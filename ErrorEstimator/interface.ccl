@@ -1,9 +1,0 @@
-# Interface definition for thorn ErrorEstimator
-
-IMPLEMENTS: ErrorEstimator
-
-INHERITS: CarpetX
-
-
-
-USES INCLUDE HEADER: loop_device.hxx

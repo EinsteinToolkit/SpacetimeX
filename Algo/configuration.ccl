@@ -1,8 +1,0 @@
-# Configuration definitions for thorn Algo
-
-REQUIRES Arith
-REQUIRES Boost
-
-PROVIDES Algo
-{
-}

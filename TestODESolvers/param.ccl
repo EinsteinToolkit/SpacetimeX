@@ -1,6 +1,0 @@
-# Parameter definitions for thorn TestODESolvers
-
-CCTK_INT order "order p, where u(t) = (1+t)^p" STEERABLE=always
-{
-  0:* :: ""
-} 1

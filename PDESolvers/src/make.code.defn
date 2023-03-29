@@ -1,7 +1,0 @@
-# Main make.code.defn file for thorn PDESolvers
-
-# Source files in this directory
-SRCS = pdesolvers.cxx solve.cxx
-
-# Subdirectories containing source files
-SUBDIRS =

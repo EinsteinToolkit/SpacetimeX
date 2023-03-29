@@ -1,9 +1,0 @@
-# Main make.code.defn file for thorn CarpetX
-
-# Source files in this directory
-SRCS =						\
-	TestArray.cxx \
-	TestDynamicData.cxx
-
-# Subdirectories containing source files
-SUBDIRS = 

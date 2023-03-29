@@ -1,6 +1,0 @@
-# Parameter definitions for thorn TestODESolvers2
-
-CCTK_INT porder "Order of polynomial"
-{
-  0:* :: ""
-} 2

@@ -1,7 +1,0 @@
-# Schedule definitions for thorn Algo
-
-SCHEDULE Test_roots AT wragh
-{
-  LANG: C
-  OPTIONS: meta
-} "Test root-finding algorithms"

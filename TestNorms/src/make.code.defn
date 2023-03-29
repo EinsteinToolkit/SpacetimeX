@@ -1,7 +1,0 @@
-# Main make.code.defn file for thorn TestNorms
-
-# Source files in this directory
-SRCS = test.cc
-
-# Subdirectories containing source files
-SUBDIRS = 

@@ -1,9 +1,0 @@
-Cactus Code Thorn TestSymmetries
-Author(s)    : Erik Schnetter <schnetter@gmail.com>
-Maintainer(s): Erik Schnetter <schnetter@gmail.com>
-Licence      : LGPL
---------------------------------------------------------------------------
-
-1. Purpose
-
-Test grid symmetries (periodic and reflection boundaries).
