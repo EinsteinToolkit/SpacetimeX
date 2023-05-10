@@ -726,5 +726,5 @@ CarpetX/WaveToyX
 !TARGET   = $ARR
 !TYPE     = ignore
 !CHECKOUT =
-SpacetimeX/Z4c
+#SpacetimeX/Z4c
 SpacetimeX/Cowling
