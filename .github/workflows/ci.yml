@@ -1,0 +1,64 @@
+name: CI
+
+# Control when the workflow will run
+on:
+  push:
+  pull_request:
+  # Allow running this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# concurrency:
+#   group: carpetx
+#   cancel-in-progress: false
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job
+  download-build-test:
+    strategy:
+      matrix:
+        accelerator: [cpu, cuda, rocm]
+        real-precision: [real64]
+        mode: [debug, optimize]
+        exclude:
+          - {accelerator: rocm, real-precision: real32}
+          - {real-precision: real32, mode: optimize}
+    env:
+      ACCELERATOR: ${{matrix.accelerator}}
+      REAL_PRECISION: ${{matrix.real-precision}}
+      MODE: ${{matrix.mode}}
+
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    container: einsteintoolkit/carpetx:${{matrix.accelerator}}-${{matrix.real-precision}}
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Check out the repository under $GITHUB_WORKSPACE, so our job can access it
+      - uses: actions/checkout@v3
+          
+      # # Check out the documentation and test results
+      # - uses: actions/checkout@v3
+      #   with:
+      #     ref: gh-pages
+      #     path: gh-pages
+          
+      - name: Log the triggering commit
+        run: echo ${{github.event.client_payload.trigger}}
+
+      - name: Download Cactus
+        run: /bin/bash $GITHUB_WORKSPACE/scripts/download.sh
+
+      - name: Build Cactus
+        run: /bin/bash $GITHUB_WORKSPACE/scripts/build.sh
+      
+      - name: Test Cactus
+        # We cannot run with cuda nor with rocm. Debug builds run too slowly.
+        if: ${{matrix.accelerator != 'cuda' && matrix.accelerator != 'rocm' && matrix.mode != 'debug'}}
+        run: /bin/bash $GITHUB_WORKSPACE/scripts/test.sh
+      
+      # Set exit code based on test status
+      - name: Set exit code
+        # Only look at the test results for `carpetx-cpu-real64` runs
+        if: ${{matrix.accelerator == 'cpu' && matrix.real-precision == 'real64' && matrix.mode == 'debug' && env.TESTS_FAILED == 'True'}}
+        run: exit 1
