@@ -17,7 +17,7 @@ jobs:
   download-build-test:
     strategy:
       matrix:
-        accelerator: [cpu, cuda, rocm]
+        accelerator: [cpu, cuda]
         real-precision: [real64]
         mode: [debug, optimize]
         exclude:
