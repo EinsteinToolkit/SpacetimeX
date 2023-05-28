@@ -726,5 +726,11 @@ CarpetX/WaveToyX
 !TARGET   = $ARR
 !TYPE     = ignore
 !CHECKOUT =
-SpacetimeX/Z4c
+SpacetimeX/AHFinder
+SpacetimeX/BrillLindquist
 SpacetimeX/Cowling
+SpacetimeX/Punctures
+SpacetimeX/StaticTrumpet
+SpacetimeX/TwoPunctures
+SpacetimeX/Weyl
+SpacetimeX/Z4c
