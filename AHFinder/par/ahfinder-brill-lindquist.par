@@ -31,17 +31,6 @@ CarpetX::ncells_x = 128   # 64
 CarpetX::ncells_y = 128   # 64
 CarpetX::ncells_z = 128   # 64
 
-CarpetX::periodic_x = no
-CarpetX::periodic_y = no
-CarpetX::periodic_z = no
-CarpetX::periodic = no
-# CarpetX::reflection_x = yes
-# CarpetX::reflection_y = yes
-# CarpetX::reflection_z = yes
-# CarpetX::reflection_upper_x = yes
-# CarpetX::reflection_upper_y = yes
-# CarpetX::reflection_upper_z = yes
-
 CarpetX::ghost_size = 3
 
 CarpetX::max_num_levels = 1
