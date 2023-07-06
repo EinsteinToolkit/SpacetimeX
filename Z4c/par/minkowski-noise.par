@@ -1,5 +1,5 @@
 ActiveThorns = "
-    ADMBase
+    ADMBaseX
     CarpetX
     ErrorEstimator
     Formaline
@@ -55,10 +55,10 @@ CarpetX::prolongation_order = 1
 ODESolvers::method = "RK2"
 CarpetX::dtfac = 0.25
 
-ADMBase::initial_data = "Cartesian Minkowski"
-ADMBase::initial_lapse = "one"
-ADMBase::initial_shift = "zero"
-ADMBase::noise_amplitude = 1.0e-10
+ADMBaseX::initial_data = "Cartesian Minkowski"
+ADMBaseX::initial_lapse = "one"
+ADMBaseX::initial_shift = "zero"
+ADMBaseX::noise_amplitude = 1.0e-10
 
 IO::out_dir = $parfile
 IO::out_every = 1   #TODO $ncells * 2 ** ($nlevels - 1) / 32
