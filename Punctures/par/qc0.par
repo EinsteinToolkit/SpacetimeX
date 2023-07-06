@@ -4,7 +4,7 @@
 # run.time: 600.0
 
 ActiveThorns = "
-    ADMBase
+    ADMBaseX
     CarpetX
     ErrorEstimator
     Formaline
@@ -52,11 +52,11 @@ CarpetX::regrid_error_threshold = 8.0
 ErrorEstimator::region_shape = "cube"
 ErrorEstimator::scale_by_resolution = yes
 
-ADMBase::initial_data = "Punctures"
-ADMBase::initial_lapse = "Punctures"
-ADMBase::initial_shift = "Punctures"
-ADMBase::initial_dtlapse = "Punctures"
-ADMBase::initial_dtshift = "Punctures"
+ADMBaseX::initial_data = "Punctures"
+ADMBaseX::initial_lapse = "Punctures"
+ADMBaseX::initial_shift = "Punctures"
+ADMBaseX::initial_dtlapse = "Punctures"
+ADMBaseX::initial_dtshift = "Punctures"
 
 # QC-0 setup
 Punctures::npunctures = 2

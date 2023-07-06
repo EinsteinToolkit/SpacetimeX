@@ -38,14 +38,14 @@ SCHEDULE Punctures_solve AT initial AFTER  Punctures_init
       WRITES: usol(everywhere)
     } "Apply boundary conditions to puncture solution"
 
-SCHEDULE Punctures_ADMBase AT initial AFTER Punctures_solve
+SCHEDULE Punctures_ADMBaseX AT initial AFTER Punctures_solve
 {
   LANG: C
   READS: usol(everywhere)
-  WRITES: ADMBase::metric(everywhere)
-  WRITES: ADMBase::curv(everywhere)
-  WRITES: ADMBase::lapse(everywhere)
-  WRITES: ADMBase::shift(everywhere)
-  WRITES: ADMBase::dtlapse(everywhere)
-  WRITES: ADMBase::dtshift(everywhere)
-} "Set ADMBase variables"
+  WRITES: ADMBaseX::metric(everywhere)
+  WRITES: ADMBaseX::curv(everywhere)
+  WRITES: ADMBaseX::lapse(everywhere)
+  WRITES: ADMBaseX::shift(everywhere)
+  WRITES: ADMBaseX::dtlapse(everywhere)
+  WRITES: ADMBaseX::dtshift(everywhere)
+} "Set ADMBaseX variables"
