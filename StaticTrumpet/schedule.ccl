@@ -2,18 +2,18 @@ if (CCTK_EQUALS(initial_data, "Static Trumpet") ||
     CCTK_EQUALS(initial_lapse, "Static Trumpet") ||
     CCTK_EQUALS(initial_shift, "Static Trumpet") ||
     CCTK_EQUALS(initial_dtshift, "Static Trumpet")) {
-  SCHEDULE StaticTrumpet_Initial IN ADMBase_InitialData
+  SCHEDULE StaticTrumpet_Initial IN ADMBaseX_InitialData
   {
     LANG: C
-    WRITES: ADMBase::metric(everywhere)
-    WRITES: ADMBase::curv(everywhere)
-    WRITES: ADMBase::lapse(everywhere)
-    WRITES: ADMBase::shift(everywhere)
-    WRITES: ADMBase::dtshift(everywhere)
-    SYNC: ADMBase::metric
-    SYNC: ADMBase::curv
-    SYNC: ADMBase::lapse
-    SYNC: ADMBase::shift
-    SYNC: ADMBase::dtshift
+    WRITES: ADMBaseX::metric(everywhere)
+    WRITES: ADMBaseX::curv(everywhere)
+    WRITES: ADMBaseX::lapse(everywhere)
+    WRITES: ADMBaseX::shift(everywhere)
+    WRITES: ADMBaseX::dtshift(everywhere)
+    SYNC: ADMBaseX::metric
+    SYNC: ADMBaseX::curv
+    SYNC: ADMBaseX::lapse
+    SYNC: ADMBaseX::shift
+    SYNC: ADMBaseX::dtshift
   } "Set up static trumpet initial conditions"
 }
