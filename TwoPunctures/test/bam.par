@@ -3,7 +3,7 @@
 ActiveThorns = "Boundary CartGrid3D Time CoordBase SymBase LocalReduce"
 ActiveThorns = "PUGH PUGHReduce PUGHSlab"
 ActiveThorns = "IOASCII IOBasic IOUtil LocalReduce"
-ActiveThorns = "TmunuBase ADMBase StaticConformal"
+ActiveThorns = "TmunuBaseX ADMBaseX StaticConformal"
 ActiveThorns = "ADMConstraints ADMCoupling ADMMacros SpaceMask"
 ActiveThorns = "BAM_Elliptic EllBase"
 
@@ -26,7 +26,7 @@ Driver::global_nz		= 35
 # BAM requires this specific processor topology setup algorithm in PUGH
 PUGH::processor_topology = "automatic_old"
 
-ADMBase::initial_data		= "BrBr"
+ADMBaseX::initial_data		= "BrBr"
 
 BAM_Elliptic::redblack_decouple = "yes"
 BAM_Elliptic::bam_persist       = "yes"
@@ -48,11 +48,11 @@ BAM_Elliptic::bhsz2		= -1.0
 
 BAM_Elliptic::bam_bound		= "bamrobin"
 
-ADMBase::metric_type		= "static conformal"
+ADMBaseX::metric_type		= "static conformal"
 StaticConformal::conformal_storage = "factor+derivs+2nd derivs"
 
-ADMBase::lapse_evolution_method	= "static"
-ADMBase::initial_lapse		= "one"
+ADMBaseX::lapse_evolution_method	= "static"
+ADMBaseX::initial_lapse		= "one"
   
 IO::out_dir			= $parfile
 IO::out_fileinfo		= "axis labels"
