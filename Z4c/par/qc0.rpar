@@ -41,7 +41,7 @@ parfile = """
 # run.time: 7200.0
 
 ActiveThorns = "
-    ADMBase
+    ADMBaseX
     CarpetX
     Coordinates
     ErrorEstimator
@@ -50,7 +50,7 @@ ActiveThorns = "
     ODESolvers
     SystemTopology
     TimerReport
-    TmunuBase
+    TmunuBaseX
     TwoPunctures
     Weyl
     Z4c
@@ -116,8 +116,8 @@ ODESolvers::verbose = no
 ODESolvers::method = "RK4"
 CarpetX::dtfac = $dtfac
 
-ADMBase::initial_data = "TwoPunctures"
-ADMBase::initial_lapse = "TwoPunctures-averaged"
+ADMBaseX::initial_data = "TwoPunctures"
+ADMBaseX::initial_lapse = "TwoPunctures-averaged"
 
 # QC-0 setup
 TwoPunctures::par_b =  1.168642873
@@ -164,10 +164,10 @@ CarpetX::recover_method = "openpmd"
 CarpetX::out_metadata = yes
 
 CarpetX::out_silo_vars = "
-    ADMBase::metric
-    ADMBase::curv
-    ADMBase::lapse
-    ADMBase::shift
+    ADMBaseX::metric
+    ADMBaseX::curv
+    ADMBaseX::lapse
+    ADMBaseX::shift
     Weyl::Psi4re
     Weyl::Psi4im
     Z4c::allC
@@ -176,10 +176,10 @@ CarpetX::out_silo_vars = "
 "
 
 CarpetX::out_openpmd_vars = "
-    ADMBase::metric
-    ADMBase::curv
-    ADMBase::lapse
-    ADMBase::shift
+    ADMBaseX::metric
+    ADMBaseX::curv
+    ADMBaseX::lapse
+    ADMBaseX::shift
     Weyl::Psi4re
     Weyl::Psi4im
     Z4c::allC
@@ -188,10 +188,10 @@ CarpetX::out_openpmd_vars = "
 "
 
 CarpetX::out_tsv_vars = "
-    ADMBase::metric
-    ADMBase::curv
-    ADMBase::lapse
-    ADMBase::shift
+    ADMBaseX::metric
+    ADMBaseX::curv
+    ADMBaseX::lapse
+    ADMBaseX::shift
     Weyl::Psi4re
     Weyl::Psi4im
     Z4c::allC
