@@ -1,6 +1,6 @@
 # Parameter definitions for thorn BrillLindquist
 
-SHARES: ADMBase
+SHARES: ADMBaseX
 
 EXTENDS KEYWORD initial_data "Initial metric and extrinsic curvature datasets"
 {
