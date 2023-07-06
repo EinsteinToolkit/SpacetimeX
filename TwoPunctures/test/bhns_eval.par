@@ -1,10 +1,10 @@
 ActiveThorns = "Boundary CartGrid3D Time CoordBase SymBase LocalReduce"
 ActiveThorns = "Loopcontrol InitBase Carpet CarpetLib CarpetInterp CarpetReduce CarpetSlab CarpetIOASCII CarpetIOBasic IOUtil CarpetIOScalar CarpetIOHDF5"
 
-ActiveThorns = "ADMBase"
+ActiveThorns = "ADMBaseX"
 ActiveThorns = "StaticConformal"
 ActiveThorns = "ADMCoupling ADMMacros"
-ActiveThorns = "TmunuBase Constants SpaceMask HydroBase"
+ActiveThorns = "TmunuBaseX Constants SpaceMask HydroBaseX"
 ActiveThorns = "TOVSolver eos_omni"
 ActiveThorns = "TwoPunctures"
 ActiveThorns = "coordgauge boundary"
@@ -35,12 +35,12 @@ CartGrid3D::type         = "coordbase"
 CartGrid3D::domain       = "full"
 CartGrid3D::avoid_origin = "no"
 
-ADMBase::initial_data		= "twopunctures"
-ADMBase::initial_lapse  = "tov"
-ADMBase::initial_shift  = "tov"
+ADMBaseX::initial_data		= "twopunctures"
+ADMBaseX::initial_lapse  = "tov"
+ADMBaseX::initial_shift  = "tov"
 
 TwoPunctures::keep_u_around     = yes
-TwoPunctures::schedule_in_ADMBase_InitialData = no
+TwoPunctures::schedule_in_ADMBaseX_InitialData = no
 
 TwoPunctures::npoints_A         = 20
 TwoPunctures::npoints_B         = 20
@@ -84,9 +84,9 @@ Carpet::init_3_timelevels         = no
 CarpetIOScalar::outScalar_reductions	= "minimum maximum norm1 norm2"
 
 IOScalar::outScalar_every	= 512
-IOScalar::outScalar_vars		= "admbase::metric admbase::curv TwoPunctures::puncture_u HydroBase::w_lorentz hydrobase::rho hydrobase::press hydrobase::eps HydroBase::vel admbase::lapse admbase::shift"
+IOScalar::outScalar_vars		= "admbase::metric admbase::curv TwoPunctures::puncture_u HydroBaseX::w_lorentz hydrobase::rho hydrobase::press hydrobase::eps HydroBaseX::vel admbase::lapse admbase::shift"
 IOASCII::out1D_every		= 512
-IOASCII::out1D_vars		= "admbase::metric admbase::curv TwoPunctures::puncture_u HydroBase::w_lorentz hydrobase::rho hydrobase::press hydrobase::eps HydroBase::vel admbase::lapse admbase::shift"
+IOASCII::out1D_vars		= "admbase::metric admbase::curv TwoPunctures::puncture_u HydroBaseX::w_lorentz hydrobase::rho hydrobase::press hydrobase::eps HydroBaseX::vel admbase::lapse admbase::shift"
 
 admbase::metric_type		= "physical"
 

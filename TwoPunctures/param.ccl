@@ -1,6 +1,6 @@
 # Parameter definitions for thorn TwoPunctures
 
-SHARES: ADMBase
+SHARES: ADMBaseX
 
 EXTENDS KEYWORD initial_data 
 {
