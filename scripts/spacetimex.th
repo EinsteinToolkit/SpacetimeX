@@ -726,7 +726,7 @@ CarpetX/WaveToyX
 !TARGET   = $ARR
 !TYPE     = ignore
 !CHECKOUT =
-SpacetimeX/AHFinder
+SpacetimeX/AHFinderX
 SpacetimeX/BrillLindquist
 SpacetimeX/Cowling
 SpacetimeX/Punctures
