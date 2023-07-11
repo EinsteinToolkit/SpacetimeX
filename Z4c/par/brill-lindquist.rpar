@@ -28,7 +28,7 @@ out_every = round(1.0 / dtfac * 2 ** (nlevels - 1))
 
 parfile = """
 ActiveThorns = "
-    ADMBase
+    ADMBaseX
     BrillLindquist
     CarpetX
     ErrorEstimator
@@ -36,7 +36,7 @@ ActiveThorns = "
     IOUtil
     ODESolvers
     TimerReport
-    TmunuBase
+    TmunuBaseX
     Z4c
 "
 
@@ -95,8 +95,8 @@ CarpetX::prolongation_order = 5
 ODESolvers::method = "RK4"
 CarpetX::dtfac = $dtfac
 
-ADMBase::initial_data = "Brill-Lindquist"
-ADMBase::initial_lapse = "Brill-Lindquist"
+ADMBaseX::initial_data = "Brill-Lindquist"
+ADMBaseX::initial_lapse = "Brill-Lindquist"
 
 Z4c::epsdiss = 0.32
 
@@ -108,10 +108,10 @@ IO::out_proc_every = 1
 CarpetX::out_plotfile_groups = ""
 
 CarpetX::out_silo_vars = "
-    ADMBase::metric
-    ADMBase::curv
-    ADMBase::lapse
-    ADMBase::shift
+    ADMBaseX::metric
+    ADMBaseX::curv
+    ADMBaseX::lapse
+    ADMBaseX::shift
     Z4c::chi
     Z4c::gamma_tilde
     Z4c::K_hat

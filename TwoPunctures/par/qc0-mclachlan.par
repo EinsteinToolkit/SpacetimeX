@@ -94,12 +94,12 @@ NaNChecker::check_vars      = "
         ML_BSSN::ML_shift
         ML_BSSN::ML_dtlapse
         ML_BSSN::ML_dtshift
-        ADMBase::metric
-        ADMBase::curv
-        ADMBase::lapse
-        ADMBase::shift
-        ADMBase::dtlapse
-        ADMBase::dtshift
+        ADMBaseX::metric
+        ADMBaseX::curv
+        ADMBaseX::lapse
+        ADMBaseX::shift
+        ADMBaseX::dtlapse
+        ADMBaseX::dtshift
 "
 
 
@@ -245,7 +245,7 @@ Time::dtfac = 0.25
 
 
 
-ActiveThorns = "ADMBase ADMCoupling ADMMacros CoordGauge SpaceMask StaticConformal TmunuBase"
+ActiveThorns = "ADMBaseX ADMCoupling ADMMacros CoordGauge SpaceMask StaticConformal TmunuBaseX"
 
 ADMMacros::spatial_order = 4
 
@@ -253,16 +253,16 @@ ADMMacros::spatial_order = 4
 
 ActiveThorns = "TwoPunctures"
 
-ADMBase::metric_type = "physical"
+ADMBaseX::metric_type = "physical"
 
-ADMBase::initial_data    = "twopunctures"
-ADMBase::initial_lapse   = "twopunctures-averaged"
-ADMBase::initial_shift   = "zero"
-ADMBase::initial_dtlapse = "zero"
-ADMBase::initial_dtshift = "zero"
+ADMBaseX::initial_data    = "twopunctures"
+ADMBaseX::initial_lapse   = "twopunctures-averaged"
+ADMBaseX::initial_shift   = "zero"
+ADMBaseX::initial_dtlapse = "zero"
+ADMBaseX::initial_dtshift = "zero"
 
 # needed for AHFinderDirect
-ADMBase::metric_timelevels = 3
+ADMBaseX::metric_timelevels = 3
 
 TwoPunctures::par_b          =  1.168642873
 TwoPunctures::par_m_plus     =  0.453
@@ -281,11 +281,11 @@ TwoPunctures::verbose = yes
 
 ActiveThorns = "ML_BSSN ML_BSSN_Helper NewRad"
 
-ADMBase::evolution_method         = "ML_BSSN"
-ADMBase::lapse_evolution_method   = "ML_BSSN"
-ADMBase::shift_evolution_method   = "ML_BSSN"
-ADMBase::dtlapse_evolution_method = "ML_BSSN"
-ADMBase::dtshift_evolution_method = "ML_BSSN"
+ADMBaseX::evolution_method         = "ML_BSSN"
+ADMBaseX::lapse_evolution_method   = "ML_BSSN"
+ADMBaseX::shift_evolution_method   = "ML_BSSN"
+ADMBaseX::dtlapse_evolution_method = "ML_BSSN"
+ADMBaseX::dtshift_evolution_method = "ML_BSSN"
 
 ML_BSSN::harmonicN           = 1      # 1+log
 ML_BSSN::harmonicF           = 2.0    # 1+log
@@ -448,12 +448,12 @@ IOScalar::one_file_per_group = yes
 IOScalar::outScalar_every = 128
 IOScalar::outScalar_vars  = "
         CarpetReduce::weight
-        ADMBase::metric
-        ADMBase::curv
-        ADMBase::lapse
-        ADMBase::shift
-        ADMBase::dtlapse
-        ADMBase::dtshift
+        ADMBaseX::metric
+        ADMBaseX::curv
+        ADMBaseX::lapse
+        ADMBaseX::shift
+        ADMBaseX::dtlapse
+        ADMBaseX::dtshift
         WEYLSCAL4::Psi4r
         WEYLSCAL4::Psi4i
         ML_ADMConstraints::ML_Ham
@@ -482,12 +482,12 @@ IOASCII::out0D_every = 128
 IOASCII::out0D_vars  = "
         Carpet::timing
         CarpetReduce::weight
-        ADMBase::metric
-        ADMBase::curv
-        ADMBase::lapse
-        ADMBase::shift
-        ADMBase::dtlapse
-        ADMBase::dtshift
+        ADMBaseX::metric
+        ADMBaseX::curv
+        ADMBaseX::lapse
+        ADMBaseX::shift
+        ADMBaseX::dtlapse
+        ADMBaseX::dtshift
         WEYLSCAL4::Psi4r
         WEYLSCAL4::Psi4i
         ML_ADMConstraints::ML_Ham
@@ -508,12 +508,12 @@ IOASCII::out0D_vars  = "
 IOASCII::out1D_every = 128
 IOASCII::out1D_vars  = "
         CarpetReduce::weight
-        ADMBase::metric
-        ADMBase::curv
-        ADMBase::lapse
-        ADMBase::shift
-        ADMBase::dtlapse
-        ADMBase::dtshift
+        ADMBaseX::metric
+        ADMBaseX::curv
+        ADMBaseX::lapse
+        ADMBaseX::shift
+        ADMBaseX::dtlapse
+        ADMBaseX::dtshift
         WEYLSCAL4::Psi4r
         WEYLSCAL4::Psi4i
         ML_ADMConstraints::ML_Ham
@@ -551,12 +551,12 @@ IOHDF5::compression_level      = 1
 IOHDF5::use_checksums          = yes
 IOHDF5::out_vars               = "
         CarpetReduce::weight
-        ADMBase::metric
-        ADMBase::curv
-        ADMBase::lapse
-        ADMBase::shift
-        ADMBase::dtlapse
-        ADMBase::dtshift
+        ADMBaseX::metric
+        ADMBaseX::curv
+        ADMBaseX::lapse
+        ADMBaseX::shift
+        ADMBaseX::dtlapse
+        ADMBaseX::dtshift
         WEYLSCAL4::Psi4r
         WEYLSCAL4::Psi4i
         ML_ADMConstraints::ML_Ham

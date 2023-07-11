@@ -4,7 +4,7 @@
 # run.time: 60.0
 
 ActiveThorns = "
-    ADMBase
+    ADMBaseX
     CarpetX
     Formaline
     IOUtil
@@ -44,11 +44,11 @@ CarpetX::periodic_z = no
 
 CarpetX::ghost_size = 1
 
-ADMBase::initial_data = "Punctures"
-ADMBase::initial_lapse = "Punctures"
-ADMBase::initial_shift = "Punctures"
-ADMBase::initial_dtlapse = "Punctures"
-ADMBase::initial_dtshift = "Punctures"
+ADMBaseX::initial_data = "Punctures"
+ADMBaseX::initial_lapse = "Punctures"
+ADMBaseX::initial_shift = "Punctures"
+ADMBaseX::initial_dtlapse = "Punctures"
+ADMBaseX::initial_dtshift = "Punctures"
 
 Punctures::npunctures = 1
 
