@@ -29,25 +29,25 @@ STORAGE: betaG_rhs
 
 
 
-SCHEDULE GROUP Z4c_InitialGroup AT initial AFTER ADMBase_PostInitial
+SCHEDULE GROUP Z4c_InitialGroup AT initial AFTER ADMBaseX_PostInitial
 {
 } "Convert ADM to Z4c variables"
 
-SCHEDULE GROUP Z4c_PostStepGroup AT initial AFTER Z4c_InitialGroup BEFORE ADMBase_SetADMVars
+SCHEDULE GROUP Z4c_PostStepGroup AT initial AFTER Z4c_InitialGroup BEFORE ADMBaseX_SetADMVars
 {
 } "Post-process Z4c variables"
 
-SCHEDULE GROUP Z4c_PostStepGroup2 AT initial AFTER (TmunuBase_SetTmunuVars, Z4c_PostStepGroup) BEFORE ADMBase_SetADMRHS
+SCHEDULE GROUP Z4c_PostStepGroup2 AT initial AFTER (TmunuBaseX_SetTmunuVars, Z4c_PostStepGroup) BEFORE ADMBaseX_SetADMRHS
 {
 } "Post-process Z4c variables, part 2"
 
 
 
-SCHEDULE GROUP Z4c_PostStepGroup AT postregrid BEFORE ADMBase_SetADMVars
+SCHEDULE GROUP Z4c_PostStepGroup AT postregrid BEFORE ADMBaseX_SetADMVars
 {
 } "Post-process Z4c variables"
 
-SCHEDULE GROUP Z4c_PostStepGroup2 AT postregrid AFTER (TmunuBase_SetTmunuVars, Z4c_PostStepGroup) BEFORE ADMBase_SetADMRHS
+SCHEDULE GROUP Z4c_PostStepGroup2 AT postregrid AFTER (TmunuBaseX_SetTmunuVars, Z4c_PostStepGroup) BEFORE ADMBaseX_SetADMRHS
 {
 } "Post-process Z4c variables, part 2"
 
@@ -59,11 +59,11 @@ SCHEDULE GROUP Z4c_AnalysisGroup AT analysis
 
 
 
-SCHEDULE GROUP Z4c_PostStepGroup IN ODESolvers_PostStep BEFORE ADMBase_SetADMVars
+SCHEDULE GROUP Z4c_PostStepGroup IN ODESolvers_PostStep BEFORE ADMBaseX_SetADMVars
 {
 } "Post-process Z4c variables"
 
-SCHEDULE GROUP Z4c_PostStepGroup2 IN ODESolvers_PostStep AFTER (TmunuBase_SetTmunuVars, Z4c_PostStepGroup) BEFORE ADMBase_SetADMRHS
+SCHEDULE GROUP Z4c_PostStepGroup2 IN ODESolvers_PostStep AFTER (TmunuBaseX_SetTmunuVars, Z4c_PostStepGroup) BEFORE ADMBaseX_SetADMRHS
 {
 } "Post-process Z4c variables, part 2"
 
@@ -96,10 +96,10 @@ SCHEDULE Z4c_Test AT wragh
 SCHEDULE Z4c_Initial1 IN Z4c_InitialGroup
 {
   LANG: C
-  READS: ADMBase::metric(interior)
-  READS: ADMBase::curv(interior)
-  READS: ADMBase::lapse(interior)
-  READS: ADMBase::shift(interior)
+  READS: ADMBaseX::metric(interior)
+  READS: ADMBaseX::curv(interior)
+  READS: ADMBaseX::lapse(interior)
+  READS: ADMBaseX::shift(interior)
   WRITES: chi(interior)
   WRITES: gamma_tilde(interior)
   WRITES: K_hat(interior)
@@ -159,15 +159,15 @@ if (calc_ADM_vars) {
     READS: Theta(everywhere)
     READS: alphaG(everywhere)
     READS: betaG(everywhere)
-    # READS: TmunuBase::eTtt(interior)
-    # READS: TmunuBase::eTti(interior)
-    # READS: TmunuBase::eTij(interior)
-    WRITES: ADMBase::metric(everywhere)
-    WRITES: ADMBase::curv(everywhere)
-    WRITES: ADMBase::lapse(everywhere)
-    WRITES: ADMBase::dtlapse(everywhere)
-    WRITES: ADMBase::shift(everywhere)
-    WRITES: ADMBase::dtshift(everywhere)
+    # READS: TmunuBaseX::eTtt(interior)
+    # READS: TmunuBaseX::eTti(interior)
+    # READS: TmunuBaseX::eTij(interior)
+    WRITES: ADMBaseX::metric(everywhere)
+    WRITES: ADMBaseX::curv(everywhere)
+    WRITES: ADMBaseX::lapse(everywhere)
+    WRITES: ADMBaseX::dtlapse(everywhere)
+    WRITES: ADMBaseX::shift(everywhere)
+    WRITES: ADMBaseX::dtshift(everywhere)
   } "Convert Z4c to ADM variables"
 }
 
@@ -183,15 +183,15 @@ if (calc_ADMRHS_vars) {
     READS: Theta(everywhere)
     READS: alphaG(everywhere)
     READS: betaG(everywhere)
-    READS: TmunuBase::eTtt(interior)
-    READS: TmunuBase::eTti(interior)
-    READS: TmunuBase::eTij(interior)
-    WRITES: ADMBase::dtcurv(interior)
-    WRITES: ADMBase::dt2lapse(interior)
-    WRITES: ADMBase::dt2shift(interior)
-    SYNC: ADMBase::dtcurv
-    SYNC: ADMBase::dt2lapse
-    SYNC: ADMBase::dt2shift
+    READS: TmunuBaseX::eTtt(interior)
+    READS: TmunuBaseX::eTti(interior)
+    READS: TmunuBaseX::eTij(interior)
+    WRITES: ADMBaseX::dtcurv(interior)
+    WRITES: ADMBaseX::dt2lapse(interior)
+    WRITES: ADMBaseX::dt2shift(interior)
+    SYNC: ADMBaseX::dtcurv
+    SYNC: ADMBaseX::dt2lapse
+    SYNC: ADMBaseX::dt2shift
   } "Calculate second time derivatives of ADM variables"
 }
 
@@ -209,9 +209,9 @@ if (calc_constraints) {
     READS: Theta(everywhere)
     READS: alphaG(everywhere)
     READS: betaG(everywhere)
-    READS: TmunuBase::eTtt(interior)
-    READS: TmunuBase::eTti(interior)
-    READS: TmunuBase::eTij(interior)
+    READS: TmunuBaseX::eTtt(interior)
+    READS: TmunuBaseX::eTti(interior)
+    READS: TmunuBaseX::eTij(interior)
     WRITES: ZtC(interior)
     WRITES: HC(interior)
     WRITES: MtC(interior)
@@ -236,9 +236,9 @@ SCHEDULE Z4c_RHS IN Z4c_RHSGroup
   READS: Theta(everywhere)
   READS: alphaG(everywhere)
   READS: betaG(everywhere)
-  READS: TmunuBase::eTtt(interior)
-  READS: TmunuBase::eTti(interior)
-  READS: TmunuBase::eTij(interior)
+  READS: TmunuBaseX::eTtt(interior)
+  READS: TmunuBaseX::eTti(interior)
+  READS: TmunuBaseX::eTij(interior)
   WRITES: chi_rhs(interior)
   WRITES: gamma_tilde_rhs(interior)
   WRITES: K_hat_rhs(interior)

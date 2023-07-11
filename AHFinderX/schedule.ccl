@@ -33,8 +33,8 @@ SCHEDULE AHFinder_find AT poststep
 {
   LANG: C
   OPTIONS: global
-  READS: ADMBase::metric(everywhere)
-  READS: ADMBase::curv(everywhere)
+  READS: ADMBaseX::metric(everywhere)
+  READS: ADMBaseX::curv(everywhere)
   READS: position
   READS: radius
   WRITES: position

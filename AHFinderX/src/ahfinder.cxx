@@ -188,18 +188,18 @@ metric_t<T> brill_lindquist_metric(const cGH *const cctkGH,
 template <typename T>
 metric_t<T> interpolate_metric(const cGH *const cctkGH,
                                const coords_t<T> &coords) {
-  const int gxx_ind = CCTK_VarIndex("ADMBase::gxx");
-  const int gxy_ind = CCTK_VarIndex("ADMBase::gxy");
-  const int gxz_ind = CCTK_VarIndex("ADMBase::gxz");
-  const int gyy_ind = CCTK_VarIndex("ADMBase::gyy");
-  const int gyz_ind = CCTK_VarIndex("ADMBase::gyz");
-  const int gzz_ind = CCTK_VarIndex("ADMBase::gzz");
-  const int kxx_ind = CCTK_VarIndex("ADMBase::kxx");
-  const int kxy_ind = CCTK_VarIndex("ADMBase::kxy");
-  const int kxz_ind = CCTK_VarIndex("ADMBase::kxz");
-  const int kyy_ind = CCTK_VarIndex("ADMBase::kyy");
-  const int kyz_ind = CCTK_VarIndex("ADMBase::kyz");
-  const int kzz_ind = CCTK_VarIndex("ADMBase::kzz");
+  const int gxx_ind = CCTK_VarIndex("ADMBaseX::gxx");
+  const int gxy_ind = CCTK_VarIndex("ADMBaseX::gxy");
+  const int gxz_ind = CCTK_VarIndex("ADMBaseX::gxz");
+  const int gyy_ind = CCTK_VarIndex("ADMBaseX::gyy");
+  const int gyz_ind = CCTK_VarIndex("ADMBaseX::gyz");
+  const int gzz_ind = CCTK_VarIndex("ADMBaseX::gzz");
+  const int kxx_ind = CCTK_VarIndex("ADMBaseX::kxx");
+  const int kxy_ind = CCTK_VarIndex("ADMBaseX::kxy");
+  const int kxz_ind = CCTK_VarIndex("ADMBaseX::kxz");
+  const int kyy_ind = CCTK_VarIndex("ADMBaseX::kyy");
+  const int kyz_ind = CCTK_VarIndex("ADMBaseX::kyz");
+  const int kzz_ind = CCTK_VarIndex("ADMBaseX::kzz");
 
   constexpr int nvars = 6 * (1 + 3 + 1);
   const array<CCTK_INT, nvars> varinds{
