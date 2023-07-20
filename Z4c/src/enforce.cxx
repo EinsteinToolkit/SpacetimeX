@@ -79,7 +79,7 @@ extern "C" void Z4c_Enforce(CCTK_ARGUMENTS) {
         const vreal detgammat = calc_det(delta3 + gammat);
         const vreal gammat_norm = maxabs(delta3 + gammat);
         const vreal gammat_scale = gammat_norm;
-#ifndef __CUDACC__
+#if !defined __CUDACC__ && !defined __HIPCC__
         if (!(all(fabs(detgammat - 1) <= 1.0e-12 * gammat_scale))) {
           ostringstream buf;
           buf << "det gammat is not one: gammat=" << gammat
@@ -106,7 +106,7 @@ extern "C" void Z4c_Enforce(CCTK_ARGUMENTS) {
         const vreal gammatu_norm = maxabs(delta3 + gammatu);
         const vreal At_norm = maxabs(At);
         const vreal At_scale = fmax(fmax(gammat_norm, gammatu_norm), At_norm);
-#ifndef __CUDACC__
+#if !defined __CUDACC__ && !defined __HIPCC__
         if (!(all(fabs(traceAt) <= 1.0e-12 * At_scale))) {
           ostringstream buf;
           buf << "tr At: At=" << At << " tr(At)=" << traceAt;
