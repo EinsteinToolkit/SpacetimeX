@@ -1,0 +1,9 @@
+Cactus Code Thorn SohericalHarmonics
+Author(s)    : Erik Schnetter <eschnetter@perimeterinstitute.ca>
+Maintainer(s): Erik Schnetter <eschnetter@perimeterinstitute.ca>
+Licence      : LGPL
+--------------------------------------------------------------------------
+
+1. Purpose
+
+Decompose a grid function into spherical harmonics
