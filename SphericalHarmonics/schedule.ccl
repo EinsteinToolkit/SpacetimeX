@@ -1,0 +1,8 @@
+# Schedule definition for thorn SphericalHarmonics
+
+SCHEDULE SphericalHarmonics_extract AT analysis AFTER Weyl_Weyl
+{
+  LANG: C
+  OPTIONS: global
+  READS: Weyl::Psi4re Weyl::Psi4im
+} "Extract spherical harmonics"

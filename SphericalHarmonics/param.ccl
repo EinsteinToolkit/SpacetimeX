@@ -1,0 +1,6 @@
+# Parameter definition for thorn SphericalHarmonics
+
+SHARES: IO
+
+USES STRING out_dir
+USES CCTK_INT out_every
