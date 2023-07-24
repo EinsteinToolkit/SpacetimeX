@@ -16,7 +16,7 @@ USES INCLUDE HEADER: vect.hxx
 
 INHERITS: Derivs
 
-USES INCLUDE HEADER: derivs-spacetimex.hxx
+USES INCLUDE HEADER: derivs_spacetimex.hxx
 
 
 

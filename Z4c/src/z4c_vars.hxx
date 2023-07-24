@@ -1,7 +1,7 @@
 #ifndef Z4C_HXX
 #define Z4C_HXX
 
-#include "derivs.hxx"
+#include "derivs_spacetimex.hxx"
 #include "physics.hxx"
 
 #include <mat.hxx>
