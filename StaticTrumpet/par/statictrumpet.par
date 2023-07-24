@@ -1,5 +1,5 @@
 ActiveThorns = "
-    ADMBase
+    ADMBaseX
     BaikalX
     CarpetX
     ErrorEstimator
@@ -44,10 +44,10 @@ CarpetX::prolongation_order = 3
 
 CarpetX::dtfac = 0.25
 
-ADMBase::initial_data = "Static Trumpet"
-ADMBase::initial_lapse = "Static Trumpet"
-ADMBase::initial_shift = "Static Trumpet"
-ADMBase::initial_dtshift = "Static Trumpet"
+ADMBaseX::initial_data = "Static Trumpet"
+ADMBaseX::initial_lapse = "Static Trumpet"
+ADMBaseX::initial_shift = "Static Trumpet"
+ADMBaseX::initial_dtshift = "Static Trumpet"
 
 IO::out_dir = $parfile
 IO::out_every = 1   #TODO $ncells * 2 ** ($nlevels - 1) / 32

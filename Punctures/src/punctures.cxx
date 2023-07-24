@@ -234,8 +234,8 @@ extern "C" void Punctures_boundary(CCTK_ARGUMENTS) {
   });
 }
 
-extern "C" void Punctures_ADMBase(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTS_Punctures_ADMBase;
+extern "C" void Punctures_ADMBaseX(CCTK_ARGUMENTS) {
+  DECLARE_CCTK_ARGUMENTS_Punctures_ADMBaseX;
   DECLARE_CCTK_PARAMETERS;
 
   const GF3D<const CCTK_REAL, 0, 0, 0> usol_(cctkGH, usol);

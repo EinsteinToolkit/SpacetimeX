@@ -1,5 +1,5 @@
 ActiveThorns = "
-    ADMBase
+    ADMBaseX
     CTGBase
     CTGEvolution
     CTGGauge
@@ -63,15 +63,15 @@ PeriodicCarpet::periodic = yes
 
 driver::ghost_size = 2
 
-ADMBase::initial_data = "sine_planewaves"
-ADMBase::initial_lapse = "one"
-ADMBase::initial_shift = "zero"
+ADMBaseX::initial_data = "sine_planewaves"
+ADMBaseX::initial_lapse = "one"
+ADMBaseX::initial_shift = "zero"
 
 IDLinearWaves::amplitude = 1.0e-8
 IDLinearWaves::wavelength = 1.0
 IDLinearWaves::wavetheta = 90
 
-ADMBase::evolution_method = "ctgamma"
+ADMBaseX::evolution_method = "ctgamma"
 
 SummationByParts::order = 2
 
@@ -93,12 +93,12 @@ IO::out_dir = $parfile
 IO::out_every = 1
 
 IOASCII::out1d_vars = "
-    ADMBase::metric
-    ADMBase::curv
-    ADMBase::lapse
-    ADMBase::shift
-    ADMBase::dtlapse
-    ADMBase::dtshift
+    ADMBaseX::metric
+    ADMBaseX::curv
+    ADMBaseX::lapse
+    ADMBaseX::shift
+    ADMBaseX::dtlapse
+    ADMBaseX::dtshift
     CTGBase::conformal_factor
     CTGBase::conformal_metric
     CTGBase::curvature_scalar

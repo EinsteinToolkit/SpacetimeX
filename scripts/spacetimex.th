@@ -699,7 +699,7 @@ Numerical/AEILocalInterp
 !REPO_BRANCH = unify-derivs
 !REPO_PATH= $2
 !CHECKOUT =
-CarpetX/ADMBase
+CarpetX/ADMBaseX
 CarpetX/Algo
 CarpetX/Arith
 CarpetX/CarpetX
@@ -707,11 +707,11 @@ CarpetX/Coordinates
 CarpetX/Derivs
 CarpetX/ErrorEstimator
 CarpetX/FluxWaveToyX
-CarpetX/HydroBase
+CarpetX/HydroBaseX
 CarpetX/Loop
 CarpetX/ODESolvers
 CarpetX/PDESolvers
-CarpetX/Poisson2
+CarpetX/Poisson
 CarpetX/TestArrayGroup
 CarpetX/TestInterpolate
 CarpetX/TestNorms
@@ -720,12 +720,19 @@ CarpetX/TestODESolvers2
 CarpetX/TestOutput
 CarpetX/TestProlongate
 CarpetX/TestSymmetries
-CarpetX/TmunuBase
+CarpetX/TmunuBaseX
 CarpetX/WaveToyX
 
 # SpacetimeX thorns
 !TARGET   = $ARR
 !TYPE     = ignore
 !CHECKOUT =
-SpacetimeX/Z4c
+SpacetimeX/AHFinderX
+SpacetimeX/BrillLindquist
 SpacetimeX/Cowling
+SpacetimeX/Punctures
+SpacetimeX/SphericalHarmonics
+SpacetimeX/StaticTrumpet
+SpacetimeX/TwoPunctures
+SpacetimeX/Weyl
+SpacetimeX/Z4c

@@ -1,11 +1,11 @@
 ActiveThorns = "
-    ADMBase
+    ADMBaseX
     CarpetX
     ErrorEstimator
     Formaline
     IOUtil
     ODESolvers
-    TmunuBase
+    TmunuBaseX
     Z4c
 "
  
@@ -58,9 +58,9 @@ CarpetX::prolongation_order = 5
 ODESolvers::method = "RK4"
 CarpetX::dtfac = 0.25
 
-ADMBase::initial_data = "Cartesian Minkowski"
-ADMBase::initial_lapse = "one"
-ADMBase::initial_shift = "zero"
+ADMBaseX::initial_data = "Cartesian Minkowski"
+ADMBaseX::initial_lapse = "one"
+ADMBaseX::initial_shift = "zero"
 
 IO::out_dir = $parfile
 IO::out_every = $ncells * 2 ** ($nlevels - 1) / 32

@@ -2,7 +2,7 @@
 
 IMPLEMENTS: TwoPunctures
 
-INHERITS: ADMBase Coordinates
+INHERITS: ADMBaseX Coordinates
 
 USES INCLUDE HEADER: loopcontrol.h
 

@@ -3,7 +3,7 @@
 ActiveThorns = "Boundary CartGrid3D Time CoordBase SymBase"
 ActiveThorns = "PUGH PUGHReduce PUGHSlab"
 ActiveThorns = "IOASCII IOBasic IOUtil"
-ActiveThorns = "TmunuBase ADMBase StaticConformal"
+ActiveThorns = "TmunuBaseX ADMBaseX StaticConformal"
 ActiveThorns = "ADMConstraints ADMCoupling ADMMacros SpaceMask"
 ActiveThorns = "IDPuncture TATelliptic TATJacobi TATMG TATPETSc"
 
@@ -23,7 +23,7 @@ Driver::global_nx		= 35
 Driver::global_ny		= 35
 Driver::global_nz		= 35
 
-ADMBase::initial_data		= "puncture"
+ADMBaseX::initial_data		= "puncture"
 
 IDPuncture::verbose		= "yes"
 
@@ -43,11 +43,11 @@ IDPuncture::bound		= "robin"
 
 IDPuncture::solver		= "TATPETSc"
 
-ADMBase::metric_type		= "static conformal"
+ADMBaseX::metric_type		= "static conformal"
 StaticConformal::conformal_storage = "factor+derivs+2nd derivs"
 
-ADMBase::lapse_evolution_method	= "static"
-ADMBase::initial_lapse		= "one"
+ADMBaseX::lapse_evolution_method	= "static"
+ADMBaseX::initial_lapse		= "one"
 
 TATJacobi::verbose		= yes
 

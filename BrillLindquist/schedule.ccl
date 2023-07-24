@@ -1,18 +1,18 @@
 # Schedule definitions for thorn BrillLindquist
 
 if (CCTK_EQUALS(initial_data, "Brill-Lindquist")) {
-  SCHEDULE BrillLindquist_initial_data IN ADMBase_InitialData
+  SCHEDULE BrillLindquist_initial_data IN ADMBaseX_InitialData
   {
     LANG: C
-    WRITES: ADMBase::metric(everywhere)
-    WRITES: ADMBase::curv(everywhere)
+    WRITES: ADMBaseX::metric(everywhere)
+    WRITES: ADMBaseX::curv(everywhere)
   } "Set up Brill-Lindquist initial data"
 }
 
 if (CCTK_EQUALS(initial_lapse, "Brill-Lindquist")) {
-  SCHEDULE BrillLindquist_initial_lapse IN ADMBase_InitialGauge
+  SCHEDULE BrillLindquist_initial_lapse IN ADMBaseX_InitialGauge
   {
     LANG: C
-    WRITES: ADMBase::lapse(everywhere)
+    WRITES: ADMBaseX::lapse(everywhere)
   } "Set up Brill-Lindquist lapse"
 }
