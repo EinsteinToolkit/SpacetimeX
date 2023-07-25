@@ -11,6 +11,8 @@
 #include <cmath>
 #include <iostream>
 
+using namespace derivs_spacetimex;
+
 namespace Z4c {
 
 // See arXiv:1212.2901 [gr-qc]

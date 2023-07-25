@@ -27,6 +27,8 @@
 
 #include <cmath>
 
+using namespace derivs_spacetimex;
+
 namespace Z4c {
 using namespace Arith;
 using namespace Loop;
