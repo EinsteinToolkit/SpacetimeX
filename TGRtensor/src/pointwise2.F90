@@ -25,7 +25,7 @@ module pointwise2
   public get_2tensorderivs3
 contains
 #define TGR_INCLUDED
-#include "EinsteinUtils/TGRtensor/src/derivs2.F90"
+#include "SpacetimeX/TGRtensor/src/derivs2.F90"
 #undef TGR_INCLUDED
   subroutine calc_2position (shape, i,j, pos)
     integer, intent(in)  :: shape(2)
