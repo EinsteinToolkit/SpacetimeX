@@ -1,0 +1,50 @@
+# parameter file for patch system test
+ActiveThorns = "CartGrid3D LocalInterp PUGH ADMBase ADMCoupling CoordGauge Exact AHFinderDirect"
+
+# PUGH
+driver::ghost_size = 0
+driver::global_nx = 61
+driver::global_ny = 61
+driver::global_nz = 61
+
+# CartGrid3D
+grid::domain = "full"
+grid::type = "byrange"
+grid::xyzmin = -3.0
+grid::xyzmax =  3.0
+
+# ADMBase
+ADMBase::initial_lapse = "exact"
+ADMBase::initial_shift = "exact"
+ADMBase::initial_data = "exact"
+ADMBase::lapse_evolution_method = "static"
+ADMBase::shift_evolution_method = "static"
+ADMBase::metric_type = "physical"
+
+# Exact
+Exact::exact_model = "Kerr/Kerr-Schild"
+Exact::Kerr_KerrSchild__mass = 1.0
+Exact::Kerr_KerrSchild__spin = 0.6
+
+AHFinderDirect::method = "Newton solve"
+AHFinderDirect::h_file_name      = "small-ahf-badguess-2.5.h.dat"
+AHFinderDirect::H_of_h_file_name = "small-ahf-badguess-2.5.H.dat"
+
+AHFinderDirect::origin_x = 0.5
+AHFinderDirect::origin_y = 0.7
+AHFinderDirect::origin_z = 0.9
+AHFinderDirect::patch_system_type = "full sphere"
+AHFinderDirect::ghost_zone_width = 2
+AHFinderDirect::patch_overlap_width = 1
+AHFinderDirect::N_zones_per_right_angle = 10
+
+AHFinderDirect::geometry_interpolator_name = "generalized polynomial interpolation"
+AHFinderDirect::geometry_interpolator_pars = "order=3"
+AHFinderDirect::interpatch_interpolator_name = "generalized polynomial interpolation"
+AHFinderDirect::interpatch_interpolator_pars = "order=3"
+
+AHFinderDirect::initial_guess_method = "ellipsoid"
+AHFinderDirect::initial_guess__ellipsoid__x_radius = 2.5
+AHFinderDirect::initial_guess__ellipsoid__y_radius = 2.5
+AHFinderDirect::initial_guess__ellipsoid__z_radius = 2.5
+AHFinderDirect::initial_guess__ellipsoid__x_center = -0.25

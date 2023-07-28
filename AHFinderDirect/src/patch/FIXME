@@ -1,0 +1,4 @@
+patch_interp::interp_molecule_minmax_mipar() should also query/check
+- molecule family
+- MSS_is_fn_of_gridfn_values and other new queries
+

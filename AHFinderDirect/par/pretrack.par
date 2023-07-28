@@ -1,0 +1,303 @@
+# Demonstrate pretracking in a binary black hole collision.
+# 2004-01-10 Erik Schnetter <schnetter@aei.mpg.de>
+# $Header$
+
+# Most parameter settings are fairly standard and should be looked up
+# in their respective thorns.  Mostly the pretracking parameters are
+# explained.
+
+
+
+Cactus::cctk_run_title     = "Pretracking the common apparent horizon with Brill-Lindquist black holes"
+Cactus::cctk_timer_output  = full
+Cactus::cctk_full_warnings = yes
+Cactus::terminate          = time
+Cactus::cctk_final_time    = 5.0
+
+
+
+ActiveThorns = "CoordBase SymBase"
+
+ActiveThorns = "LocalInterp AEILocalInterp"
+
+ActiveThorns = "NaNCatcher"
+
+ActiveThorns = "TGRtensor"
+
+
+
+ActiveThorns = "SphericalSurface"
+
+
+
+ActiveThorns = "IOUtil"
+
+IO::out_dir = $parfile
+
+
+
+ActiveThorns = "PUGH PUGHInterp PUGHReduce PUGHSlab"
+
+driver::global_nx  = 35
+driver::global_ny  = 35
+driver::global_nz  = 43
+driver::ghost_size = 2
+
+
+
+ActiveThorns = "NaNChecker"
+
+NaNChecker::check_every     = 1
+NaNChecker::action_if_found = terminate
+NaNChecker::check_vars      = "ADMBase::gxx"
+
+
+
+ActiveThorns = "Boundary CartGrid3D"
+
+grid::type         = byspacing
+grid::dxyz         = 0.125
+grid::domain       = octant
+
+
+
+ActiveThorns = "Time MoL SpaceMask Dissipation"
+
+Time::dtfac = 0.25
+
+MoL::ODE_Method = RK3
+
+Dissipation::epsdis = 0.3
+Dissipation::vars   = "ADM_BSSN::ADM_BSSN_phi ADM_BSSN::ADM_BSSN_metric ADM_BSSN::ADM_BSSN_K ADM_BSSN::ADM_BSSN_curv ADM_BSSN::ADM_BSSN_gamma ADMBase::lapse"
+
+
+
+ActiveThorns = "ADMBase ADMCoupling ADMMacros CoordGauge StaticConformal"
+
+ADMBase::metric_type = "static conformal"
+
+
+
+ActiveThorns = "IDAnalyticBH"
+
+ADMBase::initial_data = bl_bh
+
+IDAnalyticBH::bl_nbh  =  2
+IDAnalyticBH::bl_z0_1 = +1.0
+IDAnalyticBH::bl_z0_2 = -1.0
+
+
+
+ActiveThorns = "BSSN_MoL"
+
+ADMBase::evolution_method = ADM_BSSN
+
+BSSN_MoL::bound        = newrad
+BSSN_MoL::stencil_size = 2
+BSSN_MoL::advection    = upwind2
+
+ADMBase::initial_lapse          = one
+ADMBase::lapse_evolution_method = 1+log
+BSSN_MoL::lapsesource           = standard
+BSSN_MoL::harmonic_f            = 2.0
+
+ADMBase::initial_shift = none
+
+
+
+ActiveThorns = "ADMConstraints"
+
+
+
+ActiveThorns = "AHFinder"
+
+AHFinder::ahf_verbose     = yes
+#AHFinder::ahf_veryverbose = yes
+AHFinder::ahf_active      = yes
+AHFinder::ahf_findevery   = 1
+
+AHFinder::ahf_guessold     = yes
+AHFinder::ahf_manual_guess = yes
+AHFinder::ahf_l0_guess     = +2.5
+AHFinder::ahf_l2_guess     = +0.2
+
+AHFinder::ahf_ntheta = 36
+AHFinder::ahf_nphi   = 72
+AHFinder::ahf_octant = high
+
+AHFinder::ahf_1Doutput      = yes
+
+
+
+ActiveThorns = "SphericalSurface AHFinderDirect"
+
+# less output
+#AHFinderDirect::verbose_level = "physics highlights"
+AHFinderDirect::N_horizons = 12
+AHFinderDirect::find_every =  1
+
+AHFinderDirect::max_Newton_iterations__initial           = 20
+AHFinderDirect::max_Newton_iterations__subsequent        = 20
+AHFinderDirect::max_allowable_Theta_growth_iterations    = 10
+AHFinderDirect::max_allowable_Theta_nonshrink_iterations = 10
+
+# these always seem to be positive, even for inner horizons
+AHFinderDirect::want_expansion_gradients                 = yes
+
+# individual apparent horizon
+AHFinderDirect::origin_z[1]                              =  1.0
+AHFinderDirect::initial_guess__coord_sphere__z_center[1] =  1.0
+AHFinderDirect::initial_guess__coord_sphere__radius[1]   =  0.5
+
+# common apparent horizon
+AHFinderDirect::initial_guess__coord_sphere__radius[2]   =  3.5
+
+# pretrack: find CE surface with smallest Theta_l
+# (this is the simplest method, but it might not work)
+AHFinderDirect::use_pretracking[3]                       = yes
+AHFinderDirect::initial_guess__coord_sphere__radius[3]   =  3.5
+AHFinderDirect::pretracking_value[3]                     =  0.1
+AHFinderDirect::pretracking_minimum_value[3]             = -1.0
+AHFinderDirect::pretracking_maximum_value[3]             =  1.0
+AHFinderDirect::pretracking_delta[3]                     =  0.01
+AHFinderDirect::pretracking_minimum_delta[3]             =  0.0001
+AHFinderDirect::pretracking_maximum_delta[3]             =  0.01
+AHFinderDirect::smoothing_factor[3]                      =  0.25
+
+# pretrack: find CE surface with smallest (Theta_l r)
+# (this is probably the best method)
+AHFinderDirect::use_pretracking[4]                       = yes
+AHFinderDirect::surface_modification[4]                  = "radius"
+AHFinderDirect::initial_guess__coord_sphere__radius[4]   = 3.5
+AHFinderDirect::pretracking_value[4]                     =   0.1
+AHFinderDirect::pretracking_minimum_value[4]             = -1.0
+AHFinderDirect::pretracking_maximum_value[4]             =  1.0
+AHFinderDirect::pretracking_delta[4]                     =  0.01
+AHFinderDirect::pretracking_minimum_delta[4]             =  0.0001
+AHFinderDirect::pretracking_maximum_delta[4]             =  0.01
+AHFinderDirect::smoothing_factor[4]                      =  0.25
+
+# pretrack: find CE surface with smallest (Theta_l r^2)
+# (this is probably another good method)
+AHFinderDirect::use_pretracking[5]                       = yes
+AHFinderDirect::surface_modification[5]                  = "radius^2"
+AHFinderDirect::initial_guess__coord_sphere__radius[5]   =  3.5
+AHFinderDirect::pretracking_value[5]                     =  0.1
+AHFinderDirect::pretracking_minimum_value[5]             = -1.0
+AHFinderDirect::pretracking_maximum_value[5]             =  1.0
+AHFinderDirect::pretracking_delta[5]                     =  0.01
+AHFinderDirect::pretracking_minimum_delta[5]             =  0.0001
+AHFinderDirect::pretracking_maximum_delta[5]             =  0.01
+AHFinderDirect::smoothing_factor[5]                      =  0.25
+
+# pretrack: find CE surface with smallest mean coordinate radius
+# (this might not find the horizon, or if it does, it might find it later)
+AHFinderDirect::use_pretracking[6]                       = yes
+AHFinderDirect::surface_selection[6]                     = "mean coordinate radius"
+AHFinderDirect::initial_guess__coord_sphere__radius[6]   =  3.5
+AHFinderDirect::pretracking_value[6]                     =  2.0
+AHFinderDirect::pretracking_minimum_value[6]             =  0.0
+AHFinderDirect::pretracking_maximum_value[6]             = 10.0
+AHFinderDirect::pretracking_delta[6]                     =  0.1
+AHFinderDirect::pretracking_minimum_delta[6]             =  0.0001
+AHFinderDirect::pretracking_maximum_delta[6]             =  0.1
+AHFinderDirect::smoothing_factor[6]                      =  0.25
+
+# dependent surface: find CE surface with [smallest (Theta_l r)] + offset
+AHFinderDirect::depends_on[7]                            = 4
+AHFinderDirect::surface_modification[7]                  = "radius"
+AHFinderDirect::initial_guess__coord_sphere__radius[7]   =  3.5
+AHFinderDirect::desired_value_offset[7]                  = -0.01
+
+# dependent surface: find CE surface with [smallest (Theta_l r)] + offset
+AHFinderDirect::depends_on[8]                            = 4
+AHFinderDirect::surface_modification[8]                  = "radius"
+AHFinderDirect::initial_guess__coord_sphere__radius[8]   =  3.5
+AHFinderDirect::desired_value_offset[8]                  =  0.01
+
+# dependent surface: find CE surface with [smallest (Theta_l r^2)] + offset
+AHFinderDirect::depends_on[9]                            = 5
+AHFinderDirect::surface_modification[9]                  = "radius^2"
+AHFinderDirect::initial_guess__coord_sphere__radius[9]   =  3.5
+AHFinderDirect::desired_value_offset[9]                  = -0.01
+
+# dependent surface: find CE surface with [smallest (Theta_l r^2)] + offset
+AHFinderDirect::depends_on[10]                           = 5
+AHFinderDirect::surface_modification[10]                 = "radius^2"
+AHFinderDirect::initial_guess__coord_sphere__radius[10]  =  3.5
+AHFinderDirect::desired_value_offset[10]                 =  0.01
+
+# pretrack: find CE surface with smallest (Theta_l r)
+# try to find an inner horizon
+AHFinderDirect::use_pretracking[11]                      = yes
+AHFinderDirect::surface_modification[11]                 = "radius"
+AHFinderDirect::initial_guess__coord_sphere__radius[11]  = 3.5
+AHFinderDirect::pretracking_value[11]                    =   0.1
+AHFinderDirect::pretracking_minimum_value[11]            = -1.0
+AHFinderDirect::pretracking_maximum_value[11]            =  1.0
+AHFinderDirect::pretracking_delta[11]                    =  0.01
+AHFinderDirect::pretracking_minimum_delta[11]            =  0.0001
+AHFinderDirect::pretracking_maximum_delta[11]            =  0.01
+
+# pretrack: find CE surface with smallest (Theta_l r)
+# desperately try to find an inner horizon
+AHFinderDirect::use_pretracking[12]                      = yes
+AHFinderDirect::surface_modification[12]                 = "radius"
+AHFinderDirect::initial_guess__coord_sphere__radius[12]  = 3.5
+AHFinderDirect::pretracking_value[12]                    =   0.1
+AHFinderDirect::pretracking_minimum_value[12]            = -1.0
+AHFinderDirect::pretracking_maximum_value[12]            =  1.0
+AHFinderDirect::pretracking_delta[12]                    =  0.01
+AHFinderDirect::pretracking_minimum_delta[12]            =  0.0001
+AHFinderDirect::pretracking_maximum_delta[12]            =  0.01
+AHFinderDirect::smoothing_factor[12]                     = -0.25
+
+
+
+ActiveThorns = "HTTPD Socket"
+
+HTTPD::use_pthreads = yes
+
+
+
+ActiveThorns = "IOASCII IOBasic"
+
+IOBasic::outInfo_every      = 1
+IOBasic::outInfo_reductions = "norm2"
+IOBasic::outInfo_vars       = "ADMBase::gxx ADMConstraints::ham"
+
+IOBasic::outScalar_every      = 1
+IOBasic::outScalar_style      = gnuplot
+IOBasic::out_format           = ".15g"
+IOBasic::outScalar_reductions = "minimum maximum norm1 norm2 norm_inf"
+IOBasic::outScalar_vars       = "
+        StaticConformal::confac
+        ADMBase::metric
+        ADMBase::curv
+        ADMBase::lapse
+        ADMConstraints::hamiltonian
+        ADMConstraints::momentum
+        ADM_BSSN::ADM_BSSN_ham
+        ADM_BSSN::ADM_BSSN_normham
+        ADM_BSSN::ADM_BSSN_mom
+        ADM_BSSN::ADM_BSSN_dG
+        ADM_BSSN::ADM_BSSN_A
+        ADM_BSSN::ADM_BSSN_S
+"
+
+IOASCII::out1D_every = 1
+IOASCII::out1D_style = "gnuplot f(x)"
+IOASCII::out1D_vars  = "
+        StaticConformal::confac
+        ADMBase::metric
+        ADMBase::curv
+        ADMBase::lapse
+        ADMConstraints::hamiltonian
+        ADMConstraints::momentum
+        ADM_BSSN::ADM_BSSN_ham
+        ADM_BSSN::ADM_BSSN_normham
+        ADM_BSSN::ADM_BSSN_mom
+        ADM_BSSN::ADM_BSSN_dG
+        ADM_BSSN::ADM_BSSN_A
+        ADM_BSSN::ADM_BSSN_S
+"

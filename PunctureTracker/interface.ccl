@@ -1,0 +1,50 @@
+# Interface definition for thorn PunctureTracker
+
+IMPLEMENTS: PunctureTracker
+
+INHERITS: ADMBaseX Coordinates BoxInBox
+
+USES INCLUDE HEADER: loop_device.hxx
+USES INCLUDE HEADER: mat.hxx
+USES INCLUDE HEADER: simd.hxx
+USES INCLUDE HEADER: vec.hxx
+
+PUBLIC:
+
+CCTK_REAL pt_loc[10] TYPE=scalar
+{
+	pt_loc_t pt_loc_x pt_loc_y pt_loc_z
+} "Location of punctures"
+
+CCTK_REAL pt_vel[10] TYPE=scalar
+{
+  pt_vel_t pt_vel_x pt_vel_y pt_vel_z
+} "Velocity of punctures"
+
+CCTK_INT FUNCTION DriverInterpolate(
+  CCTK_POINTER_TO_CONST IN cctkGH,
+  CCTK_INT IN N_dims,
+  CCTK_INT IN local_interp_handle,
+  CCTK_INT IN param_table_handle,
+  CCTK_INT IN coord_system_handle,
+  CCTK_INT IN N_interp_points,
+  CCTK_INT IN interp_coords_type,
+  CCTK_POINTER_TO_CONST ARRAY IN interp_coords,
+  CCTK_INT IN N_input_arrays,
+  CCTK_INT ARRAY IN input_array_indices,
+  CCTK_INT IN N_output_arrays,
+  CCTK_INT ARRAY IN output_array_types,
+  CCTK_POINTER ARRAY IN output_arrays)
+REQUIRES FUNCTION DriverInterpolate
+
+void FUNCTION Interpolate( 
+  CCTK_POINTER_TO_CONST IN cctkGH, 
+  CCTK_INT IN npoints, 
+  CCTK_REAL ARRAY IN coordsx, 
+  CCTK_REAL ARRAY IN coordsy, 
+  CCTK_REAL ARRAY IN coordsz, 
+  CCTK_INT IN nvars, 
+  CCTK_INT ARRAY IN varinds, 
+  CCTK_INT ARRAY IN operations, 
+  CCTK_POINTER IN resultptrs) 
+REQUIRES FUNCTION Interpolate 

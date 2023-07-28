@@ -1,0 +1,51 @@
+# coords.maple -- set up and covert between coordinates, gridfn arrays, etc
+# $Header$
+
+#
+# setup_coords - set up coordinates
+#
+
+################################################################################
+
+#
+# This function sets up the coordinates.
+#
+setup_coords :=
+proc()
+global
+  @include "../maple/coords.minc";
+
+N := 3;					# number of spatial coordinates,
+					# i.e. spatial coordinate indices
+					#      are 1..N
+N_ang := 2;				# number of angular spatial coordinates
+
+# Kronecker delta
+delta := array(1..N, 1..N, identity);
+
+# (x,y,z) coordinates
+# n.b. individual coordinates are (xx,yy,zz) to avoid confusion with
+#      local variables x, y, etc
+x_xyz := array(1..N);
+x_xyz[1] := xx;
+x_xyz[2] := yy;
+x_xyz[3] := zz;
+x_xyz_list := [xx, yy, zz];
+x_xyz_set := {xx, yy, zz};
+
+# r coordinate
+r__fnd := ssqrt(xx^2 + yy^2 + zz^2);
+
+# (rho,sigma) coordinates
+y_rs := array(1..N_ang);
+y_rs[1] := rho;
+y_rs[2] := sigma;
+y_rs_list := [rho, sigma];
+y_rs_set := {rho, sigma};
+
+# list of all coordinates (for sorting things into "nice" order)
+xy_all_list := [op(x_xyz_list), op(y_rs_list)];
+xy_all_set := {op(xy_all_list)};
+
+NULL;
+end proc;

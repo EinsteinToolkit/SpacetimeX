@@ -1,0 +1,25 @@
+# Parameter definitions for thorn TestPT
+#
+BOOLEAN test_z_parity "interpolate two test points reflected across the x-y plane" STEERABLE=always
+{
+} "no"
+
+SHARES: ADMBaseX
+
+EXTENDS KEYWORD initial_shift 
+{
+  "shift_circle" :: "circular shift field for testing puncture tracker"
+  "shift_3D" :: "3D circular shift field (hopefully) testing higher order interpolation"
+  "shift_ycircle" :: "circular shift field about y axis"
+} 
+
+SHARES: IO
+
+USES STRING out_dir
+
+RESTRICTED:
+
+REAL center_offset[3] "offset b=0 to position (x,y,z)"
+{
+  (*:*) :: ""
+} 0.0

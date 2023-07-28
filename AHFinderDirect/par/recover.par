@@ -1,0 +1,25 @@
+# This parameter file sets up Kerr/Kerr-Schild initial data, then
+# finds the apparent horizon in it.
+
+cactus::cctk_itlast = 2
+
+ActiveThorns = "IOUtil"
+IO::out_dir = $parfile
+
+ActiveThorns = "Carpet CarpetLib CarpetReduce"
+ActiveThorns = "Boundary CartGrid3D CoordBase RotatingSymmetry90 Slab SymBase"
+ActiveThorns = "ADMBase ADMCoupling ADMMacros StaticConformal CoordGauge SpaceMask LegoExcision Exact NaNChecker Time MoL BSSN_MoL"
+
+########################################
+
+ActiveThorns = "SphericalSurface"
+
+ActiveThorns = "LocalInterp AEILocalInterp CarpetInterp CarpetReduce SphericalSurface AHFinderDirect"
+
+########################################
+
+ActiveThorns = "CarpetIOASCII"
+ActiveThorns = "CarpetIOHDF5"
+IO::checkpoint_dir = $parfile
+IO::recover        = auto
+IO::recover_dir    = "checkpoint"

@@ -1,0 +1,118 @@
+ActiveThorns = "
+    CarpetX
+    IOUtil
+    Coordinates
+    SystemTopology
+    TimerReport
+    ADMBase
+    PunctureTracker
+    TestPT
+		BoxInBox
+"
+
+
+# -------------------- Cactus --------------------------------------------------
+Cactus::cctk_show_schedule = yes
+Cactus::presync_mode       = "mixed-error"
+CarpetX::poison_undefined_values = no
+
+Cactus::terminate       = "time"
+Cactus::cctk_final_time	= 8 
+
+
+# -------------------- TimerReport ---------------------------------------------
+TimerReport::out_every                  = 32
+TimerReport::out_filename               = "TimerReport.asc"
+TimerReport::output_all_timers_together = yes
+TimerReport::output_all_timers_readable = yes
+TimerReport::n_top_timers               = 50
+
+
+
+# -------------------- CarpetX -------------------------------------------------
+CarpetX::verbose = no
+
+CarpetX::xmin = -6.0
+CarpetX::ymin = -6.0
+CarpetX::zmin = -0.06
+
+CarpetX::xmax = +6.0
+CarpetX::ymax = +6.0
+CarpetX::zmax = +0.06
+
+CarpetX::boundary_x = "linear extrapolation"
+CarpetX::boundary_y = "linear extrapolation"
+CarpetX::boundary_z = "linear extrapolation"
+
+CarpetX::boundary_upper_x = "linear extrapolation"
+CarpetX::boundary_upper_y = "linear extrapolation"
+CarpetX::boundary_upper_z = "linear extrapolation"
+
+CarpetX::ncells_x = 200
+CarpetX::ncells_y = 200
+CarpetX::ncells_z = 2
+
+CarpetX::blocking_factor_x      = 1
+CarpetX::blocking_factor_y      = 1
+CarpetX::blocking_factor_z      = 1
+
+CarpetX::prolongation_type = "ddf"
+CarpetX::prolongation_order = 5
+CarpetX::ghost_size        = 3
+CarpetX::dtfac             = 0.25
+
+
+# -------------------- BoxInBox -------------------------------------------------
+CarpetX::max_num_levels = 5
+CarpetX::regrid_every = 16
+CarpetX::regrid_error_threshold = 0.9
+
+PunctureTracker::track_boxes = yes
+
+BoxInBox::num_regions = 1
+
+# Region 1
+BoxInBox::shape_1 = "cube"
+BoxInBox::num_levels_1 = 4
+BoxInBox::position_x_1 = +3
+BoxInBox::radius_1[0] = 2
+BoxInBox::radius_1[1] = 1
+BoxInBox::radius_1[2] = 0.5
+BoxInBox::radius_1[3] = 0.25
+
+# Region 2
+BoxInBox::shape_2 = "cube"
+BoxInBox::num_levels_2 = 4
+BoxInBox::position_x_2 = -3
+BoxInBox::radius_2[0] = 2
+BoxInBox::radius_2[1] = 1
+BoxInBox::radius_2[2] = 0.5
+BoxInBox::radius_2[3] = 0.25
+
+# -------------------- ADMBase -------------------------------------------------
+ADMBase::initial_data    = "Cartesian Minkowski"
+ADMBase::initial_shift   = "shift_circle"
+
+# PunctureTracker
+PunctureTracker::verbose = yes
+
+PunctureTracker::track    [0] = yes
+PunctureTracker::initial_x[0] = +3
+
+PunctureTracker::track    [1] = yes
+PunctureTracker::initial_x[1] = -3
+
+CarpetX::interpolation_order = 4
+
+
+IO::out_dir = $parfile
+IO::out_every = 32
+CarpetX::out_silo_vars = "
+	ADMBase::shift
+	CarpetX::regrid_error
+"
+
+CarpetX::out_tsv_vars = "
+	PunctureTracker::pt_loc
+	PunctureTracker::pt_vel
+"

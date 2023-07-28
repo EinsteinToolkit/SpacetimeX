@@ -1,0 +1,68 @@
+# Parameter definitions for thorn PunctureTracker
+
+BOOLEAN verbose "speak up?" STEERABLE=always
+{
+} "no"
+
+BOOLEAN read_shifts "Enable to write nearby shifts to stdout" STEERABLE=always
+{
+} "no"
+
+BOOLEAN check_interpolate "Enable to write shifts near +/- 4 to stdout" STEERABLE=always
+{
+} "no"
+
+BOOLEAN track[10] "Track this puncture"
+{
+} "no"
+
+BOOLEAN track_boxes "Enable to center refinement regions on punctures"
+{
+} "no"
+
+REAL initial_x[10] "Initial x coordinate positions of punctures"
+{
+  *:* :: ""
+} 0.0
+
+REAL initial_y[10] "Initial y coordinate positions of punctures"
+{
+  *:* :: ""
+} 0.0
+
+REAL initial_z[10] "Initial z coordinate positions of punctures"
+{
+  *:* :: ""
+} 0.0
+
+INT modify_puncture[2] "Punctures to use for modification criteria"
+{
+  -1:9 :: "One of the tracking punctures or negative for no modification"
+} -1
+
+REAL modify_distance "Modify levels when the distance is less than this"
+{
+  0.0:* :: "zero or positive"
+} 0.0
+
+INT new_reflevel_number[2] "The new number of refinement levels"
+{
+  -1:* :: "Negative for no change"
+} -1
+
+INT interp_order "Shift interpolation order"
+{
+  0:* :: ""
+} 1
+
+INT which_surface_to_store_info[10] "A spherical surface index where we can store the puncture location"
+{
+  -1  :: "don't store puncture location"
+  0:* :: "any spherical surface index"
+} -1
+
+REAL shift_limit "Shift components must be less than this in magnitude"
+{
+  0.0:* :: "zero or positive"
+} 1.0e10
+

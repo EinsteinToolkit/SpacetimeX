@@ -1,0 +1,46 @@
+# Schedule definitions for thorn PunctureTracker
+
+SCHEDULE PunctureTracker_Init AT initial
+{
+  LANG: C
+	WRITES: pt_loc
+	WRITES: pt_vel
+	WRITES: BoxInBox::positions
+  OPTIONS: GLOBAL
+} "Calculate initial location of punctures"
+
+SCHEDULE PunctureTracker_Track AT evol AFTER ODESolvers_Solve
+{
+  LANG: C
+  READS: ADMBaseX::shift(everywhere)
+	WRITES: pt_loc
+	WRITES: pt_vel
+	WRITES: BoxInBox::positions
+  OPTIONS: GLOBAL
+} "Calculate new location of punctures"
+
+if (read_shifts)
+{
+	SCHEDULE PunctureTracker_CheckShift AT evol BEFORE PunctureTracker_Track
+	{
+		LANG: C
+		READS: ADMBaseX::shift(interior)
+		READS: BoxInBox::num_levels
+		READS: pt_loc
+		READS: Coordinates::vertex_coords(interior)
+		OPTIONS: LOCAL
+	} "Outputs nearby shift quantities to stdout"
+}
+
+if (check_interpolate)
+{
+	SCHEDULE CheckInterpolate AT evol AFTER ODESolvers_Solve
+	{
+		LANG: C
+		READS: ADMBaseX::shift(everywhere)
+		READS: BoxInBox::num_levels
+		READS: pt_loc
+		READS: Coordinates::vertex_coords(everywhere)
+		OPTIONS: GLOBAL
+	} "Outputs nearby shift quantities to stdout"
+}

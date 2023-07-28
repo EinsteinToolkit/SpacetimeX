@@ -1,0 +1,188 @@
+# File produced by Kranc
+
+
+restricted:
+CCTK_INT verbose "verbose" STEERABLE=ALWAYS
+{
+  *:* :: ""
+} 0
+
+restricted:
+CCTK_INT other_timelevels "Number of active timelevels for non-evolved grid functions" STEERABLE=RECOVER
+{
+  0:3 :: ""
+} 1
+
+restricted:
+CCTK_REAL offset "offset"
+{
+  *:* :: ""
+} 1.e-15
+
+restricted:
+CCTK_REAL xorig "xorig"
+{
+  *:* :: ""
+} 0
+
+restricted:
+CCTK_REAL yorig "yorig"
+{
+  *:* :: ""
+} 0
+
+restricted:
+CCTK_REAL zorig "zorig"
+{
+  *:* :: ""
+} 0
+
+restricted:
+CCTK_INT fdOrder "fdOrder"
+{
+  2 :: ""
+  4 :: ""
+  6 :: ""
+  8 :: ""
+} 2
+
+restricted:
+CCTK_INT tile_size "Loop tile size"
+{
+  *:* :: ""
+} -1
+
+private:
+CCTK_KEYWORD calc_scalars "Which scalars to calculate"
+{
+  "psi4" :: ""
+  "psis" :: ""
+} "psi4"
+
+private:
+CCTK_KEYWORD calc_invariants "Compute invariants"
+{
+  "always" :: ""
+  "never" :: ""
+} "never"
+
+restricted:
+CCTK_INT timelevels "Number of active timelevels" STEERABLE=RECOVER
+{
+  0:1 :: ""
+} 1
+
+restricted:
+CCTK_INT rhs_timelevels "Number of active RHS timelevels" STEERABLE=RECOVER
+{
+  0:3 :: ""
+} 1
+
+restricted:
+CCTK_INT WeylScal4_psi4_calc_Nth_calc_every "WeylScal4_psi4_calc_Nth_calc_every" STEERABLE=ALWAYS
+{
+  *:* :: ""
+} 1
+
+restricted:
+CCTK_INT WeylScal4_psi4_calc_2nd_calc_every "WeylScal4_psi4_calc_2nd_calc_every" STEERABLE=ALWAYS
+{
+  *:* :: ""
+} 1
+
+restricted:
+CCTK_INT WeylScal4_psi4_calc_4th_calc_every "WeylScal4_psi4_calc_4th_calc_every" STEERABLE=ALWAYS
+{
+  *:* :: ""
+} 1
+
+restricted:
+CCTK_INT WeylScal4_psis_calc_Nth_calc_every "WeylScal4_psis_calc_Nth_calc_every" STEERABLE=ALWAYS
+{
+  *:* :: ""
+} 1
+
+restricted:
+CCTK_INT WeylScal4_psis_calc_2nd_calc_every "WeylScal4_psis_calc_2nd_calc_every" STEERABLE=ALWAYS
+{
+  *:* :: ""
+} 1
+
+restricted:
+CCTK_INT WeylScal4_psis_calc_4th_calc_every "WeylScal4_psis_calc_4th_calc_every" STEERABLE=ALWAYS
+{
+  *:* :: ""
+} 1
+
+restricted:
+CCTK_INT WeylScal4_invars_calc_Nth_calc_every "WeylScal4_invars_calc_Nth_calc_every" STEERABLE=ALWAYS
+{
+  *:* :: ""
+} 1
+
+restricted:
+CCTK_INT WeylScal4_invars_calc_2nd_calc_every "WeylScal4_invars_calc_2nd_calc_every" STEERABLE=ALWAYS
+{
+  *:* :: ""
+} 1
+
+restricted:
+CCTK_INT WeylScal4_invars_calc_4th_calc_every "WeylScal4_invars_calc_4th_calc_every" STEERABLE=ALWAYS
+{
+  *:* :: ""
+} 1
+
+restricted:
+CCTK_INT WeylScal4_psi4_calc_Nth_calc_offset "WeylScal4_psi4_calc_Nth_calc_offset" STEERABLE=ALWAYS
+{
+  *:* :: ""
+} 0
+
+restricted:
+CCTK_INT WeylScal4_psi4_calc_2nd_calc_offset "WeylScal4_psi4_calc_2nd_calc_offset" STEERABLE=ALWAYS
+{
+  *:* :: ""
+} 0
+
+restricted:
+CCTK_INT WeylScal4_psi4_calc_4th_calc_offset "WeylScal4_psi4_calc_4th_calc_offset" STEERABLE=ALWAYS
+{
+  *:* :: ""
+} 0
+
+restricted:
+CCTK_INT WeylScal4_psis_calc_Nth_calc_offset "WeylScal4_psis_calc_Nth_calc_offset" STEERABLE=ALWAYS
+{
+  *:* :: ""
+} 0
+
+restricted:
+CCTK_INT WeylScal4_psis_calc_2nd_calc_offset "WeylScal4_psis_calc_2nd_calc_offset" STEERABLE=ALWAYS
+{
+  *:* :: ""
+} 0
+
+restricted:
+CCTK_INT WeylScal4_psis_calc_4th_calc_offset "WeylScal4_psis_calc_4th_calc_offset" STEERABLE=ALWAYS
+{
+  *:* :: ""
+} 0
+
+restricted:
+CCTK_INT WeylScal4_invars_calc_Nth_calc_offset "WeylScal4_invars_calc_Nth_calc_offset" STEERABLE=ALWAYS
+{
+  *:* :: ""
+} 0
+
+restricted:
+CCTK_INT WeylScal4_invars_calc_2nd_calc_offset "WeylScal4_invars_calc_2nd_calc_offset" STEERABLE=ALWAYS
+{
+  *:* :: ""
+} 0
+
+restricted:
+CCTK_INT WeylScal4_invars_calc_4th_calc_offset "WeylScal4_invars_calc_4th_calc_offset" STEERABLE=ALWAYS
+{
+  *:* :: ""
+} 0
+

@@ -1,0 +1,51 @@
+This directory contains all the code for this thorn which "knows" about
+general relativity.
+
+The main source files in this directory are as follows:
+
+expansion.cc
+	Computes the expansion $\Theta = \Theta(h)$ of a trial horizon
+	surface $r = h(angle)$
+
+expansion_Jacobian.cc
+	Computes the Jacobian $J[\Theta(h)]$ of the expansion $\Theta(h)$.
+
+Schwarzschild_EF.cc
+	Computes the Schwarzschild/Eddington-Finkelstein g_ij and K_ij
+
+misc.cc
+	Misc support routines.
+
+gr.hh
+	Overall header file for all the external routines in this directory.
+
+gfns.hh
+	Defines the gfns of all the gridfns as enums in namespace gfns::.
+
+cg.hh
+	This header file defines the "virtual machine" used by the
+	machine-generated code in ../gr.cg/.  This file is "dangerous"
+	in that it #defines macros for all the gridfns, which will
+	break lots of other code.  See the header comments in this
+	file for details.
+
+doit.maple
+	Top-level driver for all the Maple code.
+
+maple.log
+	This is a log file (transcript) of the Maple computation.
+
+setup_gr_gfas.maple
+gr_gfas.minc
+	These files define the relativity gridfns for the Maple code,
+	eg the 3-metric, 3-extrinsic curvature, etc.
+
+auxiliary.maple
+curvature.maple
+horizon.maple
+	These files compute the $\Theta(h)$ function and the $J[\Theta(h)]$
+	coefficients in Maple.
+
+makefile
+	This drives the Maple code-generation process; the resulting
+	(Maple-generated) C code lives in ../gr.cg/

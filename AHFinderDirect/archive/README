@@ -1,0 +1,6 @@
+This directory contains stuff that's no longer used, but that I
+thought might be useful for future reference, so I didn't want to
+throw it away.
+
+Compared to the CVS attic, having a separate directory like this
+seems more convenient -- you can 'cat, awk, and grep' more easily.
