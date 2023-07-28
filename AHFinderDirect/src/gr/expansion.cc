@@ -746,6 +746,33 @@ if (par_table_setup && (psi_flag == par_table_psi_flag))
 	par_table_psi_flag = psi_flag;
 	}
 
+#if 0
+{ // Interp Table Debugging
+CCTK_VINFO("Param Table Handle: %d", gi.param_table_handle);
+CCTK_INT my_operand_indices[]
+	= {
+	  -1, -1, -1, -1,		// mask, partial_[xyz] mask
+	  -1, -1, -1, -1,		// g_dd_11, partial_[xyz] g_dd_11
+	  -1, -1, -1, -1,		// g_dd_12, partial_[xyz] g_dd_12
+	  -1, -1, -1, -1,		// g_dd_13, partial_[xyz] g_dd_13
+	  -1, -1, -1, -1,		// g_dd_22, partial_[xyz] g_dd_22
+	  -1, -1, -1, -1,		// g_dd_23, partial_[xyz] g_dd_23
+	  -1, -1, -1, -1,		// g_dd_33, partial_[xyz] g_dd_33
+	  -1, -1, -1, -1, -1, -1,	// K_dd_{11,12,13,22,23,33}
+	  -1, -1, -1, -1,	// psi, partial_[xyz] psi
+	  };
+CCTK_INT n_elems = Util_TableGetIntArray(gi.param_table_handle, N_output_arrays_use,
+                                  my_operand_indices, "operand_indices");
+if (n_elems == UTIL_ERROR_TABLE_NO_SUCH_KEY) {
+	CCTK_WARN(CCTK_WARN_ALERT, "operand indices not found");
+}
+else {
+	for (int ii = 0; ii < N_output_arrays_use; ii++){
+		CCTK_VINFO("True Index = %d; TableGetIntArray Returns = %d", operand_indices[ii], my_operand_indices[ii]);
+	}
+}	
+}
+#endif
 
 //
 // ***** the actual interpolation *****

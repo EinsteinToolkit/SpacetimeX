@@ -2,10 +2,12 @@
 # $Header$
 
 implements: AHFinderDirect
-inherits: Grid ADMBase StaticConformal SpaceMask SphericalSurface IO
+inherits: Coordinates ADMBaseX SphericalSurface IO
+
+USES INCLUDE HEADER: loop_device.hxx
 
 # include file provided by SpaceMask
-USES INCLUDE: SpaceMask.h
+# USES INCLUDE: SpaceMask.h
 
 ################################################################################
 
@@ -14,7 +16,7 @@ USES INCLUDE: SpaceMask.h
 # using the most recent timelevel is sufficient.
 # Allow up to 3 timelevels for backwards compatibility with old parameter files.
 
-REAL ahmask TYPE=gf TIMELEVELS=3 TAGS='tensortypealias="Scalar" Prolongation="None" InterpNumTimelevels=1'
+REAL ahmask TYPE=gf TIMELEVELS=1 TAGS='tensortypealias="Scalar" Prolongation="None" InterpNumTimelevels=1'
 
 ################################################################################
 
@@ -117,7 +119,7 @@ CCTK_REAL ah_centroid[N_horizons] TYPE=scalar
   ah_centroid_x_p ah_centroid_y_p ah_centroid_z_p ah_centroid_t_p
 }
 
-CCTK_INT ah_flags[N_horizons] TYPE=scalar
+CCTK_REAL ah_flags[N_horizons] TYPE=scalar
 {
   ah_initial_find_flag
   ah_really_initial_find_flag

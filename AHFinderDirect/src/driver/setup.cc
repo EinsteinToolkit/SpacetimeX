@@ -27,8 +27,6 @@
 #include "cctk_Arguments.h"
 #include "cctk_Parameters.h"
 
-#include "SpaceMask.h"			// from thorn SpaceMask
-
 #include "config.h"
 #include "stdc.h"
 #include "../jtutil/util.hh"
@@ -234,7 +232,13 @@ DECLARE_CCTK_PARAMETERS
 CCTK_VInfo(CCTK_THORNSTRING,
 	   "setting up AHFinderDirect data structures");
 
+static bool already_ran = false;
 
+if (already_ran){
+	return;
+}
+
+already_ran = true;
 //
 // check parameters
 //
@@ -326,27 +330,30 @@ if (verbose_info.print_algorithm_highlights)
    then CCTK_VInfo(CCTK_THORNSTRING, "   setting up Cactus grid info");
 struct cactus_grid_info& cgi = state.cgi;
 cgi.GH = cctkGH;
-cgi.coord_system_handle = CCTK_CoordSystemHandle(coordinate_system_name);
-if (cgi.coord_system_handle < 0)
-   then CCTK_VWarn(FATAL_ERROR, __LINE__, __FILE__, CCTK_THORNSTRING,
-"AHFinderDirect_setup(): can't find Cactus coordinate system \"%s\"!",
-		   coordinate_system_name);			/*NOTREACHED*/
+// cgi.coord_system_handle = CCTK_CoordSystemHandle(coordinate_system_name);
+// if (cgi.coord_system_handle < 0)
+//    then CCTK_VWarn(FATAL_ERROR, __LINE__, __FILE__, CCTK_THORNSTRING,
+// "AHFinderDirect_setup(): can't find Cactus coordinate system \"%s\"!",
+// 		   coordinate_system_name);			/*NOTREACHED*/
 cgi.use_Cactus_conformal_metric = false;	// dummy value, may change later
 
+// TODO: provide correct handle
+cgi.coord_system_handle = 0;
+
 cgi.mask_varindex    = Cactus_gridfn_varindex("AHFinderDirect::ahmask");
-cgi.g_dd_11_varindex = Cactus_gridfn_varindex("ADMBase::gxx");
-cgi.g_dd_12_varindex = Cactus_gridfn_varindex("ADMBase::gxy");
-cgi.g_dd_13_varindex = Cactus_gridfn_varindex("ADMBase::gxz");
-cgi.g_dd_22_varindex = Cactus_gridfn_varindex("ADMBase::gyy");
-cgi.g_dd_23_varindex = Cactus_gridfn_varindex("ADMBase::gyz");
-cgi.g_dd_33_varindex = Cactus_gridfn_varindex("ADMBase::gzz");
-cgi.K_dd_11_varindex = Cactus_gridfn_varindex("ADMBase::kxx");
-cgi.K_dd_12_varindex = Cactus_gridfn_varindex("ADMBase::kxy");
-cgi.K_dd_13_varindex = Cactus_gridfn_varindex("ADMBase::kxz");
-cgi.K_dd_22_varindex = Cactus_gridfn_varindex("ADMBase::kyy");
-cgi.K_dd_23_varindex = Cactus_gridfn_varindex("ADMBase::kyz");
-cgi.K_dd_33_varindex = Cactus_gridfn_varindex("ADMBase::kzz");
-cgi.psi_varindex     = Cactus_gridfn_varindex("StaticConformal::psi");
+cgi.g_dd_11_varindex = Cactus_gridfn_varindex("ADMBaseX::gxx");
+cgi.g_dd_12_varindex = Cactus_gridfn_varindex("ADMBaseX::gxy");
+cgi.g_dd_13_varindex = Cactus_gridfn_varindex("ADMBaseX::gxz");
+cgi.g_dd_22_varindex = Cactus_gridfn_varindex("ADMBaseX::gyy");
+cgi.g_dd_23_varindex = Cactus_gridfn_varindex("ADMBaseX::gyz");
+cgi.g_dd_33_varindex = Cactus_gridfn_varindex("ADMBaseX::gzz");
+cgi.K_dd_11_varindex = Cactus_gridfn_varindex("ADMBaseX::kxx");
+cgi.K_dd_12_varindex = Cactus_gridfn_varindex("ADMBaseX::kxy");
+cgi.K_dd_13_varindex = Cactus_gridfn_varindex("ADMBaseX::kxz");
+cgi.K_dd_22_varindex = Cactus_gridfn_varindex("ADMBaseX::kyy");
+cgi.K_dd_23_varindex = Cactus_gridfn_varindex("ADMBaseX::kyz");
+cgi.K_dd_33_varindex = Cactus_gridfn_varindex("ADMBaseX::kzz");
+// cgi.psi_varindex     = Cactus_gridfn_varindex("StaticConformal::psi");
 
 
 //
@@ -363,6 +370,7 @@ if (gi.operator_handle < 0)
    then CCTK_VWarn(FATAL_ERROR, __LINE__, __FILE__, CCTK_THORNSTRING,
 "AHFinderDirect_setup(): couldn't find interpolator \"%s\"!",
 		   geometry_interpolator_name);		/*NOTREACHED*/
+
 gi.param_table_handle = Util_TableCreateFromString(geometry_interpolator_pars);
 if (gi.param_table_handle < 0)
    then CCTK_VWarn(FATAL_ERROR, __LINE__, __FILE__, CCTK_THORNSTRING,
@@ -628,10 +636,10 @@ if (strlen(surface_interpolator_name) > 0)
 	       //     parameters in our param.ccl file; these appear as
 	       //     ordinary Cactus parameters here, so (eg)
 	       //     grid::domain is just "domain" here
-	       choose_patch_system_type(/* grid:: */ domain,
-					/* grid:: */ bitant_plane,
-					/* grid:: */ quadrant_direction,
-					/* grid:: */ rotation_axis,
+	       choose_patch_system_type(/* grid:: */ /* domain */ NULL,
+					/* grid:: */ /*bitant_plane */ NULL,
+					/* grid:: */ /* quadrant_direction */ NULL,
+					/* grid:: */ /* rotation_axis */ NULL,
 					origin_x[hn],
 					origin_y[hn],
 					origin_z[hn])
@@ -935,6 +943,8 @@ enum patch_system::patch_system_type
 			   const char grid_rotation_axis[],
 			   fp origin_x, fp origin_y, fp origin_z)
 {
+return patch_system::patch_system__full_sphere;
+#if 0
 if	(STRING_EQUAL(grid_domain, "full"))
    then return patch_system::patch_system__full_sphere;
 
@@ -1052,6 +1062,7 @@ else	{
 		   grid_domain);
 	return patch_system::patch_system__full_sphere;
 	}
+#endif
 }
 	  }
 

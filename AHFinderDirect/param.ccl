@@ -9,22 +9,22 @@
 
 # we may need to look at some grid:: parameters to choose our patch system type
 # note our access is read-only
-shares: grid
-USES KEYWORD domain
-USES KEYWORD bitant_plane
-USES KEYWORD quadrant_direction
-USES KEYWORD rotation_axis
+# shares: Coordinates
+# USES KEYWORD domain
+# USES KEYWORD bitant_plane
+# USES KEYWORD quadrant_direction
+# USES KEYWORD rotation_axis
 
-# we need to look at ADMBase::metric_type and StaticConformal::conformal_state
+# we need to look at ADMBaseX::metric_type and StaticConformal::conformal_state
 # to check physical/conformal metric
 # note our access is read-only
-shares: ADMBase
-USES KEYWORD metric_type
+shares: ADMBaseX
+#USES KEYWORD metric_type
 
 # we need to look at SpaceMask::use_mask in order to find out about the
 # excision region
-shares: SpaceMask
-USES BOOLEAN use_mask
+# shares: SpaceMask
+# USES BOOLEAN use_mask
 
 # we need to look at IO::out_dir to set the default for our own
 # output directory parameters

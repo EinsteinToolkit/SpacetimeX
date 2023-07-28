@@ -1,4 +1,4 @@
-REQUIRES SpaceMask
+REQUIRES Loop
 
 OPTIONAL HDF5
 {

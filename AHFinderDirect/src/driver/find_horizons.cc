@@ -14,6 +14,8 @@
 #include <assert.h>
 #include <math.h>
 #include <string.h>
+#include <loop_device.hxx>
+#include <array>
 
 #include "util_Table.h"
 #include "cctk.h"
@@ -90,30 +92,45 @@ void do_test_expansion_Jacobians(int my_proc, int N_horizons,
 // This function is called by the Cactus scheduler to import
 // the excision mask.
 //
+//TODO: Modernize old mask infrastructure
 extern "C"
   void AHFinderDirect_import_mask(CCTK_ARGUMENTS)
 {
-DECLARE_CCTK_ARGUMENTS_AHFinderDirect_import_mask
-DECLARE_CCTK_PARAMETERS
+using namespace Loop;
+using namespace std;
 
-assert(ahmask != 0);
+DECLARE_CCTK_ARGUMENTS_AHFinderDirect_import_mask;
+DECLARE_CCTK_PARAMETERS;
 
-for (int k=0; k<cctk_lsh[2]; ++k)
-for (int j=0; j<cctk_lsh[1]; ++j)
-for (int i=0; i<cctk_lsh[0]; ++i)
-{
-        const int ind = CCTK_GFINDEX3D(cctkGH,i,j,k);
-        // zero means: point can be used,
-        // non-zero means: point must be avoided
-        ahmask[ind] = 0;
-        if (use_mask)
-           // grid points with mask values of 1.0 can be used,
-           // values of 0.0 and 0.5 must be avoided.
-           // the excision boundary cannot be used because
-           // (a) it is inaccurate
-           // (b) it does not respect the symmetries e.g. in Kerr.
-           then ahmask[ind] = fabs(emask[ind] - 1.0) > 0.01;
-}
+//assert(ahmask != 0);
+
+const array<int, dim> indextype = {0, 0, 0};
+const GF3D2layout layout(cctkGH, indextype);
+
+const GF3D2<CCTK_REAL> ahmask_(layout, ahmask);
+const GridDescBaseDevice grid(cctkGH);
+grid.loop_all_device<0, 0, 0>(grid.nghostzones,
+                                [=] CCTK_DEVICE(const PointDesc &p)
+                                    CCTK_ATTRIBUTE_ALWAYS_INLINE {
+																			ahmask_(p.I) = 0;
+                                    });
+
+// for (int k=0; k<cctk_lsh[2]; ++k)
+// for (int j=0; j<cctk_lsh[1]; ++j)
+// for (int i=0; i<cctk_lsh[0]; ++i)
+// {
+//         const int ind = CCTK_GFINDEX3D(cctkGH,i,j,k);
+//         // zero means: point can be used,
+//         // non-zero means: point must be avoided
+//         ahmask[ind] = 0;
+//         // if (use_mask)
+//            // grid points with mask values of 1.0 can be used,
+//            // values of 0.0 and 0.5 must be avoided.
+//            // the excision boundary cannot be used because
+//            // (a) it is inaccurate
+//            // (b) it does not respect the symmetries e.g. in Kerr.
+//            // then ahmask[ind] = fabs(emask[ind] - 1.0) > 0.01;
+// }
 }
 
 //******************************************************************************
@@ -174,6 +191,8 @@ const struct     verbose_info& verbose_info = state.verbose_info;
 
 // what are the semantics of the Cactus gxx variables? (these may
 // change from one call to another, so we have to re-check each time)
+
+#if 0
 if      (CCTK_Equals(metric_type, "physical"))
    then cgi.use_Cactus_conformal_metric = false;
 else if (CCTK_Equals(metric_type, "static conformal"))
@@ -181,6 +200,8 @@ else if (CCTK_Equals(metric_type, "static conformal"))
 else	CCTK_VWarn(FATAL_ERROR, __LINE__, __FILE__, CCTK_THORNSTRING,
 "AHFinderDirect_find_horizons(): unknown metric_type=\"%s\"!",
 		   metric_type);				/*NOTREACHED*/
+#endif
+cgi.use_Cactus_conformal_metric = false; // CarpetX Change: disable multiple metric types
 
 // update parameters
 IO_info.output_ASCII_files = (output_ASCII_files != 0);
