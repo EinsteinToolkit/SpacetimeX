@@ -1,0 +1,52 @@
+# File produced by Kranc
+
+STORAGE: Psi4r_group[timelevels]
+STORAGE: Psi4i_group[timelevels]
+
+schedule group MoL_PseudoEvolution at ANALYSIS
+{
+} "Group to compute constraints"
+
+schedule group MoL_PseudoEvolution AT INITIAL AFTER Z4c_PostStepGroup2
+{
+} "Group to compute constraints"
+
+schedule group WeylScal4_psi4_calc_4th_group in MoL_PseudoEvolution after ADMBase_SetADMVars
+{
+} "WeylScal4_psi4_calc_4th"
+
+schedule WeylScal4_psi4_calc_4th in WeylScal4_psi4_calc_4th_group
+{
+  LANG: C
+  READS: admbase::kxx(Everywhere)
+  READS: admbase::kxy(Everywhere)
+  READS: admbase::kxz(Everywhere)
+  READS: admbase::kyy(Everywhere)
+  READS: admbase::kyz(Everywhere)
+  READS: admbase::kzz(Everywhere)
+  READS: admbase::gxx(Everywhere)
+  READS: admbase::gxy(Everywhere)
+  READS: admbase::gxz(Everywhere)
+  READS: admbase::gyy(Everywhere)
+  READS: admbase::gyz(Everywhere)
+  READS: admbase::gzz(Everywhere)
+  READS: Coordinates::vertex_coords(Everywhere)
+  WRITES: WeylScal4::Psi4i(Interior)
+  WRITES: WeylScal4::Psi4r(Interior)
+} "WeylScal4_psi4_calc_4th"
+
+schedule WeylScal4_psi4_calc_4th_SelectBCs in WeylScal4_psi4_calc_4th_bc_group
+{
+  LANG: C
+  OPTIONS: level
+  SYNC: Psi4i_group
+  SYNC: Psi4r_group
+} "WeylScal4_psi4_calc_4th_SelectBCs"
+
+schedule group ApplyBCs as WeylScal4_psi4_calc_4th_ApplyBCs in WeylScal4_psi4_calc_4th_bc_group after WeylScal4_psi4_calc_4th_SelectBCs
+{
+} "Apply BCs for groups set in WeylScal4_psi4_calc_4th"
+
+schedule group WeylScal4_psi4_calc_4th_bc_group in WeylScal4_psi4_calc_4th_group after WeylScal4_psi4_calc_4th
+{
+} "WeylScal4_psi4_calc_4th"

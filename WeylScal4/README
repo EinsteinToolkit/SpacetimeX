@@ -1,0 +1,29 @@
+Cactus Code Thorn WeylScal4
+Author(s)    : Tanja Bode
+               Ian Hinder
+               Roland Haas
+               Erik Schnetter
+Maintainer(s): Cactus team
+Licence      : LGPL
+--------------------------------------------------------------------------
+
+1. Purpose
+
+Calculate the Weyl Scalars for a given metric given the fiducial tetrad of
+Baker, Campanelli, and Lousto. PRD 65,044001 (2002) without the final null
+rotations.
+
+
+2. Implementation
+
+The code is generated automatically with Mathematica.  The Mathematica
+scripts are in the subdirectory "m", and the Makefile in there
+re-generates the code.  This requires Mathematica and Kranc to be installed.
+
+The scripts look for a Kranc installation in the "m" directory, in the Cactus
+root directory and in $HOME as well as in the location where they find the
+kranc shell-script if it is in the $PATH. If your Kranc (or kranc) directory is
+in neither of these places, then you can set the environment variable KRANCPATH
+to the location of your Kranc installation.
+
+This thorn was generated using Kranc from http://github.com/ianhinder/Kranc

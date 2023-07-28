@@ -1,0 +1,113 @@
+# File produced by Kranc
+
+implements: WeylScal4
+
+inherits:   admbase Coordinates
+
+public:
+CCTK_REAL Psi0r_group type=GF timelevels=1 tags='tensortypealias="Scalar" tensorweight=0 tensorparity=1 checkpoint="no"'
+{
+  Psi0r
+} "Psi0r_group"
+
+public:
+CCTK_REAL Psi0i_group type=GF timelevels=1 tags='tensortypealias="Scalar" tensorweight=0 tensorparity=-1 checkpoint="no"'
+{
+  Psi0i
+} "Psi0i_group"
+
+public:
+CCTK_REAL Psi1r_group type=GF timelevels=1 tags='tensortypealias="ManualCartesian" tensorweight=0 cartesianreflectionparities="++-" checkpoint="no"'
+{
+  Psi1r
+} "Psi1r_group"
+
+public:
+CCTK_REAL Psi1i_group type=GF timelevels=1 tags='tensortypealias="ManualCartesian" tensorweight=0 cartesianreflectionparities="--+" checkpoint="no"'
+{
+  Psi1i
+} "Psi1i_group"
+
+public:
+CCTK_REAL Psi2r_group type=GF timelevels=1 tags='tensortypealias="Scalar" tensorweight=0 tensorparity=1 checkpoint="no"'
+{
+  Psi2r
+} "Psi2r_group"
+
+public:
+CCTK_REAL Psi2i_group type=GF timelevels=1 tags='tensortypealias="Scalar" tensorweight=0 tensorparity=-1 checkpoint="no"'
+{
+  Psi2i
+} "Psi2i_group"
+
+public:
+CCTK_REAL Psi3r_group type=GF timelevels=1 tags='tensortypealias="ManualCartesian" tensorweight=0 cartesianreflectionparities="++-" checkpoint="no"'
+{
+  Psi3r
+} "Psi3r_group"
+
+public:
+CCTK_REAL Psi3i_group type=GF timelevels=1 tags='tensortypealias="ManualCartesian" tensorweight=0 cartesianreflectionparities="--+" checkpoint="no"'
+{
+  Psi3i
+} "Psi3i_group"
+
+public:
+CCTK_REAL Psi4r_group type=GF timelevels=1 tags='tensortypealias="Scalar" tensorweight=0 tensorparity=1 checkpoint="no"'
+{
+  Psi4r
+} "Psi4r_group"
+
+public:
+CCTK_REAL Psi4i_group type=GF timelevels=1 tags='tensortypealias="Scalar" tensorweight=0 tensorparity=-1 checkpoint="no"'
+{
+  Psi4i
+} "Psi4i_group"
+
+public:
+CCTK_REAL curvIr_group type=GF timelevels=1 tags='tensortypealias="Scalar" tensorweight=0 tensorparity=1 checkpoint="no"'
+{
+  curvIr
+} "curvIr_group"
+
+public:
+CCTK_REAL curvIi_group type=GF timelevels=1 tags='tensortypealias="Scalar" tensorweight=0 tensorparity=-1 checkpoint="no"'
+{
+  curvIi
+} "curvIi_group"
+
+public:
+CCTK_REAL curvJr_group type=GF timelevels=1 tags='tensortypealias="Scalar" tensorweight=0 tensorparity=1 checkpoint="no"'
+{
+  curvJr
+} "curvJr_group"
+
+public:
+CCTK_REAL curvJi_group type=GF timelevels=1 tags='tensortypealias="Scalar" tensorweight=0 tensorparity=-1 checkpoint="no"'
+{
+  curvJi
+} "curvJi_group"
+
+public:
+CCTK_REAL curvJ1_group type=GF timelevels=1 tags='tensortypealias="Scalar" tensorweight=0 checkpoint="no"'
+{
+  curvJ1
+} "curvJ1_group"
+
+public:
+CCTK_REAL curvJ2_group type=GF timelevels=1 tags='tensortypealias="Scalar" tensorweight=0 checkpoint="no"'
+{
+  curvJ2
+} "curvJ2_group"
+
+public:
+CCTK_REAL curvJ3_group type=GF timelevels=1 tags='tensortypealias="Scalar" tensorweight=0 checkpoint="no"'
+{
+  curvJ3
+} "curvJ3_group"
+
+public:
+CCTK_REAL curvJ4_group type=GF timelevels=1 tags='tensortypealias="Scalar" tensorweight=0 checkpoint="no"'
+{
+  curvJ4
+} "curvJ4_group"

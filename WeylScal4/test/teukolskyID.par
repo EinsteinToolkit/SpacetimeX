@@ -1,0 +1,99 @@
+# Initial data and short evolution for gauge wave in Minkowski spacetime
+# Author: Mitica Vulcanov <vulcan@aei.mpg.de>
+# Author: Roland Haas <roland.haas@physics.gatech.edu>
+# $Header$
+
+# Required thorns
+ActiveThorns = "CartGrid3D CoordBase SymBase Boundary Time Carpet CarpetLib CarpetSlab CarpetRegrid2 CarpetReduce InitBase CarpetIOAscii IOUtil IOBasic ADMBase ADMMacros GenericFD TmunuBase StaticConformal CoordGauge SpaceMask IDLinearWaves LoopControl GSL WeylScal4 ReflectionSymmetry MoL"
+
+# Grid
+driver::ghost_size   = 2
+
+CartGrid3D::avoid_origin = no
+
+Carpet::max_refinement_levels = 3
+Carpet::prolongation_order_space = 3 # 1 seems to be buggy in Carpet/git
+Carpet::prolongation_order_time = 0
+Carpet::domain_from_coordbase = yes
+
+Carpet::poison_new_timelevels = "yes"
+Carpet::check_for_poison      = "no"
+CarpetLib::poison_new_memory  = "yes"
+CarpetLib::poison_value       = 114
+
+InitBase::initial_data_setup_method = init_some_levels
+Carpet::init_fill_timelevels = yes
+
+CarpetRegrid2::min_distance          = 0
+CarpetRegrid2::ensure_proper_nesting = "yes"
+CarpetRegrid2::regrid_every          = 0
+CarpetRegrid2::num_centres           = 1
+CarpetRegrid2::num_levels_1          = 3
+CarpetRegrid2::position_x_1          = -0.0625
+CarpetRegrid2::position_y_1          = -0.0625
+CarpetRegrid2::position_z_1          = 0
+CarpetRegrid2::radius_1[1]           = 2.0
+CarpetRegrid2::radius_1[2]           = 1.0
+
+Grid::type = "coordbase"
+
+CoordBase::xmin = -4.0625
+CoordBase::ymin = -4.0625
+CoordBase::zmin = 0.0
+CoordBase::xmax = 3.9375
+CoordBase::ymax = 3.9375
+CoordBase::zmax = 4.0
+CoordBase::dx   = 0.5
+CoordBase::dy   = 0.5
+CoordBase::dz   = 0.5
+
+CoordBase::boundary_size_x_lower = 2
+CoordBase::boundary_size_y_lower = 2
+CoordBase::boundary_size_z_lower = 2
+CoordBase::boundary_size_x_upper = 2
+CoordBase::boundary_size_y_upper = 2
+CoordBase::boundary_size_z_upper = 2
+
+CoordBase::boundary_shiftout_z_lower = 1
+CoordBase::boundary_shiftout_z_upper = 0
+
+ReflectionSymmetry::avoid_origin_z = "no"
+ReflectionSymmetry::reflection_z = "yes"
+
+cactus::cctk_initial_time = 0
+cactus::cctk_itlast       = 0
+
+# Initial data
+ADMBase::initial_data  = "teukwaves"
+ADMBase::initial_shift = "zero"
+ADMBase::initial_lapse = "one"
+IDLinearWaves::mvalue = 2
+
+# Gauge
+ADMBase::lapse_evolution_method = "static"
+ADMBase::shift_evolution_method = "static"
+ADMBase::dtshift_evolution_method = "static"
+
+# Evolution
+ADMBase::evolution_method = "static"
+
+ADMBase::lapse_timelevels = 1
+ADMBase::shift_timelevels = 1
+ADMBase::metric_timelevels = 1
+
+# Output
+IO::out_dir = $parfile
+IO::out_fileinfo = "none"
+IO::parfile_write = "no"
+
+IOASCII::out1D_every =  1
+IOASCII::out1d_yline_x = -0.0625
+IOASCII::out1d_xline_y = -0.0625
+IOASCII::out1d_zline_x = -0.0625
+IOASCII::out1d_zline_y = -0.0625
+IOASCII::out1D_vars  = "weylscal4::psi4r weylscal4::psi4i"
+
+CarpetIOASCII::compact_format = yes
+CarpetIOASCII::output_ghost_points = no
+
+WeylScal4::timelevels = 1
