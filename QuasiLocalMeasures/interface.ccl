@@ -1,0 +1,192 @@
+# Interface definition for thorn QuasiLocalMeasures
+
+IMPLEMENTS: QuasiLocalMeasures
+
+INHERITS: ADMBase SphericalSurface TmunuBase
+
+
+
+CCTK_POINTER_TO_CONST \
+FUNCTION GetMPICommWorld (CCTK_POINTER_TO_CONST IN cctkGH)
+USES FUNCTION GetMPICommWorld
+
+# translate SphericalSurface name into ID
+CCTK_INT \
+FUNCTION sf_IdFromName (CCTK_INT IN id, CCTK_POINTER_TO_CONST IN name)
+USES FUNCTION sf_IdFromName
+
+
+
+INT qlm_state[num_surfaces] TYPE=scalar
+{
+  qlm_calc_error          # some QLM information is invalid
+  qlm_have_valid_data     # interpolating from the AH was successful
+  qlm_have_killing_vector # we found a Killing vector field
+  qlm_timederiv_order     # order of time derivatives
+  qlm_iteration           # iteration for current data
+} "Status information"
+
+INT qlm_state_p[num_surfaces] TYPE=scalar
+{
+  qlm_have_valid_data_p qlm_have_valid_data_p_p
+  qlm_have_killing_vector_p qlm_have_killing_vector_p_p
+} "Previous status information"
+  
+INT qlm_grid_int[num_surfaces] TYPE=scalar
+{
+  qlm_nghoststheta qlm_nghostsphi
+  qlm_ntheta qlm_nphi
+} "Grid description"
+
+REAL qlm_grid_real[num_surfaces] TYPE=scalar
+{
+  qlm_origin_x qlm_origin_y qlm_origin_z
+  qlm_origin_theta qlm_origin_phi
+  qlm_delta_theta qlm_delta_phi
+} "Grid description"
+
+REAL qlm_grid_real_p[num_surfaces] TYPE=scalar
+{
+  qlm_origin_x_p qlm_origin_y_p qlm_origin_z_p
+  qlm_origin_x_p_p qlm_origin_y_p_p qlm_origin_z_p_p
+} "Previous grid description"
+
+REAL qlm_shapes[num_surfaces] TYPE=array DIM=2 SIZE=SphericalSurface::maxntheta,SphericalSurface::maxnphi DISTRIB=constant TAGS='convergence_power=1'
+{
+  qlm_shape
+} "Shape of the surface"
+
+REAL qlm_shapes_p[num_surfaces] TYPE=array DIM=2 SIZE=SphericalSurface::maxntheta,SphericalSurface::maxnphi DISTRIB=constant TAGS='convergence_power=1'
+{
+  qlm_shape_p qlm_shape_p_p
+} "Previous shapes of the surface"
+
+REAL qlm_coordinates[num_surfaces] TYPE=array DIM=2 SIZE=SphericalSurface::maxntheta,SphericalSurface::maxnphi DISTRIB=constant TAGS='convergence_power=1'
+{
+  qlm_x qlm_y qlm_z
+} "Cartesian coordinates of the grid points on the surface"
+
+# TODO: make this group private, i.e., move it into qlm_variables.F90
+REAL qlm_coordinates_p[num_surfaces] TYPE=array DIM=2 SIZE=SphericalSurface::maxntheta,SphericalSurface::maxnphi DISTRIB=constant TAGS='convergence_power=1'
+{
+  qlm_x_p qlm_y_p qlm_z_p
+  qlm_x_p_p qlm_y_p_p qlm_z_p_p
+} "Past Cartesian coordinates of the grid points on the surface"
+
+REAL qlm_tetrad_l[num_surfaces] TYPE=array DIM=2 SIZE=SphericalSurface::maxntheta,SphericalSurface::maxnphi DISTRIB=constant TAGS='convergence_power=1'
+{
+  # all components are contravariant
+  qlm_l0 qlm_l1 qlm_l2 qlm_l3       # outward null normal
+} "Tetrad vector l^mu"
+
+REAL qlm_tetrad_n[num_surfaces] TYPE=array DIM=2 SIZE=SphericalSurface::maxntheta,SphericalSurface::maxnphi DISTRIB=constant TAGS='convergence_power=1'
+{
+  # all components are contravariant
+  qlm_n0 qlm_n1 qlm_n2 qlm_n3       # inward null normal
+} "Tetrad vector n^mu"
+
+REAL qlm_tetrad_m[num_surfaces] TYPE=array DIM=2 SIZE=SphericalSurface::maxntheta,SphericalSurface::maxnphi DISTRIB=constant TAGS='convergence_power=1'
+{
+  # all components are contravariant
+  qlm_m0r qlm_m0i qlm_m1r qlm_m1i qlm_m2r qlm_m2i qlm_m3r qlm_m3i       # null normal within surface
+} "Tetrad vector m^mu"
+
+COMPLEX qlm_newman_penrose[num_surfaces] TYPE=array DIM=2 SIZE=SphericalSurface::maxntheta,SphericalSurface::maxnphi DISTRIB=constant TAGS='Checkpoint="no",convergence_power=1'
+{
+  qlm_npkappa qlm_nptau qlm_npsigma qlm_nprho
+  qlm_npepsilon qlm_npgamma qlm_npbeta qlm_npalpha
+  qlm_nppi qlm_npnu qlm_npmu qlm_nplambda
+#  qlm_lie_l_npsigma
+#  qlm_lie_n_npsigma # for the Bondi mass
+} "Newman-Penrose quantities"
+
+COMPLEX qlm_weyl_scalars[num_surfaces] TYPE=array DIM=2 SIZE=SphericalSurface::maxntheta,SphericalSurface::maxnphi DISTRIB=constant TAGS='Checkpoint="no",convergence_power=1'
+{
+  qlm_psi0 # should be zero for an IH
+  qlm_psi1 # should be zero for an IH
+  qlm_psi2 # Im Psi_2 defines the angular momentum
+  qlm_psi3
+  qlm_psi4
+  qlm_i qlm_j # curvature invariants I and J
+  qlm_s      # speciality index S = 27 J^2 / I^3
+  qlm_sdiff  # (27 J^2 - I^3) / L_2[Psi_n]^3
+} "Weyl scalars (aka Newman-Penrose spin coefficients)"
+
+REAL qlm_ricci_scalars[num_surfaces] TYPE=array DIM=2 SIZE=SphericalSurface::maxntheta,SphericalSurface::maxnphi DISTRIB=constant TAGS='Checkpoint="no",convergence_power=1'
+{
+  qlm_phi00                     # Ricci tensor
+  qlm_phi11
+  qlm_phi01
+  qlm_phi12
+  qlm_phi10
+  qlm_phi21
+  qlm_phi02
+  qlm_phi22
+  qlm_phi20
+  
+  qlm_lambda                    # Ricci scalar
+  
+  qlm_lie_n_theta_l             # Lie_n Theta_(l)
+} "Ricci scalars"
+
+REAL qlm_twometric[num_surfaces] TYPE=array DIM=2 SIZE=SphericalSurface::maxntheta,SphericalSurface::maxnphi DISTRIB=constant TAGS='Checkpoint="no",convergence_power=1'
+{
+  qlm_qtt qlm_qtp qlm_qpp
+  qlm_rsc                       # 2-Ricci scalar
+} "2-metric"
+
+REAL qlm_killing_vector[num_surfaces] TYPE=array DIM=2 SIZE=SphericalSurface::maxntheta,SphericalSurface::maxnphi DISTRIB=constant TAGS='convergence_power=1'
+{
+  qlm_xi_t qlm_xi_p
+  qlm_chi
+} "Killing vector field"
+
+REAL qlm_killed_twometric[num_surfaces] TYPE=array DIM=2 SIZE=SphericalSurface::maxntheta,SphericalSurface::maxnphi DISTRIB=constant TAGS='Checkpoint="no",convergence_power=1'
+{
+  qlm_lqtt qlm_lqtp qlm_lqpp
+} "Lie derivative of the 2-metric along the Killing vector field"
+
+REAL qlm_invariant_coordinates[num_surfaces] TYPE=array DIM=2 SIZE=SphericalSurface::maxntheta,SphericalSurface::maxnphi DISTRIB=constant TAGS='Checkpoint="no",convergence_power=1'
+{
+  qlm_inv_z
+} "Invariant coordinates on the surface, assuming axisymmetry"
+
+REAL qlm_multipole_moments[num_surfaces] TYPE=scalar TAGS='Checkpoint="no"'
+{
+  qlm_mp_m0 qlm_mp_m1 qlm_mp_m2 qlm_mp_m3 qlm_mp_m4 qlm_mp_m5 qlm_mp_m6 qlm_mp_m7 qlm_mp_m8
+  qlm_mp_j0 qlm_mp_j1 qlm_mp_j2 qlm_mp_j3 qlm_mp_j4 qlm_mp_j5 qlm_mp_j6 qlm_mp_j7 qlm_mp_j8
+} "Mass and spin multipole moments"
+
+REAL qlm_3determinant[num_surfaces] TYPE=array DIM=2 SIZE=SphericalSurface::maxntheta,SphericalSurface::maxnphi DISTRIB=constant TAGS='Checkpoint="no",convergence_power=1'
+{
+  qlm_3det
+} "3-Determinant of H for a special choice of the triad"
+
+REAL qlm_scalars[num_surfaces] TYPE=scalar
+{
+  qlm_time
+  qlm_equatorial_circumference
+  qlm_polar_circumference_0
+  qlm_polar_circumference_pi_2
+  # area A and areal radius R
+  qlm_area qlm_irreducible_mass qlm_radius
+  qlm_spin_guess qlm_mass_guess
+  qlm_killing_eigenvalue_re qlm_killing_eigenvalue_im
+  # spin J: J = a M^2, i.e., angular momentum (spin is a misnomer)
+  qlm_spin qlm_npspin qlm_wsspin qlm_cvspin
+  qlm_coordspinx qlm_coordspiny qlm_coordspinz
+  # mass M : total mass, i.e., including angular momentum
+  qlm_mass
+  qlm_adm_energy
+  qlm_adm_momentum_x qlm_adm_momentum_y qlm_adm_momentum_z
+  qlm_adm_angular_momentum_x qlm_adm_angular_momentum_y qlm_adm_angular_momentum_z
+  qlm_w_energy
+  qlm_w_momentum_x qlm_w_momentum_y qlm_w_momentum_z
+  qlm_w_angular_momentum_x qlm_w_angular_momentum_y qlm_w_angular_momentum_z
+} "Scalar quantities on the surface"
+
+REAL qlm_scalars_p[num_surfaces] TYPE=scalar
+{
+  qlm_time_p qlm_time_p_p
+  qlm_radius_p qlm_radius_p_p
+} "Some scalar quantities on the surface at previous times"

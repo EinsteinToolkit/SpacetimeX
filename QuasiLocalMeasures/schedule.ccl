@@ -1,0 +1,48 @@
+# Schedule definitions for thorn QuasiLocalMeasures
+
+STORAGE: qlm_state qlm_scalars
+STORAGE: qlm_state_p qlm_scalars_p
+STORAGE: qlm_grid_int qlm_grid_real qlm_grid_real_p
+STORAGE: qlm_shapes qlm_tetrad_l qlm_tetrad_n qlm_tetrad_m
+STORAGE: qlm_shapes_p
+STORAGE: qlm_killing_vector
+
+
+
+# These variables need storage so that they can be output
+STORAGE: qlm_coordinates qlm_coordinates_p
+STORAGE: qlm_newman_penrose qlm_weyl_scalars
+STORAGE: qlm_ricci_scalars qlm_twometric qlm_killed_twometric
+STORAGE: qlm_invariant_coordinates qlm_multipole_moments qlm_3determinant
+
+
+
+SCHEDULE qlm_paramcheck AT paramcheck
+{
+  OPTIONS: global
+  LANG: Fortran
+} "Check quasi-local parameter settings"
+
+SCHEDULE qlm_init AT initial
+{
+  OPTIONS: global
+  LANG: Fortran
+} "Initialise quasi-local calculations"
+
+SCHEDULE qlm_calculate AT analysis AFTER (SphericalSurface_HasBeenSet SetTmunu)
+{
+  OPTIONS: global
+  LANG: Fortran
+  STORAGE: qlm_coordinates qlm_coordinates_p
+  STORAGE: qlm_newman_penrose qlm_weyl_scalars
+  STORAGE: qlm_ricci_scalars qlm_twometric qlm_killed_twometric 
+  STORAGE: qlm_invariant_coordinates qlm_multipole_moments qlm_3determinant
+  TRIGGERS: qlm_state
+  TRIGGERS: qlm_grid_int qlm_grid_real
+  TRIGGERS: qlm_shapes qlm_tetrad_l qlm_tetrad_n qlm_tetrad_m
+  TRIGGERS: qlm_coordinates
+  TRIGGERS: qlm_newman_penrose qlm_weyl_scalars
+  TRIGGERS: qlm_ricci_scalars qlm_twometric qlm_killing_vector qlm_killed_twometric
+  TRIGGERS: qlm_invariant_coordinates qlm_multipole_moments qlm_3determinant
+  TRIGGERS: qlm_scalars
+} "Calculate quasi-local quantities"

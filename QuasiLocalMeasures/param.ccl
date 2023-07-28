@@ -1,0 +1,109 @@
+# Parameter definitions for thorn QuasiLocalMeasures
+
+BOOLEAN verbose "Produce log output while running" STEERABLE=always
+{
+} "no"
+
+BOOLEAN veryverbose "Produce much log output while running" STEERABLE=always
+{
+} "no"
+
+
+
+INT num_surfaces "Number of surfaces"
+{
+  0:100 :: ""
+} 1
+
+
+
+INT surface_index[100] "Spherical surface that contains the surface shape"
+{
+  -1  :: "do not calculate"
+  0:* :: "surface index"
+} -1
+
+STRING surface_name[100] "Spherical surface that contains the surface shape"
+{
+  ""   :: "use surface_index"
+  ".*" :: "surface name"
+} ""
+
+STRING coordsystem "The coordinate system to use" STEERABLE=always
+{
+  "" :: "must be a registered coordinate system"
+} "cart3d"
+
+STRING interpolator "The interpolator to use" STEERABLE=always
+{
+  "" :: "must be a registered interpolator"
+} "Lagrange polynomial interpolation"
+
+STRING interpolator_options "Options for the interpolator" STEERABLE=always
+{
+  "" :: "must be a valid options specification"
+} "order=2"
+
+
+
+INT spatial_order "Order of spatial differencing"
+{
+  2 :: "second order"
+  4 :: "fourth order"
+} 2
+
+
+
+REAL begin_qlm_calculations_after[100] "when should we start calculations?" STEERABLE=always
+{
+  *:* :: "at/after this time (inclusively)"
+} 0.0
+
+
+
+# this method requires the spin to be roughly aligned with the z-axes and
+# computes qlm_spin use qlm_coordspinx, qlm_coordspiny, qlm_coordspinz
+# otherwise
+KEYWORD killing_vector_method "Method for finding the Killing vector field" STEERABLE=always
+{
+  "axial"       :: "Assume that d/dphi is a Killing vector"
+  "eigenvector" :: "Solve the Killing vector equation as eigenvector equation"
+  "gradient"    :: "Calculate the normal to the gradient of a scalar"
+} "eigenvector"
+
+KEYWORD killing_vector_normalisation "Method for normalising the Killing vector field" STEERABLE=always
+{
+  "average" :: "Average several integral lines"
+  "median"  :: "Use the median integral line"
+} "average"
+
+INT output_vtk_every "Output a VTK file with the main 2D" STEERABLE=always
+{
+  0   :: "don't output VTK file"
+  1:* :: "output every so many iterations"
+} 0
+
+
+SHARES: ADMBase
+
+USES KEYWORD metric_type
+
+
+
+SHARES: SphericalSurface
+
+USES INT nsurfaces
+
+USES BOOLEAN auto_res
+
+USES INT maxntheta
+USES INT maxnphi
+
+USES INT ntheta
+USES INT nphi
+USES INT nghoststheta
+USES INT nghostsphi
+
+USES BOOLEAN symmetric_x
+USES BOOLEAN symmetric_y
+USES BOOLEAN symmetric_z
