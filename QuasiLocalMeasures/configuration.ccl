@@ -1,6 +1,6 @@
 # Configuration definition for thorn QuasiLocalMeasures
 
-REQUIRES Boundary Fortran LAPACK TGRtensor
+REQUIRES LAPACK Fortran TGRtensor #Boundary
 
 OPTIONAL MPI
 {

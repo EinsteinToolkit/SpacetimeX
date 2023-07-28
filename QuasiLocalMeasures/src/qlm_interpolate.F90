@@ -83,9 +83,9 @@ subroutine qlm_interpolate (CCTK_ARGUMENTS, hn)
   
   
   
-  if (shift_state==0) then
-     call CCTK_WARN (0, "The shift must have storage")
-  end if
+  !! if (shift_state==0) then
+  !!    call CCTK_WARN (0, "The shift must have storage")
+  !! end if
   
 !!$  if (stress_energy_state==0) then
 !!$     call CCTK_WARN (0, "The stress-energy tensor must have storage")
@@ -146,33 +146,34 @@ subroutine qlm_interpolate (CCTK_ARGUMENTS, hn)
   ! TODO: check the excision mask
   
   ! Get variable indices
-  call CCTK_VarIndex (ind_gxx  , "ADMBase::gxx"   )
-  call CCTK_VarIndex (ind_gxy  , "ADMBase::gxy"   )
-  call CCTK_VarIndex (ind_gxz  , "ADMBase::gxz"   )
-  call CCTK_VarIndex (ind_gyy  , "ADMBase::gyy"   )
-  call CCTK_VarIndex (ind_gyz  , "ADMBase::gyz"   )
-  call CCTK_VarIndex (ind_gzz  , "ADMBase::gzz"   )
-  call CCTK_VarIndex (ind_kxx  , "ADMBase::kxx"   )
-  call CCTK_VarIndex (ind_kxy  , "ADMBase::kxy"   )
-  call CCTK_VarIndex (ind_kxz  , "ADMBase::kxz"   )
-  call CCTK_VarIndex (ind_kyy  , "ADMBase::kyy"   )
-  call CCTK_VarIndex (ind_kyz  , "ADMBase::kyz"   )
-  call CCTK_VarIndex (ind_kzz  , "ADMBase::kzz"   )
-  call CCTK_VarIndex (ind_alpha, "ADMBase::alp"   )
-  call CCTK_VarIndex (ind_betax, "ADMBase::betax" )
-  call CCTK_VarIndex (ind_betay, "ADMBase::betay" )
-  call CCTK_VarIndex (ind_betaz, "ADMBase::betaz" )
-  if (stress_energy_state /= 0) then
-     call CCTK_VarIndex (ind_ttt  , "TmunuBase::eTtt")
-     call CCTK_VarIndex (ind_ttx  , "TmunuBase::eTtx")
-     call CCTK_VarIndex (ind_tty  , "TmunuBase::eTty")
-     call CCTK_VarIndex (ind_ttz  , "TmunuBase::eTtz")
-     call CCTK_VarIndex (ind_txx  , "TmunuBase::eTxx")
-     call CCTK_VarIndex (ind_txy  , "TmunuBase::eTxy")
-     call CCTK_VarIndex (ind_txz  , "TmunuBase::eTxz")
-     call CCTK_VarIndex (ind_tyy  , "TmunuBase::eTyy")
-     call CCTK_VarIndex (ind_tyz  , "TmunuBase::eTyz")
-     call CCTK_VarIndex (ind_tzz  , "TmunuBase::eTzz")
+  call CCTK_VarIndex (ind_gxx  , "ADMBaseX::gxx"   )
+  call CCTK_VarIndex (ind_gxy  , "ADMBaseX::gxy"   )
+  call CCTK_VarIndex (ind_gxz  , "ADMBaseX::gxz"   )
+  call CCTK_VarIndex (ind_gyy  , "ADMBaseX::gyy"   )
+  call CCTK_VarIndex (ind_gyz  , "ADMBaseX::gyz"   )
+  call CCTK_VarIndex (ind_gzz  , "ADMBaseX::gzz"   )
+  call CCTK_VarIndex (ind_kxx  , "ADMBaseX::kxx"   )
+  call CCTK_VarIndex (ind_kxy  , "ADMBaseX::kxy"   )
+  call CCTK_VarIndex (ind_kxz  , "ADMBaseX::kxz"   )
+  call CCTK_VarIndex (ind_kyy  , "ADMBaseX::kyy"   )
+  call CCTK_VarIndex (ind_kyz  , "ADMBaseX::kyz"   )
+  call CCTK_VarIndex (ind_kzz  , "ADMBaseX::kzz"   )
+  call CCTK_VarIndex (ind_alpha, "ADMBaseX::alp"   )
+  call CCTK_VarIndex (ind_betax, "ADMBaseX::betax" )
+  call CCTK_VarIndex (ind_betay, "ADMBaseX::betay" )
+  call CCTK_VarIndex (ind_betaz, "ADMBaseX::betaz" )
+  !! if (stress_energy_state /= 0) then
+  if (1 == 1) then
+     call CCTK_VarIndex (ind_ttt  , "TmunuBaseX::eTtt")
+     call CCTK_VarIndex (ind_ttx  , "TmunuBaseX::eTtx")
+     call CCTK_VarIndex (ind_tty  , "TmunuBaseX::eTty")
+     call CCTK_VarIndex (ind_ttz  , "TmunuBaseX::eTtz")
+     call CCTK_VarIndex (ind_txx  , "TmunuBaseX::eTxx")
+     call CCTK_VarIndex (ind_txy  , "TmunuBaseX::eTxy")
+     call CCTK_VarIndex (ind_txz  , "TmunuBaseX::eTxz")
+     call CCTK_VarIndex (ind_tyy  , "TmunuBaseX::eTyy")
+     call CCTK_VarIndex (ind_tyz  , "TmunuBaseX::eTyz")
+     call CCTK_VarIndex (ind_tzz  , "TmunuBaseX::eTzz")
   else
      ind_ttt = -1
      ind_ttx = -1
@@ -510,7 +511,8 @@ subroutine qlm_interpolate (CCTK_ARGUMENTS, hn)
      call unpack (qlm_betax  , ni, nj)
      call unpack (qlm_betay  , ni, nj)
      call unpack (qlm_betaz  , ni, nj)
-     if (stress_energy_state /= 0) then
+     !! if (stress_energy_state /= 0) then
+     if (1 == 1) then
         call unpack (qlm_ttt    , ni, nj)
         call unpack (qlm_ttx    , ni, nj)
         call unpack (qlm_tty    , ni, nj)

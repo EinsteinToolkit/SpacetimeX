@@ -2,7 +2,7 @@
 
 IMPLEMENTS: QuasiLocalMeasures
 
-INHERITS: ADMBase SphericalSurface TmunuBase
+INHERITS: ADMBaseX SphericalSurface TmunuBaseX
 
 
 
@@ -17,7 +17,7 @@ USES FUNCTION sf_IdFromName
 
 
 
-INT qlm_state[num_surfaces] TYPE=scalar
+REAL qlm_state[num_surfaces] TYPE=scalar
 {
   qlm_calc_error          # some QLM information is invalid
   qlm_have_valid_data     # interpolating from the AH was successful
@@ -26,13 +26,13 @@ INT qlm_state[num_surfaces] TYPE=scalar
   qlm_iteration           # iteration for current data
 } "Status information"
 
-INT qlm_state_p[num_surfaces] TYPE=scalar
+REAL qlm_state_p[num_surfaces] TYPE=scalar
 {
   qlm_have_valid_data_p qlm_have_valid_data_p_p
   qlm_have_killing_vector_p qlm_have_killing_vector_p_p
 } "Previous status information"
   
-INT qlm_grid_int[num_surfaces] TYPE=scalar
+REAL qlm_grid_int[num_surfaces] TYPE=scalar
 {
   qlm_nghoststheta qlm_nghostsphi
   qlm_ntheta qlm_nphi
@@ -85,10 +85,10 @@ REAL qlm_tetrad_n[num_surfaces] TYPE=array DIM=2 SIZE=SphericalSurface::maxnthet
   qlm_n0 qlm_n1 qlm_n2 qlm_n3       # inward null normal
 } "Tetrad vector n^mu"
 
-REAL qlm_tetrad_m[num_surfaces] TYPE=array DIM=2 SIZE=SphericalSurface::maxntheta,SphericalSurface::maxnphi DISTRIB=constant TAGS='convergence_power=1'
+COMPLEX qlm_tetrad_m[num_surfaces] TYPE=array DIM=2 SIZE=SphericalSurface::maxntheta,SphericalSurface::maxnphi DISTRIB=constant TAGS='convergence_power=1'
 {
   # all components are contravariant
-  qlm_m0r qlm_m0i qlm_m1r qlm_m1i qlm_m2r qlm_m2i qlm_m3r qlm_m3i       # null normal within surface
+  qlm_m0 qlm_m1 qlm_m2 qlm_m3       # null normal within surface
 } "Tetrad vector m^mu"
 
 COMPLEX qlm_newman_penrose[num_surfaces] TYPE=array DIM=2 SIZE=SphericalSurface::maxntheta,SphericalSurface::maxnphi DISTRIB=constant TAGS='Checkpoint="no",convergence_power=1'
