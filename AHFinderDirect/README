@@ -1,0 +1,257 @@
+Cactus Code Thorn AHFinderDirect
+Authors    : Jonathan Thornburg <jthorn@aei.mpg.de>
+Maintainer : Jonathan Thornburg <jthorn@aei.mpg.de>
+CVS info   : $Header$
+--------------------------------------------------------------------------
+
+Purpose of This Thorn
+=====================
+
+This thorn finds an apparent horizon (or more generally, a closed
+2-surface with S^2 topology having any desired constant expansion)
+given the 3D xyz-grid metric and extrinsic curvature (and optionally
+the StaticConformal conformal factor).  It uses a direct method,
+writing the apparent horizon equation as an elliptic PDE on
+angular-coordinate space.  This is very fast and accurate, but
+it does require an intitial guess for the apparent horizon position.
+
+
+Documentation
+=============
+
+The doc/ directory contains detailed documentation for this thorn,
+including a discussion of those parameters which you'll likely want
+to set (or at least know about) in practice.  For full information
+on all the parameters, see the comments in the  param.ccl  file.
+
+The par/ directory contains some sample par files.
+
+src/CODESTYLE documents the general programming conventions used in
+this thorn.
+
+src/PORTING.OUTSIDE.CACTUS has some general remarks on what it would
+take to port this thorn to a non-Cactus numerical relativity code.
+
+See below in this file for notes on compiling this thorn.
+
+
+Publications
+============
+The algorithms used in this thorn are described in the papers
+@article{
+	Thornburg2003:AH-finding,
+	author = "Jonathan Thornburg",
+	title  = "A Fast Apparent-Horizon Finder
+		  for 3-Dimensional {C}artesian Grids in Numerical Relativity",
+	journal = "Classical and Quantum Gravity",
+	volume = 21, number = 2,
+	year   = "2004", month = "January 21",
+	pages  = "743--766",
+	doi    = "10.1088/0264-9381/21/2/026",
+	url    = "http://stacks.iop.org/0264-9381/21/743",
+	eprint = "gr-qc/0306056",
+	note   = "gr-qc/0306056",
+	}
+and
+@article{
+	Thornburg-1996-horizon-finding,
+	author = "Jonathan Thornburg",
+	title = "Finding Apparent Horizons in Numerical Relativity",
+	journal = "Physical Review D",
+	pages = "4899--4918",
+	volume = 54, number = 8,
+	year = 1996, month = "October 15",
+	eprint = "gr-qc/9508014",
+	}
+As a courtesy, I ask that these papers be cited in any published research
+which uses this thorn, or which uses code from this thorn.
+
+
+Copyright
+=========
+
+This thorn is copyright (C) 2001-2004
+by Jonathan Thornburg <jthorn@aei.mpg.de>.
+
+This thorn is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This thorn is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this thorn (see the file COPYING in this directory);
+if not, write to the Free Software Foundation, Inc., 59 Temple
+Place, Suite 330, Boston, MA  02111-1307  USA
+
+
+Other Software Used (Already Contained within AHFinderDirect)
+=============================================================
+
+AHFinderDirect's  src/sparse-matrix/  directory contains various
+sparse-matrix libraries, which have their own copyrights and licensing terms:
+
+The src/sparse-matrix/umfpack/ directory contains a subset of the files
+in UMFPACK version 4.0 (11.Apr.2002).  This code is copyright (C) 2002 by
+Timothy A. Davis, and is subect to the UMFPACK License:
+
+    Your use or distribution of UMFPACK or any modified version of
+    UMFPACK implies that you agree to this License.
+
+    THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY
+    EXPRESSED OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
+
+    Permission is hereby granted to use or copy this program, provided
+    that the Copyright, this License, and the Availability of the original
+    version is retained on all copies.  User documentation of any code that
+    uses UMFPACK or any modified version of UMFPACK code must cite the
+    Copyright, this License, the Availability note, and "Used by permission."
+    Permission to modify the code and to distribute modified code is granted,
+    provided the Copyright, this License, and the Availability note are
+    retained, and a notice that the code was modified is included.  This
+    software was developed with support from the National Science Foundation,
+    and is provided to you free of charge.
+
+
+Other Software Required
+=======================
+
+This thorn inherits from Grid, ADMBase, StaticConformal, SpaceMask, IO
+(all in the CactusBase or CactusEinstein arrangements), and
+SphericalSurface (in the AEIThorns arrangement; you can get AEIThorns
+by anonymous CVS checkout from cvs_anon@cvs.aei.mpg.de:/numrelcvs, CVS
+path AEIThorns/SphericalSurface).
+
+By default this thorn uses various Cactus APIs which are supplied by
+other thorns:
+* This thorn uses CCTK_InterpGridArrays() for interpolating grid arrays.
+  This is supplied by a driver-specific thorn, such as PUGHInterp or
+  CarpetInterp.
+* This thorn uses CCTK_ReduceLocArrayToArray1D() for interprocessor
+  communication in the multiprocessor Newton solver.
+	[see src/driver/README.parallel for details]
+  This is supplied by a driver-specific thorn; at present PUGHReduce
+  it this for the PUGH driver.
+* This thorn uses CCTK_InterpLocalUniform() for interpatch and surface
+  interpolation, and it needs various interpolation options which at
+  present are (only) supported by the AEIThorns/AEILocalInterp local
+  interpolator.
+
+This thorn is written in C++, so you'll need a C++ compiler -- in fact
+a fairly modern one -- to compile this thorn.  See the "Compilation Notes"
+section below for details.
+
+Most of this thorn's relativity code is machine-generated using Maple
+(version 7), but you don't need Maple unless you want to modify the
+relativity code.
+
+By default, this thorn doesn't use any external libraries.  However,
+if HAVE_DENSE_JACOBIAN__LAPACK is defined in src/include/config.h,
+then this thorn uses the LAPACK library (which in turn uses the BLAS
+library), so you will need to configure your Cactus to use LAPACK.
+Instructions on doing this are in the file README.library in this
+directory.
+
+
+Code Notes
+==========
+
+This thorn is written in C++, and requires a fairly modern C++ compiler.
+In particular:
+* Templates are used, but only rather simple ones for containers or other
+  low-level stuff templated on the floating-point or integer datatype.
+  These templates are always instantiated explicitly.
+* bool, mutable, typename are used.
+* The new-style casts static_cast<...> and const_cast<...> are used.
+  reinterpret_cast<...> and dynamic_cast<...> are *not* used.
+* The code will compile ok under either the archaic or the modern
+  for-loop declaration scope rules.
+* C header files are used in the pre-namespaces form (eg <stdio.h>).
+  (In ISO-standard C++ this is deprecated (but still supported), but
+  alas none of the more modern forms (<cstdio> and namespace std::)
+  seem to be supported on as wide a range of systems as the pre-namespaces
+  form.)
+* <assert.h> is used fairly heavily for sanity checks.
+* To avoid various portability problems, none of the C++ standard
+  template library (STL) is used.
+
+
+Compiler Notes
+==============
+
+This thorn should be fully portable across architectures and operating
+systems, but C++ compilers may be a problem:
+
+This thorn has been compiled and run successfully using
+
+x86
+===
+* gcc version 2.95.3 20010125 (prerelease)
+* g++ (GCC) 3.2 for x86
+* g++ (GCC) 3.2.2 for x86
+* g++ (GCC) 3.3 for x86
+* Intel(R) C++ Compiler for 32-bit applications, Version 5.0.1   Build 010730D0
+* Intel C++ Compiler for Linux, version 6.0
+* Intel(R) C++ Compiler for 32-bit applications, Version 7.0   Build 20021021Z
+  On platinum.ncsa.uiuc.edu, Denis Pollney reports success configuring Cactus
+  with
+    LIBS="crypt F90 CEPCF90 intrins mkl mkl_lapack guide"
+    LIBDIRS=/usr/local/intel/mkl/lib/32
+* Portland Group pgCC 3.3-2
+  On platinum.ncsa.uiuc.edu, Denis Pollney reports success configuring Cactus
+  with
+    LAPACK=yes
+    LAPACK_DIR=/usr/local/pgi/linux86
+
+ia64, a.k.a. Itanium
+====================
+* Intel(R) C++ Itanium(R) Compiler for Itanium(R)-based applications
+  Version 7.0 Beta, Build 20020911
+  On titan.ncsa.uiuc.edu, Denis Pollney reports success configuring Cactus
+  with
+    LIBS="crypt F90 CEPCF90 intrins mkl_lapack mkl_itp guide"
+    LIBDIRS=/usr/local/intel/mkl/lib/64
+
+Alpha
+=====
+* g++ (GCC) 3.0
+  On lemieux.psc.edu, Denis Pollney reports success configuring Cactus
+  with
+    LIBS="m c_r dxml for"
+* Using the DEC/Compaq/HP/whatever-their-corporate-name-is-this-week
+  compiler, you need to specify the  -nopt  compiler option to disable
+  automatic template instantiation.
+
+SGI
+===
+* On modi4.ncsa.uiuc.edu (an old SGI Origin), using
+  MIPSpro Compilers: Version 7.3.1.3m
+  you need to specify the  -no_auto_include  compiler option to disable
+  automatic template instantiation.  In fact, you should probably specify
+  this option on any SGI system...
+
+IBM Power4 (AIX)
+================
+* C for AIX Compiler, Version 6
+  On psi19.rzg.mpg.de, Denis Pollney reports success configuring Cactus
+  with
+    LIBS="f m lapack-essl essl"
+    LIBDIRS="/afs/rzg/@sys/lib"
+
+Please let me (Jonathan) know of any other compilers which are ok.
+
+This thorn compiles, but does *NOT* work, using the folloing
+systems/compilers; the cure is to switch to a newer compiler version:
+x86
+===
+* gcc version 2.96 20000731 (Red Hat Linux 7.1 2.96-98)
+  (This is the system gcc on Red Hat GNU/Linux 7.2 systems)
+
+The code will almost certainly *not* compile using
+* any "egcs" version of gcc, or more generally, any version of gcc
+  earlier than 2.95
+* any version of Microsoft Visual C++ up to and including mid-2002

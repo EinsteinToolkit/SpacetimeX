@@ -1,0 +1,11 @@
+This directory contains subdirectories with test programs for
+various C++ compiler/library features:
+
+namespace/	This directory tests how namespaces are handled for
+		C standard library functions, eg <stdio.h> vs <cstdio>
+
+vector/		This directory test how namespaces are handled for
+		the STL vector class, eg <vector.h> vs <cvector>
+
+inline-fns/	This directory tests how inline functions are handled,
+		both within C++ classes and "globally"

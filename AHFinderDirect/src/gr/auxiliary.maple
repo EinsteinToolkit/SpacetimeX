@@ -1,0 +1,139 @@
+# auxiliary.maple -- Maple code to compute ADM auxiliary quantities
+# $Header$
+
+#
+# auxiliary - compute and optionally generate C code for auxiliary quantities
+## inverse_metric - metric determinant and inverse metric
+## extrinsic_curvature_trace_raise - compute trace+contravariant K_ij
+#
+
+###############################################################################
+
+#
+# This function computes various auxiliary variables which are
+# algebraic functions of the basic ADM fields {g_dd,K_dd}, and optionally
+# also generates C code for them (the auxiliar variables).
+#
+# Code files are written to the directory ../gr.cg/ .
+#
+# Inputs (Maple):
+#	N
+#	g_dd
+#	K_dd
+#
+# Outputs (Maple + code file "inverse_metric.c"):
+#	g_uu = g_uu__fnd(g_dd)
+#
+# Outputs (Maple + code file "extrinsic_curvature_trace_raise.c"):
+#	K = K__fnd(g_uu, K_dd)
+#	K_uu = K_uu__fnd(g_uu, K_dd)
+#
+# Arguments:
+# cg_flag = (in) false ==> Compute Maple expressions only.
+#		 true ==> Compute Maple expressions and generate C code.
+# 
+auxiliary :=
+proc(cg_flag::boolean)
+
+inverse_metric(cg_flag);
+extrinsic_curvature_trace_raise(cg_flag);
+
+NULL;
+end;
+
+###############################################################################
+
+#
+# This function computes the inverse metric, and optionally also
+# generates C code for this.
+#
+# Inputs (Maple):
+#	N
+#	g_dd
+#
+# Outputs (Maple + code file "inverse_metric.c"):
+#	g_uu = g_uu__fnd(g_dd)
+#
+# Arguments:
+# cg_flag = (in) false ==> Compute Maple expressions only.
+#		 true ==> Compute Maple expressions and generate C code.
+#
+inverse_metric :=
+proc(cg_flag::boolean)
+global
+  @include "../maple/coords.minc",
+  @include "../maple/gfa.minc",
+  @include "../gr/gr_gfas.minc";
+
+printf("%a...\n", procname);
+
+assert_fnd_exists(g_dd);
+assert_fnd_exists(g_uu, fnd);
+
+g_uu__fnd := linalg[inverse](g_dd);
+
+if (cg_flag)
+   then codegen2(g_uu__fnd, 'g_uu', "../gr.cg/inverse_metric.c");
+fi;
+
+NULL;
+end;
+
+###############################################################################
+
+#
+# This function computes the trace of the extrinsic curvature, K,
+# and the contravariant extrinsic curvature, K_uu, and optionally also
+# generates C code for this.
+#
+# Inputs (as global variables):
+#	N
+#	K_dd
+#	g_uu
+#
+# Outputs (Maple + code file "extrinsic_curvature_trace_raise.c"):
+#	K = K__fnd(g_uu, K_dd)
+#	K_uu = K_uu__fnd(g_uu, K_dd)
+#
+# Arguments:
+# cg_flag = (in) false ==> Set up Maple variables only.
+#		 true ==> Set up Maple variables and generate C code.
+#
+extrinsic_curvature_trace_raise :=
+proc(cg_flag::boolean)
+global
+  @include "../maple/coords.minc",
+  @include "../maple/gfa.minc",
+  @include "../gr/gr_gfas.minc";
+local i, j, m, n;
+
+printf("%a...\n", procname);
+
+assert_fnd_exists(g_uu);
+assert_fnd_exists(K_dd);
+assert_fnd_exists(K, fnd);
+assert_fnd_exists(K_uu, fnd);
+
+K__fnd := simplify(
+	    msum('g_uu[i,j] * K_dd[i,j]', 'i'=1..N, 'j'=1..N)
+		  );
+
+	for i from 1 to N
+	do
+	for j from i to N		# upper triangle only
+	do
+	K_uu__fnd[i,j] := simplify(
+			    msum('g_uu[i,m] * g_uu[j,n] * K_dd[m,n]',
+				 'm'=1..N, 'n'=1..N)
+				  );
+	end do;
+	end do;
+
+if (cg_flag)
+   then codegen2([K__fnd, K_uu__fnd],
+		 ['K', 'K_uu'],
+		 "../gr.cg/extrinsic_curvature_trace_raise.c");
+fi;
+
+NULL;
+end;

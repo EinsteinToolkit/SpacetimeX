@@ -1,0 +1,19 @@
+HDF5 Data File Format
+=====================
+$Header$
+
+This design assumes that integer min/max/size info is implicit in an
+HDF5 dataset.  If not, these would need to be added as explicit attributes.
+
+array [0:*] (timesteps) of
+	array [1:N_horizons(t)] of
+		# description of a single apparent horizon
+		fp origin_x, origin_y, origin_z
+		array [0:N_patches-1] of
+			# description of a single patch
+			array [min_irho:max_irho] [min_isigma:max_isigma] of h
+			array [min_irho:max_irho] [min_isigma:max_isigma] of x
+			array [min_irho:max_irho] [min_isigma:max_isigma] of y
+			array [min_irho:max_irho] [min_isigma:max_isigma] of z
+		fp centroid_x, centroid_y, centroid_z
+		fp area, mass

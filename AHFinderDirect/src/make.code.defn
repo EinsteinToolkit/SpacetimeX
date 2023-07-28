@@ -1,0 +1,14 @@
+# Cactus specification of where source code lives for this thorn
+# $Header$
+
+# Source files in this directory
+SRCS = 
+
+# Subdirectories containing source files (normal compilation)
+# ... directories are listed in bottom-up order
+SUBDIRS = jtutil patch \
+          sparse-matrix/ilucg sparse-matrix/umfpack \
+          elliptic gr driver
+
+## Subdirectories containing source files (using src/patch/test_patch_system.cc)
+##SUBDIRS = jtutil patch

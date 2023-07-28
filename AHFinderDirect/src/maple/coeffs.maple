@@ -1,0 +1,26 @@
+# coeffs.maple - set up coordinate coefficients
+# $Header$
+#
+# setup_coeff_gfas - create the coordinate-transformation coefficient gfas
+#
+
+################################################################################
+
+#
+# This function sets up the coordinate-transformation gfas.
+# At present these are only inert -- Maple doesn't worry about
+# their fnd expressions (ugly trig functions).
+#
+setup_coeff_gfas :=
+proc()
+global
+  @include "../maple/coords.minc",
+  @include "../maple/gfa.minc";
+
+# 1st ($X^u_i$) and 2nd ($X^u_{ij}$) partial derivs
+# of (r,rho,sigma) wrt (xx,yy,zz)
+make_gfa('X_ud', {inert}, [1..N_ang, 1..N], none);
+make_gfa('X_udd', {inert}, [1..N_ang, 1..N, 1..N], symmetric3_23);
+
+NULL;
+end proc;

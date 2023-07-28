@@ -1,0 +1,28 @@
+# setup.maple -- top-level Maple input file to set up PDE compiler system
+# $Header$
+
+#
+# Note not all files here actually *use* the preprocessor, but for
+# convenience we preprocess everything (this way we don't have to keep
+# track of which files should be used as .maple and which as .mm).
+#
+
+#
+# Note paths are evaluated relative to where read command gets executed,
+# not relative to this directory, so we use ../maple/ to try and avoid
+# ambiguities in case this file gets read from another directory.
+#
+
+read "../maple/util.mm";
+
+read "../maple/coords.mm";
+setup_coords();
+
+read "../maple/Diff.mm";
+
+read "../maple/gfa.mm";
+
+read "../maple/coeffs.mm";
+setup_coeff_gfas();
+
+read "../maple/codegen2.mm";

@@ -1,0 +1,46 @@
+# Maple include file listing all gfa functional-dependence forms
+# $Header$
+
+g_dd,
+K_dd,
+
+g_uu, g_uu__fnd,
+K_uu, K_uu__fnd,
+
+K, K__fnd,
+
+partial_d_g_dd,
+
+partial_d_ln_sqrt_g, partial_d_ln_sqrt_g__fnd,
+partial_d_g_uu, partial_d_g_uu__fnd,
+
+h, h__fnd,
+
+s_d, s_d__fnd,
+partial_d_s_d, partial_d_s_d__fnd,
+
+n_u, n_u__fnd,
+
+Theta_A, Theta_A__fnd,
+Theta_B, Theta_B__fnd,
+Theta_C, Theta_C__fnd,
+Theta_D, Theta_D__fnd,
+Theta, Theta__fnd,
+
+partial_d_Theta_A, partial_d_Theta_A__fnd,
+partial_d_Theta_B, partial_d_Theta_B__fnd,
+partial_d_Theta_C, partial_d_Theta_C__fnd,
+partial_d_Theta_D, partial_d_Theta_D__fnd,
+partial_d_Theta_, partial_d_Theta__fnd,
+
+partial_Theta_A_wrt_partial_d_h, partial_Theta_A_wrt_partial_d_h__fnd,
+partial_Theta_B_wrt_partial_d_h, partial_Theta_B_wrt_partial_d_h__fnd,
+partial_Theta_C_wrt_partial_d_h, partial_Theta_C_wrt_partial_d_h__fnd,
+partial_Theta_D_wrt_partial_d_h, partial_Theta_D_wrt_partial_d_h__fnd,
+partial_Theta_A_wrt_partial_dd_h, partial_Theta_A_wrt_partial_dd_h__fnd,
+partial_Theta_B_wrt_partial_dd_h, partial_Theta_B_wrt_partial_dd_h__fnd,
+
+partial_Theta_X_wrt_partial_d_h, partial_Theta_X_wrt_partial_d_h__fnd,
+partial_Theta_Y_wrt_partial_d_h, partial_Theta_Y_wrt_partial_d_h__fnd,
+partial_Theta_X_wrt_partial_dd_h, partial_Theta_X_wrt_partial_dd_h__fnd,
+partial_Theta_Y_wrt_partial_dd_h, partial_Theta_Y_wrt_partial_dd_h__fnd # no comma
