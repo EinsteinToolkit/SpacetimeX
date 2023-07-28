@@ -84,9 +84,9 @@ INT output_vtk_every "Output a VTK file with the main 2D" STEERABLE=always
 } 0
 
 
-SHARES: ADMBase
+SHARES: ADMBaseX
 
-USES KEYWORD metric_type
+#USES KEYWORD metric_type
 
 
 

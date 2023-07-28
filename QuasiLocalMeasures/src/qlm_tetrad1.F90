@@ -294,16 +294,11 @@ subroutine qlm_calc_tetrad1 (CCTK_ARGUMENTS, hn)
         qlm_n2(i,j,hn) = nn(2)
         qlm_n3(i,j,hn) = nn(3)
         
-        qlm_m0r(i,j,hn) = mm(0)%re
-        qlm_m1r(i,j,hn) = mm(1)%re
-        qlm_m2r(i,j,hn) = mm(2)%re
-        qlm_m3r(i,j,hn) = mm(3)%re
+        qlm_m0(i,j,hn) = mm(0)
+        qlm_m1(i,j,hn) = mm(1)
+        qlm_m2(i,j,hn) = mm(2)
+        qlm_m3(i,j,hn) = mm(3)
         
-        qlm_m0i(i,j,hn) = mm(0)%im
-        qlm_m1i(i,j,hn) = mm(1)%im
-        qlm_m2i(i,j,hn) = mm(2)%im
-        qlm_m3i(i,j,hn) = mm(3)%im
-
      end do
   end do
   

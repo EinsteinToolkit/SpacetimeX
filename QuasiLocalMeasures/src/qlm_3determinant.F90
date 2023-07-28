@@ -73,11 +73,11 @@ SUBROUTINE qlm_calc_3determinant (CCTK_ARGUMENTS, hn)
         beta(2) = qlm_betay(i,j)
         beta(3) = qlm_betaz(i,j)
         
-        mm(0) = cmplx(qlm_m0r(i,j,hn), qlm_m0i(i,j,hn), kind(mm));
-        mm(1) = cmplx(qlm_m1r(i,j,hn), qlm_m1i(i,j,hn), kind(mm));
-        mm(2) = cmplx(qlm_m2r(i,j,hn), qlm_m2i(i,j,hn), kind(mm));
-        mm(3) = cmplx(qlm_m3r(i,j,hn), qlm_m3i(i,j,hn), kind(mm));
-
+        mm(0) = qlm_m0(i,j,hn)
+        mm(1) = qlm_m1(i,j,hn)
+        mm(2) = qlm_m2(i,j,hn)
+        mm(3) = qlm_m3(i,j,hn)
+        
         ! Build the four-metric
         CALL calc_4metric (gg,alfa,beta, g4)
         
