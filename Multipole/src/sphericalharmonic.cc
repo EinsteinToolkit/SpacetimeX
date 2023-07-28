@@ -1,10 +1,13 @@
 #include <math.h>
 #include <assert.h>
 #include <iostream>
+#include <vector>
+#include <loop_device.hxx>
 
 #include "cctk.h"
 #include "cctk_Parameters.h"
 #include "cctk_Arguments.h"
+#include "sphericalharmonic.hh"
 
 static const CCTK_REAL PI = acos(-1.0);
 
@@ -73,28 +76,115 @@ void Multipole_HarmonicSetup(int s, int l, int m,
 // Fill a grid function with a given spherical harmonic
 extern "C" void Multipole_SetHarmonic(CCTK_ARGUMENTS)
 {
+  using namespace Loop;
+  using namespace std;
   DECLARE_CCTK_ARGUMENTS_Multipole_SetHarmonic;
   DECLARE_CCTK_PARAMETERS;
-  CCTK_REAL vcoordr;
-
-  CCTK_LOOP3_ALL(Multipole_SetHarmonic, cctkGH, i, j, k) {
-    int index = CCTK_GFINDEX3D(cctkGH, i, j, k);
-    vcoordr = sqrt(vcoordx[index]*vcoordx[index] + vcoordy[index]*vcoordy[index] + vcoordz[index]*vcoordz[index]);
-
-    CCTK_REAL theta = acos(vcoordz[index]/vcoordr);
+  
+  const int dim = 3;
+  
+  const array<int, dim> indextype = {0, 0, 0};
+  const GF3D2layout layout(cctkGH, indextype);
+  
+  const GF3D2<CCTK_REAL> harmonic_re_(layout, harmonic_re);
+  const GF3D2<CCTK_REAL> harmonic_im_(layout, harmonic_im);
+  
+  const GridDescBaseDevice grid(cctkGH);
+  grid.loop_int<0, 0, 0>(grid.nghostzones,
+                                [=] CCTK_DEVICE(const PointDesc &p)
+                                    CCTK_ATTRIBUTE_ALWAYS_INLINE {
+    CCTK_REAL vcoordr = sqrt(p.x*p.x + p.y*p.y + p.z*p.z);
+    CCTK_REAL theta = acos(p.z/vcoordr);
     if (vcoordr == 0) theta = 0;
-    CCTK_REAL phi = atan2(vcoordy[index],vcoordx[index]);
+    CCTK_REAL phi = atan2(p.y,p.x);
 
-    CCTK_REAL re = 0;
-    CCTK_REAL im = 0;
+		CCTK_REAL re = 0;
+		CCTK_REAL im = 0;
 
-    Multipole_SphericalHarmonic(test_sw,test_l,test_m,theta,phi,
-                                &re, &im);
+		Multipole_SphericalHarmonic(test_sw,test_l,test_m,theta,phi,
+																&re, &im);
 
-    CCTK_REAL fac = test_mode_proportional_to_r ? vcoordr : 1.0;
+		CCTK_REAL fac = test_mode_proportional_to_r ? vcoordr : 1.0;
+		harmonic_re_(p.I) = re * fac;
+		harmonic_im_(p.I) = im * fac;
+                                    });
 
-    harmonic_re[index] = re * fac;
-    harmonic_im[index] = im * fac;
-  } CCTK_ENDLOOP3_ALL(Multipole_SetHarmonic);
+  // for (int k = 0; k < cctk_lsh[2]+1; k++)
+  // {
+  //   for (int j = 0; j < cctk_lsh[1]+1; j++)
+  //   {
+  //     for (int i = 0; i < cctk_lsh[0]+1; i++)
+  //     {
+  //       int index = i + j * (cctk_lsh[0]+1) + k * (cctk_lsh[0]+1)*(cctk_lsh[1]+1)  ;
+  //       vcoordr = sqrt(vcoordx[index]*vcoordx[index] + vcoordy[index]*vcoordy[index] + vcoordz[index]*vcoordz[index]);
+
+  //       CCTK_REAL theta = acos(vcoordz[index]/vcoordr);
+  //       if (vcoordr == 0) theta = 0;
+  //       CCTK_REAL phi = atan2(vcoordy[index],vcoordx[index]);
+
+  //       CCTK_REAL re = 0;
+  //       CCTK_REAL im = 0;
+
+  //       Multipole_SphericalHarmonic(test_sw,test_l,test_m,theta,phi,
+  //                                   &re, &im);
+
+  //       CCTK_REAL fac = test_mode_proportional_to_r ? vcoordr : 1.0;
+
+  //       harmonic_re[index] = re * fac;
+  //       harmonic_im[index] = im * fac;
+  //     }
+  //   }
+  // }
+  return;
+}
+
+
+extern "C" void Multipole_SetHarmonicWeyl(CCTK_ARGUMENTS)
+{
+  using namespace Loop;
+  using namespace std;
+  DECLARE_CCTK_ARGUMENTS_Multipole_SetHarmonicWeyl;
+  DECLARE_CCTK_PARAMETERS;
+  
+  const int dim = 3;
+  
+  const array<int, dim> indextype = {0, 0, 0};
+  const GF3D2layout layout(cctkGH, indextype);
+  
+  const GF3D2<CCTK_REAL> Psi4r_(layout, Psi4r);
+  const GF3D2<CCTK_REAL> Psi4i_(layout, Psi4i);
+  
+  const GridDescBaseDevice grid(cctkGH);
+  grid.loop_int<0, 0, 0>(grid.nghostzones,
+                                [=] CCTK_DEVICE(const PointDesc &p)
+                                    CCTK_ATTRIBUTE_ALWAYS_INLINE {
+    CCTK_REAL vcoordr = sqrt(p.x*p.x + p.y*p.y + p.z*p.z);
+    CCTK_REAL theta = acos(p.z/vcoordr);
+    if (vcoordr == 0) theta = 0;
+    CCTK_REAL phi = atan2(p.y,p.x);
+
+		CCTK_REAL re22 = 0;
+		CCTK_REAL im22 = 0;
+
+		Multipole_SphericalHarmonic(test_sw,2,2,theta,phi,
+																&re22, &im22);
+
+		CCTK_REAL re2m2 = 0;
+		CCTK_REAL im2m2 = 0;
+
+		Multipole_SphericalHarmonic(test_sw,2,-2,theta,phi,
+																&re2m2, &im2m2);
+
+		CCTK_REAL re31 = 0;
+		CCTK_REAL im31 = 0;
+
+		Multipole_SphericalHarmonic(test_sw,3,1,theta,phi,
+																&re31, &im31);
+
+		CCTK_REAL fac = test_mode_proportional_to_r ? vcoordr : 1.0;
+		Psi4r_(p.I) = (re22 + 0.5 * re2m2 + 0.25 * re31) * fac;
+		Psi4i_(p.I) = (im22 + 0.5 * im2m2 + 0.25 * im31) * fac;
+                                    });
+
   return;
 }

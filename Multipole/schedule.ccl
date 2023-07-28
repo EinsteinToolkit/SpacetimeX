@@ -9,7 +9,7 @@ if (enable_test)
   STORAGE: test_orthonormality
 }
 
-schedule Multipole_Calc at CCTK_ANALYSIS after (calc_np,PsiKadelia,Accelerator_CopyBack)
+schedule Multipole_Calc at analysis after Weyl_Weyl #after (calc_np,PsiKadelia,Accelerator_CopyBack)
 {
   LANG: C
   OPTIONS: GLOBAL
@@ -23,6 +23,7 @@ if (enable_test)
     {
       Reads: Coordinates::vertex_coords
       Writes: Multipole::harmonics(interior)
+			SYNC: Multipole::harmonics
       LANG: C
     } "Populate grid functions with spherical harmonics"
 
@@ -32,6 +33,31 @@ if (enable_test)
       OPTIONS: GLOBAL
     } "Loop over modes and integrate them to check orthonormality"
 }
+
+if (enable_test_Weyl)
+{
+    schedule Multipole_SetHarmonicWeyl at CCTK_INITIAL
+    {
+      Reads: Coordinates::vertex_coords
+			WRITES: WeylScal4::Psi4i_group(Interior)
+			WRITES: WeylScal4::Psi4r_group(Interior)
+			SYNC: WeylScal4::Psi4i_group
+			SYNC: WeylScal4::Psi4r_group
+      LANG: C
+    } "Populate Weyl grid functions with spherical harmonics"
+}
+
+if (!enable_test && !enable_test_Weyl)
+{
+	schedule Multipole_Init at initial
+	{
+		LANG: C
+		READS: Coordinates::vertex_coords
+		WRITES: Multipole::harmonics(interior)
+		SYNC: Multipole::harmonics
+	} "Init harmonics to zero to make CarpetX happy?"
+}
+
 
 schedule Multipole_ParamCheck at CCTK_PARAMCHECK
 {

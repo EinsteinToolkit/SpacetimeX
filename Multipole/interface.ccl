@@ -1,6 +1,8 @@
 #interface.ccl for thorn Multipole
 implements: multipole
-inherits:   Coordinates 
+inherits:   Coordinates WeylScal4
+
+USES INCLUDE HEADER: loop_device.hxx
 
 CCTK_INT FUNCTION IO_TruncateOutputFiles \
   (CCTK_POINTER_TO_CONST IN GH)
@@ -9,7 +11,7 @@ REQUIRES FUNCTION IO_TruncateOutputFiles
 
 public:
 
-CCTK_REAL harmonics type=GF timelevels=1 tags='index={0 0 0} checkpoint="no"'
+CCTK_REAL harmonics type=GF timelevels=1 tags='checkpoint="no"'
 {
   harmonic_re, harmonic_im
 } "Spherical harmonics"
@@ -42,3 +44,19 @@ CCTK_REAL test_integration_symmetries type=SCALAR
 # N*(N+1)/2
 # only 1 spin-weight mode is tested
 CCTK_REAL test_orthonormality type=ARRAY distrib=constant dim=2 size=1,(10*10)*(10*10+1)/2  "Test orthonormality of spherical harmonics"
+
+CCTK_INT FUNCTION DriverInterpolate(
+  CCTK_POINTER_TO_CONST IN cctkGH,
+  CCTK_INT IN N_dims,
+  CCTK_INT IN local_interp_handle,
+  CCTK_INT IN param_table_handle,
+  CCTK_INT IN coord_system_handle,
+  CCTK_INT IN N_interp_points,
+  CCTK_INT IN interp_coords_type,
+  CCTK_POINTER_TO_CONST ARRAY IN interp_coords,
+  CCTK_INT IN N_input_arrays,
+  CCTK_INT ARRAY IN input_array_indices,
+  CCTK_INT IN N_output_arrays,
+  CCTK_INT ARRAY IN output_array_types,
+  CCTK_POINTER ARRAY IN output_arrays)
+REQUIRES FUNCTION DriverInterpolate

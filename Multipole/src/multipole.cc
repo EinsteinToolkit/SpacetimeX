@@ -5,6 +5,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <loop_device.hxx>
 
 #include "cctk.h"
 #include "cctk_Arguments.h"
@@ -139,8 +140,8 @@ static void output_1D(CCTK_ARGUMENTS, const Multipole::variable_desc *v, CCTK_RE
                       CCTK_REAL *th, CCTK_REAL *ph,
                       CCTK_REAL *real, CCTK_REAL *imag, int array_size)
 {
-  DECLARE_CCTK_ARGUMENTS
-  DECLARE_CCTK_PARAMETERS
+  DECLARE_CCTK_ARGUMENTS;
+  DECLARE_CCTK_PARAMETERS;
 
   if (CCTK_MyProc(cctkGH) == 0 && output_ascii)
   {
@@ -270,10 +271,35 @@ extern "C" void Multipole_ParamCheck(CCTK_ARGUMENTS)
   }
 }
 
+extern "C" void Multipole_Init(CCTK_ARGUMENTS)
+{
+	using namespace Loop;
+  DECLARE_CCTK_ARGUMENTS_Multipole_Init;
+  DECLARE_CCTK_PARAMETERS;
+
+	const int dim = 3;
+
+  const array<int, dim> indextype = {0, 0, 0};
+  const GF3D2layout layout(cctkGH, indextype);
+
+  const GF3D2<CCTK_REAL> re_(layout, harmonic_re);
+  const GF3D2<CCTK_REAL> im_(layout, harmonic_im);
+
+  const GridDescBaseDevice grid(cctkGH);
+  grid.loop_int<0, 0, 0>(grid.nghostzones,
+                                [=] CCTK_DEVICE(const PointDesc &p)
+                                    CCTK_ATTRIBUTE_ALWAYS_INLINE {
+                                      re_(p.I) = 0;
+                                      im_(p.I) = 0;
+                                    });
+}
+
+	
+
 extern "C" void Multipole_Calc(CCTK_ARGUMENTS)
 {
-  DECLARE_CCTK_ARGUMENTS_Multipole_Calc
-  DECLARE_CCTK_PARAMETERS
+  DECLARE_CCTK_ARGUMENTS_Multipole_Calc;
+  DECLARE_CCTK_PARAMETERS;
 
   static CCTK_REAL *xs, *ys, *zs;
   static CCTK_REAL *xhat, *yhat, *zhat;
@@ -316,6 +342,7 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS)
     setup_harmonics(spin_weights, n_spin_weights, lmax, th, ph,
                     array_size, reY, imY);
     initialized = true;
+		CCTK_VINFO("initialized arrays");
   }
 
   Multipole::mode_array modes(n_variables, nradii, lmax);
@@ -334,6 +361,7 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS)
       // Interpolate Psi4r and Psi4i
       Multipole_Interp(CCTK_PASS_CTOC, xs, ys, zs, vars[v].index, vars[v].imag_index, 
                        real, imag);
+
       for (int l=0; l <= lmax; l++)
       {
         for (int m=-l; m <= l; m++)

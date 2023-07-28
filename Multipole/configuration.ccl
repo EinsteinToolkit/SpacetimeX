@@ -1,3 +1,5 @@
+REQUIRES Loop
+
 OPTIONAL HDF5
 {
 }

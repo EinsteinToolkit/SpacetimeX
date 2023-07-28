@@ -395,7 +395,7 @@ void Multipole_Integrate(int array_size, int nthetap,
     CCTK_REAL const th[], CCTK_REAL const ph[], 
     CCTK_REAL *outre, CCTK_REAL *outim)
 {
-  DECLARE_CCTK_PARAMETERS
+  DECLARE_CCTK_PARAMETERS;
 
   int il = Multipole_Index(0,0,ntheta);
   int iu = Multipole_Index(1,0,ntheta);

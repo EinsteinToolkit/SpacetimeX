@@ -98,6 +98,10 @@ CCTK_BOOLEAN enable_test "whether to set a spherical harmonic in the 'harmonic' 
 {
 } "no"
 
+CCTK_BOOLEAN enable_test_Weyl "whether to set a spherical harmonic in the 'Weyl::Psi4r and i' grid functions"
+{
+} "no"
+
 CCTK_INT test_l "which mode to put into the test variables"
 {
   * :: "Any integer"

@@ -1,7 +1,6 @@
 #include <stdio.h>
 
 #include "interpolate.hh"
-#include <loop_device.hxx>
 
 static
 void report_interp_error(int ierr)
@@ -32,6 +31,9 @@ void Multipole_Interp(CCTK_ARGUMENTS,
   CCTK_INT num_input_arrays  = imag_idx == -1 ? 1 : 2;
   CCTK_INT num_output_arrays = imag_idx == -1 ? 1 : 2;
   const CCTK_INT num_dims = 3;
+	
+	const CCTK_INT num_points = CCTK_MyProc(cctkGH) == 0 ? (ntheta+1)*(nphi+1) : 0; // Only the 0 processor needs the points
+
   int ierr = -1;
 
   const void* interp_coords[num_dims] 
@@ -43,36 +45,67 @@ void Multipole_Interp(CCTK_ARGUMENTS,
     = { real_idx,
         imag_idx };
 
-  const CCTK_INT output_array_types[2]
-    = { CCTK_VARIABLE_REAL,
-        CCTK_VARIABLE_REAL };
+  // const CCTK_INT output_array_types[2]
+  //   = { CCTK_VARIABLE_REAL,
+  //       CCTK_VARIABLE_REAL };
+  // Interpolation result types: Not used by CarpetX DriverInterp
+  CCTK_INT const output_array_types[1] = {0};
+  
+  // void * output_arrays[2]
+  //   = { (void *) sphere_real,
+  //       (void *) sphere_imag };
 
-  void * output_arrays[2]
-    = { (void *) sphere_real,
-        (void *) sphere_imag };
+	// Interpolation result
+	CCTK_POINTER output_arrays[2];
+	output_arrays[0] = sphere_real;
+	output_arrays[1] = sphere_imag;
 
-  // const int operator_handle = CCTK_InterpHandle(interpolator_name);
-  const int operator_handle = 0; // not used by CarpetX interpolator
+  const int operator_handle = 0; //not used by CarpetX Interpolator
+  // Interpolation parameter table
+  CCTK_INT operations[1][num_dims];
+  for (int var = 0 ; var < num_points; var++) {
+  	operations[0][var] = 0;
+  }
+  
+	int operands[1][num_dims];
+  for (int var = 0 ; var < num_points; var++) {
+		operands[0][var] = var;
+  }
 
   int param_table_handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
-  ierr = Util_TableSetFromString(param_table_handle, interpolator_pars);
+  if (param_table_handle < 0)
+    CCTK_VERROR("Can't create parameter table: %d", param_table_handle);
+  if ((ierr = Util_TableSetInt(param_table_handle, 1, "order")) < 0)
+    CCTK_VERROR("Can't set order in parameter table: %d", ierr);
+  if ((ierr = Util_TableSetIntArray(param_table_handle, num_points, (int const*const)operands,
+                            "operand_indices")) < 0)
+    CCTK_VERROR("Can't set operand_indices array in parameter table: %d", ierr);
+  if ((ierr = Util_TableSetIntArray(param_table_handle, num_points, (int const*const)operations,
+                            "operation_codes")) < 0)
+    CCTK_VERROR("Can't set operation_codes array in parameter table: %d", ierr);
 
-  const int coord_system_handle = CCTK_CoordSystemHandle(coord_system);
+  const int coord_system_handle = 0; // not used by CarpetX Interpolator
 
-  ierr = DriverInterpolate(
-      cctkGH,
-      num_dims,
-      operator_handle,
-      param_table_handle,
-      coord_system_handle,
-      CCTK_MyProc(cctkGH) == 0 ? (ntheta+1)*(nphi+1) : 0, // Only the 0 processor needs the points
-      CCTK_VARIABLE_REAL,
-      interp_coords,
-      num_input_arrays,
-      input_array_indices,
-      num_output_arrays,
-      output_array_types,
-      output_arrays);
+  // ierr = CCTK_InterpGridArrays(
+  //     cctkGH,
+  //     num_dims,
+  //     operator_handle,
+  //     param_table_handle,
+  //     coord_system_handle,
+  //     CCTK_MyProc(cctkGH) == 0 ? (ntheta+1)*(nphi+1) : 0, // Only the 0 processor needs the points
+  //     CCTK_VARIABLE_REAL,
+  //     interp_coords,
+  //     num_input_arrays,
+  //     input_array_indices,
+  //     num_output_arrays,
+  //     output_array_types,
+  //     output_arrays);
+
+	ierr = DriverInterpolate(
+	cctkGH, num_dims, operator_handle, param_table_handle, coord_system_handle,
+	num_points, CCTK_VARIABLE_REAL, interp_coords, num_input_arrays, (int const * const)input_array_indices,
+	num_output_arrays, output_array_types, output_arrays);
+	
 
   report_interp_error(ierr);
 

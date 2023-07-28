@@ -104,7 +104,7 @@ CarpetX::periodic = no
 CarpetX::ghost_size = 3
 
 CarpetX::max_num_levels = $nlevels
-CarpetX::regrid_every = 16
+CarpetX::regrid_every = 0   #TODO 16
 CarpetX::regrid_error_threshold = $error_threshold
 
 CarpetX::prolongation_type = "ddf"

@@ -1,9 +1,13 @@
-#include "cctk.h"
-#include "cctk_Arguments.h"
+#include <cctk.h>
+#include <cctk_Arguments.h>
 
 #include <string>
 #include <vector>
 #include <cassert>
+
+// Multipole_Init
+// 			Sets harmonic coefficients to zero at init.
+extern "C" void Multipole_Init(CCTK_ARGUMENTS);
 
 // Multipole_Calc
 //      This is the main scheduling file.  Because we are completely local here
