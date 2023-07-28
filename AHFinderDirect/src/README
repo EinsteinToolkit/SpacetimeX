@@ -1,0 +1,57 @@
+This is the top-level source directory for the AHFinderDirect thorn.
+See ../doc/ for further documentation.
+
+
+Files in this directory:
+CODESTYLE	documents some general programming conventions I have
+		used in this thorn
+make.code.defn	usual Cactus definition of subdirectories
+
+
+Subdirectories which are *not* used directly in compiling this thorn
+within Cactus:
+misc/		contains misc source code that's not part of the Cactus
+		executable, including the 'mpp' Maple preprocessor used
+		by the Maple code in other directories
+maple/		contains Maple code to generate C/C++ from complicated
+		expressions
+cctest/		contains small test programs for checking what features
+		various C++ compilers support
+
+
+Subdirectories which *are* used directly in compiling this thorn
+within Cactus; these are listed in top-down order (no code depends
+on, or includes header files from, higher-level code):
+driver/		contains high-level driver routines to solve the
+		Theta(h) = 0 equations and interface to the rest of Cactus
+		(all the aliased-function stuff to interface with other
+		thorns also lives here)
+gr/		contains relativity code; all knowledge of the actual
+		apparent horizon equation lives in the code in this directory
+gr.cg/		contains Maple-generated C code (generated from Maple
+		code in  gr/  subdirectory) to compute the Theta(h)
+		function and its Jacobian coefficients
+elliptic/	contains code to solve elliptic equations on the multipatch
+		$S^2$
+sparse-matrix/	constains sparse-matrix libraries imported from outside
+		this thorn
+patch/		contains the basic multipatch infrastructure for storing
+		and finite differencing gridfns in angular coordinates
+		on the surface of a 2-sphere
+jtutil/		contains various low-level utility routines for things
+		like integer <--> floating-point linear maps, fuzzy
+		floating-point comparisons, N-dimensional arrays, etc;
+		this is the only directory containing C++ templates
+include/	contains common header files which don't live in any other
+		source directory; all compile-time options for this thorn
+		are configured here
+
+All the code in the directories
+  driver/
+  gr/
+  gr.cg/
+  elliptic/
+  patch/
+is in namespace AHFinderDirect.  All the code in the directories
+  jtutil/
+is in namespace jtutil.

@@ -1,0 +1,11 @@
+This directory contains the Harwell Y12M sparse LU decompositon routines,
+as obtained from netlib (url given in ./www) in September 2002.
+
+Y12MAE		single precision driver
+Y12MAF		double precision driver
+
+Y12MF		iterative improvement
+
+Y12MB[EF]	analyse
+Y12MC[EF]	factor (LU decompose)
+Y12MD[EF]	solve given LU decomposition

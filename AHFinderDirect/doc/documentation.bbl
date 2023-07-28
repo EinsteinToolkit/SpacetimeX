@@ -1,0 +1,54 @@
+\begin{thebibliography}{DKSS03}
+
+\bibitem[Die03]{AHFinderDirect/Diener03a}
+P.~Diener.
+\newblock A new general purpose event horizon finder for {3D} numerical
+  spacetimes.
+\newblock {\em Class. Quantum Grav.}, 20(22):4901--4917, 2003.
+
+\bibitem[DKSS03]{AHFinderDirect/Dreyer-etal-2002-isolated-horizons}
+Olaf Dreyer, Badri Krishnan, Deirdre Shoemaker, and Erik Schnetter.
+\newblock Introduction to {Isolated} {Horizons} in {Numerical} {Relativity}.
+\newblock {\em Phys. Rev. D}, 67:024018, 2003.
+
+\bibitem[Gun98]{AHFinderDirect/Gundlach97a}
+Carsten Gundlach.
+\newblock Pseudo-spectral apparent horizon finders: An efficient new algorithm.
+\newblock {\em Phys. Rev. D}, 57:863--875, 1998.
+
+\bibitem[Sch86]{AHFinderDirect/Schroeder86}
+Manfred~R. Schroeder.
+\newblock {\em Number Theory in Science and Communication}.
+\newblock Springer-Verlag, Berlin, 2nd enlarged edition, 1986.
+
+\bibitem[Sch02]{AHFinderDirect/Schnetter02a}
+Erik Schnetter.
+\newblock A fast apparent horizon algorithm.
+\newblock gr-qc/0206003, 2002.
+
+\bibitem[Sch03]{AHFinderDirect/Schnetter03a}
+Erik Schnetter.
+\newblock Finding apparent horizons and other two-surfaces of constant
+  expansion.
+\newblock {\em Class. Quantum Grav.}, 20(22):4719--4737, 2003.
+
+\bibitem[Tho96]{AHFinderDirect/Thornburg95}
+Jonathan Thornburg.
+\newblock Finding apparent horizons in numerical relativity.
+\newblock {\em Phys. Rev. D}, 54(8):4899--4918, October 15 1996.
+
+\bibitem[Tho04]{AHFinderDirect/Thornburg2003:AH-finding}
+Jonathan Thornburg.
+\newblock A fast apparent-horizon finder for 3-dimensional {C}artesian grids in
+  numerical relativity.
+\newblock {\em Class. Quantum Grav.}, 21(2):743--766, 21 January 2004.
+
+\bibitem[Yor89]{AHFinderDirect/York89}
+James~W. York.
+\newblock Initial data for collisions of black holes and other gravitational
+  miscellany.
+\newblock In C.~Evans, L.~Finn, and D.~Hobill, editors, {\em Frontiers in
+  Numerical Relativity}, pages 89--109. Cambridge University Press, Cambridge,
+  England, 1989.
+
+\end{thebibliography}

@@ -1,0 +1,18 @@
+# Cactus specification of things to be compiled in this directory
+# $Header$
+
+# Source files in this directory
+SRCS = expansion.cc \
+       expansion_Jacobian.cc \
+       Schwarzschild_EF.cc \
+       misc-gr.cc
+
+# Subdirectories containing source files
+SUBDIRS =
+
+# disable automatic template instantiation on DEC Alphas
+ifeq ($(shell uname), OSF1)
+  ifeq ($(CXX), cxx)
+    CXXFLAGS += -nopt
+  endif
+endif

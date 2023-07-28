@@ -1,0 +1,38 @@
+    |\^/|     Maple 7 (IBM INTEL LINUX)
+._|\|   |/|_. Copyright (c) 2001 by Waterloo Maple Inc.
+ \  MAPLE  /  All rights reserved. Maple is a registered trademark of
+ <____ ____>  Waterloo Maple Inc.
+      |       Type ? for help.
+# ellipsoid.maple -- compute equations for offset ellipsoid setup
+# $Header: /usr/local/svn/cvs-repositories/numrelcvs/AEIThorns/AHFinderDirect/archive/ellipsoid.out,v 1.1 2002-07-18 17:37:11 jthorn Exp $
+> 
+#
+# ellipsoid has center (A,B,C), radius (a,b,c)
+# angular coordinate system has center (U,V,W)
+#
+# direction cosines wrt angular coordinate center are (alpha,beta,gamma)
+# but Maple predefines gamma = Euler's constant, so we use (xcos,ycos,zcos)
+# instead, i.e. a point has coordinates (U+xcos*r, V+ycos*r, W+zcos*r)
+#
+# then the equation of the ellipsoid is
+#	(U+xcos*r - A)^2     (V+ycos*r - B)^2     (W+zcos*r - C)^2
+#	-----------------  +  ----------------  +  -----------------  =  1
+#	        a^2                  b^2                   c^2
+#
+# to solve this, we introduce intermediate variables
+#	AU = A - U
+#	BV = B - V
+#	CW = C - W
+#
+> eqn := (xcos*r - AU)^2/a^2 + (ycos*r - BV)^2/b^2 + (zcos*r - CW)^2/c^2 = 1;
+                              2                2                2
+                 (xcos r - AU)    (ycos r - BV)    (zcos r - CW)
+          eqn := -------------- + -------------- + -------------- = 1
+                        2                2                2
+                       a                b                c
+
+> 
+> read "../maple/util.mm";
+Error, unable to read `../maple/util.mm`
+> quit
+bytes used=129844, alloc=196572, time=0.03

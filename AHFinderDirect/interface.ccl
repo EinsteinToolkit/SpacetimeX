@@ -1,0 +1,148 @@
+# Interface definition for thorn AHFinderDirect
+# $Header$
+
+implements: AHFinderDirect
+inherits: Grid ADMBase StaticConformal SpaceMask SphericalSurface IO
+
+# include file provided by SpaceMask
+USES INCLUDE: SpaceMask.h
+
+################################################################################
+
+# we use a mask in order to find out whether we interpolate from the excised
+# region. ahmask is only used when noshrink is set and only grows in time, so
+# using the most recent timelevel is sufficient.
+# Allow up to 3 timelevels for backwards compatibility with old parameter files.
+
+REAL ahmask TYPE=gf TIMELEVELS=3 TAGS='tensortypealias="Scalar" Prolongation="None" InterpNumTimelevels=1'
+
+################################################################################
+
+# we use an aliased function maybe provided by DriftCorrect
+SUBROUTINE SetDriftCorrectPosition					\
+   (CCTK_POINTER_TO_CONST IN GH,					\
+    CCTK_REAL IN x, CCTK_REAL IN y, CCTK_REAL IN z)
+USES FUNCTION SetDriftCorrectPosition
+
+################################################################################
+
+#
+# This thorn provides an aliased-function interface which other thorns
+# can use to find out about the horizons.  Each function returns a status
+# code which is >= 0 for ok, or < 0 for an error.
+#
+
+########################################
+
+#
+# This function returns the local coordinate origin for a given horizon.
+#
+CCTK_INT FUNCTION HorizonLocalCoordinateOrigin				\
+   (CCTK_INT IN horizon_number,						\
+    CCTK_REAL OUT origin_x, CCTK_REAL OUT origin_y, CCTK_REAL OUT origin_z)
+
+#
+# The following function queries whether or not the specified horizon
+# was found the most recent time AHFinderDirect searched for it.
+# The return value is:
+#  1 if the horizon was found
+#  0 if the horizon was not found
+#  negative for an error
+#
+CCTK_INT FUNCTION HorizonWasFound(CCTK_INT IN horizon_number)
+
+#
+# The following function queries whether or not the specified horizon
+# was found the most recent time AHFinderDirect searched for it, and
+# if it was, returns the horizon centroid.  The returned value is the
+# same as that of  HorizonWasFound()  (above), i.e.
+#  1 if the horizon was found; in this case  centroid_[xyz]  are set
+#    to the centroid position
+#  0 if the horizon was not found; in this case  centroid_[xyz]  are
+#    set to zeros
+#  negative for an error
+#
+CCTK_INT FUNCTION HorizonCentroid					\
+  (CCTK_INT IN horizon_number,						\
+   CCTK_REAL OUT centroid_x, CCTK_REAL OUT centroid_y, CCTK_REAL OUT centroid_z)
+
+#
+# The following function computes the horizon radius in the direction
+# of each (x,y,z) point, or -1.0 if this horizon wasn't found the most
+# recent time AHFinderDirect searched for it.  More precisely, for each
+# (x,y,z), consider the ray from the local coordinate origin through
+# (x,y,z).  This function computes the Euclidean distance between the
+# local coordinate origin and this ray's intersection with the horizon,
+# or -1.0 if this horizon wasn't found the most recent time AHFinderDirect
+# searched for it.  
+#
+CCTK_INT FUNCTION HorizonRadiusInDirection				\
+   (CCTK_INT IN horizon_number,						\
+    CCTK_INT IN N_points,						\
+    CCTK_REAL IN ARRAY x, CCTK_REAL IN ARRAY y, CCTK_REAL IN ARRAY z,	\
+    CCTK_REAL OUT ARRAY radius)
+
+########################################
+
+# all these functions are in src/driver/aliased_functions.cc
+PROVIDES FUNCTION HorizonLocalCoordinateOrigin				\
+	WITH AHFinderDirect_local_coordinate_origin			\
+	LANGUAGE C
+PROVIDES FUNCTION HorizonWasFound					\
+	WITH AHFinderDirect_horizon_was_found				\
+	LANGUAGE C
+PROVIDES FUNCTION HorizonCentroid					\
+	WITH AHFinderDirect_horizon_centroid				\
+	LANGUAGE C
+PROVIDES FUNCTION HorizonRadiusInDirection				\
+	WITH AHFinderDirect_radius_in_direction				\
+	LANGUAGE C
+
+################################################################################
+
+# Grid arrays to store the horizon shape, for easy output and checkpointing.
+# These are similar and equivalent to SphericalSurface.
+# Note that the horizons are numbered [0...N_horizon-1].
+
+CCTK_REAL ah_radius[N_horizons] TYPE=array DIM=3 SIZE=max_N_zones_per_right_angle+1,max_N_zones_per_right_angle+1,6 DISTRIB=constant
+
+CCTK_REAL ah_origin[N_horizons] TYPE=scalar
+{
+  ah_origin_x ah_origin_y ah_origin_z
+}
+
+CCTK_REAL ah_centroid[N_horizons] TYPE=scalar
+{
+  ah_centroid_x ah_centroid_y ah_centroid_z ah_centroid_t
+  ah_centroid_x_p ah_centroid_y_p ah_centroid_z_p ah_centroid_t_p
+}
+
+CCTK_INT ah_flags[N_horizons] TYPE=scalar
+{
+  ah_initial_find_flag
+  ah_really_initial_find_flag
+  ah_search_flag
+  ah_found_flag
+  ah_centroid_valid
+  ah_centroid_valid_p
+  ah_centroid_iteration
+  ah_centroid_iteration_p
+}
+
+################################################################################
+
+# This IOUtil function is used to determine whether the diagnostics file
+# should be truncated or appended (as in a recovery run )
+
+CCTK_INT FUNCTION IO_TruncateOutputFiles \
+  (CCTK_POINTER_TO_CONST IN GH)
+USES FUNCTION IO_TruncateOutputFiles
+
+################################################################################
+
+# translate SphericalSurface name into ID
+CCTK_INT \
+FUNCTION sf_IdFromName (CCTK_INT IN id, CCTK_POINTER_TO_CONST IN name)
+USES FUNCTION sf_IdFromName
+
+################################################################################

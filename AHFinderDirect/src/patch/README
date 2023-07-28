@@ -1,0 +1,64 @@
+This directory contains C++ code for the horizon finder's basic
+multi-patch infrastructure.  This code doesn't know about relativity.
+
+The main classes defined in this directory are as follows:
+patch_system
+	is the top-level class representing a multipatch system.
+	It stores the actual grid function data, defines the actual
+	finite differencing operations (both 2nd and 4th order are
+	provided, presently selected by #ifdef at compile time),
+	and keeps pointers to all the other objects making up the
+	patch system.
+x_patch, y_patch, z_patch
+	represent individual patches near the +/- x, +/- y, and +/- z
+	axes respectively.
+patch
+	is an virtual base class representing a grid patch.
+patch_edge
+	represents the geometry of a single edge of a patch, ie it
+	represents the conversions between (perpendicular,parallel)
+	and (rho,sigma) coordinates.
+ghost_zone
+	is a virtual base class representing the ghost zone
+	along a single edge of a patch.
+interpatch_ghost_zone
+	represents a ghost zone where we get data by interpolating
+	it from a neighboring patch.
+symmetry_ghost_zone
+	represents a ghost zone where we get data by a discrete
+	symmetry (eg a reflection or periodic boundary condition).
+patch_interp
+	is our interface to the interpatch interpolation.
+
+Class  patch  is in term implemented using the following helper classes:
+grid
+	This class is derived from class  grid_arrays , and adds
+	the floating-point grid-coordinate metadata.
+grid_arrays
+	This class stores the basic integer-array-subscripts metadata
+	for a 2-D grid.
+
+The implementation also uses the low-level support routines and classes
+in namespace jtutil::, which are all defined in  ../jtutil/ .
+
+All the code makes heavy use of the type  fp , defined in
+../include/config.h .  This is the floating-point type, i.e. CCTK_REAL.
+
+
+coord_derivs.maple
+coord_derivs.out
+	are maple input and output to compute derivatives of the
+	coordinate-transformation functions for the
+	local_coords::partial*_wrt_*() and local_coords::partial2*_wrt_*()
+	functions
+
+
+There are also a number of test drivers in  test_*.cc :
+test_coords.cc
+test_coords2.cc
+	These are standalone test drivers to test various coordinate
+	conversions; there are targets in ./makefile to build them.
+
+test_patch_system.cc
+	This is a Cactus driver to do various tests of the patch system.
+	To use it you need to uncomment its line in ./make.code.defn .
