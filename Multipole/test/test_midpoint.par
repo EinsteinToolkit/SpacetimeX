@@ -1,0 +1,93 @@
+
+ActiveThorns = "Coordinates SymBase IOUtil CarpetX InitBase Multipole"
+ActiveThorns = "LocalInterp AEILocalInterp"
+
+#############################################################
+# Grid
+#############################################################
+Cactus::presync_mode = "mixed-error"
+CarpetX::interpolation_order = 3
+Multipole::interpolator_pars = "order=3"
+CarpetX::verbose = "yes"
+CarpetX::max_tile_size_y = 100000
+CarpetX::max_tile_size_z = 100000
+CarpetX::max_grid_size_x = 100000
+CarpetX::max_grid_size_y = 100000
+CarpetX::max_grid_size_z = 100000
+CarpetX::xmin                         = -10
+CarpetX::ymin                         = -10
+CarpetX::zmin                         = -10
+CarpetX::xmax                         = 10
+CarpetX::ymax                         = 10
+CarpetX::zmax                         = 10
+CarpetX::ncells_x = 128
+CarpetX::ncells_y = 128
+CarpetX::ncells_z = 128
+CarpetX::periodic_x = "no"
+CarpetX::periodic_y = "no"
+CarpetX::periodic_z = "no"
+
+#############################################################
+# Carpet
+#############################################################
+
+CarpetX::ghost_size                      = 3
+#Carpet::domain_from_coordbase           = "yes"
+#Carpet::poison_new_timelevels           = "yes"
+#Carpet::check_for_poison                = "no"
+#CarpetLib::poison_value                    = 113
+#Carpet::init_fill_timelevels            = "yes"
+
+#############################################################
+# CarpetLib
+#############################################################
+
+#CarpetLib::poison_new_memory            = "yes"
+
+#############################################################
+# Cactus
+#############################################################
+
+Cactus::terminate                     = "iteration"
+Cactus::cctk_itlast                   = 0
+
+#############################################################
+# Multipole
+#############################################################
+
+Multipole::nradii = 1
+Multipole::radius[0] = 8.0
+Multipole::variables = "Multipole::harmonic_re{sw=-2 cmplx='Multipole::harmonic_im' name='harmonic'}"
+Multipole::integration_method = "midpoint"
+
+Multipole::enable_test = "yes"
+Multipole::test_l = 2
+Multipole::test_m = 2
+Multipole::out_1d_every = 1
+
+#############################################################
+# Output
+#############################################################
+
+IO::out_dir                          = $parfile
+IO::out_fileinfo                     = "none"
+IO::parfile_write                    = "no"
+IO::out_every = 1
+
+#CarpetIOASCII::compact_format = "yes"
+#
+## Enabling 1D output for the test grid functions would be helpful for
+## localising any failures but it makes the tests dependent on the
+## number of processors, as CarpetIOASCII's output is dependent on
+## this.
+#
+## CarpetIOASCII::out1d_vars = "Multipole::harmonics"
+## CarpetIOASCII::out1d_every = 1
+## CarpetIOASCII::out1d_x = yes
+## CarpetIOASCII::out1d_y = yes
+## CarpetIOASCII::out1d_z = yes
+#
+#CarpetIOASCII::out0d_vars = "Multipole::test_midpoint_convergence_order Multipole::test_midpoint_pi_symmetry Multipole::test_midpoint_result_low Multipole::test_midpoint_result_high"
+#CarpetIOASCII::out0d_every = 1
+#CarpetIOASCII::out2d_vars = "Multipole::test_orthonormality"
+#CarpetIOASCII::out2d_every = 1
