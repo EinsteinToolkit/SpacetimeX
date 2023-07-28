@@ -1,0 +1,54 @@
+Cactus Code Thorn QuasiLocalMeasures
+Thorn Author(s)     : Olaf Dreyer
+                      Badri Krishnan
+                      Erik Schnetter <schnetter@cct.lsu.edu>
+                      Deirdre Shoemaker
+                      Michael Jasiulek
+Thorn Maintainer(s) : Erik Schnetter <schnetter@cct.lsu.edu>
+--------------------------------------------------------------------------
+
+Purpose of the thorn:
+
+Calculate quasi-local measures such as masses, momenta, or angular
+momenta and related quantities on closed two-dimentional surfaces,
+including on horizons.
+
+
+Some Literature:
+
+Isolated Horizons:
+
+Olaf Dreyer, Badri Krishnan, Erik Schnetter, Deirdre Shoemaker
+Introduction to Isolated Horizons in Numerical Relativity
+Phys. Rev. D 67 (2003) 024018
+arXiv:gr-qc/0206008
+
+Multipole moments:
+
+Abhay Ashtekar, Badri Krishnan
+Dynamical Horizons and their Properties
+Phys. Rev. D 68 (2003) 104030
+arXiv:gr-qc/0308033
+
+Dynamical horizons:
+
+Erik Schnetter, Badri Krishnan, Florian Beyer
+ntroduction to dynamical horizons in numerical relativity
+Phys. Rev. D 74 (2006) 024028
+arXiv:gr-qc/0604015
+
+Quasi-local measures:
+
+László B. Szabados
+Quasi-Local Energy-Momentum and Angular Momentum in GR: A Review Article
+Living Rev. Relativity 7 (2004) 4
+http://www.livingreviews.org/lrr-2004-4
+
+Andrew P. Lundgren, Bjoern S. Schmekel, James W. York, Jr.
+Self-Renormalization of the Classical Quasilocal Energy
+arXiv:gr-qc/0610088
+
+Tetrad formalism:
+
+GRwiki
+http://grwiki.physics.ncsu.edu/
