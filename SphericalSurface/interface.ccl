@@ -1,7 +1,7 @@
 # Interface definition for thorn SphericalSurface
 
 IMPLEMENTS: SphericalSurface
-inherits: grid
+inherits: Coordinates
 
 
 
@@ -25,14 +25,14 @@ PUBLIC:
 # Suggested meanings:
 # zero: The surface data are invalid (garbage)
 # one:  The surface data are valid in principle, although they may be outdated
-CCTK_INT sf_active[nsurfaces] TYPE=scalar
+CCTK_REAL sf_active[nsurfaces] TYPE=scalar
 
 # To be defined by the setting thorn.
 # Suggested meanings: 
 # zero:     No surface is provided at this time step
 # negative: No surface could be found at this time step
 # positive: The surface data are valid
-CCTK_INT sf_valid[nsurfaces] TYPE=scalar
+CCTK_REAL sf_valid[nsurfaces] TYPE=scalar
 
 
 
@@ -76,10 +76,10 @@ CCTK_REAL sf_info[nsurfaces] TYPE=scalar
 
 
 # the finest reflevel each surface is intersecting
-CCTK_INT sf_minreflevel[nsurfaces] TYPE=scalar
+CCTK_REAL sf_minreflevel[nsurfaces] TYPE=scalar
 
 # the finest reflevel that contains the entire surface
-CCTK_INT sf_maxreflevel[nsurfaces] TYPE=scalar
+CCTK_REAL sf_maxreflevel[nsurfaces] TYPE=scalar
 
 
 CCTK_REAL sf_radius[nsurfaces] TYPE=array DIM=2 SIZE=maxntheta,maxnphi DISTRIB=constant #TAGS='convergence_power=1'
@@ -101,7 +101,7 @@ CCTK_REAL sf_coordinate_descriptors[nsurfaces] TYPE=scalar
 
 
 
-CCTK_INT sf_shape_descriptors[nsurfaces] TYPE=scalar
+CCTK_REAL sf_shape_descriptors[nsurfaces] TYPE=scalar
 {
   sf_ntheta sf_nphi
   sf_nghoststheta sf_nghostsphi
