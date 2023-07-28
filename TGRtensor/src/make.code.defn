@@ -1,0 +1,33 @@
+# Main make.code.defn file for thorn TGRtensor   -*-Makefile-*-
+# $Header$
+
+# Source files in this directory
+SRCS =	adm_metric.F90				\
+	adm_metric_simple.F90			\
+	cactus.F90				\
+	classify.c				\
+	classify.F90				\
+	constants.F90				\
+	conversion.F90				\
+	covderivs.F90				\
+	covderivs2.F90				\
+	derivs.F90				\
+	derivs2.F90				\
+	gram_schmidt.F90			\
+	matdet.F90				\
+	matexp.F90				\
+	matinv.F90				\
+	ricci.F90				\
+	ricci2.F90				\
+	ricci4.F90				\
+	rotation.F90				\
+	tensor.F90				\
+	tensor2.F90				\
+	tensor4.F90				\
+	timederivs.F90				\
+	pointwise.F90				\
+	pointwise2.F90
+
+# Subdirectories containing source files
+SUBDIRS = 
+

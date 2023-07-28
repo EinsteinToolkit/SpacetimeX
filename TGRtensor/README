@@ -1,0 +1,10 @@
+Cactus Code Thorn TGRtensor
+Authors    : Erik Schnetter <schnetter@uni-tuebingen.de>
+CVS info   : $Header$
+--------------------------------------------------------------------------
+
+Purpose of the thorn:
+
+It contains generic tensor operations and other generic stuff.
+
+TODO: Move lapack routines to thorn LAPACK
