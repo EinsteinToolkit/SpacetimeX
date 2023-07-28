@@ -23,8 +23,6 @@
 #include "cctk_Arguments.h"
 #include "cctk_Parameters.h"
 
-#include "SpaceMask.h"			// from thorn SpaceMask
-
 #include "config.h"
 #include "stdc.h"
 #include "../jtutil/util.hh"
@@ -136,6 +134,7 @@ namespace {
 void setup_mask_grid_info(CCTK_ARGUMENTS, struct mask_grid_info& mgi);
 void setup_mask_dataptrs_and_bitfields(const cGH *GH,
 				       struct mask_info& mask_info);
+#if 0
 void set_mask_gridfn(int N_horizons,
 		     const struct AH_data* const AH_data_array[],
 		     const struct mask_grid_info& mgi,
@@ -153,6 +152,7 @@ void set_mask_gridfn_to_inside_and_buffer_values
 	 const struct mask_info& mask_info,
 	 const patch_system& ps,
 	 const struct verbose_info& verbose_info);
+#endif
 fp inner_mask_radius(const struct mask_grid_info& mgi,
 		     const struct mask_info& mask_info,
 		     fp r_horizon);
@@ -167,6 +167,7 @@ fp outer_mask_radius(const struct mask_grid_info& mgi,
 // This function is called by the Cactus scheduler after we find any
 // apparent horizons, to do all this thorn's mask processing.
 //
+#if 0
 extern "C"
   void AHFinderDirect_maybe_do_masks(CCTK_ARGUMENTS)
 {
@@ -195,6 +196,7 @@ if (mask_info.set_mask_for_any_horizon)
 	}
 }
 
+#endif
 //******************************************************************************
 
 //
@@ -267,6 +269,7 @@ printf("mask.cc:: mgi.proc_coord_origin[] = [%g,%g,%g]\n",
 //		 .outside_value   --> .outside_bitvalue
 //
 namespace {
+#if 0
 void setup_mask_dataptrs_and_bitfields(const cGH *GH,
 				       struct mask_info& mask_info)
 {
@@ -342,6 +345,7 @@ if (mask_info.set_new_style_mask)
 			   nsmi.outside_value);			/*NOTREACHED*/
 	}
 }
+#endif
 	  }
 
 //******************************************************************************
@@ -351,6 +355,7 @@ if (mask_info.set_new_style_mask)
 // based on each horizon's shape.
 //
 namespace {
+#if 0
 void set_mask_gridfn(int N_horizons,
 		     const struct AH_data* const AH_data_array[],
 		     const struct mask_grid_info& mgi,
@@ -528,6 +533,7 @@ set_mask_gridfn_to_outside_value(mgi,
 						    verbose_info);
 	}
 }
+#endif
 	  }
 
 //******************************************************************************
@@ -540,6 +546,7 @@ set_mask_gridfn_to_outside_value(mgi,
 // option is set).
 //
 namespace {
+#if 0
 void set_mask_gridfn_to_outside_value(const struct mask_grid_info& mgi,
 				      const struct mask_info& mask_info,
 				      const struct verbose_info& verbose_info)
@@ -596,6 +603,7 @@ if (verbose_info.print_algorithm_details)
 	}
 	}
 }
+#endif
 	  }
 
 //******************************************************************************
@@ -620,6 +628,7 @@ if (verbose_info.print_algorithm_details)
 // interpolations, and maybe also use r_min/r_max tests for early-out.
 //
 namespace {
+#if 0
 void set_mask_gridfn_to_inside_and_buffer_values
 	(const struct mask_grid_info& mgi,
 	 int use_min_i, int use_max_i,
@@ -724,6 +733,7 @@ if (verbose_info.print_algorithm_details)
 		   "      %ld \"inside\" points, %ld \"buffer\" points on this processor",
 		   inside_count, buffer_count);
 }
+#endif
 	  }
 
 //******************************************************************************

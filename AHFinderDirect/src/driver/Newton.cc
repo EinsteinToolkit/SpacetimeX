@@ -18,6 +18,7 @@
 #include <float.h>
 #include <math.h>
 #include <string.h>
+#include <mpi.h>
 
 #include "util_Table.h"
 #include "cctk.h"
@@ -1259,6 +1260,7 @@ if (my_active_flag)
 //
 
 // this name is appropriate for PUGHReduce, caveat user for other drivers :)
+#if 0
 const int reduction_handle = CCTK_ReductionArrayHandle("sum");
 if (reduction_handle < 0)
    then CCTK_VWarn(FATAL_ERROR, __LINE__, __FILE__, CCTK_THORNSTRING,
@@ -1279,6 +1281,15 @@ if (reduction_status < 0)
    then CCTK_VWarn(FATAL_ERROR, __LINE__, __FILE__, CCTK_THORNSTRING,
 		   "broadcast_status(): error status %d from reduction!",
 		   reduction_status);				/*NOTREACHED*/
+#endif
+
+MPI_Allreduce(
+	send_buffer.data_array(),
+	receive_buffer.data_array(),
+	send_buffer.N_array(),	
+	MPI_DOUBLE,
+	MPI_SUM,
+	MPI_COMM_WORLD);
 
 //
 // unpack the reduction buffer back to the high-level result buffers and
@@ -1407,7 +1418,7 @@ if (broadcast_flag)
 	}
    else jtutil::zero_C_array(horizon_buffers.N_buffer,
 			     horizon_buffers.send_buffer);
-
+#if 0
 // this name is appropriate for PUGHReduce, caveat user for other drivers :)
 const int reduction_handle = CCTK_ReductionArrayHandle("sum");
 if (reduction_handle < 0)
@@ -1425,10 +1436,21 @@ const int status
 					     (horizon_buffers.receive_buffer),
 				  horizon_buffers.N_buffer,
 				  CCTK_VARIABLE_REAL);
+
 if (status < 0)
    then CCTK_VWarn(FATAL_ERROR, __LINE__, __FILE__, CCTK_THORNSTRING,
 		   "broadcast_horizon_data(): error status %d from reduction!",
 		   status);					/*NOTREACHED*/
+
+#endif
+
+MPI_Allreduce(
+	horizon_buffers.send_buffer,
+	horizon_buffers.receive_buffer,
+	horizon_buffers.N_buffer,
+	MPI_DOUBLE,
+	MPI_SUM,
+	MPI_COMM_WORLD);
 
 if (!broadcast_flag)
    then {
