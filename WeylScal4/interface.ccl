@@ -2,7 +2,7 @@
 
 implements: WeylScal4
 
-inherits:   admbase Coordinates
+inherits: ADMBaseX Coordinates
 
 public:
 CCTK_REAL Psi0r_group type=GF timelevels=1 tags='tensortypealias="Scalar" tensorweight=0 tensorparity=1 checkpoint="no"'
