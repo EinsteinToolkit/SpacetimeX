@@ -1,0 +1,36 @@
+# Main make.code.defn file for thorn QuasiLocalMeasures   -*-Makefile-*-
+
+# Source files in this directory
+SRCS =  qlm_3determinant.F90			\
+        qlm_analyse.F90				\
+        qlm_boundary.F90			\
+        qlm_broadcast.c				\
+        qlm_calculate.F90			\
+        qlm_coordinates.F90			\
+        qlm_derivs.F90				\
+        qlm_gram_schmidt.F90			\
+        qlm_import_surface.F90			\
+        qlm_init.F90				\
+        qlm_interpolate.F90			\
+        qlm_killing_axial.F90			\
+        qlm_killing_gradient.F90		\
+        qlm_killing_normalisation.F90		\
+        qlm_killing_normalise.F90		\
+        qlm_killing_test.F90			\
+        qlm_killing_transport.F90		\
+        qlm_killing_transportation.F90		\
+        qlm_multipoles.F90			\
+        qlm_newman_penrose.F90			\
+        qlm_newman_penrose1.F90			\
+        qlm_output_vtk.F90			\
+        qlm_paramcheck.F90			\
+        qlm_set_coordinates.F90			\
+        qlm_tetrad.F90				\
+        qlm_tetrad1.F90				\
+        qlm_twometric.F90			\
+        qlm_variables.F90			\
+        qlm_weyl_scalars.F90			\
+        qlm_weyl_scalars1.F90
+
+# Subdirectories containing source files
+SUBDIRS = 
