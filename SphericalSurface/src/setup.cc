@@ -164,11 +164,11 @@ extern "C" void SphericalSurface_Setup (CCTK_ARGUMENTS)
       sf_nphi[n]   = lrint(phi_range  /sf_delta_phi_estimate[n]  ) + 2*nghostsphi[n];
       
       // ...make number of theta-gridpoints odd...
-      if (sf_ntheta[n] % 2 != 1)
+      if ((int)sf_ntheta[n] % 2 != 1)
         sf_ntheta[n] += 1;
       
       // ... and make inner phi-gridpoints divisible by 4 since some thorns require that (e.g. IsolatedHorizon)
-      sf_nphi[n]   += 4 - (sf_nphi[n]-2*nghostsphi[n]) % 4 + 2*nghostsphi[n];
+      sf_nphi[n]   += 4 - ((int)(sf_nphi[n]-2*nghostsphi[n])) % 4 + 2*nghostsphi[n];
       
       // consistency check
       if (sf_ntheta[n] < 3*nghoststheta[n]) 
@@ -319,8 +319,10 @@ extern "C" void SphericalSurface_SetupRes (CCTK_ARGUMENTS)
   
   static bool first_call = true;
   
-  int min_reduction_handle = CCTK_ReductionArrayHandle("minimum");
-  int max_reduction_handle = CCTK_ReductionArrayHandle("maximum");
+  // int min_reduction_handle = CCTK_ReductionArrayHandle("minimum");
+  // int max_reduction_handle = CCTK_ReductionArrayHandle("maximum");
+  int min_reduction_handle = 0;
+	int max_reduction_handle = 0;
 
   if (min_reduction_handle < 0)
      CCTK_WARN(0, "Cannot get reduction handle for minimum operation.");
