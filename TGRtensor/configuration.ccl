@@ -1,0 +1,8 @@
+# Configuration definition for thorn TGRtensor
+# $Header$
+
+PROVIDES TGRtensor
+{
+}
+
+REQUIRES LAPACK

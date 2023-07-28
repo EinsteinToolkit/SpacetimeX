@@ -1,0 +1,4 @@
+# Interface definition for thorn TGRtensor
+# $Header$
+
+IMPLEMENTS: TGRtensor
