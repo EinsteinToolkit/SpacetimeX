@@ -11,11 +11,11 @@ extern "C" void PunctureTracker_ParamCheck(CCTK_ARGUMENTS) {
   if (CCTK_MyProc(cctkGH) != 0)
     return;
 
-  for (int i = 0; i < 10; ++i) {
-    if (which_surface_to_store_info[i] != -1) {
-      if (which_surface_to_store_info[i] >= nsurfaces)
-        CCTK_PARAMWARN("You assigned a greater surface index than there are "
-                       "spherical surfaces!");
-    }
-  }
+  // for (int i = 0; i < 10; ++i) {
+  //   if (which_surface_to_store_info[i] != -1) {
+  //     if (which_surface_to_store_info[i] >= nsurfaces)
+  //       CCTK_PARAMWARN("You assigned a greater surface index than there are "
+  //                      "spherical surfaces!");
+  //   }
+  // }
 }

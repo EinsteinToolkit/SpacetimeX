@@ -4,7 +4,19 @@ BOOLEAN verbose "speak up?" STEERABLE=always
 {
 } "no"
 
+BOOLEAN read_shifts "Enable to write nearby shifts to stdout" STEERABLE=always
+{
+} "no"
+
+BOOLEAN check_interpolate "Enable to write shifts near +/- 4 to stdout" STEERABLE=always
+{
+} "no"
+
 BOOLEAN track[10] "Track this puncture"
+{
+} "no"
+
+BOOLEAN track_boxes "Enable to center refinement regions on punctures"
 {
 } "no"
 
@@ -38,6 +50,10 @@ INT new_reflevel_number[2] "The new number of refinement levels"
   -1:* :: "Negative for no change"
 } -1
 
+INT interp_order "Shift interpolation order"
+{
+  0:* :: ""
+} 1
 
 INT which_surface_to_store_info[10] "A spherical surface index where we can store the puncture location"
 {
@@ -50,8 +66,3 @@ REAL shift_limit "Shift components must be less than this in magnitude"
   0.0:* :: "zero or positive"
 } 1.0e10
 
-PRIVATE:
-
-SHARES: SphericalSurface
-
-USES CCTK_INT nsurfaces
