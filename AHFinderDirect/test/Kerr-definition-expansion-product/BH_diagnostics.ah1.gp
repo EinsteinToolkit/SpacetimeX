@@ -1,0 +1,43 @@
+# apparent horizon 1/1
+#
+# column  1 = cctk_iteration
+# column  2 = cctk_time
+# column  3 = centroid_x
+# column  4 = centroid_y
+# column  5 = centroid_z
+# column  6 = min radius
+# column  7 = max radius
+# column  8 = mean radius
+# column  9 = quadrupole_xx
+# column 10 = quadrupole_xy
+# column 11 = quadrupole_xz
+# column 12 = quadrupole_yy
+# column 13 = quadrupole_yz
+# column 14 = quadrupole_zz
+# column 15 = min x
+# column 16 = max x
+# column 17 = min y
+# column 18 = max y
+# column 19 = min z
+# column 20 = max z
+# column 21 = xy-plane circumference
+# column 22 = xz-plane circumference
+# column 23 = yz-plane circumference
+# column 24 = ratio of xz/xy-plane circumferences
+# column 25 = ratio of yz/xy-plane circumferences
+# column 26 = area
+# column 27 = m_irreducible
+# column 28 = areal radius
+# column 29 = expansion Theta_(l)
+# column 30 = inner expansion Theta_(n)
+# column 31 = product of the expansions
+# column 32 = mean curvature
+# column 33 = gradient of the areal radius
+# column 34 = gradient of the expansion Theta_(l)
+# column 35 = gradient of the inner expansion Theta_(n)
+# column 36 = gradient of the product of the expansions
+# column 37 = gradient of the mean curvature
+# column 38 = minimum  of the mean curvature
+# column 39 = maximum  of the mean curvature
+# column 40 = integral of the mean curvature
+0	0.000	0.000048	0.000017	0.000000	1.080531538	2.800829600	2.037784647	1.255306188	2.326092532e-06	0.000000000	1.255317946	-0.000000000	1.136129710	-1.940044440	1.940541383	-1.940376093	1.940113780	-1.845784220	1.845784220	12.80965757	11.13336459	11.51557674	0.8691383456	0.8989761570	47.30477931	0.9701024082	1.940204816	0.01396799474	-1.432182012	-0.02000000000	0.7230750032	0.000000000	0.000000000	0.000000000	0.000000000	0.000000000	0.6969169191	0.7348563253	34.14075770

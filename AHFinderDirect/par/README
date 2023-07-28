@@ -1,0 +1,20 @@
+This directory contains sample parameter files.
+
+Kerr.par is a good one to start with if you want a simple example
+of AHFinderDirect usage.  It's my standard "sanity-check" test case
+for AHFinderDirect, and runs in a < 10 seconds on a laptop.  It sets
+up Kerr/Kerr-Schild initial data and finds the apparent horizon in
+it, with the coordinate origin and initial guess offset to make this
+a nontrivial test of the apparent horizon finder.
+
+misner1.2-025-init.par sets up Misner initial data (mu=1.2, so there's
+a common horizon as well as two separate horizons) and then finds the
+apparent horizons in it.
+
+misner1.2-025-init-mask.par is a variant of this that also sets an
+old-style (CCTK_REAL) excision mask.
+
+misner-run.par is a more complicated parameter file, which sets up the
+same Misner initial data, but now time-evolves it, finding the apparent
+horizons at each time step.  (It also runs AHFinder every 20 time steps
+for comparison.)  It takes a lot of cpu and memory to run.

@@ -1,0 +1,9 @@
+# Cactus specification of things to be compiled in this directory
+# $Header$
+
+# Source files in this directory
+SRCS = array.cc cpm_map.cc fuzzy.cc linear_map.cc norm.cc round.cc \
+       miscfp.cc error_exit.cc
+
+# Subdirectories containing source files
+SUBDIRS = 

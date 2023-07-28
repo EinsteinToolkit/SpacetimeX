@@ -1,0 +1,124 @@
+# Initial data and short evolution for gauge wave in Minkowski spacetime
+# Author: Mitica Vulcanov <vulcan@aei.mpg.de>
+# Author: Roland Haas <roland.haas@physics.gatech.edu>
+# $Header$
+
+# Required thorns
+ActiveThorns = "CartGrid3D CoordBase SymBase Boundary Time Carpet CarpetLib CarpetSlab CarpetRegrid2 CarpetReduce InitBase CarpetIOAscii IOUtil IOBasic ADMBase ADMMacros GenericFD TmunuBase StaticConformal CoordGauge SpaceMask IDLinearWaves LoopControl GSL WeylScal4 ML_BSSN ML_BSSN_Helper NewRad GenericFD MoL ReflectionSymmetry"
+
+# Grid
+driver::ghost_size   = 2
+
+CartGrid3D::avoid_origin = no
+
+Carpet::max_refinement_levels = 3
+Carpet::prolongation_order_space = 3 # 1 is buggy in git version
+Carpet::prolongation_order_time = 2
+Carpet::domain_from_coordbase = yes
+
+Carpet::poison_new_timelevels = "yes"
+Carpet::check_for_poison      = "no"
+CarpetLib::poison_new_memory  = "yes"
+CarpetLib::poison_value       = 114
+
+InitBase::initial_data_setup_method = init_some_levels
+Carpet::init_fill_timelevels = yes
+
+CarpetRegrid2::min_distance          = 0
+CarpetRegrid2::ensure_proper_nesting = "yes"
+CarpetRegrid2::regrid_every          = 0
+CarpetRegrid2::num_centres           = 1
+CarpetRegrid2::num_levels_1          = 3
+CarpetRegrid2::position_x_1          = -0.0625
+CarpetRegrid2::position_y_1          = -0.0625
+CarpetRegrid2::position_z_1          = 0
+CarpetRegrid2::radius_1[1]           = 2.0
+CarpetRegrid2::radius_1[2]           = 1.0
+
+Grid::type = "coordbase"
+
+CoordBase::xmin = -4.0625
+CoordBase::ymin = -4.0625
+CoordBase::zmin = 0.0
+CoordBase::xmax = 3.9375
+CoordBase::ymax = 3.9375
+CoordBase::zmax = 4.0
+CoordBase::dx   = 0.5
+CoordBase::dy   = 0.5
+CoordBase::dz   = 0.5
+
+CoordBase::boundary_size_x_lower = 2
+CoordBase::boundary_size_y_lower = 2
+CoordBase::boundary_size_z_lower = 2
+CoordBase::boundary_size_x_upper = 2
+CoordBase::boundary_size_y_upper = 2
+CoordBase::boundary_size_z_upper = 2
+
+CoordBase::boundary_shiftout_z_lower = 1
+CoordBase::boundary_shiftout_z_upper = 0
+
+ReflectionSymmetry::avoid_origin_z = "no"
+ReflectionSymmetry::reflection_z = "yes"
+
+cactus::cctk_initial_time = 0
+cactus::cctk_itlast       = 4
+
+# Evolution
+Carpet::use_buffer_zones    = "yes"
+MoL::MoL_Intermediate_Steps = 1      # number of iterations for ICN
+
+# Initial data
+ADMBase::initial_data    = "teukwaves"
+ADMBase::initial_shift   = "zero"
+ADMBase::initial_lapse   = "one"
+ADMBase::initial_dtlapse = "zero"
+ADMBase::initial_dtshift = "zero"
+IDLinearWaves::mvalue = 2
+
+# Gauge
+ADMBase::lapse_evolution_method   = "ML_BSSN"
+ADMBase::shift_evolution_method   = "ML_BSSN"
+ADMBase::dtlapse_evolution_method = "ML_BSSN"
+ADMBase::dtshift_evolution_method = "ML_BSSN"
+
+# Evolution
+ADMBase::evolution_method = "ML_BSSN"
+
+ML_BSSN::harmonicN           = 1      # 1+log
+ML_BSSN::harmonicF           = 2.0    # 1+log
+ML_BSSN::ShiftGammaCoeff     = 0.75
+ML_BSSN::BetaDriver          = 1.0
+ML_BSSN::LapseAdvectionCoeff = 1.0
+ML_BSSN::ShiftAdvectionCoeff = 1.0
+
+ML_BSSN::MinimumLapse        = 1.0e-8
+
+ML_BSSN::my_initial_boundary_condition = "extrapolate-gammas"
+
+ML_BSSN::fdOrder             = 2
+
+# These are necessary
+ML_BSSN::ML_log_confac_bound = "flat"
+ML_BSSN::ML_metric_bound     = "flat"
+ML_BSSN::ML_Gamma_bound      = "flat"
+ML_BSSN::ML_trace_curv_bound = "flat"
+ML_BSSN::ML_curv_bound       = "flat"
+ML_BSSN::ML_lapse_bound      = "flat"
+ML_BSSN::ML_dtlapse_bound    = "flat"
+ML_BSSN::ML_shift_bound      = "flat"
+ML_BSSN::ML_dtshift_bound    = "flat"
+
+# Output
+IO::out_dir = $parfile
+IO::out_fileinfo = "none"
+IO::parfile_write = "no"
+
+IOASCII::out1D_every =  1
+IOASCII::out1d_yline_x = -0.0625
+IOASCII::out1d_xline_y = -0.0625
+IOASCII::out1d_zline_x = -0.0625
+IOASCII::out1d_zline_y = -0.0625
+IOASCII::out1D_vars  = "weylscal4::psi4r weylscal4::psi4i"
+
+CarpetIOASCII::compact_format = yes
+CarpetIOASCII::output_ghost_points = no

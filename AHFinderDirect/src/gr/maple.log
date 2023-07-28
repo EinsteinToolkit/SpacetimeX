@@ -1,0 +1,1234 @@
+RedHat v <9 or other Linux present, starting standard mode...
+    |\^/|     Maple 7 (IBM INTEL LINUX)
+._|\|   |/|_. Copyright (c) 2001 by Waterloo Maple Inc.
+ \  MAPLE  /  All rights reserved. Maple is a registered trademark of
+ <____ ____>  Waterloo Maple Inc.
+      |       Type ? for help.
+# top-level Maple file to read/run all code in this directory
+# $Header: /numrelcvs/AEIThorns/AHFinderDirect/src/gr/doit.maple,v 1.5 2002/09/13 14:12:18 jthorn Exp $
+> 
+> read "../maple/setup.mm";
+msum := proc(fn::algebraic)
+local expr, sum_index;
+    if nargs < 2 then ERROR("must have two or more arguments") end if;
+    expr := fn;
+    for sum_index in [args[2 .. nargs]] do
+        expr; sum_index; expr := 'sum'(''%%'', ''%'')
+    end do;
+    return eval(expr)
+end proc
+
+      arctan_xy := proc(x::algebraic, y::algebraic) arctan(y, x) end proc
+
+            ssqrt := proc(x::algebraic) sqrt(x, 'symbolic') end proc
+
+indices_in_order :=
+
+    proc(T::table) return sort([indices(T)], lexorder_integer_list) end proc
+
+lexorder_integer_list := proc(list1::list(numeric), list2::list(numeric))
+local len1, len2, k;
+    len1 := nops(list1);
+    len2 := nops(list2);
+    for k to min(len1, len2) do
+        if list1[k] < list2[k] then return true
+        elif list2[k] < list1[k] then return false
+        end if
+    end do;
+    return evalb(len1 < len2)
+end proc
+
+sort_var_list := proc(var_list::list(name))
+global lexorder_vars;
+option remember;
+    return sort(var_list, lexorder_vars)
+end proc
+
+lexorder_vars := proc(x::name, y::name)
+local xposn, yposn;
+global delta, N, N_ang, xx, yy, zz, x_xyz, x_xyz_list, x_xyz_set, r, r__fnd,
+rho, sigma, y_rs, y_rs_list, y_rs_set, xy_all_list, xy_all_set;
+option remember;
+    if member(x, xy_all_list, 'xposn') and member(y, xy_all_list, 'yposn')
+    then return evalb(xposn < yposn)
+    else return lexorder(x, y)
+    end if
+end proc
+
+gensym := proc(opt_base_name::string)
+local base_name, tn;
+global `gensym/counter`;
+    if 1 <= nargs then base_name := opt_base_name
+    else base_name := 'temp_'
+    end if;
+    if not assigned(`gensym/counter`) then `gensym/init`() end if;
+    tn := cat(base_name, `gensym/counter`);
+    `gensym/counter` := `gensym/counter` + 1;
+    tn;
+    return '%'
+end proc
+
+gensym/init := proc(opt_initial_counter::integer)
+local initial_counter;
+global `gensym/counter`;
+    if 1 <= nargs then initial_counter := opt_initial_counter
+    else initial_counter := 1
+    end if;
+    `gensym/counter` := initial_counter;
+    NULL
+end proc
+
+saveit := proc(
+n::integer, fn::{procedure, string}, label::string, expr::anything)
+local save_name;
+global `saveit/level`;
+    if assigned(`saveit/level`) and type(`saveit/level`, integer) and
+    n <= `saveit/level` then
+        save_name := cat(convert(fn, string), "/", label);
+        printf("      --> `%s`\n", save_name);
+        assign(convert(eval(save_name, 1), name) = expr)
+    end if;
+    NULL
+end proc
+
+setup_coords := proc()
+global delta, N, N_ang, xx, yy, zz, x_xyz, x_xyz_list, x_xyz_set, r, r__fnd,
+rho, sigma, y_rs, y_rs_list, y_rs_set, xy_all_list, xy_all_set;
+    N := 3;
+    N_ang := 2;
+    delta := array(1 .. N, 1 .. N, identity);
+    x_xyz := array(1 .. N);
+    x_xyz[1] := xx;
+    x_xyz[2] := yy;
+    x_xyz[3] := zz;
+    x_xyz_list := [xx, yy, zz];
+    x_xyz_set := {yy, xx, zz};
+    r__fnd := ssqrt(xx^2 + yy^2 + zz^2);
+    y_rs := array(1 .. N_ang);
+    y_rs[1] := rho;
+    y_rs[2] := sigma;
+    y_rs_list := [rho, sigma];
+    y_rs_set := {sigma, rho};
+    xy_all_list := [op(x_xyz_list), op(y_rs_list)];
+    xy_all_set := {op(xy_all_list)};
+    NULL
+end proc
+
+simplify/Diff := proc(expr)
+local temp;
+option remember;
+    if type(expr, {`*`, `^`, `=`, `+`, set, table, list}) then
+        return map(simplify, expr)
+    end if;
+    if type(expr, {procedure, name, numeric}) then return expr end if;
+    if type(expr, function) then
+        if op(0, expr) = 'Diff' then return Diff(op(expr))
+        else
+            temp := map(simplify, [op(expr)]);
+            op(0, expr);
+            return '%'(op(temp))
+        end if
+    end if;
+    ERROR(`expr has unknown type`, `whattype(expr)=`, whattype(expr))
+end proc
+
+Diff := proc(operand)
+local var_list, nn, nderiv, op_cdr, f, g, x, x_car, x_cdr, temp, n,
+inner_operand, inner_var_list, k, sorted_var_list, operand2, var_seq2;
+option remember;
+    var_list := [args[2 .. nargs]];
+    nn := nops(operand);
+    nderiv := nops(var_list);
+    if type(operand, `+`) then return
+        simplify(sum('Diff(op(k, operand), op(var_list))', 'k' = 1 .. nn))
+    end if;
+    if type(operand, `*`) and 1 <= nn and type(op(1, operand), numeric)
+    then
+        op_cdr := product('op(k, operand)', 'k' = 2 .. nn);
+        return simplify(op(1, operand)*Diff(op_cdr, op(var_list)))
+    end if;
+    if type(operand, numeric) then return 0 end if;
+    if type(operand, name) and var_list = [operand] then return 1 end if;
+    if type(operand, `*`) then
+        if nn = 0 then return 0
+        elif nn = 1 then
+            return simplify(Diff(op(1, operand), op(var_list)))
+        elif 2 <= nn then
+            f := op(1, operand);
+            g := product('op(k, operand)', 'k' = 2 .. nn);
+            if nderiv = 1 then
+                x := var_list[1];
+                return simplify(Diff(f, x)*g + f*Diff(g, x))
+            else
+                x_car := var_list[1];
+                x_cdr := var_list[2 .. nderiv];
+                temp := simplify(Diff(f*g, x_car));
+                return simplify(Diff(temp, op(x_cdr)))
+            end if
+        else ERROR(`impossible value of nn in product rule!`,
+            `(this should never happen!)`, `   operand=`, operand, `   nn=`,
+            nn)
+        end if
+    end if;
+    if type(operand, `^`) then
+        f := op(1, operand);
+        n := op(2, operand);
+        if nderiv = 1 then
+            x := var_list[1]; return simplify(n*f^(n - 1)*Diff(f, x))
+        else
+            x_car := var_list[1];
+            x_cdr := var_list[2 .. nderiv];
+            temp := simplify(Diff(f^n, x_car));
+            return simplify(Diff(temp, op(x_cdr)))
+        end if
+    end if;
+    if type(operand, function) and op(0, operand) = 'Diff' then
+        inner_operand := op(1, operand);
+        inner_var_list := [op(2 .. nn, operand)];
+        return
+            simplify(Diff(inner_operand, op(inner_var_list), op(var_list)))
+    end if;
+    sorted_var_list := sort_var_list(var_list);
+    temp := `Diff/gridfn`(operand, op(sorted_var_list));
+    if type(`Diff/gridfn2`, procedure) and type(temp, function) and
+    op(0, temp) = 'Diff' then
+        operand2 := op(1, temp);
+        var_seq2 := op(2 .. nops(temp), temp);
+        temp := `Diff/gridfn2`(operand2, var_seq2)
+    end if;
+    return temp
+end proc
+
+Diff/gridfn := proc(operand)
+local var_list, posn;
+global delta, N, N_ang, xx, yy, zz, x_xyz, x_xyz_list, x_xyz_set, r, r__fnd,
+rho, sigma, y_rs, y_rs_list, y_rs_set, xy_all_list, xy_all_set, inert, none,
+fnd, symmetric3_23, X_ud, X_ud__fnd, X_udd, X_udd__fnd, g_dd, K_dd, g_uu,
+g_uu__fnd, K_uu, K_uu__fnd, K, K__fnd, partial_d_g_dd, partial_d_ln_sqrt_g,
+partial_d_ln_sqrt_g__fnd, partial_d_g_uu, partial_d_g_uu__fnd, h, h__fnd,
+s_d, s_d__fnd, partial_d_s_d, partial_d_s_d__fnd, n_u, n_u__fnd, Theta_A,
+Theta_A__fnd, Theta_B, Theta_B__fnd, Theta_C, Theta_C__fnd, Theta_D,
+Theta_D__fnd, Theta, Theta__fnd, partial_d_Theta_A, partial_d_Theta_A__fnd,
+partial_d_Theta_B, partial_d_Theta_B__fnd, partial_d_Theta_C,
+partial_d_Theta_C__fnd, partial_d_Theta_D, partial_d_Theta_D__fnd,
+partial_d_Theta_, partial_d_Theta__fnd, partial_Theta_A_wrt_partial_d_h,
+partial_Theta_A_wrt_partial_d_h__fnd, partial_Theta_B_wrt_partial_d_h,
+partial_Theta_B_wrt_partial_d_h__fnd, partial_Theta_C_wrt_partial_d_h,
+partial_Theta_C_wrt_partial_d_h__fnd, partial_Theta_D_wrt_partial_d_h,
+partial_Theta_D_wrt_partial_d_h__fnd, partial_Theta_A_wrt_partial_dd_h,
+partial_Theta_A_wrt_partial_dd_h__fnd, partial_Theta_B_wrt_partial_dd_h,
+partial_Theta_B_wrt_partial_dd_h__fnd, partial_Theta_X_wrt_partial_d_h,
+partial_Theta_X_wrt_partial_d_h__fnd, partial_Theta_Y_wrt_partial_d_h,
+partial_Theta_Y_wrt_partial_d_h__fnd, partial_Theta_X_wrt_partial_dd_h,
+partial_Theta_X_wrt_partial_dd_h__fnd, partial_Theta_Y_wrt_partial_dd_h,
+partial_Theta_Y_wrt_partial_dd_h__fnd;
+option remember;
+    var_list := [args[2 .. nargs]];
+    if type(operand, indexed) and op(0, operand) = 'X_ud' and
+    nops(var_list) = 1 and member(var_list[1], x_xyz_list, 'posn') then
+        return X_udd[op(operand), posn]
+    end if;
+    return 'Diff'(operand, op(var_list))
+end proc
+
+make_gfa := proc(gfa_name::name, fnd_name_set::set(name),
+index_bounds::list(integer .. integer), index_fn::{name, identical(none)})
+local fnd_name, var_name, index_fn_seq;
+global N, `gfa/fnd_table`;
+    if not type(N, integer) then ERROR("must set up coordinates first!")
+    end if;
+    if index_bounds = [] and index_fn <> 'none' then ERROR(
+        "not meaningful to specify a symmetry function for a scalar!",
+        "   gfa_name=", gfa_name)
+    end if;
+    for fnd_name in fnd_name_set do
+        var_name := Maple_name(gfa_name, fnd_name);
+        if assigned(`gfa/fnd_table`[eval(var_name, 1)]) then ERROR(
+            "duplicate gfa/fnd definition!", "   gfa_name=", gfa_name,
+            "   fnd_name_set=", fnd_name_set)
+        end if;
+        `gfa/fnd_table`[eval(var_name, 1)] := true;
+        if index_bounds = [] then unassign(eval(var_name, 1))
+        else
+            if index_fn = 'none' then index_fn_seq := NULL
+            else index_fn_seq := index_fn
+            end if;
+            assign(
+                eval(var_name, 1) = array(index_fn_seq, op(index_bounds)))
+        end if
+    end do;
+    NULL
+end proc
+
+assert_fnd_exists := proc(gfa_name::name, fnd_name::name)
+local var_name;
+global `gfa/fnd_table`;
+    var_name := Maple_name(gfa_name, args[2 .. nargs]);
+    if not assigned(`gfa/fnd_table`[eval(var_name, 1)]) then ERROR(
+        "functional-dependence form doesn't exist!", "var_name=", var_name)
+    end if
+end proc
+
+Maple_name := proc(gfa_name::name, fnd_name::name)
+    if nargs = 1 or fnd_name = 'inert' then return gfa_name
+    else return cat(gfa_name, "__", fnd_name)
+    end if
+end proc
+
+index/symmetric3_23 := proc(ilist::list, tab::table, vlist::list)
+local k, i, j, index_seq;
+    if not (nops(ilist) = 3) then ERROR(`must have exactly 3 indices!`)
+    end if;
+    k := eval(ilist[1]);
+    i := eval(ilist[2]);
+    j := eval(ilist[3]);
+    index_seq := k, op(sort([i, j]));
+    if nargs = 2 then return tab[index_seq]
+    else tab[index_seq] := op(vlist)
+    end if
+end proc
+
+print_symmetric3_23 := proc(A::array)
+local bounds, k, i, j, M23;
+    if op(1, eval(A)) <> 'symmetric3_23' then
+        ERROR(`can only print symmetric3_23 arrays`)
+    end if;
+    bounds := op(2, eval(A));
+    M23 := array(bounds[2 .. 3], symmetric);
+    for k in `$`(bounds[1]) do
+        for i in `$`(bounds[2]) do for j in `$`(bounds[3]) do
+                if i <= j then M23[i, j] := A[k, i, j] end if
+            end do
+        end do;
+        printf("[%d] = \n", k);
+        print(M23)
+    end do;
+    NULL
+end proc
+
+setup_coeff_gfas := proc()
+global delta, N, N_ang, xx, yy, zz, x_xyz, x_xyz_list, x_xyz_set, r, r__fnd,
+rho, sigma, y_rs, y_rs_list, y_rs_set, xy_all_list, xy_all_set, inert, none,
+fnd, symmetric3_23, X_ud, X_ud__fnd, X_udd, X_udd__fnd;
+    make_gfa('X_ud', {inert}, [1 .. N_ang, 1 .. N], none);
+    make_gfa('X_udd', {inert}, [1 .. N_ang, 1 .. N, 1 .. N], symmetric3_23)
+        ;
+    NULL
+end proc
+
+codegen2 := proc(expr_in::{algebraic, list(algebraic)},
+lhs_name::{name, list(name)}, output_file_name::string)
+local expr, expr_temps, input_set, output_set, expr_cost;
+global delta, N, N_ang, xx, yy, zz, x_xyz, x_xyz_list, x_xyz_set, r, r__fnd,
+rho, sigma, y_rs, y_rs_list, y_rs_set, xy_all_list, xy_all_set, inert, none,
+fnd, symmetric3_23, X_ud, X_ud__fnd, X_udd, X_udd__fnd;
+    printf("codegen2(%a) --> \"%s\"\n", lhs_name, output_file_name);
+    expr := expr_in;
+    saveit(10, procname, "input", expr);
+    printf("   convert --> equation list\n");
+    expr := cvt_to_eqnlist(expr, lhs_name);
+    saveit(10, procname, "eqnlist", expr);
+    printf("   optimizing computation sequence\n");
+    expr := [codegen[optimize](expr)];
+    saveit(10, procname, "optimize", expr);
+    printf("   find temporary variables\n");
+    expr_temps := temps_in_eqnlist(expr, lhs_name);
+    saveit(10, procname, "temps", expr_temps);
+    printf(
+        "   convert Diff(expr,rho,sigma) --> PARTIAL_RHO_SIGMA(expr) etc\n")
+        ;
+    expr := fix_Diff(expr);
+    saveit(10, procname, "fix_Diff", expr);
+    input_set := deindex_names(
+        (indets(map(rhs, expr), name) minus {op(expr_temps)}) minus
+        xy_all_set);
+    output_set :=
+        deindex_names({op(map(lhs, expr))} minus {op(expr_temps)});
+    printf("   convert R_dd[2,3] --> R_dd_23 etc\n");
+    expr := unindex_names(expr);
+    saveit(10, procname, "unindex", expr);
+    expr_cost := codegen[cost](expr);
+    printf("   convert p/q --> RATIONAL(p/q)\n");
+    expr := fix_rationals(expr);
+    saveit(10, procname, "fix_rationals", expr);
+    printf("   writing C code\n");
+    ftruncate(output_file_name);
+    fprintf(output_file_name, "/*\n");
+    fprintf(output_file_name, " * inputs = %a\n", input_set);
+    fprintf(output_file_name, " * outputs = %a\n", output_set);
+    fprintf(output_file_name, " * cost = %a\n", expr_cost);
+    fprintf(output_file_name, " */\n");
+    print_name_list_dcl(expr_temps, "fp", output_file_name);
+    codegen[C](expr, filename = output_file_name);
+    NULL
+end proc
+
+cvt_to_eqnlist := proc(expr::{algebraic, array, list({algebraic, array})},
+lhs_name::{name, list(name)})
+    if type(expr, array) and type(lhs_name, name) then return map(
+        proc(ii) return lhs_name[op(ii)] = expr[op(ii)] end proc,
+        indices_in_order(expr))
+    end if;
+    if type(expr, algebraic) and type(lhs_name, name) then
+        return [lhs_name = expr]
+    end if;
+    if type(expr, list({algebraic, array})) and type(lhs_name, list(name))
+    then return zip(op@cvt_to_eqnlist, expr, lhs_name)
+    end if;
+    error
+        "unknown type for expression!\n   expr=%1\n   whattype(expr)=%2\n",
+        expr, whattype(expr)
+end proc
+
+fix_Diff := proc(
+expr::{algebraic, name = algebraic, list({algebraic, name = algebraic})})
+local nn, k, base, power, fn, fn_args_list, Darg, Dvars;
+global `fix_Diff/remap_table`;
+    if type(expr, list) then return map(fix_Diff, expr) end if;
+    if type(expr, name = algebraic) then
+        return lhs(expr) = fix_Diff(rhs(expr))
+    end if;
+    nn := nops(expr);
+    if type(expr, `+`) then
+        return sum('fix_Diff(op(k, expr))', 'k' = 1 .. nn)
+    end if;
+    if type(expr, `*`) then
+        return product('fix_Diff(op(k, expr))', 'k' = 1 .. nn)
+    end if;
+    if type(expr, `^`) then
+        base := op(1, expr);
+        power := op(2, expr);
+        return fix_Diff(base)^power
+    end if;
+    if type(expr, function) and op(0, expr) <> 'Diff' then
+        fn := op(0, expr);
+        fn_args_list := [op(expr)];
+        fn;
+        return '%'(op(map(fix_Diff, fn_args_list)))
+    end if;
+    if type(expr, function) and op(0, expr) = 'Diff' then
+        Darg := op(1, expr);
+        Dvars := [op(2 .. nn, expr)];
+        if assigned(`fix_Diff/remap_table`[op(Dvars)]) then
+            `fix_Diff/remap_table`[op(Dvars)]; return '%'(Darg)
+        else error "don't know how to remap Diff() call!\n   Darg = %1\n\
+               Dvars = %2\n", Darg, Dvars
+        end if
+    end if;
+    return expr
+end proc
+
+                    fix_Diff/remap_table[rho] := PARTIAL_RHO
+
+                  fix_Diff/remap_table[sigma] := PARTIAL_SIGMA
+
+               fix_Diff/remap_table[rho, rho] := PARTIAL_RHO_RHO
+
+             fix_Diff/remap_table[rho, sigma] := PARTIAL_RHO_SIGMA
+
+           fix_Diff/remap_table[sigma, sigma] := PARTIAL_SIGMA_SIGMA
+
+                     fix_Diff/remap_table[xx] := PARTIAL_X
+
+                     fix_Diff/remap_table[yy] := PARTIAL_Y
+
+                     fix_Diff/remap_table[zz] := PARTIAL_Z
+
+                   fix_Diff/remap_table[xx, xx] := PARTIAL_XX
+
+                   fix_Diff/remap_table[xx, yy] := PARTIAL_XY
+
+                   fix_Diff/remap_table[xx, zz] := PARTIAL_XZ
+
+                   fix_Diff/remap_table[yy, yy] := PARTIAL_YY
+
+                   fix_Diff/remap_table[yy, zz] := PARTIAL_YZ
+
+                   fix_Diff/remap_table[zz, zz] := PARTIAL_ZZ
+
+temps_in_eqnlist := proc(
+expr::list(name = algebraic), result_name::{name, list(name), set(name)})
+    return remove(is_result, map(lhs, expr), result_name)
+end proc
+
+is_result := proc(try_name::name, result_name_in::{name, list(name), set(name)}
+)
+local result_name, rn;
+    if type(result_name_in, name) then result_name := {result_name_in}
+    else result_name := result_name_in
+    end if;
+    for rn in result_name do
+        if try_name = rn then return true
+        elif type(try_name, indexed) and op(0, try_name) = rn then
+            return true
+        end if
+    end do;
+    return false
+end proc
+
+deindex_names := proc(
+expr::{function, name, list({function, name}), set({function, name})})
+local fn, fn_args_list;
+    if type(expr, {set, list}) then return map(deindex_names, expr) end if;
+    if type(expr, function) then
+        fn := op(0, expr);
+        fn_args_list := [op(expr)];
+        fn;
+        return '%'(op(map(deindex_names, fn_args_list)))
+    end if;
+    if type(expr, indexed) then return op(0, expr) end if;
+    if type(expr, {name, numeric}) then return expr end if;
+    error "expr has unknown type!\nwhattype(expr)=%1\n", whattype(expr)
+end proc
+
+unindex_names := proc(expr::{algebraic, name = algebraic,
+list({algebraic, name = algebraic}), set({algebraic, name = algebraic})})
+local nn, k, base, power, fn, fn_args_list, base_name, index_seq;
+    if type(expr, {set, list}) then return map(unindex_names, expr) end if;
+    if type(expr, `=`) then
+        return unindex_names(lhs(expr)) = unindex_names(rhs(expr))
+    end if;
+    nn := nops(expr);
+    if type(expr, `+`) then
+        return sum('unindex_names(op(k, expr))', 'k' = 1 .. nn)
+    end if;
+    if type(expr, `*`) then
+        return product('unindex_names(op(k, expr))', 'k' = 1 .. nn)
+    end if;
+    if type(expr, `^`) then
+        base := op(1, expr);
+        power := op(2, expr);
+        return unindex_names(base)^power
+    end if;
+    if type(expr, function) then
+        fn := op(0, expr);
+        fn_args_list := [op(expr)];
+        fn;
+        return '%'(op(map(unindex_names, fn_args_list)))
+    end if;
+    if type(expr, indexed) then
+        base_name := op(0, expr);
+        index_seq := op(expr);
+        return cat(base_name, "_", index_seq)
+    end if;
+    if type(expr, {name, numeric}) then return expr end if;
+    error "expr has unknown type!\nwhattype(expr)=%1\n", whattype(expr)
+end proc
+
+fix_rationals := proc(
+expr::{algebraic, name = algebraic, list({algebraic, name = algebraic})})
+local nn, k, expr_sign, expr_abs, base, power, fbase, fpower, fn,
+fn_args_list, int_factors, nonint_factors, num, den, mult;
+    if type(expr, list) then return map(fix_rationals, expr) end if;
+    if type(expr, name = algebraic) then
+        return lhs(expr) = fix_rationals(rhs(expr))
+    end if;
+    if type(expr, function) then
+        fn := op(0, expr);
+        if fn <> 'RATIONAL' then
+            fn_args_list := [op(expr)];
+            fn;
+            return '%'(op(map(fix_rationals, fn_args_list)))
+        end if
+    end if;
+    nn := nops(expr);
+    if type(expr, `+`) then
+        return sum('fix_rationals(op(k, expr))', 'k' = 1 .. nn)
+    end if;
+    if type(expr, `*`) then
+        int_factors, nonint_factors := selectremove(type, expr, integer);
+        if 0 < nops(int_factors) then return op(1, int_factors)*product(
+            'fix_rationals(op(k, nonint_factors))',
+            'k' = 1 .. nops(nonint_factors))
+        else return product('fix_rationals(op(k, expr))', 'k' = 1 .. nn)
+        end if
+    end if;
+    if type(expr, `^`) then
+        base := op(1, expr);
+        power := op(2, expr);
+        fbase := fix_rationals(base);
+        if type(power, integer) then fpower := power
+        else fpower := fix_rationals(power)
+        end if;
+        return fbase^fpower
+    end if;
+    if type(expr, integer) then return 'RATIONAL'(expr, 1) end if;
+    if type(expr, fraction) then
+        num := op(1, expr); den := op(2, expr); return 'RATIONAL'(num, den)
+    end if;
+    if type(expr, float) then
+        mult := op(1, expr);
+        power := op(2, expr);
+        return fix_rationals(mult*10^power)
+    end if;
+    if type(expr, name) then return expr end if;
+    error "expr has unknown type!\nwhattype(expr)=%1\nexpr=%2\n",
+        whattype(expr), expr
+end proc
+
+print_name_list_dcl := proc(
+name_list::list({name, string}), name_type::string, file_name::string)
+local nn;
+    nn := nops(name_list);
+    if nn <= 10 then
+        map(convert, name_list, string);
+        ListTools[Join](%, ", ");
+        cat(op(%));
+        fprintf(file_name, "%s %s;\n", name_type, %);
+        NULL;
+        return
+    end if;
+    print_name_list_dcl([op(1 .. 10, name_list)], name_type, file_name);
+    print_name_list_dcl([op(11 .. nn, name_list)], name_type, file_name)
+end proc
+
+> 
+> read "setup_gr_gfas.mm";
+setup_gr_gfas := proc()
+global delta, N, N_ang, xx, yy, zz, x_xyz, x_xyz_list, x_xyz_set, r, r__fnd,
+rho, sigma, y_rs, y_rs_list, y_rs_set, xy_all_list, xy_all_set, inert, none,
+fnd, symmetric3_23, X_ud, X_ud__fnd, X_udd, X_udd__fnd, g_dd, K_dd, g_uu,
+g_uu__fnd, K_uu, K_uu__fnd, K, K__fnd, partial_d_g_dd, partial_d_ln_sqrt_g,
+partial_d_ln_sqrt_g__fnd, partial_d_g_uu, partial_d_g_uu__fnd, h, h__fnd,
+s_d, s_d__fnd, partial_d_s_d, partial_d_s_d__fnd, n_u, n_u__fnd, Theta_A,
+Theta_A__fnd, Theta_B, Theta_B__fnd, Theta_C, Theta_C__fnd, Theta_D,
+Theta_D__fnd, Theta, Theta__fnd, partial_d_Theta_A, partial_d_Theta_A__fnd,
+partial_d_Theta_B, partial_d_Theta_B__fnd, partial_d_Theta_C,
+partial_d_Theta_C__fnd, partial_d_Theta_D, partial_d_Theta_D__fnd,
+partial_d_Theta_, partial_d_Theta__fnd, partial_Theta_A_wrt_partial_d_h,
+partial_Theta_A_wrt_partial_d_h__fnd, partial_Theta_B_wrt_partial_d_h,
+partial_Theta_B_wrt_partial_d_h__fnd, partial_Theta_C_wrt_partial_d_h,
+partial_Theta_C_wrt_partial_d_h__fnd, partial_Theta_D_wrt_partial_d_h,
+partial_Theta_D_wrt_partial_d_h__fnd, partial_Theta_A_wrt_partial_dd_h,
+partial_Theta_A_wrt_partial_dd_h__fnd, partial_Theta_B_wrt_partial_dd_h,
+partial_Theta_B_wrt_partial_dd_h__fnd, partial_Theta_X_wrt_partial_d_h,
+partial_Theta_X_wrt_partial_d_h__fnd, partial_Theta_Y_wrt_partial_d_h,
+partial_Theta_Y_wrt_partial_d_h__fnd, partial_Theta_X_wrt_partial_dd_h,
+partial_Theta_X_wrt_partial_dd_h__fnd, partial_Theta_Y_wrt_partial_dd_h,
+partial_Theta_Y_wrt_partial_dd_h__fnd;
+    make_gfa('g_dd', {inert}, [1 .. N, 1 .. N], symmetric);
+    make_gfa('K_dd', {inert}, [1 .. N, 1 .. N], symmetric);
+    make_gfa('g_uu', {inert, fnd}, [1 .. N, 1 .. N], symmetric);
+    make_gfa('K_uu', {inert, fnd}, [1 .. N, 1 .. N], symmetric);
+    make_gfa('K', {inert, fnd}, [], none);
+    make_gfa('partial_d_g_dd', {inert}, [1 .. N, 1 .. N, 1 .. N],
+        symmetric3_23);
+    make_gfa('partial_d_ln_sqrt_g', {inert, fnd}, [1 .. N], none);
+    make_gfa('partial_d_g_uu', {inert, fnd}, [1 .. N, 1 .. N, 1 .. N],
+        symmetric3_23);
+    make_gfa('h', {inert, fnd}, [], none);
+    make_gfa('s_d', {inert, fnd}, [1 .. N], none);
+    make_gfa('partial_d_s_d', {inert, fnd}, [1 .. N, 1 .. N], none);
+    make_gfa('Theta_A', {inert, fnd}, [], none);
+    make_gfa('Theta_B', {inert, fnd}, [], none);
+    make_gfa('Theta_C', {inert, fnd}, [], none);
+    make_gfa('Theta_D', {inert, fnd}, [], none);
+    make_gfa('Theta', {inert, fnd}, [], none);
+    make_gfa('partial_d_Theta_A', {inert, fnd}, [1 .. N], none);
+    make_gfa('partial_d_Theta_B', {inert, fnd}, [1 .. N], none);
+    make_gfa('partial_d_Theta_C', {inert, fnd}, [1 .. N], none);
+    make_gfa('partial_d_Theta_D', {inert, fnd}, [1 .. N], none);
+    make_gfa('partial_d_Theta', {inert, fnd}, [1 .. N], none);
+    make_gfa('partial_Theta_A_wrt_partial_d_h', {inert, fnd}, [1 .. N_ang],
+        none);
+    make_gfa('partial_Theta_B_wrt_partial_d_h', {inert, fnd}, [1 .. N_ang],
+        none);
+    make_gfa('partial_Theta_C_wrt_partial_d_h', {inert, fnd}, [1 .. N_ang],
+        none);
+    make_gfa('partial_Theta_D_wrt_partial_d_h', {inert, fnd}, [1 .. N_ang],
+        none);
+    make_gfa('partial_Theta_A_wrt_partial_dd_h', {inert, fnd},
+        [1 .. N_ang, 1 .. N_ang], symmetric);
+    make_gfa('partial_Theta_B_wrt_partial_dd_h', {inert, fnd},
+        [1 .. N_ang, 1 .. N_ang], symmetric);
+    make_gfa('partial_Theta_X_wrt_partial_d_h', {inert, fnd}, [1 .. N_ang],
+        none);
+    make_gfa('partial_Theta_Y_wrt_partial_d_h', {inert, fnd}, [1 .. N_ang],
+        none);
+    make_gfa('partial_Theta_X_wrt_partial_dd_h', {inert, fnd},
+        [1 .. N_ang, 1 .. N_ang], symmetric);
+    make_gfa('partial_Theta_Y_wrt_partial_dd_h', {inert, fnd},
+        [1 .. N_ang, 1 .. N_ang], symmetric);
+    NULL
+end proc
+
+Diff/gridfn2 := proc(operand)
+local var_list, posn;
+global delta, N, N_ang, xx, yy, zz, x_xyz, x_xyz_list, x_xyz_set, r, r__fnd,
+rho, sigma, y_rs, y_rs_list, y_rs_set, xy_all_list, xy_all_set, inert, none,
+fnd, symmetric3_23, X_ud, X_ud__fnd, X_udd, X_udd__fnd, g_dd, K_dd, g_uu,
+g_uu__fnd, K_uu, K_uu__fnd, K, K__fnd, partial_d_g_dd, partial_d_ln_sqrt_g,
+partial_d_ln_sqrt_g__fnd, partial_d_g_uu, partial_d_g_uu__fnd, h, h__fnd,
+s_d, s_d__fnd, partial_d_s_d, partial_d_s_d__fnd, n_u, n_u__fnd, Theta_A,
+Theta_A__fnd, Theta_B, Theta_B__fnd, Theta_C, Theta_C__fnd, Theta_D,
+Theta_D__fnd, Theta, Theta__fnd, partial_d_Theta_A, partial_d_Theta_A__fnd,
+partial_d_Theta_B, partial_d_Theta_B__fnd, partial_d_Theta_C,
+partial_d_Theta_C__fnd, partial_d_Theta_D, partial_d_Theta_D__fnd,
+partial_d_Theta_, partial_d_Theta__fnd, partial_Theta_A_wrt_partial_d_h,
+partial_Theta_A_wrt_partial_d_h__fnd, partial_Theta_B_wrt_partial_d_h,
+partial_Theta_B_wrt_partial_d_h__fnd, partial_Theta_C_wrt_partial_d_h,
+partial_Theta_C_wrt_partial_d_h__fnd, partial_Theta_D_wrt_partial_d_h,
+partial_Theta_D_wrt_partial_d_h__fnd, partial_Theta_A_wrt_partial_dd_h,
+partial_Theta_A_wrt_partial_dd_h__fnd, partial_Theta_B_wrt_partial_dd_h,
+partial_Theta_B_wrt_partial_dd_h__fnd, partial_Theta_X_wrt_partial_d_h,
+partial_Theta_X_wrt_partial_d_h__fnd, partial_Theta_Y_wrt_partial_d_h,
+partial_Theta_Y_wrt_partial_d_h__fnd, partial_Theta_X_wrt_partial_dd_h,
+partial_Theta_X_wrt_partial_dd_h__fnd, partial_Theta_Y_wrt_partial_dd_h,
+partial_Theta_Y_wrt_partial_dd_h__fnd;
+option remember;
+    var_list := [args[2 .. nargs]];
+    if type(operand, indexed) and op(0, operand) = 'g_dd' and
+    nops(var_list) = 1 and member(var_list[1], x_xyz_list, 'posn') then
+        return partial_d_g_dd[posn, op(operand)]
+    end if;
+    return 'Diff'(operand, op(var_list))
+end proc
+
+> setup_gr_gfas();
+> 
+> read "auxiliary.mm";
+auxiliary := proc(cg_flag::boolean)
+    inverse_metric(cg_flag); extrinsic_curvature_trace_raise(cg_flag); NULL
+end proc
+
+inverse_metric := proc(cg_flag::boolean)
+global delta, N, N_ang, xx, yy, zz, x_xyz, x_xyz_list, x_xyz_set, r, r__fnd,
+rho, sigma, y_rs, y_rs_list, y_rs_set, xy_all_list, xy_all_set, inert, none,
+fnd, symmetric3_23, X_ud, X_ud__fnd, X_udd, X_udd__fnd, g_dd, K_dd, g_uu,
+g_uu__fnd, K_uu, K_uu__fnd, K, K__fnd, partial_d_g_dd, partial_d_ln_sqrt_g,
+partial_d_ln_sqrt_g__fnd, partial_d_g_uu, partial_d_g_uu__fnd, h, h__fnd,
+s_d, s_d__fnd, partial_d_s_d, partial_d_s_d__fnd, n_u, n_u__fnd, Theta_A,
+Theta_A__fnd, Theta_B, Theta_B__fnd, Theta_C, Theta_C__fnd, Theta_D,
+Theta_D__fnd, Theta, Theta__fnd, partial_d_Theta_A, partial_d_Theta_A__fnd,
+partial_d_Theta_B, partial_d_Theta_B__fnd, partial_d_Theta_C,
+partial_d_Theta_C__fnd, partial_d_Theta_D, partial_d_Theta_D__fnd,
+partial_d_Theta_, partial_d_Theta__fnd, partial_Theta_A_wrt_partial_d_h,
+partial_Theta_A_wrt_partial_d_h__fnd, partial_Theta_B_wrt_partial_d_h,
+partial_Theta_B_wrt_partial_d_h__fnd, partial_Theta_C_wrt_partial_d_h,
+partial_Theta_C_wrt_partial_d_h__fnd, partial_Theta_D_wrt_partial_d_h,
+partial_Theta_D_wrt_partial_d_h__fnd, partial_Theta_A_wrt_partial_dd_h,
+partial_Theta_A_wrt_partial_dd_h__fnd, partial_Theta_B_wrt_partial_dd_h,
+partial_Theta_B_wrt_partial_dd_h__fnd, partial_Theta_X_wrt_partial_d_h,
+partial_Theta_X_wrt_partial_d_h__fnd, partial_Theta_Y_wrt_partial_d_h,
+partial_Theta_Y_wrt_partial_d_h__fnd, partial_Theta_X_wrt_partial_dd_h,
+partial_Theta_X_wrt_partial_dd_h__fnd, partial_Theta_Y_wrt_partial_dd_h,
+partial_Theta_Y_wrt_partial_dd_h__fnd;
+    printf("%a...\n", procname);
+    assert_fnd_exists(g_dd);
+    assert_fnd_exists(g_uu, fnd);
+    g_uu__fnd := linalg[inverse](g_dd);
+    if cg_flag then
+        codegen2(g_uu__fnd, 'g_uu', "../gr.cg/inverse_metric.c")
+    end if;
+    NULL
+end proc
+
+extrinsic_curvature_trace_raise := proc(cg_flag::boolean)
+local i, j, m, n;
+global delta, N, N_ang, xx, yy, zz, x_xyz, x_xyz_list, x_xyz_set, r, r__fnd,
+rho, sigma, y_rs, y_rs_list, y_rs_set, xy_all_list, xy_all_set, inert, none,
+fnd, symmetric3_23, X_ud, X_ud__fnd, X_udd, X_udd__fnd, g_dd, K_dd, g_uu,
+g_uu__fnd, K_uu, K_uu__fnd, K, K__fnd, partial_d_g_dd, partial_d_ln_sqrt_g,
+partial_d_ln_sqrt_g__fnd, partial_d_g_uu, partial_d_g_uu__fnd, h, h__fnd,
+s_d, s_d__fnd, partial_d_s_d, partial_d_s_d__fnd, n_u, n_u__fnd, Theta_A,
+Theta_A__fnd, Theta_B, Theta_B__fnd, Theta_C, Theta_C__fnd, Theta_D,
+Theta_D__fnd, Theta, Theta__fnd, partial_d_Theta_A, partial_d_Theta_A__fnd,
+partial_d_Theta_B, partial_d_Theta_B__fnd, partial_d_Theta_C,
+partial_d_Theta_C__fnd, partial_d_Theta_D, partial_d_Theta_D__fnd,
+partial_d_Theta_, partial_d_Theta__fnd, partial_Theta_A_wrt_partial_d_h,
+partial_Theta_A_wrt_partial_d_h__fnd, partial_Theta_B_wrt_partial_d_h,
+partial_Theta_B_wrt_partial_d_h__fnd, partial_Theta_C_wrt_partial_d_h,
+partial_Theta_C_wrt_partial_d_h__fnd, partial_Theta_D_wrt_partial_d_h,
+partial_Theta_D_wrt_partial_d_h__fnd, partial_Theta_A_wrt_partial_dd_h,
+partial_Theta_A_wrt_partial_dd_h__fnd, partial_Theta_B_wrt_partial_dd_h,
+partial_Theta_B_wrt_partial_dd_h__fnd, partial_Theta_X_wrt_partial_d_h,
+partial_Theta_X_wrt_partial_d_h__fnd, partial_Theta_Y_wrt_partial_d_h,
+partial_Theta_Y_wrt_partial_d_h__fnd, partial_Theta_X_wrt_partial_dd_h,
+partial_Theta_X_wrt_partial_dd_h__fnd, partial_Theta_Y_wrt_partial_dd_h,
+partial_Theta_Y_wrt_partial_dd_h__fnd;
+    printf("%a...\n", procname);
+    assert_fnd_exists(g_uu);
+    assert_fnd_exists(K_dd);
+    assert_fnd_exists(K, fnd);
+    assert_fnd_exists(K_uu, fnd);
+    K__fnd :=
+        simplify(msum('g_uu[i, j]*K_dd[i, j]', 'i' = 1 .. N, 'j' = 1 .. N))
+        ;
+    for i to N do for j from i to N do K_uu__fnd[i, j] := simplify(msum(
+            'g_uu[i, m]*g_uu[j, n]*K_dd[m, n]', 'm' = 1 .. N, 'n' = 1 .. N))
+        end do
+    end do;
+    if cg_flag then codegen2([K__fnd, K_uu__fnd], ['K', 'K_uu'],
+        "../gr.cg/extrinsic_curvature_trace_raise.c")
+    end if;
+    NULL
+end proc
+
+> read "curvature.mm";
+curvature := proc(cg_flag::boolean)
+    inverse_metric_gradient(cg_flag); metric_det_gradient(cg_flag); NULL
+end proc
+
+inverse_metric_gradient := proc(cg_flag::boolean)
+local k, i, j, m, n;
+global delta, N, N_ang, xx, yy, zz, x_xyz, x_xyz_list, x_xyz_set, r, r__fnd,
+rho, sigma, y_rs, y_rs_list, y_rs_set, xy_all_list, xy_all_set, inert, none,
+fnd, symmetric3_23, X_ud, X_ud__fnd, X_udd, X_udd__fnd, g_dd, K_dd, g_uu,
+g_uu__fnd, K_uu, K_uu__fnd, K, K__fnd, partial_d_g_dd, partial_d_ln_sqrt_g,
+partial_d_ln_sqrt_g__fnd, partial_d_g_uu, partial_d_g_uu__fnd, h, h__fnd,
+s_d, s_d__fnd, partial_d_s_d, partial_d_s_d__fnd, n_u, n_u__fnd, Theta_A,
+Theta_A__fnd, Theta_B, Theta_B__fnd, Theta_C, Theta_C__fnd, Theta_D,
+Theta_D__fnd, Theta, Theta__fnd, partial_d_Theta_A, partial_d_Theta_A__fnd,
+partial_d_Theta_B, partial_d_Theta_B__fnd, partial_d_Theta_C,
+partial_d_Theta_C__fnd, partial_d_Theta_D, partial_d_Theta_D__fnd,
+partial_d_Theta_, partial_d_Theta__fnd, partial_Theta_A_wrt_partial_d_h,
+partial_Theta_A_wrt_partial_d_h__fnd, partial_Theta_B_wrt_partial_d_h,
+partial_Theta_B_wrt_partial_d_h__fnd, partial_Theta_C_wrt_partial_d_h,
+partial_Theta_C_wrt_partial_d_h__fnd, partial_Theta_D_wrt_partial_d_h,
+partial_Theta_D_wrt_partial_d_h__fnd, partial_Theta_A_wrt_partial_dd_h,
+partial_Theta_A_wrt_partial_dd_h__fnd, partial_Theta_B_wrt_partial_dd_h,
+partial_Theta_B_wrt_partial_dd_h__fnd, partial_Theta_X_wrt_partial_d_h,
+partial_Theta_X_wrt_partial_d_h__fnd, partial_Theta_Y_wrt_partial_d_h,
+partial_Theta_Y_wrt_partial_d_h__fnd, partial_Theta_X_wrt_partial_dd_h,
+partial_Theta_X_wrt_partial_dd_h__fnd, partial_Theta_Y_wrt_partial_dd_h,
+partial_Theta_Y_wrt_partial_dd_h__fnd;
+    printf("%a...\n", procname);
+    assert_fnd_exists(g_dd);
+    assert_fnd_exists(g_uu);
+    assert_fnd_exists(partial_d_g_uu, fnd);
+    for k to N do for i to N do for j from i to N do
+                partial_d_g_uu__fnd[k, i, j] := simplify(-msum(
+                'g_uu[i, m]*g_uu[j, n]*partial_d_g_dd[k, m, n]',
+                'm' = 1 .. N, 'n' = 1 .. N))
+            end do
+        end do
+    end do;
+    if cg_flag then codegen2(partial_d_g_uu__fnd, 'partial_d_g_uu',
+        "../gr.cg/inverse_metric_gradient.c")
+    end if;
+    NULL
+end proc
+
+metric_det_gradient := proc(cg_flag::boolean)
+local k, i, j;
+global delta, N, N_ang, xx, yy, zz, x_xyz, x_xyz_list, x_xyz_set, r, r__fnd,
+rho, sigma, y_rs, y_rs_list, y_rs_set, xy_all_list, xy_all_set, inert, none,
+fnd, symmetric3_23, X_ud, X_ud__fnd, X_udd, X_udd__fnd, g_dd, K_dd, g_uu,
+g_uu__fnd, K_uu, K_uu__fnd, K, K__fnd, partial_d_g_dd, partial_d_ln_sqrt_g,
+partial_d_ln_sqrt_g__fnd, partial_d_g_uu, partial_d_g_uu__fnd, h, h__fnd,
+s_d, s_d__fnd, partial_d_s_d, partial_d_s_d__fnd, n_u, n_u__fnd, Theta_A,
+Theta_A__fnd, Theta_B, Theta_B__fnd, Theta_C, Theta_C__fnd, Theta_D,
+Theta_D__fnd, Theta, Theta__fnd, partial_d_Theta_A, partial_d_Theta_A__fnd,
+partial_d_Theta_B, partial_d_Theta_B__fnd, partial_d_Theta_C,
+partial_d_Theta_C__fnd, partial_d_Theta_D, partial_d_Theta_D__fnd,
+partial_d_Theta_, partial_d_Theta__fnd, partial_Theta_A_wrt_partial_d_h,
+partial_Theta_A_wrt_partial_d_h__fnd, partial_Theta_B_wrt_partial_d_h,
+partial_Theta_B_wrt_partial_d_h__fnd, partial_Theta_C_wrt_partial_d_h,
+partial_Theta_C_wrt_partial_d_h__fnd, partial_Theta_D_wrt_partial_d_h,
+partial_Theta_D_wrt_partial_d_h__fnd, partial_Theta_A_wrt_partial_dd_h,
+partial_Theta_A_wrt_partial_dd_h__fnd, partial_Theta_B_wrt_partial_dd_h,
+partial_Theta_B_wrt_partial_dd_h__fnd, partial_Theta_X_wrt_partial_d_h,
+partial_Theta_X_wrt_partial_d_h__fnd, partial_Theta_Y_wrt_partial_d_h,
+partial_Theta_Y_wrt_partial_d_h__fnd, partial_Theta_X_wrt_partial_dd_h,
+partial_Theta_X_wrt_partial_dd_h__fnd, partial_Theta_Y_wrt_partial_dd_h,
+partial_Theta_Y_wrt_partial_dd_h__fnd;
+    printf("%a...\n", procname);
+    assert_fnd_exists(g_dd);
+    assert_fnd_exists(g_uu);
+    assert_fnd_exists(partial_d_ln_sqrt_g, fnd);
+    for k to N do partial_d_ln_sqrt_g__fnd[k] := simplify(1/2*msum(
+        'g_uu[i, j]*partial_d_g_dd[k, i, j]', 'i' = 1 .. N, 'j' = 1 .. N))
+    end do;
+    if cg_flag then codegen2(partial_d_ln_sqrt_g__fnd,
+        'partial_d_ln_sqrt_g', "../gr.cg/metric_det_gradient.c")
+    end if;
+    NULL
+end proc
+
+> read "horizon.mm";
+horizon := proc(cg_flag::boolean)
+    non_unit_normal();
+    non_unit_normal_deriv();
+    expansion(cg_flag);
+    expansion_Jacobian(cg_flag);
+    NULL
+end proc
+
+non_unit_normal := proc()
+local i, u;
+global delta, N, N_ang, xx, yy, zz, x_xyz, x_xyz_list, x_xyz_set, r, r__fnd,
+rho, sigma, y_rs, y_rs_list, y_rs_set, xy_all_list, xy_all_set, inert, none,
+fnd, symmetric3_23, X_ud, X_ud__fnd, X_udd, X_udd__fnd, g_dd, K_dd, g_uu,
+g_uu__fnd, K_uu, K_uu__fnd, K, K__fnd, partial_d_g_dd, partial_d_ln_sqrt_g,
+partial_d_ln_sqrt_g__fnd, partial_d_g_uu, partial_d_g_uu__fnd, h, h__fnd,
+s_d, s_d__fnd, partial_d_s_d, partial_d_s_d__fnd, n_u, n_u__fnd, Theta_A,
+Theta_A__fnd, Theta_B, Theta_B__fnd, Theta_C, Theta_C__fnd, Theta_D,
+Theta_D__fnd, Theta, Theta__fnd, partial_d_Theta_A, partial_d_Theta_A__fnd,
+partial_d_Theta_B, partial_d_Theta_B__fnd, partial_d_Theta_C,
+partial_d_Theta_C__fnd, partial_d_Theta_D, partial_d_Theta_D__fnd,
+partial_d_Theta_, partial_d_Theta__fnd, partial_Theta_A_wrt_partial_d_h,
+partial_Theta_A_wrt_partial_d_h__fnd, partial_Theta_B_wrt_partial_d_h,
+partial_Theta_B_wrt_partial_d_h__fnd, partial_Theta_C_wrt_partial_d_h,
+partial_Theta_C_wrt_partial_d_h__fnd, partial_Theta_D_wrt_partial_d_h,
+partial_Theta_D_wrt_partial_d_h__fnd, partial_Theta_A_wrt_partial_dd_h,
+partial_Theta_A_wrt_partial_dd_h__fnd, partial_Theta_B_wrt_partial_dd_h,
+partial_Theta_B_wrt_partial_dd_h__fnd, partial_Theta_X_wrt_partial_d_h,
+partial_Theta_X_wrt_partial_d_h__fnd, partial_Theta_Y_wrt_partial_d_h,
+partial_Theta_Y_wrt_partial_d_h__fnd, partial_Theta_X_wrt_partial_dd_h,
+partial_Theta_X_wrt_partial_dd_h__fnd, partial_Theta_Y_wrt_partial_dd_h,
+partial_Theta_Y_wrt_partial_dd_h__fnd;
+    printf("%a...\n", procname);
+    assert_fnd_exists(h);
+    assert_fnd_exists(X_ud);
+    assert_fnd_exists(s_d, fnd);
+    for i to N do s_d__fnd[i] :=
+        x_xyz[i]/r - sum('X_ud[u, i]*Diff(h, y_rs[u])', 'u' = 1 .. N_ang)
+    end do;
+    NULL
+end proc
+
+non_unit_normal_deriv := proc()
+local temp, i, j, k, u, v;
+global delta, N, N_ang, xx, yy, zz, x_xyz, x_xyz_list, x_xyz_set, r, r__fnd,
+rho, sigma, y_rs, y_rs_list, y_rs_set, xy_all_list, xy_all_set, inert, none,
+fnd, symmetric3_23, X_ud, X_ud__fnd, X_udd, X_udd__fnd, g_dd, K_dd, g_uu,
+g_uu__fnd, K_uu, K_uu__fnd, K, K__fnd, partial_d_g_dd, partial_d_ln_sqrt_g,
+partial_d_ln_sqrt_g__fnd, partial_d_g_uu, partial_d_g_uu__fnd, h, h__fnd,
+s_d, s_d__fnd, partial_d_s_d, partial_d_s_d__fnd, n_u, n_u__fnd, Theta_A,
+Theta_A__fnd, Theta_B, Theta_B__fnd, Theta_C, Theta_C__fnd, Theta_D,
+Theta_D__fnd, Theta, Theta__fnd, partial_d_Theta_A, partial_d_Theta_A__fnd,
+partial_d_Theta_B, partial_d_Theta_B__fnd, partial_d_Theta_C,
+partial_d_Theta_C__fnd, partial_d_Theta_D, partial_d_Theta_D__fnd,
+partial_d_Theta_, partial_d_Theta__fnd, partial_Theta_A_wrt_partial_d_h,
+partial_Theta_A_wrt_partial_d_h__fnd, partial_Theta_B_wrt_partial_d_h,
+partial_Theta_B_wrt_partial_d_h__fnd, partial_Theta_C_wrt_partial_d_h,
+partial_Theta_C_wrt_partial_d_h__fnd, partial_Theta_D_wrt_partial_d_h,
+partial_Theta_D_wrt_partial_d_h__fnd, partial_Theta_A_wrt_partial_dd_h,
+partial_Theta_A_wrt_partial_dd_h__fnd, partial_Theta_B_wrt_partial_dd_h,
+partial_Theta_B_wrt_partial_dd_h__fnd, partial_Theta_X_wrt_partial_d_h,
+partial_Theta_X_wrt_partial_d_h__fnd, partial_Theta_Y_wrt_partial_d_h,
+partial_Theta_Y_wrt_partial_d_h__fnd, partial_Theta_X_wrt_partial_dd_h,
+partial_Theta_X_wrt_partial_dd_h__fnd, partial_Theta_Y_wrt_partial_dd_h,
+partial_Theta_Y_wrt_partial_dd_h__fnd;
+    printf("%a...\n", procname);
+    assert_fnd_exists(h);
+    assert_fnd_exists(X_ud);
+    assert_fnd_exists(X_udd);
+    assert_fnd_exists(partial_d_s_d, fnd);
+    for i to N do for j to N do
+            temp := `if`(i = j,
+                sum('x_xyz[k]^2', 'k' = 1 .. N) - x_xyz[i]^2,
+                -x_xyz[i]*x_xyz[j]);
+            partial_d_s_d__fnd[i, j] := simplify(temp/r^3) - simplify(
+                sum('X_udd[u, i, j]*Diff(h, y_rs[u])', 'u' = 1 .. N_ang))
+                 - simplify(msum(
+                'X_ud[u, i]*X_ud[v, j]*Diff(h, y_rs[u], y_rs[v])',
+                'u' = 1 .. N_ang, 'v' = 1 .. N_ang))
+        end do
+    end do;
+    NULL
+end proc
+
+expansion := proc(cg_flag::boolean)
+local i, j, k, l;
+global delta, N, N_ang, xx, yy, zz, x_xyz, x_xyz_list, x_xyz_set, r, r__fnd,
+rho, sigma, y_rs, y_rs_list, y_rs_set, xy_all_list, xy_all_set, inert, none,
+fnd, symmetric3_23, X_ud, X_ud__fnd, X_udd, X_udd__fnd, g_dd, K_dd, g_uu,
+g_uu__fnd, K_uu, K_uu__fnd, K, K__fnd, partial_d_g_dd, partial_d_ln_sqrt_g,
+partial_d_ln_sqrt_g__fnd, partial_d_g_uu, partial_d_g_uu__fnd, h, h__fnd,
+s_d, s_d__fnd, partial_d_s_d, partial_d_s_d__fnd, n_u, n_u__fnd, Theta_A,
+Theta_A__fnd, Theta_B, Theta_B__fnd, Theta_C, Theta_C__fnd, Theta_D,
+Theta_D__fnd, Theta, Theta__fnd, partial_d_Theta_A, partial_d_Theta_A__fnd,
+partial_d_Theta_B, partial_d_Theta_B__fnd, partial_d_Theta_C,
+partial_d_Theta_C__fnd, partial_d_Theta_D, partial_d_Theta_D__fnd,
+partial_d_Theta_, partial_d_Theta__fnd, partial_Theta_A_wrt_partial_d_h,
+partial_Theta_A_wrt_partial_d_h__fnd, partial_Theta_B_wrt_partial_d_h,
+partial_Theta_B_wrt_partial_d_h__fnd, partial_Theta_C_wrt_partial_d_h,
+partial_Theta_C_wrt_partial_d_h__fnd, partial_Theta_D_wrt_partial_d_h,
+partial_Theta_D_wrt_partial_d_h__fnd, partial_Theta_A_wrt_partial_dd_h,
+partial_Theta_A_wrt_partial_dd_h__fnd, partial_Theta_B_wrt_partial_dd_h,
+partial_Theta_B_wrt_partial_dd_h__fnd, partial_Theta_X_wrt_partial_d_h,
+partial_Theta_X_wrt_partial_d_h__fnd, partial_Theta_Y_wrt_partial_d_h,
+partial_Theta_Y_wrt_partial_d_h__fnd, partial_Theta_X_wrt_partial_dd_h,
+partial_Theta_X_wrt_partial_dd_h__fnd, partial_Theta_Y_wrt_partial_dd_h,
+partial_Theta_Y_wrt_partial_dd_h__fnd;
+    printf("%a...\n", procname);
+    assert_fnd_exists(g_uu);
+    assert_fnd_exists(K_uu);
+    assert_fnd_exists(partial_d_ln_sqrt_g);
+    assert_fnd_exists(partial_d_g_uu);
+    assert_fnd_exists(s_d, fnd);
+    assert_fnd_exists(partial_d_s_d, fnd);
+    Theta_A__fnd := -msum('g_uu[i, k]*s_d__fnd[k]*g_uu[j, l]*s_d__fnd[l]*
+        partial_d_s_d__fnd[i, j]', 'i' = 1 .. N, 'j' = 1 .. N, 'k' = 1 .. N,
+        'l' = 1 .. N) - 1/2*msum('g_uu[i, j]*s_d__fnd[j]*
+        partial_d_g_uu[i, k, l]*s_d__fnd[k]*s_d__fnd[l]', 'i' = 1 .. N,
+        'j' = 1 .. N, 'k' = 1 .. N, 'l' = 1 .. N);
+    Theta_B__fnd := msum('partial_d_g_uu[i, i, j]*s_d__fnd[j]',
+        'i' = 1 .. N, 'j' = 1 .. N) + msum(
+        'g_uu[i, j]*partial_d_s_d__fnd[i, j]', 'i' = 1 .. N, 'j' = 1 .. N)
+         + msum('g_uu[i, j]*partial_d_ln_sqrt_g[i]*s_d__fnd[j]',
+        'i' = 1 .. N, 'j' = 1 .. N);
+    Theta_C__fnd := msum('K_uu[i, j]*s_d__fnd[i]*s_d__fnd[j]', 'i' = 1 .. N,
+        'j' = 1 .. N);
+    Theta_D__fnd := msum('g_uu[i, j]*s_d__fnd[i]*s_d__fnd[j]', 'i' = 1 .. N,
+        'j' = 1 .. N);
+    Theta__fnd := Theta_A__fnd/Theta_D__fnd^(3/2)
+         + Theta_B__fnd/Theta_D__fnd^(1/2) + Theta_C__fnd/Theta_D__fnd - K;
+    if cg_flag then codegen2(
+        [Theta_A__fnd, Theta_B__fnd, Theta_C__fnd, Theta_D__fnd],
+        ['Theta_A', 'Theta_B', 'Theta_C', 'Theta_D'],
+        "../gr.cg/expansion.c")
+    end if;
+    NULL
+end proc
+
+expansion_Jacobian := proc(cg_flag::boolean)
+local u, v, temp1, temp2;
+global delta, N, N_ang, xx, yy, zz, x_xyz, x_xyz_list, x_xyz_set, r, r__fnd,
+rho, sigma, y_rs, y_rs_list, y_rs_set, xy_all_list, xy_all_set, inert, none,
+fnd, symmetric3_23, X_ud, X_ud__fnd, X_udd, X_udd__fnd, g_dd, K_dd, g_uu,
+g_uu__fnd, K_uu, K_uu__fnd, K, K__fnd, partial_d_g_dd, partial_d_ln_sqrt_g,
+partial_d_ln_sqrt_g__fnd, partial_d_g_uu, partial_d_g_uu__fnd, h, h__fnd,
+s_d, s_d__fnd, partial_d_s_d, partial_d_s_d__fnd, n_u, n_u__fnd, Theta_A,
+Theta_A__fnd, Theta_B, Theta_B__fnd, Theta_C, Theta_C__fnd, Theta_D,
+Theta_D__fnd, Theta, Theta__fnd, partial_d_Theta_A, partial_d_Theta_A__fnd,
+partial_d_Theta_B, partial_d_Theta_B__fnd, partial_d_Theta_C,
+partial_d_Theta_C__fnd, partial_d_Theta_D, partial_d_Theta_D__fnd,
+partial_d_Theta_, partial_d_Theta__fnd, partial_Theta_A_wrt_partial_d_h,
+partial_Theta_A_wrt_partial_d_h__fnd, partial_Theta_B_wrt_partial_d_h,
+partial_Theta_B_wrt_partial_d_h__fnd, partial_Theta_C_wrt_partial_d_h,
+partial_Theta_C_wrt_partial_d_h__fnd, partial_Theta_D_wrt_partial_d_h,
+partial_Theta_D_wrt_partial_d_h__fnd, partial_Theta_A_wrt_partial_dd_h,
+partial_Theta_A_wrt_partial_dd_h__fnd, partial_Theta_B_wrt_partial_dd_h,
+partial_Theta_B_wrt_partial_dd_h__fnd, partial_Theta_X_wrt_partial_d_h,
+partial_Theta_X_wrt_partial_d_h__fnd, partial_Theta_Y_wrt_partial_d_h,
+partial_Theta_Y_wrt_partial_d_h__fnd, partial_Theta_X_wrt_partial_dd_h,
+partial_Theta_X_wrt_partial_dd_h__fnd, partial_Theta_Y_wrt_partial_dd_h,
+partial_Theta_Y_wrt_partial_dd_h__fnd;
+    printf("%a...\n", procname);
+    assert_fnd_exists(g_uu);
+    assert_fnd_exists(K_uu);
+    assert_fnd_exists(partial_d_ln_sqrt_g);
+    assert_fnd_exists(partial_d_g_uu);
+    assert_fnd_exists(Theta_A);
+    assert_fnd_exists(Theta_B);
+    assert_fnd_exists(Theta_C);
+    assert_fnd_exists(Theta_D);
+    for u to N_ang do
+        partial_Theta_A_wrt_partial_d_h__fnd[u] :=
+            frontend('diff', [Theta_A__fnd, Diff(h, y_rs[u])]);
+        partial_Theta_B_wrt_partial_d_h__fnd[u] :=
+            frontend('diff', [Theta_B__fnd, Diff(h, y_rs[u])]);
+        partial_Theta_C_wrt_partial_d_h__fnd[u] :=
+            frontend('diff', [Theta_C__fnd, Diff(h, y_rs[u])]);
+        partial_Theta_D_wrt_partial_d_h__fnd[u] :=
+            frontend('diff', [Theta_D__fnd, Diff(h, y_rs[u])]);
+        temp1 := 3/2*Theta_A/Theta_D^(5/2) + 1/2*Theta_B/Theta_D^(3/2);
+        partial_Theta_X_wrt_partial_d_h__fnd[u] :=
+            partial_Theta_A_wrt_partial_d_h__fnd[u]/Theta_D^(3/2)
+             + partial_Theta_B_wrt_partial_d_h__fnd[u]/Theta_D^(1/2)
+             - partial_Theta_D_wrt_partial_d_h__fnd[u]*temp1;
+        temp2 := Theta_C/Theta_D^2;
+        partial_Theta_Y_wrt_partial_d_h__fnd[u] :=
+            partial_Theta_C_wrt_partial_d_h__fnd[u]/Theta_D
+             - partial_Theta_D_wrt_partial_d_h__fnd[u]*temp2
+    end do;
+    for u to N_ang do for v from u to N_ang do
+            partial_Theta_A_wrt_partial_dd_h__fnd[u, v] :=
+                frontend('diff', [Theta_A__fnd, Diff(h, y_rs[u], y_rs[v])])
+                ;
+            partial_Theta_B_wrt_partial_dd_h__fnd[u, v] :=
+                frontend('diff', [Theta_B__fnd, Diff(h, y_rs[u], y_rs[v])])
+                ;
+            partial_Theta_X_wrt_partial_dd_h__fnd[u, v] :=
+                partial_Theta_A_wrt_partial_dd_h__fnd[u, v]/Theta_D^(3/2)
+                 +
+                partial_Theta_B_wrt_partial_dd_h__fnd[u, v]/Theta_D^(1/2);
+            partial_Theta_Y_wrt_partial_dd_h__fnd[u, v] := 0
+        end do
+    end do;
+    if cg_flag then codegen2([partial_Theta_X_wrt_partial_d_h__fnd,
+        partial_Theta_Y_wrt_partial_d_h__fnd,
+        partial_Theta_X_wrt_partial_dd_h__fnd,
+        partial_Theta_Y_wrt_partial_dd_h__fnd], [
+        'partial_Theta_X_wrt_partial_d_h',
+        'partial_Theta_Y_wrt_partial_d_h',
+        'partial_Theta_X_wrt_partial_dd_h',
+        'partial_Theta_Y_wrt_partial_dd_h'],
+        "../gr.cg/expansion_Jacobian.c")
+    end if;
+    NULL
+end proc
+
+> 
+> `saveit/level` := 10;
+                               saveit/level := 10
+
+> auxiliary(true);
+inverse_metric...
+codegen2(g_uu) --> "../gr.cg/inverse_metric.c"
+      --> `codegen2/input`
+   convert --> equation list
+      --> `codegen2/eqnlist`
+   optimizing computation sequence
+      --> `codegen2/optimize`
+   find temporary variables
+      --> `codegen2/temps`
+   convert Diff(expr,rho,sigma) --> PARTIAL_RHO_SIGMA(expr) etc
+bytes used=1000776, alloc=917336, time=0.13
+      --> `codegen2/fix_Diff`
+   convert R_dd[2,3] --> R_dd_23 etc
+      --> `codegen2/unindex`
+   convert p/q --> RATIONAL(p/q)
+      --> `codegen2/fix_rationals`
+   writing C code
+extrinsic_curvature_trace_raise...
+codegen2([K, K_uu]) --> "../gr.cg/extrinsic_curvature_trace_raise.c"
+      --> `codegen2/input`
+   convert --> equation list
+      --> `codegen2/eqnlist`
+   optimizing computation sequence
+bytes used=2001072, alloc=1441528, time=0.20
+      --> `codegen2/optimize`
+   find temporary variables
+      --> `codegen2/temps`
+   convert Diff(expr,rho,sigma) --> PARTIAL_RHO_SIGMA(expr) etc
+      --> `codegen2/fix_Diff`
+   convert R_dd[2,3] --> R_dd_23 etc
+      --> `codegen2/unindex`
+bytes used=3001364, alloc=1638100, time=0.26
+   convert p/q --> RATIONAL(p/q)
+      --> `codegen2/fix_rationals`
+   writing C code
+> curvature(true);
+inverse_metric_gradient...
+bytes used=4001680, alloc=1703624, time=0.34
+codegen2(partial_d_g_uu) --> "../gr.cg/inverse_metric_gradient.c"
+      --> `codegen2/input`
+   convert --> equation list
+      --> `codegen2/eqnlist`
+   optimizing computation sequence
+bytes used=5001836, alloc=1703624, time=0.42
+      --> `codegen2/optimize`
+   find temporary variables
+      --> `codegen2/temps`
+   convert Diff(expr,rho,sigma) --> PARTIAL_RHO_SIGMA(expr) etc
+bytes used=6002212, alloc=1769148, time=0.49
+      --> `codegen2/fix_Diff`
+   convert R_dd[2,3] --> R_dd_23 etc
+      --> `codegen2/unindex`
+bytes used=7002736, alloc=1769148, time=0.55
+   convert p/q --> RATIONAL(p/q)
+      --> `codegen2/fix_rationals`
+   writing C code
+bytes used=8003012, alloc=1769148, time=0.62
+metric_det_gradient...
+codegen2(partial_d_ln_sqrt_g) --> "../gr.cg/metric_det_gradient.c"
+      --> `codegen2/input`
+   convert --> equation list
+      --> `codegen2/eqnlist`
+   optimizing computation sequence
+bytes used=9003256, alloc=1769148, time=0.75
+      --> `codegen2/optimize`
+   find temporary variables
+      --> `codegen2/temps`
+   convert Diff(expr,rho,sigma) --> PARTIAL_RHO_SIGMA(expr) etc
+      --> `codegen2/fix_Diff`
+   convert R_dd[2,3] --> R_dd_23 etc
+      --> `codegen2/unindex`
+   convert p/q --> RATIONAL(p/q)
+      --> `codegen2/fix_rationals`
+   writing C code
+codegen/C/expression:   Unknown function:   RATIONAL   will be left as is.
+> horizon(true);
+non_unit_normal...
+non_unit_normal_deriv...
+bytes used=10005164, alloc=1769148, time=0.82
+expansion...
+bytes used=11005388, alloc=1834672, time=0.89
+codegen2([Theta_A, Theta_B, Theta_C, Theta_D]) --> "../gr.cg/expansion.c"
+      --> `codegen2/input`
+   convert --> equation list
+      --> `codegen2/eqnlist`
+   optimizing computation sequence
+bytes used=12005892, alloc=1834672, time=0.96
+bytes used=13006112, alloc=2031244, time=1.09
+bytes used=14006296, alloc=2031244, time=1.20
+      --> `codegen2/optimize`
+   find temporary variables
+      --> `codegen2/temps`
+   convert Diff(expr,rho,sigma) --> PARTIAL_RHO_SIGMA(expr) etc
+bytes used=15006844, alloc=2096768, time=1.27
+      --> `codegen2/fix_Diff`
+   convert R_dd[2,3] --> R_dd_23 etc
+bytes used=16007112, alloc=2096768, time=1.34
+      --> `codegen2/unindex`
+bytes used=17007616, alloc=2096768, time=1.40
+   convert p/q --> RATIONAL(p/q)
+bytes used=18007784, alloc=2096768, time=1.46
+      --> `codegen2/fix_rationals`
+   writing C code
+codegen/C/expression:   Unknown function:   PARTIAL_RHO   will be left as is.
+codegen/C/expression:   Unknown function:   PARTIAL_SIGMA   will be left as is.
+codegen/C/expression:   Unknown function:   PARTIAL_RHO_RHO   
+will be left as is.
+codegen/C/expression:   Unknown function:   PARTIAL_RHO_SIGMA   
+will be left as is.
+codegen/C/expression:   Unknown function:   PARTIAL_SIGMA_SIGMA   
+will be left as is.
+bytes used=19008004, alloc=2096768, time=1.51
+bytes used=20008500, alloc=2096768, time=1.62
+expansion_Jacobian...
+bytes used=21009180, alloc=2096768, time=1.70
+codegen2([partial_Theta_X_wrt_partial_d_h, partial_Theta_Y_wrt_partial_d_h, partial_Theta_X_wrt_partial_dd_h, partial_Theta_Y_wrt_partial_dd_h]) --> "../gr.cg/expansion_Jacobian.c"
+      --> `codegen2/input`
+   convert --> equation list
+bytes used=22009512, alloc=2096768, time=1.77
+      --> `codegen2/eqnlist`
+   optimizing computation sequence
+bytes used=23009696, alloc=2162292, time=1.84
+bytes used=24009880, alloc=2293340, time=1.91
+bytes used=25010716, alloc=2293340, time=1.97
+bytes used=26010940, alloc=2293340, time=2.07
+bytes used=27011284, alloc=2293340, time=2.21
+bytes used=28011604, alloc=2293340, time=2.37
+bytes used=29011784, alloc=2293340, time=2.47
+bytes used=30012024, alloc=2424388, time=2.60
+bytes used=31012336, alloc=2424388, time=2.69
+bytes used=32012604, alloc=2489912, time=2.80
+      --> `codegen2/optimize`
+   find temporary variables
+bytes used=33012892, alloc=2620960, time=2.87
+      --> `codegen2/temps`
+   convert Diff(expr,rho,sigma) --> PARTIAL_RHO_SIGMA(expr) etc
+bytes used=34013116, alloc=2620960, time=2.94
+bytes used=35013316, alloc=2620960, time=3.01
+bytes used=36013600, alloc=2620960, time=3.08
+      --> `codegen2/fix_Diff`
+   convert R_dd[2,3] --> R_dd_23 etc
+bytes used=37014080, alloc=2620960, time=3.15
+bytes used=38014560, alloc=2620960, time=3.22
+bytes used=39014928, alloc=2620960, time=3.29
+      --> `codegen2/unindex`
+bytes used=40015272, alloc=2620960, time=3.36
+bytes used=41015476, alloc=2620960, time=3.43
+bytes used=42015660, alloc=2620960, time=3.49
+bytes used=43016244, alloc=2620960, time=3.56
+bytes used=44016600, alloc=2620960, time=3.63
+   convert p/q --> RATIONAL(p/q)
+bytes used=45016764, alloc=2620960, time=3.68
+bytes used=46016940, alloc=2620960, time=3.74
+bytes used=47017228, alloc=2620960, time=3.81
+bytes used=48017676, alloc=2620960, time=3.87
+      --> `codegen2/fix_rationals`
+   writing C code
+bytes used=49017944, alloc=2620960, time=3.94
+bytes used=50018104, alloc=2620960, time=3.99
+bytes used=51018308, alloc=2620960, time=4.08
+bytes used=52018568, alloc=2620960, time=4.20
+bytes used=53018900, alloc=2620960, time=4.35
+bytes used=54019192, alloc=2620960, time=4.53
+bytes used=55019432, alloc=2620960, time=4.68
+> quit
+bytes used=55315640, alloc=2620960, time=4.73

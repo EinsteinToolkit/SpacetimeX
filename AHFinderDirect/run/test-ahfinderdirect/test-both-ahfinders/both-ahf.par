@@ -1,0 +1,80 @@
+# parameter file for patch system test
+ActiveThorns = "CartGrid3D LocalInterp IOUtil PUGH PUGHReduce PUGHInterp SpaceMask StaticConformal CoordGauge ADMBase ADMCoupling ADMMacros AHFinder Exact AHFinderDirect"
+
+# flesh
+cactus::cctk_itlast = 0
+
+# PUGH
+driver::ghost_size = 3
+driver::global_nx = 51
+driver::global_ny = 51
+driver::global_nz = 29
+
+# CartGrid3D
+grid::domain = "bitant"
+grid::avoid_origin = "false"
+grid::type = "byspacing"
+grid::dxyz = 0.2
+
+# IOUtil
+IOUtil::out_every = 1
+IOUtil::parfile_write = "no"
+
+# ADMBase
+ADMBase::initial_lapse = "exact"
+ADMBase::initial_shift = "exact"
+ADMBase::initial_data = "exact"
+ADMBase::lapse_evolution_method = "static"
+ADMBase::shift_evolution_method = "static"
+ADMBase::metric_type = "physical"
+
+# Exact
+Exact::exact_model = "Kerr/Kerr-Schild"
+Exact::Kerr_KerrSchild__mass = 1.0
+Exact::Kerr_KerrSchild__spin = 0.6
+
+# AHFinderDirect
+AHFinderDirect::find_AHs_at_postinitial = "true"
+AHFinderDirect::find_AHs_at_poststep    = "false"
+AHFinderDirect::verbose_level = "algorithm details"
+AHFinderDirect::print_timing_stats = "true"
+
+AHFinderDirect::method = "Newton solve"
+AHFinderDirect::final_H_update_if_exit_x_H_small = "true"
+AHFinderDIrect::surface_integral_method = "Simpson's rule (variant)"
+AHFinderDirect::h_base_file_name      = "both-ahf.h"
+AHFinderDirect::H_of_h_base_file_name = "both-ahf.H"
+
+AHFinderDirect::N_horizons = 1
+AHFinderDirect::origin_x[1] = 0.5
+AHFinderDirect::origin_y[1] = 0.7
+AHFinderDirect::origin_z[1] = 0.0
+AHFinderDirect::ghost_zone_width = 2
+AHFinderDirect::patch_overlap_width = 1
+AHFinderDirect::N_zones_per_right_angle = 18
+
+AHFinderDirect::geometry_interpolator_pars = "order=3   out_of_range_tolerance={-1.0 -1.0 -1.0 -1.0 -1.0 -1.0}"
+
+AHFinderDirect::initial_guess_method = "sphere"
+AHFinderDirect::initial_guess__sphere__x_center[1] = -0.2
+AHFinderDirect::initial_guess__sphere__y_center[1] =  0.3
+AHFinderDirect::initial_guess__sphere__z_center[1] =  0.0
+AHFinderDirect::initial_guess__sphere__radius[1] = 2.0
+
+# AHFinder
+AHFinder::ahf_active = "true"
+AHFinder::ahf_find3 = "false"
+AHFinder::ahf_findevery = 1
+AHFinder::ahf_phi= "true"
+AHFinder::ahf_offset = "true"
+AHFinder::ahf_xc = 0.5
+AHFinder::ahf_yc = 0.7
+AHFinder::ahf_zc = 0.0
+AHFinder::ahf_refz = "true"
+AHFinder::ahf_logfile = "true"
+AHFinder::ahf_verbose = "true"
+AHFinder::ahf_veryverbose = "true"
+AHFinder::ahf_guessverbose = "true"
+AHFinder::ahf_1Doutput = "true"
+AHFinder::ahf_2Doutput = "true"
+AHFinder::ahf_3Doutput = "true"

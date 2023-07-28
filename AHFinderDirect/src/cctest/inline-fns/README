@@ -1,0 +1,11 @@
+$Header$
+
+This directory contains test programs to see how (or if!) compilers
+handle inline functions.
+
+inline-fn.cc	Tests a trivial non-class inline function
+		defined in the .cc file
+inline-fn2.cc	Tests a trivial non-class inline function
+		defined in a header file
+inline-class.cc	Tests a trivial class containing an inline function
+		(and an out-of-line constructor)

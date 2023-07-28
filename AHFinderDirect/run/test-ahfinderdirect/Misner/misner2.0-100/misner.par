@@ -1,0 +1,82 @@
+# This parameter file sets up Misner initial data and finds the
+# apparent horizons in it with AHFinderDirect.
+#
+# Note that the grid is very high-resolution, but small (the outer
+# boundaries are very close in).  This isn't a problem for the purposes
+# of this test.  This run takes about 185 megabytes of memory, and
+# 36 cpu seconds on a 1.07GHz PIII laptop.
+
+########################################
+ 
+#
+# ***** grid *****
+#
+
+ActiveThorns = "CartGrid3D PUGH"
+
+Driver::global_nx   = 30
+Driver::global_ny   = 30
+Driver::global_nz   = 30
+driver::ghost_size    = 2
+
+Grid::domain        = "octant"
+Grid::type          = "byspacing"
+Grid::dxyz          = 0.100
+Grid::avoid_origin  = "true"
+
+########################################
+
+#
+# physics
+#
+
+ActiveThorns = "ADMBase ADMCoupling CoordGauge StaticConformal SpaceMask"
+ActiveThorns = "IDAnalyticBH"
+
+ADMBase::initial_data              = "misner_bh"
+IDAnalyticBH::mu                   = 2.0
+
+########################################
+
+#
+# numerical methods
+#
+
+Cactus::cctk_itlast = 0
+ADMBase::metric_type            = "static conformal"
+StaticConformal::conformal_storage = "factor"
+ADMBase::evolution_method       = "none"
+ADMBase::initial_lapse          = "Cadez"
+ADMBase::lapse_evolution_method = "static"
+ADMBase::initial_shift          = "zero"
+ADMBase::shift_evolution_method = "static"
+
+########################################
+
+ActiveThorns = "IOUtil"
+IOUtil::parfile_write = "no"
+
+########################################
+
+#
+# AHFinderDirect
+#
+
+ActiveThorns = "AEILocalInterp PUGHInterp PUGHReduce AHFinderDirect"
+
+AHFinderDirect::print_timing_stats = "true"
+##AHFinderDirect::verbose_level = "algorithm details"
+
+AHFinderDirect::h_base_file_name              = "misner.h"
+AHFinderDirect::BH_diagnostics_base_file_name = "misner.BH_diagnostics"
+
+AHFinderDirect::N_horizons = 1
+
+AHFinderDirect::origin_x[1] = 0.0
+AHFinderDirect::origin_y[1] = 0.0
+AHFinderDirect::origin_z[1] = 1.0
+AHFinderDirect::initial_guess_method[1] = "coordinate sphere"
+AHFinderDirect::initial_guess__coord_sphere__x_center[1] = 0.0
+AHFinderDirect::initial_guess__coord_sphere__y_center[1] = 0.0
+AHFinderDirect::initial_guess__coord_sphere__z_center[1] = 1.0
+AHFinderDirect::initial_guess__coord_sphere__radius[1] = 0.30

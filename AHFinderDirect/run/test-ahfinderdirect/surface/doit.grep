@@ -1,0 +1,19 @@
+#!/bin/sh
+
+	for method in trapezoid Simpson Simpson-variant
+	do
+	for offset in '' '-offset'
+	do
+	name="$method$offset"
+	echo $name
+	fgrep 'AH found' *$name.log \
+	   | sed -e 's/^[^0-9]*//' \
+		 -e 's/-.*AH found: A=/	/' \
+		 -e 's/ m=/	/' \
+		 -e 's/ at (/	/' \
+		 -e 's/,/	/g' \
+		 -e 's/)$//' \
+	   | pre1st '# delta	area	mass	posn_x	posn_y	posn_z' \
+	   > $name.dat
+	done
+	done
