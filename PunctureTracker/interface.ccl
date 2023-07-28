@@ -1,0 +1,36 @@
+# Interface definition for thorn PunctureTracker
+
+IMPLEMENTS: PunctureTracker
+
+INHERITS: ADMBase CarpetRegrid2 SphericalSurface
+
+
+
+CCTK_REAL pt_loc[10] TYPE=scalar
+{
+  pt_loc_t pt_loc_x pt_loc_y pt_loc_z
+} "Location of punctures"
+
+CCTK_REAL pt_loc_p[10] TYPE=scalar
+{
+  pt_loc_t_p pt_loc_x_p pt_loc_y_p pt_loc_z_p
+} "Previous location of punctures"
+
+CCTK_REAL pt_vel[10] TYPE=scalar
+{
+  pt_vel_t pt_vel_x pt_vel_y pt_vel_z
+} "Velocity of punctures"
+
+
+CCTK_INT FUNCTION                                      \
+    InterpGridArrays                                   \
+        (CCTK_POINTER_TO_CONST IN cctkGH,              \
+         CCTK_INT              IN N_dims,              \
+         CCTK_INT              IN order,               \
+         CCTK_INT              IN N_interp_points,     \
+         CCTK_POINTER_TO_CONST IN interp_coords,       \
+         CCTK_INT              IN N_input_arrays,      \
+         CCTK_INT        ARRAY IN input_array_indices, \
+         CCTK_INT              IN N_output_arrays,     \
+         CCTK_POINTER          IN output_arrays)
+USES FUNCTION InterpGridArrays

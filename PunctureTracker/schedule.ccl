@@ -1,0 +1,21 @@
+# Schedule definitions for thorn PunctureTracker
+
+STORAGE: pt_loc pt_loc_p pt_vel
+
+SCHEDULE PunctureTracker_Init AT initial
+{
+  LANG: C
+  OPTIONS: GLOBAL
+} "Calculate initial location of punctures"
+
+SCHEDULE PunctureTracker_Track AT evol AFTER MoL_Evolution
+{
+  LANG: C
+  OPTIONS: GLOBAL
+} "Calculate new location of punctures"
+
+SCHEDULE PunctureTracker_SetPositions AT POSTSTEP
+{
+  LANG: C
+  OPTIONS: global
+} "Copy puncture positions to spherical surfaces"
