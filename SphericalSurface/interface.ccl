@@ -1,0 +1,117 @@
+# Interface definition for thorn SphericalSurface
+
+IMPLEMENTS: SphericalSurface
+inherits: grid
+
+
+
+# Get current refinement level
+CCTK_INT FUNCTION GetRefinementLevel (CCTK_POINTER_TO_CONST IN cctkGH)
+USES FUNCTION GetRefinementLevel
+
+# simple translation function from user-friendly name to numerical Id
+# if name is not empty returns the matching name and -1 if no name matches
+# if name is empty returns fallbackid
+CCTK_INT \
+FUNCTION sf_IdFromName (CCTK_INT IN fallbackid, CCTK_POINTER_TO_CONST IN name)
+PROVIDES FUNCTION sf_IdFromName WITH SphericalSurface_IdFromName LANGUAGE C
+
+
+
+PUBLIC:
+
+
+# To be defined by the setting thorn.
+# Suggested meanings:
+# zero: The surface data are invalid (garbage)
+# one:  The surface data are valid in principle, although they may be outdated
+CCTK_INT sf_active[nsurfaces] TYPE=scalar
+
+# To be defined by the setting thorn.
+# Suggested meanings: 
+# zero:     No surface is provided at this time step
+# negative: No surface could be found at this time step
+# positive: The surface data are valid
+CCTK_INT sf_valid[nsurfaces] TYPE=scalar
+
+
+
+
+
+CCTK_REAL sf_info[nsurfaces] TYPE=scalar
+{
+  # The following are covariant quantities:
+  
+  # proper area:
+  #    A := int(S) sqrt(q) dS
+  #    with q_ij the 2-metric on the surface
+  sf_area
+  
+  
+  
+  # The following are coordinate-dependent quantities:
+  
+  # monopole moment (average coordinate radius):
+  #    M := int(S) h ds / A
+  sf_mean_radius
+
+  # dipole moment:
+  #    D^i := int(S) x^i dS / A
+  sf_centroid_x sf_centroid_y sf_centroid_z
+
+  # quadrupole moment:
+  #    Q^ij := int(S) y^i y^j dS / A   with y^i := x^i - D^i
+  sf_quadrupole_xx sf_quadrupole_xy sf_quadrupole_xz
+  sf_quadrupole_yy sf_quadrupole_yz sf_quadrupole_zz
+  
+  
+  
+  # minimum and maximum coordinate radius
+  sf_min_radius sf_max_radius
+
+  # bounding box
+  sf_min_x sf_min_y sf_min_z sf_max_x sf_max_y sf_max_z
+} "Surface information"
+
+
+
+# the finest reflevel each surface is intersecting
+CCTK_INT sf_minreflevel[nsurfaces] TYPE=scalar
+
+# the finest reflevel that contains the entire surface
+CCTK_INT sf_maxreflevel[nsurfaces] TYPE=scalar
+
+
+CCTK_REAL sf_radius[nsurfaces] TYPE=array DIM=2 SIZE=maxntheta,maxnphi DISTRIB=constant #TAGS='convergence_power=1'
+
+CCTK_REAL sf_origin[nsurfaces] TYPE=scalar
+{
+  # these are to be set together with the radius grid array
+  sf_origin_x sf_origin_y sf_origin_z
+}
+
+
+  
+CCTK_REAL sf_coordinate_descriptors[nsurfaces] TYPE=scalar
+{
+  # these are set up by this thorn, and should be treated as read-only
+  sf_origin_theta sf_origin_phi
+  sf_delta_theta sf_delta_phi
+} "Surface coordinate descriptors"
+
+
+
+CCTK_INT sf_shape_descriptors[nsurfaces] TYPE=scalar
+{
+  sf_ntheta sf_nphi
+  sf_nghoststheta sf_nghostsphi
+} "Surface shape descriptors"
+
+
+private:
+
+
+CCTK_REAL sf_coordinate_estimators[nsurfaces] TYPE=scalar
+{
+  sf_delta_theta_estimate sf_delta_phi_estimate
+} "Surface coordinate estimators"

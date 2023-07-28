@@ -1,0 +1,82 @@
+# Schedule definitions for thorn SphericalSurface
+
+STORAGE: sf_active
+STORAGE: sf_valid
+STORAGE: sf_info
+STORAGE: sf_radius sf_origin
+STORAGE: sf_coordinate_descriptors
+STORAGE: sf_coordinate_estimators
+STORAGE: sf_shape_descriptors
+STORAGE: sf_minreflevel
+STORAGE: sf_maxreflevel
+
+
+
+SCHEDULE SphericalSurface_SetupRes AT basegrid BEFORE SphericalSurface_Setup AFTER SpatialCoordinates AFTER CorrectCoordinates
+{
+  LANG: C
+  OPTIONS: global loop-local
+  WRITES: SphericalSurface::sf_coordinate_estimators(everywhere)
+  WRITES: SphericalSurface::sf_minreflevel(everywhere)
+  WRITES: SphericalSurface::sf_maxreflevel(everywhere)
+} "Set surface resolution automatically"
+
+SCHEDULE SphericalSurface_Setup AT basegrid
+{
+  LANG: C
+  OPTIONS: global
+  READS: SphericalSurface::sf_coordinate_estimators
+  READS: SphericalSurface::sf_minreflevel
+  READS: SphericalSurface::sf_maxreflevel
+  WRITES: SphericalSurface::sf_shape_descriptors(everywhere)
+  WRITES: SphericalSurface::sf_coordinate_descriptors(everywhere)
+  WRITES: SphericalSurface::sf_active(everywhere)
+  WRITES: SphericalSurface::sf_valid(everywhere)
+} "Calculate surface coordinate descriptors"
+
+SCHEDULE SphericalSurface_Set AT basegrid BEFORE SphericalSurface_HasBeenSet
+{
+  LANG: C
+  OPTIONS: global
+  READS: SphericalSurface::sf_shape_descriptors
+  READS: SphericalSurface::sf_coordinate_descriptors
+  WRITES: SphericalSurface::sf_active(everywhere)
+  WRITES: SphericalSurface::sf_valid(everywhere)
+  WRITES: SphericalSurface::sf_info(everywhere)
+  WRITES: SphericalSurface::sf_origin(everywhere)
+  WRITES: SphericalSurface::sf_radius(everywhere)
+} "Set surface radii to be used for initial setup in other thorns"
+
+SCHEDULE GROUP SphericalSurface_HasBeenSet AT basegrid
+{
+} "Set the spherical surfaces before this group, and use it afterwards"
+
+
+
+SCHEDULE SphericalSurface_Set AT poststep BEFORE SphericalSurface_HasBeenSet
+{
+  LANG: C
+  OPTIONS: global
+} "Set surface radii"
+
+SCHEDULE GROUP SphericalSurface_HasBeenSet AT poststep
+{
+} "Set the spherical surfaces before this group, and use it afterwards"
+
+
+
+SCHEDULE SphericalSurface_CheckState IN SphericalSurface_HasBeenSet
+{
+  LANG: C
+  OPTIONS: global
+  READS: SphericalSurface::sf_valid
+  READS: SphericalSurface::sf_active
+} "Test the state of the spherical surfaces"
+
+
+
+schedule SphericalSurface_ParamCheck AT ParamCheck
+{
+  LANG: C
+  OPTIONS: global
+} "Check that all surface names are unique"
