@@ -31,16 +31,3 @@ if (read_shifts)
 		OPTIONS: LOCAL
 	} "Outputs nearby shift quantities to stdout"
 }
-
-if (check_interpolate)
-{
-	SCHEDULE CheckInterpolate AT evol AFTER ODESolvers_Solve
-	{
-		LANG: C
-		READS: ADMBaseX::shift(everywhere)
-		READS: BoxInBox::num_levels
-		READS: pt_loc
-		READS: Coordinates::vertex_coords(everywhere)
-		OPTIONS: GLOBAL
-	} "Outputs nearby shift quantities to stdout"
-}
