@@ -8,10 +8,6 @@ BOOLEAN read_shifts "Enable to write nearby shifts to stdout" STEERABLE=always
 {
 } "no"
 
-BOOLEAN check_interpolate "Enable to write shifts near +/- 4 to stdout" STEERABLE=always
-{
-} "no"
-
 BOOLEAN track[10] "Track this puncture"
 {
 } "no"
