@@ -1,0 +1,24 @@
+Porting AHFinderDirect to a non-Cactus Numerical Relativity Code
+================================================================
+$Header$
+
+As you almost certainly already know if you're reading this file,
+AHFinderDirect is currently implemented as a thorn in the Cactus
+computational toolkit.  However, AHFinderDirect is actually only
+weakly coupled to the rest of Cactus, so it wouldn't be that hard
+to port it to another (non-Cactus) numerical relativity code.  The
+main requirements for such a port would be as follows:
+* A Fortran 77 compiler, a C compiler, and a fairly modern
+  (i.e. standards-compliant) C++ compiler.    
+* A suitable geometry interpolator to do 3-D Hermite interpolation
+  (across multiple processors if the new code is to be
+  multiprocessor-capable).
+* A suitable interpatch interpolator to do processor-local 1-D
+  interpolation.  This interpolator must also be able to provide the
+  Jacobian of the interpolation (i.e. the interpolation coefficients).
+* If the new code is to be multiprocessor-capable, the routines used to
+  broadcast status information to all processors, and to broadcast AH
+  shapes to all processors for setting an excision mask, would need to
+  be re-implemented.
+* A few generic datatypes and low-level routines (for formatting and
+  printing warning/error messages) would need to be re-implemented.

@@ -1,0 +1,7 @@
+# Copy python scripts
+
+$(UTIL_DIR)/%.py: $(PACKAGE_DIR)/EinsteinAnalysis/AHFinderDirect/src/util/%.py
+	@echo "Copying $* from $< to $(UTIL_DIR)"
+	-$(MKDIR) $(MKDIRFLAGS) $(UTIL_DIR) 2> /dev/null
+	cp $< $@
+

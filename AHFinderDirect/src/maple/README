@@ -1,0 +1,7 @@
+This directory holds Maple code for manipulating tensor differential
+operators and converting them into C/C++ code.  This code doesn't itself
+know any physics, but it does have a few bits of knowledge of our
+coordinate systems:
+coords.*	define all the coordinates
+gfa.minc	defines the X_ud and X_udd coordinate-transformation
+		coefficients

@@ -1,0 +1,61 @@
+small things
+  give a cogent error message (instead of core-dumping like we do right now)
+    if we try to set a mask and nobody's registered the bitfield yet
+  add a "find_after" or "find_when" option so we can specify the times at
+    which we want to find a given horizon(s)
+  add an option to compute/output the surface radius on a latitude/longitude
+    grid
+  I should set CXXFLAGS for this thorn to turn off automagic template
+    instantiation on those platforms (eg lemieux, modi4) where it's on
+    by default (Thomas Radke says to copy FlexIO's scheme for doing this)
+  there should be an option to specify using the parameter-file initial
+    guess at selected times (or cactus iteration numbers) instead of always
+    using the AH posn from the previous time step -- this would be useful
+    if there are an inner & outer horizon which start out coincident
+    and you want to track them separately
+  implement "physics highlights" verbosity level
+  implement a log file where the full "algorithm highlights" (or whatever)
+    messages can go even if stdout (= the Cactus run's log file) only gets
+    less-verbose messages
+
+medium things
+  switch to UMFPACK 4.1 and ATLAS BLAS, cf
+     http://www.cise.ufl.edu/research/sparse/umfpack/
+     http://math-atlas.sourceforge.net/
+     --> should make AHFinderDirect considerablyfaster
+  (optionally) remember the "sparse structure decompositon" for all
+     Newton solves for a given AH within a Cactus run
+     --> uses more memory, but should make AHFinderDirect much faster
+  Frank Herrmann would like the following option for excision:
+    if there exists a point which was excised at the last time step,
+       and which this AH would not excise,
+    then skip all excision for this AH
+  properly interface to Erik's SphericalSurface thorn
+  compute Gaussian curvature, cf AHFinder/src/AHFinder_gau.F
+  read AHFinder Fourier coeffs for initial guess
+  write data files giving intersection of AH with a Cactus output plane
+     (or more generally, with a hyperslab)
+  prevent h from going negative if the iteration isn't converging
+     (maybe use log(h) in Newton iteration?)
+  handle excision properly
+     (detect when interpolator tries to use data from excised region
+      and treat this as failure to evalute H(h) --> failure to find horizon
+  checkpoint/recover doesn't remember the current horizon shape
+     for an initial guess 
+     (needs storage of h gridfn in Cactus arrays,
+      or else some equivalent mechanism)
+     what's worse, right now restart will overwrite the original
+     BH_diagnostics file(s)! :( :(
+  if two apparent horizons appear together, then move apart, right now
+     even with N_horizons > 1 we will probably have each of our AHs track
+     the same one; there should be some way to say "use AH 1 + something
+     as the initial guess for AH2" or suchlike, so we could find both AHs
+
+large things
+  handle quadrant/octant grids with rotating BCs
+     (needs Jacobian of one ghost zone to cover two different ghost zones)
+  "isolated horizons" computation of BH mass and spin
+     (maybe just accomplish this via interfacing to Erik's thorns)
+  detect Cartoon and rotate geometry interpolation into Cartoon plane
+  maybe try the TATElliptic interface for solving the AH equation
+     as an alternative to the home-grown solvers I use now???

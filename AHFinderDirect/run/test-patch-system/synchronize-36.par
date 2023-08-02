@@ -1,0 +1,28 @@
+# parameter file for patch system test
+ActiveThorns = "CartGrid3D LocalInterp PUGH AHFinderDirect"
+
+# PUGH
+driver::ghost_size = 0
+driver::global_nx = 61
+driver::global_ny = 61
+driver::global_nz = 61
+
+# CartGrid3D
+grid::domain = "full"
+grid::type = "byrange"
+grid::xyzmin = -3.0
+grid::xyzmax =  3.0
+
+AHFinderDirect::origin_x = 0.0
+AHFinderDirect::origin_y = 0.0
+AHFinderDirect::origin_z = 0.0
+AHFinderDirect::patch_system_type = "full sphere"
+AHFinderDirect::ghost_zone_width = 2
+AHFinderDirect::patch_overlap_width = 1
+AHFinderDirect::N_zones_per_right_angle = 36
+
+AHFinderDirect::interpatch_interpolator_name = "generalized polynomial interpolation"
+AHFinderDirect::interpatch_interpolator_pars = "order=3"
+
+AHFinderDirect::which_test = "synchronize"
+AHFinderDirect::which_derivs = 63

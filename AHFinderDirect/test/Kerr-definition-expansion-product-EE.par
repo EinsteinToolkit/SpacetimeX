@@ -1,0 +1,69 @@
+# This parameter file sets up Kerr/Kerr-Schild initial data, then
+# finds the apparent horizon in it.  The local coordinate system origin
+# and the initial guess are both deliberately de-centered with respect
+# to the black hole, to make this a non-trivial test for the apparent
+# horizon finder.
+
+# flesh
+cactus::cctk_itlast = 0
+
+ActiveThorns = "PUGH"
+driver::ghost_size = 3
+driver::global_nx = 31
+driver::global_ny = 31
+driver::global_nz = 19
+
+ActiveThorns = "CartGrid3D CoordBase SymBase Boundary"
+grid::domain = "bitant"
+grid::avoid_origin = "false"
+grid::type = "byspacing"
+grid::dxyz = 0.2
+
+ActiveThorns = "ADMBase StaticConformal CoordGauge SpaceMask KerrSchild GenericFD LoopControl"
+ADMBase::initial_lapse = "KerrSchild"
+ADMBase::initial_shift = "KerrSchild"
+ADMBase::initial_data = "KerrSchild"
+ADMBase::initial_dtlapse = "KerrSchild"
+ADMBase::initial_dtshift = "KerrSchild"
+ADMBase::lapse_evolution_method = "static"
+ADMBase::shift_evolution_method = "static"
+ADMBase::metric_type = "physical"
+KerrSchild::M = 1.0
+KerrSchild::a = 0.6
+
+# automagically create output directory
+ActiveThorns = "IOUtil"
+IO::out_dir = $parfile
+IO::parfile_write = "no"
+
+########################################
+
+ActiveThorns = "SphericalSurface"
+
+ActiveThorns = "LocalInterp AEILocalInterp PUGHInterp PUGHReduce AHFinderDirect"
+
+AHFinderDirect::print_timing_stats = "true"
+
+AHFinderDirect::h_base_file_name              = "h"
+AHFinderDirect::BH_diagnostics_base_file_name = "BH_diagnostics"
+AHFinderDirect::output_OpenDX_control_files   = "no"
+AHFinderDirect::Theta_norm_for_convergence = 1.0e-12
+
+AHFinderDirect::geometry_interpolator_name = "Hermite polynomial interpolation"
+AHFinderDirect::geometry_interpolator_pars = "order=3"
+
+AHFinderDirect::N_horizons = 1
+AHFinderDirect::origin_x[1] = 0.5
+AHFinderDirect::origin_y[1] = 0.7
+AHFinderDirect::origin_z[1] = 0.0
+
+AHFinderDirect::initial_guess_method[1] = "coordinate sphere"
+AHFinderDirect::initial_guess__coord_sphere__x_center[1] = -0.2
+AHFinderDirect::initial_guess__coord_sphere__y_center[1] =  0.3
+AHFinderDirect::initial_guess__coord_sphere__z_center[1] =  0.0
+AHFinderDirect::initial_guess__coord_sphere__radius[1] = 2.0
+
+AHFinderDirect::surface_definition[1] = "expansion product"
+AHFinderDirect::desired_value[1] = -0.02
+
+AHFinderDirect::max_Newton_iterations__initial = 50

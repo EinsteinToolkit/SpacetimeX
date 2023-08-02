@@ -1,0 +1,134 @@
+# curvature.maple - evaluate various "derivatives of the metric" quantities
+# $Header$
+#
+# curvature - overall driver
+## inverse_metric_gradient - compute partial_d_g_uu
+## metric_det_gradient - compute partial_d_ln_sqrt_g
+#
+
+################################################################################
+################################################################################
+################################################################################
+
+#
+# This function is a driver to compute, and optionally generate C code
+# for, various xyz-coordinate 1st derivatives of the metric.
+#
+# Inputs:
+#	N
+#	partial_d_g_dd
+#	g_uu
+#
+# Outputs (Maple + C code file "inverse_metric_gradient.c")
+#	partial_d_g_uu = partial_d_g_uu__fnd(g_uu, partial_d_g_dd)
+#
+# Outputs (Maple + C code file "metric_det_gradient.c")
+#	partial_d_ln_sqrt_g = partial_d_ln_sqrt_g__fnd(g_uu, partial_d_g_dd)
+#
+curvature :=
+proc(cg_flag::boolean)
+
+inverse_metric_gradient(cg_flag);
+metric_det_gradient(cg_flag);
+
+NULL;
+end proc;
+
+################################################################################
+
+#
+# This function computes the xyz-coordinate gradient of the inverse metric
+# and optionally also generates C code for this.
+#
+# Inputs:
+#	N
+#	partial_d_g_dd
+#	g_uu
+#
+# Outputs (Maple + C code file "inverse_metric_gradient.c")
+#	partial_d_g_uu = partial_d_g_uu__fnd(g_uu, partial_d_g_dd)
+#
+inverse_metric_gradient :=
+proc(cg_flag::boolean)
+global
+  @include "../maple/coords.minc",
+  @include "../maple/gfa.minc",
+  @include "../gr/gr_gfas.minc";
+local k, i, j, m, n;
+
+printf("%a...\n", procname);
+
+assert_fnd_exists(g_dd);
+assert_fnd_exists(g_uu);
+assert_fnd_exists(partial_d_g_uu, fnd);
+
+	for k from 1 to N
+	do
+	for i from 1 to N
+	do
+	for j from i to N	# upper triangle
+	do
+	partial_d_g_uu__fnd[k,i,j]
+	    := simplify(
+		  - msum('g_uu[i,m] * g_uu[j,n] * partial_d_g_dd[k,m,n]',
+			 'm'=1..N, 'n'=1..N)
+		       );
+	end do;
+	end do;
+	end do;
+
+if (cg_flag)
+   then codegen2(partial_d_g_uu__fnd,
+		 'partial_d_g_uu',
+		 "../gr.cg/inverse_metric_gradient.c");
+fi;
+
+NULL;
+end proc;
+
+################################################################################
+
+#
+# This function computes the xyz-coordinate gradient of the metric
+# determinate, using the formula on page 79 of my mpe notes, and
+# optionally also generates C code for this.
+#
+# Inputs:
+#	N
+#	partial_d_g_dd
+#	g_uu
+#
+# Outputs (Maple + C code file "metric_det_gradient.c")
+#	partial_d_ln_sqrt_g = partial_d_ln_sqrt_g__fnd(g_uu, partial_d_g_dd)
+#
+metric_det_gradient :=
+proc(cg_flag::boolean)
+global
+  @include "../maple/coords.minc",
+  @include "../maple/gfa.minc",
+  @include "../gr/gr_gfas.minc";
+local k, i, j;
+
+printf("%a...\n", procname);
+
+assert_fnd_exists(g_dd);
+assert_fnd_exists(g_uu);
+assert_fnd_exists(partial_d_ln_sqrt_g, fnd);
+
+	for k from 1 to N
+	do
+	partial_d_ln_sqrt_g__fnd[k]
+		:= simplify(
+		      (1/2) * msum('g_uu[i,j] * partial_d_g_dd[k,i,j]',
+				   'i'=1..N, 'j'=1..N)
+			   );
+	end do;
+
+if (cg_flag)
+   then codegen2(partial_d_ln_sqrt_g__fnd,
+		 'partial_d_ln_sqrt_g',
+		 "../gr.cg/metric_det_gradient.c");
+fi;
+
+NULL;
+end proc;

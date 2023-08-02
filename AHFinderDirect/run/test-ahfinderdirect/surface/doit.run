@@ -1,0 +1,51 @@
+#!/bin/sh
+
+#
+# Usage:
+#	doit.run template.par name-prefix
+# where
+#	template.par  is the name of a template parameter file
+#	name-prefix   is a prefix for the names of the generated .par
+#			and .log files
+#
+template="$1"
+prefix="$2"
+
+	for offset in 0 1
+	do
+	if [ $offset -eq 1 ]
+	   then offset_name='-offset'
+		origin_x=0.5
+		origin_y=0.7
+		origin_z=0.6
+	   else offset_name=''
+		origin_x=0.0
+		origin_y=0.0
+		origin_z=0.0
+	fi
+
+		for N_zones in 12 18 24 30 40 60 90
+		do
+		for method in 'trapezoid' 'Simpson' 'Simpson (variant)'
+		do
+		if [ "$method" = 'Simpson (variant)' ]
+		   then method_name='Simpson-variant'
+		   else method_name="$method"
+		fi
+		base=${prefix}${N_zones}-${method_name}${offset_name}
+		##echo ":${N_zones}:${method}:${origin_x}:${origin_y}:${origin_z}:"
+		##echo ":${N_zones}:${method_name}:${origin_x}:${origin_y}:${origin_z}:"
+		##echo $base
+
+		sed -e "s#\$N_zones_per_right_angle#$N_zones#" \
+		    -e "s#\$surface_integral_method#$method#" \
+		    -e "s#\$origin_x#$origin_x#" \
+		    -e "s#\$origin_y#$origin_y#" \
+		    -e "s#\$origin_z#$origin_z#" \
+		    -e "s#\$base_name#$base#" \
+		    <$template >$base.par
+		cactus_test-ahfinderdirect $base.par 2>&1 | tee $base.log
+		
+		done
+		done
+	done
