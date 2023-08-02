@@ -80,6 +80,7 @@ subroutine qlm_calculate (CCTK_ARGUMENTS)
         end if
      end if
      
+     write(*,*)X0qlm_3determinant,X1qlm_3determinant,qlm_3determinant_length
      call qlm_interpolate (CCTK_PASS_FTOF, hn)
      
      if (hn > 0) then
