@@ -1,0 +1,48 @@
+# parameter file for patch system test
+ActiveThorns = "CartGrid3D LocalInterp PUGH ADMBase ADMCoupling StaticConformal CoordGauge Exact AHFinderDirect"
+
+# flesh
+cactus::cctk_itlast = 0
+
+# PUGH
+driver::ghost_size = 2
+driver::global_nx = 17
+driver::global_ny = 17
+driver::global_nz = 31
+
+# CartGrid3D
+grid::domain = "quadrant"
+grid::avoid_origin = "false"
+grid::type = "byspacing"
+grid::dxyz = 0.2
+
+# ADMBase
+ADMBase::initial_lapse = "exact"
+ADMBase::initial_shift = "exact"
+ADMBase::initial_data = "exact"
+ADMBase::lapse_evolution_method = "static"
+ADMBase::shift_evolution_method = "static"
+ADMBase::metric_type = "physical"
+
+# Exact
+Exact::exact_model = "Schwarzschild/EF"
+Exact::Schwarzschild_EF__mass = 1.0
+
+AHFinderDirect::find_AHs_at_postinitial = "true"
+AHFinderDirect::find_AHs_at_poststep    = "false"
+
+AHFinderDirect::how_often_to_output_H_of_h = 1
+AHFinderDirect::final_H_update_if_exit_x_H_small = "true"
+AHFinderDirect::h_base_file_name      = "plus_xy_quadrant.h"
+AHFinderDirect::H_of_h_base_file_name = "plus_xy_quadrant.H"
+
+AHFinderDirect::N_horizons = 1
+AHFinderDirect::origin_x[1] = 0.0
+AHFinderDirect::origin_y[1] = 0.0
+AHFinderDirect::origin_z[1] = 0.0
+
+AHFinderDirect::initial_guess_method = "coordinate sphere"
+AHFinderDirect::initial_guess__coord_sphere__x_center[1] = 0.0
+AHFinderDirect::initial_guess__coord_sphere__y_center[1] = 0.0
+AHFinderDirect::initial_guess__coord_sphere__z_center[1] = 0.0
+AHFinderDirect::initial_guess__coord_sphere__radius[1] = 1.5

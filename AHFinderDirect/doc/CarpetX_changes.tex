@@ -1,0 +1,420 @@
+% *======================================================================*
+%  Cactus Thorn template for ThornGuide documentation
+%  Author: Ian Kelley
+%  Date: Sun Jun 02, 2002
+%  $Header$
+%
+%  Thorn documentation in the latex file doc/documentation.tex
+%  will be included in ThornGuides built with the Cactus make system.
+%  The scripts employed by the make system automatically include
+%  pages about variables, parameters and scheduling parsed from the
+%  relevent thorn CCL files.
+%
+%  This template contains guidelines which help to assure that your
+%  documentation will be correctly added to ThornGuides. More
+%  information is available in the Cactus UsersGuide.
+%
+%  Guidelines:
+%   - Do not change anything before the line
+%       % BEGIN CACTUS THORNGUIDE",
+%     except for filling in the title, author, date etc. fields.
+%   - You can define your own macros are OK, but they must appear after
+%     the BEGIN CACTUS THORNGUIDE line, and do not redefine standard
+%     latex commands.
+%   - To avoid name clashes with other thorns, 'labels', 'citations',
+%     'references', and 'image' names should conform to the following
+%     convention:
+%       ARRANGEMENT_THORN_LABEL
+%     For example, an image wave.eps in the arrangement CactusWave and
+%     thorn WaveToyC should be renamed to CactusWave_WaveToyC_wave.eps
+%   - Graphics should only be included using the graphix package.
+%     More specifically, with the "includegraphics" command. Do
+%     not specify any graphic file extensions in your .tex file. This
+%     will allow us (later) to create a PDF version of the ThornGuide
+%     via pdflatex. |
+%   - References should be included with the latex "bibitem" command.
+%   - For the benefit of our Perl scripts, and for future extensions,
+%     please use simple latex.
+%
+% *======================================================================*
+%
+% Example of including a graphic image:
+%    \begin{figure}[ht]
+% 	\begin{center}
+%    	   \includegraphics[width=6cm]{MyArrangement_MyThorn_MyFigure}
+% 	\end{center}
+% 	\caption{Illustration of this and that}
+% 	\label{MyArrangement_MyThorn_MyLabel}
+%    \end{figure}
+%
+% Example of using a label:
+%   \label{MyArrangement_MyThorn_MyLabel}
+%
+% Example of a citation:
+%    \cite{MyArrangement_MyThorn_Author99}
+%
+% Example of including a reference
+%   \bibitem{MyArrangement_MyThorn_Author99}
+%   {J. Author, {\em The Title of the Book, Journal, or periodical}, 1 (1999),
+%   1--16. {\tt http://www.nowhere.com/}}
+%
+% *======================================================================*
+
+% If you are using CVS use this line to give version information
+% $Header$
+
+\documentclass{article}
+\bibliographystyle{alpha}
+
+% Use the Cactus ThornGuide style file
+% (Automatically used from Cactus distribution, if you have a
+%  thorn without the Cactus Flesh download this from the Cactus
+%  homepage at www.cactuscode.org)
+\usepackage{cactus}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% The author of the documentation
+\author{Allen Wen \quad {\tt <acw6923@g.rit.edu>}}
+
+% The title of the document (not necessarily the name of the Thorn)
+\title{{\bf AHFinderDirect} -- Moving Jonathan Thornburg's Original Code to CarpetX}
+
+% the date your document was last changed, if your document is in CVS,
+% please us:
+%    \date{$ $Date$ $}
+\date{July 27, 2023}
+
+\maketitle
+
+% Do not delete next line
+% START CACTUS THORNGUIDE
+
+% Add all definitions used in this documentation here
+%   \def\mydef etc
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% misc text stuff
+\def\code#1{{\tt #1}}			% variable names, parameter values, etc
+\def\defn#1{``#1''}			% definition of a term
+\def\arrangement#1{{\bf #1}}		% name of an arrangement
+\def\thorn#1{{\bf #1}}			% name of a thorn
+\def\program#1{{\bf #1}}		% name of computer program
+\def\cvsplace#1{{\bf #1}}		% name of a CVS repository/directory/tag
+\def\cf{\hbox{cf.\hbox{}}}
+\def\eg{\hbox{eg.\hbox{}}}
+\def\ie{\hbox{i.e.\hbox{}}}
+\def\eqref#1{$(\ref{#1})$}
+
+% get size/spacing of "++" right, cf online C++ FAQ question 35.1
+\def\Cplusplus{\hbox{C\raise.25ex\hbox{\footnotesize ++}}}
+
+% misc math mode stuff
+\def\assign{\leftarrow}			% for pseudocode algorithms
+\def\ltsim{\lesssim}
+\def\gtsim{\gtrsim}
+\def\tfrac#1#2{{\textstyle    \frac{#1}{#2}}}
+\def\dfrac#1#2{{\displaystyle \frac{#1}{#2}}}
+\def\thalf{\tfrac{1}{2}}
+\def\const{{\rm const}}
+\def\ij{{ij}}
+\def\uv{{uv}}
+\def\del{\nabla}
+
+\def\I{{\text{\scriptsize I}}}                  % grid-point index
+\def\J{{\text{\scriptsize J}}}                  % grid-point index
+\def\K{{\text{\scriptsize K}}}                  % grid-point index
+\def\M{{\text{\scriptsize M}}}                  % molecule index
+
+\def\Jac[#1]{{\bf J} \bigl[ #1 \bigr]}          % discrete Jacobian for fn #1
+
+\section{Features Removed}
+\begin{enumerate}
+\item \textbf{Removed Masking:}
+    All references to the \texttt{SpaceMask} thorn have been removed and the \texttt{ahmask} gridfunction has been manually set to 0 everywhere. \textit{Must fix if this feature is desired.}
+
+\item \textbf{\texttt{StaticConformal} Support:}
+    All references to the \texttt{StaticConformal} thorn have been  removed.
+
+\item \textbf{Symmetries Provided by \texttt{GRID}:}
+    The new \texttt{Coordinates} thorn currently does not set \texttt{domain, bitant\_plane, quadrant\_direction,} or \texttt{rotation\_axis} so these parameters are no longer used to set up the \texttt{AHFinder} patch system. \textit{If these features are ever added, this will need to be fixed.}
+    
+\end{enumerate}
+
+\section{Changes Made to Original Code}
+\begin{enumerate}
+\item \textbf{Use CarpetX Interpolator:}
+    \texttt{CCTK\_InterpGridArrays} passes arguments to \texttt{ CarpetX\_DriverInterpolate} and then \texttt{ CarpetX\_Interpolate}, which does not use an interpolator handle or a coordinate system handle. Interpolator handles are still provided by \texttt{AEILocalInterp} but the coordinate system handle has been manually set to 0.
+
+\item \textbf{Scheduling Differences Between \texttt{Carpet} and \texttt{CarpetX}:}
+    \texttt{CCTK\_BASEGRID} now runs after each regrid. This was not expected by \texttt{AHFinderDirect} so a flag was added to ensure the setup function only runs once.
+
+\item \textbf{Cactus Reductions Replaced by MPI Calls}
+    \texttt{CarpetX} does not have the reduction handles and wrapper functions the \texttt{Carpet} had. Calls to \texttt{MPI\_AllReduce} were used instead.
+
+\end{enumerate}
+
+\section{Additions to \texttt{SpacetimeX}}
+The thorns \texttt{AEILocalInterp} and \texttt{SphericalSurface} have been added. They worked with \texttt{AEILocalInterp} quite easily but additional optimization or adaptation might be needed to work with other thorns.
+
+\section{Example}
+Here is a CarpetX thornlist that runs a binary black hole simulation:
+
+\begin{verbatim}
+
+# run.me:
+# run.cores: 40
+# run.memory: 1.0e9
+# run.time: 7200.0
+
+ActiveThorns = "
+ADMBaseX
+AEILocalInterp
+AHFinderDirect
+CarpetX
+Coordinates
+BoxInBox
+Formaline
+IOUtil
+ODESolvers
+SystemTopology
+SphericalSurface
+TimerReport
+TmunuBaseX
+TwoPunctures
+Weyl
+Z4c
+PunctureTracker
+#TODO Z4cNRPy
+"
+
+# domain_size = 128.0
+# domain_spacing = 1.0
+# fine_box_size = 2.0
+# fine_box_spacing = 0.0416666666667
+# dtfac = 0.25
+
+Cactus::cctk_show_schedule = yes
+
+Cactus::presync_mode = "mixed-error"
+
+Cactus::terminate = "runtime"
+Cactus::cctk_itlast = 1000000000
+Cactus::cctk_final_time = 300.0
+# Cactus::max_runtime = 30   # minutes
+Cactus::max_runtime = 5 * 60 + 30   # minutes
+
+CarpetX::verbose = yes
+CarpetX::poison_undefined_values = no
+
+CarpetX::xmin = -400
+CarpetX::ymin = -400
+CarpetX::zmin = -400
+
+CarpetX::xmax = 400
+CarpetX::ymax = 400
+CarpetX::zmax = 400
+
+CarpetX::ncells_x = 200
+CarpetX::ncells_y = 200
+CarpetX::ncells_z = 200
+
+CarpetX::max_tile_size_x = 1024000
+CarpetX::max_tile_size_y = 4
+CarpetX::max_tile_size_z = 4
+
+CarpetX::boundary_x = "dirichlet"
+CarpetX::boundary_y = "dirichlet"
+CarpetX::boundary_z = "dirichlet"
+CarpetX::boundary_upper_x = "dirichlet"
+CarpetX::boundary_upper_y = "dirichlet"
+CarpetX::boundary_upper_z = "dirichlet"
+
+CarpetX::ghost_size = 3
+CarpetX::interpolation_order = 3
+
+# -------------------- BoxInBox -------------------------------------------------
+CarpetX::max_num_levels = 11
+CarpetX::regrid_every = 32
+CarpetX::regrid_error_threshold = 0.9
+
+PunctureTracker::track_boxes = yes
+
+BoxInBox::num_regions = 1
+
+# Region 1
+BoxInBox::shape_1 = "cube"
+BoxInBox::num_levels_1 = 9
+BoxInBox::position_x_1 = +4
+BoxInBox::radius_1[1] = 220
+BoxInBox::radius_1[2] = 110
+BoxInBox::radius_1[3] = 55
+BoxInBox::radius_1[4] = 25
+BoxInBox::radius_1[5] = 10
+BoxInBox::radius_1[6] = 5
+BoxInBox::radius_1[7] = 2
+BoxInBox::radius_1[8] = 1
+
+# Region 2
+BoxInBox::shape_2 = "cube"
+BoxInBox::num_levels_2 = 9
+BoxInBox::position_x_2 = -4
+BoxInBox::radius_2[1] = 220
+BoxInBox::radius_2[2] = 110
+BoxInBox::radius_2[3] = 55
+BoxInBox::radius_2[4] = 25
+BoxInBox::radius_2[5] = 10
+BoxInBox::radius_2[6] = 5
+BoxInBox::radius_2[7] = 2
+BoxInBox::radius_2[8] = 1
+
+# -------------------- Multipole -------------------------------------------------
+# Multipole::radius[0] = 20.0
+# Multipole::variables = "WeylScal4::Psi4r{sw=-2 cmplx='Weyl::Psi4i' name='Psi4'}"
+# Multipole::interpolator_pars = "order=3"
+# Multipole::l_max = 4
+# Multipole::verbose = "yes"
+#Multipole::enable_test = "yes"
+
+CarpetX::prolongation_type = "ddf"
+CarpetX::prolongation_order = 5
+
+ODESolvers::verbose = no
+ODESolvers::method = "RK4"
+CarpetX::dtfac = 0.25
+
+ADMBaseX::initial_data = "TwoPunctures"
+ADMBaseX::initial_lapse = "TwoPunctures-averaged"
+
+# QC-0 setup
+TwoPunctures::par_b = 4
+TwoPunctures::par_m_plus =  0.4824
+TwoPunctures::par_m_minus =  0.4824
+TwoPunctures::par_P_plus [1] = +0.114
+TwoPunctures::par_P_minus[1] = -0.114
+
+TwoPunctures::grid_setup_method = "evaluation"
+
+TwoPunctures::TP_epsilon = 1.0e-2
+TwoPunctures::TP_Tiny    = 1.0e-2
+
+TwoPunctures::verbose = yes
+
+Z4c::calc_ADM_vars = yes                  # for Weyl
+Z4c::calc_ADMRHS_vars = yes               # for Weyl
+Z4c::calc_constraints = yes
+
+Z4c::chi_floor = 1.0e-6
+Z4c::alphaG_floor = 1.0e-8
+Z4c::epsdiss = 0.32
+
+# Puncture Tracker
+PunctureTracker::verbose = yes
+
+PunctureTracker::interp_order = 3
+
+PunctureTracker::track    [0] = yes
+PunctureTracker::initial_x[0] = +4
+
+PunctureTracker::track    [1] = yes
+PunctureTracker::initial_x[1] = -4
+
+#TODO # Z4cNRPy::chi_floor = 1.0e-6
+#TODO # Z4cNRPy::alphaG_floor = 1.0e-8
+#TODO # Z4cNRPy::eps_diss = 0.34
+#
+
+# AHFinderDirect::print_timing_stats = "true"
+
+# AHFinderDirect::output_Theta_every = 1
+# AHFinderDirect::h_base_file_name     = "Kerr.h"
+# AHFinderDirect::Theta_base_file_name = "Kerr.Theta"
+#
+
+AHFinderDirect::find_every   = 4
+AHFinderDirect::move_origins = yes
+
+AHFinderDirect::N_horizons = 2
+AHFinderDirect::origin_x[1] = 4.0
+AHFinderDirect::origin_y[1] = 0.0
+AHFinderDirect::origin_z[1] = 0.0
+
+AHFinderDirect::origin_x[2] = -4.0
+AHFinderDirect::origin_y[2] = 0.0
+AHFinderDirect::origin_z[2] = 0.0
+
+AHFinderDirect::initial_guess_method[1] = "coordinate sphere"
+AHFinderDirect::initial_guess__coord_sphere__x_center[1] =  4.0
+AHFinderDirect::initial_guess__coord_sphere__y_center[1] =  0.0
+AHFinderDirect::initial_guess__coord_sphere__z_center[1] =  0.0
+AHFinderDirect::initial_guess__coord_sphere__radius[1] = 0.5
+
+AHFinderDirect::initial_guess_method[2] = "coordinate sphere"
+AHFinderDirect::initial_guess__coord_sphere__x_center[2] =  -4.0
+AHFinderDirect::initial_guess__coord_sphere__y_center[2] =  0.0
+AHFinderDirect::initial_guess__coord_sphere__z_center[2] =  0.0
+AHFinderDirect::initial_guess__coord_sphere__radius[2] = 0.5
+
+AHFinderDirect::geometry_interpolator_pars = "order=3 boundary_off_centering_tolerance={1.0e-10 1.0e-10 1.0e-10 1.0e-10 1.0e-10 1.0e-10} boundary_extrapolation_tolerance={0.0 0.0 0.0 0.0 0.0 0.0}"
+
+IO::out_dir = $parfile
+IO::out_every = 1024
+IO::out_mode = "np"                       # "proc", "np", "onefile"
+IO::out_proc_every = 1
+
+# IO::checkpoint_dir = "./checkpoints"
+# IO::checkpoint_ID = yes
+# IO::checkpoint_every = 0
+# IO::checkpoint_every_walltime_hours = 3.0
+# IO::checkpoint_on_terminate = yes
+# CarpetX::checkpoint_method = "openpmd"
+# 
+# IO::recover_dir = "./checkpoints"
+# IO::recover = "autoprobe"
+# CarpetX::recover_method = "openpmd"
+
+CarpetX::out_metadata = no
+
+CarpetX::out_silo_vars = "
+ADMBaseX::metric
+ADMBaseX::curv
+ADMBaseX::lapse
+ADMBaseX::shift
+Z4c::allC
+# #TODO Z4cNRPy::allCGF
+# CarpetX::regrid_error
+"
+
+# CarpetX::out_openpmd_vars = "
+# ADMBaseX::metric
+# ADMBaseX::curv
+# ADMBaseX::lapse
+# ADMBaseX::shift
+# Weyl::Psi4re
+# Weyl::Psi4im
+# Z4c::allC
+# #TODO Z4cNRPy::allCGF
+# CarpetX::regrid_error
+# "
+
+CarpetX::out_tsv_vars = "
+ADMBaseX::lapse
+ADMBaseX::shift
+ADMBaseX::metric
+ADMBaseX::curv
+Z4c::allC
+PunctureTracker::pt_loc
+PunctureTracker::pt_vel
+"
+
+TimerReport::out_every = 512
+TimerReport::out_filename = "TimerReport"
+TimerReport::output_schedule_timers = no
+TimerReport::n_top_timers = 100
+
+\end{verbatim}
+
+\end{document}

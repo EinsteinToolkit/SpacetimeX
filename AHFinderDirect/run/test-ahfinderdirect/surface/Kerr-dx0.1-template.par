@@ -1,0 +1,65 @@
+# parameter file for patch system test
+# uses variables
+#	$N_zones_per_right_angle
+#	$surface_integral_method
+#	$origin_x
+#	$origin_y
+#	$origin_z
+#	$base_name
+ActiveThorns = "CartGrid3D LocalInterp PUGH ADMBase ADMCoupling CoordGauge Exact AHFinderDirect"
+
+# flesh
+cactus::cctk_itlast = 0
+
+# PUGH
+driver::ghost_size = 2
+driver::global_nx = 61
+driver::global_ny = 61
+driver::global_nz = 33
+
+# CartGrid3D
+grid::domain = "bitant"
+grid::avoid_origin = "false"
+grid::type = "byspacing"
+grid::dxyz = 0.1
+
+# ADMBase
+ADMBase::initial_lapse = "exact"
+ADMBase::initial_shift = "exact"
+ADMBase::initial_data = "exact"
+ADMBase::lapse_evolution_method = "static"
+ADMBase::shift_evolution_method = "static"
+ADMBase::metric_type = "physical"
+
+# Exact
+Exact::exact_model = "Kerr/Kerr-Schild"
+Exact::Kerr_KerrSchild__mass = 1.0
+Exact::Kerr_KerrSchild__spin = 0.6
+
+AHFinderDirect::find_AHs_at_postinitial = "true"
+AHFinderDirect::find_AHs_at_poststep    = "false"
+AHFinderDirect::verbose_level = "algorithm details"
+AHFinderDirect::print_timing_stats = "true"
+
+AHFinderDirect::method = "horizon function"
+AHFinderDirect::final_H_update_if_exit_x_H_small = "true"
+AHFinderDirect::surface_integral_method = "$surface_integral_method"
+##AHFinderDirect::output_initial_guess = "false"
+##AHFinderDirect::output_h = "false"
+##AHFinderDirect::output_H_of_h = "false"
+AHFinderDirect::h_base_file_name      = "$base_name.h"
+AHFinderDirect::H_of_h_base_file_name = "$base_name.H"
+
+AHFinderDirect::N_horizons = 1
+AHFinderDirect::origin_x[1] = $origin_x
+AHFinderDirect::origin_y[1] = $origin_y
+AHFinderDirect::origin_z[1] = 0.0
+AHFinderDirect::ghost_zone_width = 2
+AHFinderDirect::patch_overlap_width = 1
+AHFinderDirect::N_zones_per_right_angle = $N_zones_per_right_angle
+
+AHFinderDirect::geometry_interpolator_pars = "order=3   out_of_range_tolerance={-1.0 -1.0 -1.0 -1.0 -1.0 -1.0}"
+
+AHFinderDirect::initial_guess_method = "Kerr/Kerr-Schild"
+AHFinderDirect::initial_guess__Kerr_KerrSchild__mass[1] = 1.0
+AHFinderDirect::initial_guess__Kerr_KerrSchild__spin[1] = 0.6

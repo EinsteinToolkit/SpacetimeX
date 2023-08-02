@@ -1,0 +1,54 @@
+# This parameter file sets up Kerr/Kerr-Schild initial data, then
+# finds the apparent horizon in it.  The local coordinate system origin
+# and the initial guess are both deliberately de-centered with respect
+# to the black hole, to make this a non-trivial test for the apparent
+# horizon finder.
+
+# flesh
+cactus::cctk_itlast = 0
+
+ActiveThorns = "PUGH"
+driver::ghost_size = 3
+driver::global_nx = 31
+driver::global_ny = 31
+driver::global_nz = 31
+
+ActiveThorns = "CartGrid3D"
+grid::domain = "full"
+grid::avoid_origin = "false"
+grid::type = "byspacing"
+grid::dxyz = 0.2
+
+ActiveThorns = "ADMBase ADMCoupling StaticConformal CoordGauge Exact"
+ADMBase::initial_lapse = "exact"
+ADMBase::initial_shift = "exact"
+ADMBase::initial_data = "exact"
+ADMBase::lapse_evolution_method = "static"
+ADMBase::shift_evolution_method = "static"
+ADMBase::metric_type = "physical"
+Exact::exact_model = "Kerr/Kerr-Schild"
+Exact::Kerr_KerrSchild__mass = 1.0
+Exact::Kerr_KerrSchild__spin = 0.6
+
+########################################
+
+ActiveThorns = "LocalInterp PUGHInterp PUGHReduce AHFinderDirect"
+
+AHFinderDirect::find_AHs_at_postinitial = "true"
+AHFinderDirect::find_AHs_at_poststep    = "false"
+AHFinderDirect::print_timing_stats = "true"
+
+AHFinderDirect::how_often_to_output_Theta = 1
+AHFinderDirect::h_base_file_name     = "full_sphere.h"
+AHFinderDirect::Theta_base_file_name = "full_sphere.Theta"
+
+AHFinderDirect::N_horizons = 1
+AHFinderDirect::origin_x[1] =  0.5
+AHFinderDirect::origin_y[1] =  0.7
+AHFinderDirect::origin_z[1] = -0.6
+
+AHFinderDirect::initial_guess_method[1] = "coordinate sphere"
+AHFinderDirect::initial_guess__coord_sphere__x_center[1] = -0.2
+AHFinderDirect::initial_guess__coord_sphere__y_center[1] =  0.3
+AHFinderDirect::initial_guess__coord_sphere__z_center[1] =  0.5
+AHFinderDirect::initial_guess__coord_sphere__radius[1] = 2.0

@@ -1,0 +1,87 @@
+# This parameter file sets up Kerr/Kerr-Schild initial data, then
+# finds the apparent horizon in it.
+
+cactus::cctk_itlast = 1
+
+ActiveThorns = "IOUtil"
+IO::out_dir = $parfile
+IO::parfile_write = "no"
+
+ActiveThorns = "Carpet CarpetLib CarpetReduce"
+driver::ghost_size = 2
+driver::global_nx = 33
+driver::global_ny = 33
+driver::global_nz = 33
+
+ActiveThorns = "Boundary CartGrid3D CoordBase RotatingSymmetry90 Slab SymBase"
+grid::domain = "bitant"
+grid::avoid_origin = "false"
+grid::type = "byrange"
+grid::xmin = -0.2
+grid::ymin = -0.2
+grid::zmin = -0.2
+grid::xmax =  3.0
+grid::ymax =  3.0
+grid::zmax =  3.0
+
+ActiveThorns = "ADMBase ADMCoupling ADMMacros StaticConformal CoordGauge SpaceMask LegoExcision Exact NaNChecker Time MoL BSSN_MoL"
+ADMBase::initial_lapse = "exact"
+ADMBase::initial_shift = "exact"
+ADMBase::initial_data = "exact"
+ADMBase::lapse_evolution_method = "static"
+ADMBase::shift_evolution_method = "static"
+ADMBase::evolution_method = "adm_bssn"
+ADMBase::metric_type = "physical"
+Exact::exact_model = "Kerr/Kerr-Schild"
+Exact::Kerr_KerrSchild__mass = 1.0
+Exact::Kerr_KerrSchild__spin = 0.6
+LegoExcision::fixed_excision = sphere
+LegoExcision::fixed_size = 1.0
+SpaceMask::use_mask = yes
+Time::dtfac = 0.25
+BSSN_MoL::excise = yes
+BSSN_MoL::BSSN_MaxNumConstrainedVars = 16
+
+########################################
+
+ActiveThorns = "SphericalSurface"
+
+ActiveThorns = "LocalInterp AEILocalInterp CarpetInterp CarpetReduce SphericalSurface AHFinderDirect"
+
+AHFinderDirect::print_timing_stats = "true"
+
+AHFinderDirect::h_base_file_name              = "h"
+AHFinderDirect::BH_diagnostics_base_file_name = "BH_diagnostics"
+AHFinderDirect::output_OpenDX_control_files   = "no"
+AHFinderDirect::Theta_norm_for_convergence = 1.0e-12
+
+AHFinderDirect::geometry_interpolator_name = "Lagrange polynomial interpolation"
+AHFinderDirect::geometry_interpolator_pars = "order=4"
+
+AHFinderDirect::N_horizons = 1
+AHFinderDirect::origin_x[1] = 0.5
+AHFinderDirect::origin_y[1] = 0.7
+AHFinderDirect::origin_z[1] = 0.0
+
+AHFinderDirect::initial_guess_method[1] = "coordinate sphere"
+AHFinderDirect::initial_guess__coord_sphere__x_center[1] = -0.2
+AHFinderDirect::initial_guess__coord_sphere__y_center[1] =  0.3
+AHFinderDirect::initial_guess__coord_sphere__z_center[1] =  0.0
+AHFinderDirect::initial_guess__coord_sphere__radius[1] = 2.0
+
+########################################
+
+ActiveThorns = "CarpetIOASCII"
+CarpetIOASCII::out0D_every = 1
+CarpetIOASCII::out0D_vars = "ADMBase::gxx AHFinderDirect::ah_radius AHFinderDirect::ah_origin AHFinderDirect::ah_flags"
+CarpetIOASCII::out1D_every = 1
+CarpetIOASCII::out1D_vars = "ADMBase::gxx AHFinderDirect::ah_radius"
+CarpetIOASCII::out2D_every = 1
+CarpetIOASCII::out2D_vars = "AHFinderDirect::ah_radius"
+
+ActiveThorns = "CarpetIOHDF5"
+IO::checkpoint_ID           = yes
+IO::checkpoint_every        = 1
+IO::checkpoint_on_terminate = yes
+IO::checkpoint_dir          = $parfile
+CarpetIOHDF5::checkpoint    = yes

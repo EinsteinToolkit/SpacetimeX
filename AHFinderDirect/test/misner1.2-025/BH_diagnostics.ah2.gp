@@ -1,0 +1,43 @@
+# apparent horizon 2/2
+#
+# column  1 = cctk_iteration
+# column  2 = cctk_time
+# column  3 = centroid_x
+# column  4 = centroid_y
+# column  5 = centroid_z
+# column  6 = min radius
+# column  7 = max radius
+# column  8 = mean radius
+# column  9 = quadrupole_xx
+# column 10 = quadrupole_xy
+# column 11 = quadrupole_xz
+# column 12 = quadrupole_yy
+# column 13 = quadrupole_yz
+# column 14 = quadrupole_zz
+# column 15 = min x
+# column 16 = max x
+# column 17 = min y
+# column 18 = max y
+# column 19 = min z
+# column 20 = max z
+# column 21 = xy-plane circumference
+# column 22 = xz-plane circumference
+# column 23 = yz-plane circumference
+# column 24 = ratio of xz/xy-plane circumferences
+# column 25 = ratio of yz/xy-plane circumferences
+# column 26 = area
+# column 27 = irreducible mass
+# column 28 = areal radius
+# column 29 = [not implemented yet] (outer) expansion Theta_(l)
+# column 30 = [not implemented yet] inner expansion Theta_(n)
+# column 31 = [not implemented yet] product of inner and outer expansions
+# column 32 = [not implemented yet] mean curvature
+# column 33 = [not implemented yet] d/d(coordinate radius) of area
+# column 34 = [not implemented yet] d/d(coordinate radius) of (outer) expansion Theta_(l)
+# column 35 = [not implemented yet] d/d(coordinate radius) of inner expansion Theta_(n)
+# column 36 = [not implemented yet] d/d(coordinate radius) of product of inner and outer expansions
+# column 37 = [not implemented yet] d/d(coordinate radius) of mean curvature
+# column 38 = minimum  of the mean curvature
+# column 39 = maximum  of the mean curvature
+# column 40 = integral of the mean curvature
+0	0.000000	0.000000	0.000000	0.000000	0.3564673701	1.936787390	1.237012834	0.2058766958	0.000000000	0.000000000	0.2058766958	0.000000000	1.322929146	-0.7790370066	0.7790370066	-0.7790370066	0.7790370066	-1.936787390	1.936787390	14.51533018	64.12845394	64.12845394	4.417981069	4.417981069	719.7156025	3.783951238	7.567902475	0.000000000	0.000000000	0.000000000	0.000000000	0.000000000	0.000000000	0.000000000	0.000000000	0.000000000

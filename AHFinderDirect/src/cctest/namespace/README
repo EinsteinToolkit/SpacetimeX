@@ -1,0 +1,28 @@
+$Header$
+
+This directory contains a set of "hello, world" programs to test how
+the C++ namespaces are handled for standard library functions.
+
+Each .cc file is a "hello, world\n" program using a particular set of
+options for what header file to #include, what (if any) using declarations
+or definitions to use, and whether or not to use an explicit std::
+qualifier when calling printf().
+
+According to standard C++, #include <cstdio> puts names *only* in the
+std:: namespace, so the cstdio-global.cc program should fail to compile.
+All the other programs should be legal in standard C++.
+
+					what to		what namespace		how we call	status
+					#include?	are we using		printf()?	in
+							printf() in?				standard
+								using?				C++
+
+stdio_h-global.cc			<stdio.h>	global	--		printf()	ok
+stdio_h-std:std-printf.cc		<stdio.h>	std	--		std::printf()	ok
+stdio_h-std:using-std-printf.cc		<stdio.h>	std	std::printf;	printf()	ok
+stdio_h-std:using-namespace-std.cc	<stdio.h>	std	namespace std;	printf()	ok
+
+cstdio-global.cc			<cstdio>	global	--		printf()	WRONG
+cstdio-std:std-printf.cc		<cstdio>	std	--		std::printf()	ok
+cstdio-std:using-std-printf.cc		<cstdio>	std	std::printf;	printf()	ok
+cstdio-std:using-namespace-std.cc	<cstdio>	std	namespace std;	printf()	ok

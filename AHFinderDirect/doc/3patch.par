@@ -1,0 +1,50 @@
+# par file to write out data used to produce 3patch figure
+
+ActiveThorns = "CartGrid3D AEILocalInterp PUGH ADMBase ADMCoupling StaticConformal CoordGauge Exact AHFinderDirect"
+
+# PUGH
+Driver::ghost_size = 0
+Driver::global_nx = 31
+Driver::global_ny = 31
+Driver::global_nz = 31
+
+# CartGrid3D
+Grid::domain = "full"
+Grid::type = "byspacing"
+Grid::dxyz = 0.1
+Grid::xyzmin = -3.0
+Grid::xyzmax =  3.0
+
+# initial data only
+cactus::cctk_itlast = 0
+
+# ADMBase
+ADMBase::initial_lapse = "exact"
+ADMBase::initial_shift = "exact"
+ADMBase::initial_data = "exact"
+ADMBase::lapse_evolution_method = "static"
+ADMBase::shift_evolution_method = "static"
+ADMBase::metric_type = "physical"
+
+# Exact
+Exact::exact_model = "Schwarzschild/EF"
+Exact::Schwarzschild_EF__mass = 1.0
+
+AHFinderDirect::find_AHs_at_poststep = "false"	# initial data only
+AHFinderDirect::method = "horizon function"	# just evaluate H(h) function
+AHFinderDirect::output_ghost_zones_for_h = "true"
+AHFinderDirect::h_base_file_name = "3patch.h"
+
+AHFinderDirect::patch_system_type = "+xyz octant"
+AHFinderDirect::N_zones_per_right_angle = 20
+
+AHFinderDirect::N_horizons = 1
+AHFinderDirect::origin_x[1] = 0.0
+AHFinderDirect::origin_y[1] = 0.0
+AHFinderDirect::origin_z[1] = 0.0
+
+AHFinderDirect::initial_guess_method = "coordinate sphere"
+AHFinderDirect::initial_guess__coord_sphere__x_center[1] = 0.0
+AHFinderDirect::initial_guess__coord_sphere__y_center[1] = 0.0
+AHFinderDirect::initial_guess__coord_sphere__z_center[1] = 0.0
+AHFinderDirect::initial_guess__coord_sphere__radius[1] = 1.0
