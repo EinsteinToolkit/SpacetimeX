@@ -17,7 +17,7 @@ USES FUNCTION sf_IdFromName
 
 
 
-INT qlm_state[num_surfaces] TYPE=scalar
+REAL qlm_state[num_surfaces] TYPE=scalar
 {
   qlm_calc_error          # some QLM information is invalid
   qlm_have_valid_data     # interpolating from the AH was successful
@@ -26,13 +26,13 @@ INT qlm_state[num_surfaces] TYPE=scalar
   qlm_iteration           # iteration for current data
 } "Status information"
 
-INT qlm_state_p[num_surfaces] TYPE=scalar
+REAL qlm_state_p[num_surfaces] TYPE=scalar
 {
   qlm_have_valid_data_p qlm_have_valid_data_p_p
   qlm_have_killing_vector_p qlm_have_killing_vector_p_p
 } "Previous status information"
   
-INT qlm_grid_int[num_surfaces] TYPE=scalar
+REAL qlm_grid_int[num_surfaces] TYPE=scalar
 {
   qlm_nghoststheta qlm_nghostsphi
   qlm_ntheta qlm_nphi
