@@ -41,8 +41,7 @@ subroutine qlm_paramcheck (CCTK_ARGUMENTS)
      qlm_nghostsphi  (hn) = nghostsphi(sn)
      qlm_ntheta      (hn) = ntheta(sn)
      qlm_nphi        (hn) = nphi(sn)
-     write(*,*)hn,qlm_nphi(hn),sn,nphi(sn) 
-     call flush()
+
      ! Symmetries
      if (symmetric_x(sn) /= 0 .or. &
           symmetric_y(sn) /= 0 .or. &
@@ -66,8 +65,6 @@ subroutine qlm_paramcheck (CCTK_ARGUMENTS)
         call CCTK_PARAMWARN (msg)
      end if
      
-     write(*,*)"check: ",hn,qlm_nphi(hn),qlm_nghostsphi(hn),mod(int(qlm_nphi(hn) - 2*qlm_nghostsphi(hn)),4) 
-     call flush()
      if (auto_res(sn) /= 1 .and. (mod(int(qlm_nphi(hn) - 2*qlm_nghostsphi(hn)),4) /= 0)) then
         ! We need grid points on the four major meridians
         write (msg, '("The number of interior grid points in the phi direction of surface ",i4," must be a multiple of four after the symmetries have been removed, but it is ",i6)') hn-1, qlm_nphi(hn) - 2*qlm_nghostsphi(hn)
