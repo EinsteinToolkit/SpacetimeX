@@ -28,7 +28,7 @@ subroutine qlm_calculate (CCTK_ARGUMENTS)
   
   num_procs = CCTK_nProcs (cctkGH)
   my_proc   = CCTK_MyProc (cctkGH)
-  
+  write(*,*)"QLM proc info",num_procs,my_proc 
   do pass = 1, (num_surfaces + num_procs - 1) / num_procs
      
      ! Calculate the range of horizons for this pass
@@ -79,7 +79,7 @@ subroutine qlm_calculate (CCTK_ARGUMENTS)
            did_allocate = .true.
         end if
      end if
-     
+    
      call qlm_interpolate (CCTK_PASS_FTOF, hn)
      
      if (hn > 0) then

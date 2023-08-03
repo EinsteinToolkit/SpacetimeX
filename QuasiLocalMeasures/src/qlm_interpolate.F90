@@ -97,11 +97,15 @@ subroutine qlm_interpolate (CCTK_ARGUMENTS, hn)
   call CCTK_FortranString &
        (len_coordsystem, int(coordsystem,sk), fort_coordsystem)
   call CCTK_CoordSystemHandle (coord_handle, fort_coordsystem)
-  if (coord_handle<0) then
-     write (msg, '("The coordinate system """, a, """ does not exist")') &
-          trim(fort_coordsystem)
-     call CCTK_WARN (0, msg)
-  end if
+  coord_handle = 0 ! TODO: CarpetX interpolator does not use this, coord systems
+  ! are not defined
+
+
+  ! if (coord_handle<0) then
+  !    write (msg, '("The coordinate system """, a, """ does not exist")') &
+  !         trim(fort_coordsystem)
+  !    call CCTK_WARN (0, msg)
+  ! end if
   
   ! Get interpolator
   call CCTK_FortranString &
