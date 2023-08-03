@@ -59,6 +59,16 @@ SCHEDULE qlm_calculate IN qlm_calc_group
   TRIGGERS: qlm_ricci_scalars qlm_twometric qlm_killing_vector qlm_killed_twometric
   TRIGGERS: qlm_invariant_coordinates qlm_multipole_moments qlm_3determinant
   TRIGGERS: qlm_scalars
+  #READS: qlm_coordinates
+  #READS: qlm_coordinates_p
+  #READS: qlm_newman_penrose
+  #READS: qlm_weyl_scalars
+  #READS: qlm_ricci_scalars
+  #READS: qlm_twometric
+  #READS: qlm_killed_twometric
+  #READS: qlm_invariant_coordinates
+  #READS: qlm_multipole_moments
+  #READS: qlm_3determinant
 } "Calculate quasi-local quantities"
 
 # SCHEDULE qlm_calculate AT analysis AFTER (SphericalSurface_HasBeenSet SetTmunu)
