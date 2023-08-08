@@ -105,41 +105,30 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
   // Dimensions
   const int dim = 3;
 
-	// Number of interpolation variables
-	int const num_vars = 3;
-
-  const int operator_handle = 0; // not implemented in CarpetX
+  // Interpolation operator
+  const int operator_handle =
+      CCTK_InterpHandle("Lagrange polynomial interpolation");
+  if (operator_handle < 0) {
+    CCTK_WARN(CCTK_WARN_ALERT, "Can't get interpolation handle");
+    return;
+  } // TODO: Not used by CarpetX Interpolator
 
   // Interpolation parameter table
-  CCTK_INT operations[1][dim];
-	for (int var = 0 ; var < num_vars; var++) {
-	  operations[0][var] = 0;
-	}
-
-  int operands[1][dim];
-	for (int var = 0 ; var < num_vars; var++) {
-		operands[0][var] = var;
-	}
-
 	int ierr;
-
   int param_table_handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
   if (param_table_handle < 0)
     CCTK_VERROR("Can't create parameter table: %d", param_table_handle);
   if ((ierr = Util_TableSetInt(param_table_handle, interp_order, "order")) < 0)
     CCTK_VERROR("Can't set order in parameter table: %d", ierr);
-  if ((ierr = Util_TableSetIntArray(param_table_handle, num_vars, (int const*const)operands,
-                            "operand_indices")) < 0)
-    CCTK_VERROR("Can't set operand_indices array in parameter table: %d", ierr);
-  if ((ierr = Util_TableSetIntArray(param_table_handle, num_vars, (int const*const)operations,
-                            "operation_codes")) < 0)
-    CCTK_VERROR("Can't set operation_codes array in parameter table: %d", ierr);
 
   {
-
     // Interpolation coordinate system: Not used in CarpetX_DriverInterpolate
     const int coordsys_handle = 0;
-		CCTK_INT const interp_coords_type_code = 0;
+    // const int coordsys_handle = CCTK_CoordSystemHandle("cart3d");
+    // if (coordsys_handle < 0) {
+    //   CCTK_WARN(CCTK_WARN_ALERT, "Can't get coordinate system handle");
+    //   goto label_free_param_table;
+    // }
 
     // Only processor 0 interpolates
     const int num_points = CCTK_MyProc(cctkGH) == 0 ? max_num_tracked : 0;
@@ -151,6 +140,9 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
 		interp_coords[1] = pt_loc_y;
 		interp_coords[2] = pt_loc_z;
 
+    // Number of interpolation variables
+    int const num_vars = 3;
+
     // Interpolated variables
     assert(num_vars == 3);
     int input_array_indices[3];
@@ -159,7 +151,11 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
     input_array_indices[2] = CCTK_VarIndex("ADMBaseX::betaz");
 
     // Interpolation result types: Not used by CarpetX DriverInterp
-		CCTK_INT const output_array_type_codes[1] = {0};
+    assert(num_vars == 3);
+    CCTK_INT output_array_type_codes[3];
+    output_array_type_codes[0] = CCTK_VARIABLE_REAL;
+    output_array_type_codes[1] = CCTK_VARIABLE_REAL;
+    output_array_type_codes[2] = CCTK_VARIABLE_REAL;
 
     // Interpolation result
     CCTK_REAL pt_betax[max_num_tracked];
@@ -174,12 +170,11 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
 
     // Interpolate
     int ierr;
-    // Use CarpetX Funtion:
-		ierr = DriverInterpolate(
-		cctkGH, dim, operator_handle, param_table_handle, coordsys_handle,
-		num_points, interp_coords_type_code, interp_coords, num_vars, (int const * const)input_array_indices,
-		num_vars, output_array_type_codes, output_arrays);
-
+		ierr = CCTK_InterpGridArrays(
+				cctkGH, dim, operator_handle, param_table_handle, coordsys_handle,
+				num_points, CCTK_VARIABLE_REAL, interp_coords, num_vars,
+				input_array_indices, num_vars, output_array_type_codes,
+				output_arrays);
     if (ierr < 0) {
       CCTK_WARN(CCTK_WARN_ALERT, "Interpolation error");
       goto label_free_param_table;
