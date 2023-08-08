@@ -127,7 +127,7 @@ extern "C" void SphericalHarmonics_extract(CCTK_ARGUMENTS) {
   std::array<CCTK_POINTER, nvars> ptrs{psi4re.data(), psi4im.data()};
 
   Interpolate(cctkGH, npoints_local, coord_x.data(), coord_y.data(),
-              coord_z.data(), nvars, varinds.data(), operations.data(),
+              coord_z.data(), nvars, varinds.data(), operations.data(), 1,
               ptrs.data());
 
   // Calculate and output modes only on a single process
@@ -135,7 +135,8 @@ extern "C" void SphericalHarmonics_extract(CCTK_ARGUMENTS) {
 
     for (int n = 0; n < npoints; ++n) {
       if (!(isfinite(psi4re.at(n))))
-        CCTK_VWARN(CCTK_WARN_ALERT, "psi4re is not finite: n=%d [x,y,z]=[%.17g,%.17g,%.17g]", n,
+        CCTK_VWARN(CCTK_WARN_ALERT,
+                   "psi4re is not finite: n=%d [x,y,z]=[%.17g,%.17g,%.17g]", n,
                    coord_x.at(n), coord_y.at(n), coord_z.at(n));
       // assert(isfinite(psi4re.at(n)));
       // assert(isfinite(psi4im.at(n)));

@@ -237,7 +237,7 @@ metric_t<T> interpolate_metric(const cGH *const cctkGH,
       metric.K(1, 2)().data(),     metric.K(2, 2)().data()};
 
   Interpolate(cctkGH, geom.npoints, coords.x(0)().data(), coords.x(1)().data(),
-              coords.x(2)().data(), nvars, varinds.data(), operations.data(),
+              coords.x(2)().data(), nvars, varinds.data(), operations.data(), 1,
               ptrs.data());
 
   metric.g(1, 0)() = metric.g(0, 1)();
