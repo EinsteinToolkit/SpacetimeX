@@ -5,4 +5,4 @@ IMPLEMENTS: NewRadX
 USES INCLUDE HEADER: loop.hxx
 USES INCLUDE HEADER: loop_device.hxx
 
-INCLUDE HEADER: newrad.hxx in newrad.hxx
+INCLUDE HEADER: newradx.hxx in newradx.hxx

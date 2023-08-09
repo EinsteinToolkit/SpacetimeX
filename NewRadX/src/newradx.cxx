@@ -1,7 +1,7 @@
 #include <cctk.h>
 #include <cctk_Arguments_Checked.h>
 #include <cmath>
-#include "newrad.hxx"
+#include "newradx.hxx"
 #include "loop.hxx"
 #include "loop_device.hxx"
 
@@ -36,7 +36,7 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
 
   const auto derivx =
       [=] CCTK_DEVICE CCTK_HOST(const GF3D2<const CCTK_REAL> &u_, const PointDesc &p)
-			    CCTK_ATTRIBUTE_ALWAYS_INLINE {
+          CCTK_ATTRIBUTE_ALWAYS_INLINE {
         const auto I = p.I;
         if (p.NI[0] == 0)
           // interior
@@ -61,7 +61,7 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
 
   const auto derivy =
       [=] CCTK_DEVICE CCTK_HOST(const GF3D2<const CCTK_REAL> &u_, const PointDesc &p)
-			    CCTK_ATTRIBUTE_ALWAYS_INLINE {
+          CCTK_ATTRIBUTE_ALWAYS_INLINE {
         const auto I = p.I;
         if (p.NI[1] == 0)
           // interior
@@ -86,7 +86,7 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
 
   const auto derivz =
       [=] CCTK_DEVICE CCTK_HOST(const GF3D2<const CCTK_REAL> &u_, const PointDesc &p)
-			    CCTK_ATTRIBUTE_ALWAYS_INLINE {
+          CCTK_ATTRIBUTE_ALWAYS_INLINE {
         const auto I = p.I;
         if (p.NI[2] == 0)
           // interior
