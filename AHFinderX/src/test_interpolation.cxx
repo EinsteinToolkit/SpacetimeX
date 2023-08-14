@@ -56,7 +56,7 @@ extern "C" void AHFinder_test_interpolation(CCTK_ARGUMENTS) {
   }
 
   Interpolate(cctkGH, npoints, coords[0].data(), coords[1].data(),
-              coords[2].data(), nvars, varinds.data(), operations.data(),
+              coords[2].data(), nvars, varinds.data(), operations.data(), 1,
               resultptrs.data());
 
   CCTK_INT const N_dims = 3;
