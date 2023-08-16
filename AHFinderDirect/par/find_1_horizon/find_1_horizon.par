@@ -153,14 +153,14 @@ IO::out_proc_every = 1
 
 CarpetX::out_metadata = no
 
-CarpetX::out_silo_vars = "
-ADMBaseX::metric
-ADMBaseX::curv
-ADMBaseX::lapse
-ADMBaseX::shift
-Z4c::allC
+# CarpetX::out_silo_vars = "
+# ADMBaseX::metric
+# ADMBaseX::curv
+# ADMBaseX::lapse
+# ADMBaseX::shift
+# Z4c::allC
 # CarpetX::regrid_error
-"
+# "
 
 # CarpetX::out_openpmd_vars = "
 # ADMBaseX::metric

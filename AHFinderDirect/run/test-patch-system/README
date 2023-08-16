@@ -1,3 +1,0 @@
-This directory contains parameter files and associated stuff for
-the   ../src/util/test_patch_system.cc  test driver.  The output files
-are plain ASCII, gnuplot 'splot' format.

@@ -1,10 +1,10 @@
-jobid="run-find_1_horizon-login1.frontera.tacc.utexas.edu-acw6923-2023.08.16-16.21.50-234094"
+jobid="run-find_1_horizon-login2.frontera.tacc.utexas.edu-acw6923-2023.08.16-16.51.26-289139"
 jobtype="default"
 app_title=""
-start_time="Aug 16 2023 11:21:50-0500"
+start_time="Aug 16 2023 11:51:26-0500"
 project_name=""
 output_files="find_1_horizon"
-host="login1.frontera.tacc.utexas.edu"
+host="login2.frontera.tacc.utexas.edu"
 nprocs=1
 portal_username=""
 local_username="acw6923"
@@ -19,12 +19,12 @@ config_id="config-CarpetX-AHFD-login4.frontera.tacc.utexas.edu-work2-09319-acw69
 build_id="build-CarpetX-AHFD-login4.frontera.tacc.utexas.edu-acw6923-2023.08.03-22.45.33-157210"
 compile_date="Aug 03 2023"
 compile_time="17:45:42"
-simulation_id="run-find_1_horizon-login1.frontera.tacc.utexas.edu-acw6923-2023.08.16-16.21.50-234094"
-run_id="run-find_1_horizon-login1.frontera.tacc.utexas.edu-acw6923-2023.08.16-16.21.50-234094"
+simulation_id="run-find_1_horizon-login2.frontera.tacc.utexas.edu-acw6923-2023.08.16-16.51.26-289139"
+run_id="run-find_1_horizon-login2.frontera.tacc.utexas.edu-acw6923-2023.08.16-16.51.26-289139"
 run_user="acw6923"
 run_date="Aug 16 2023"
-run_time="11:21:50-0500"
-run_host="login1.frontera.tacc.utexas.edu"
+run_time="11:51:26-0500"
+run_host="login2.frontera.tacc.utexas.edu"
 run_title=""
 argc=2
 argv[0]="../../../../exe/cactus_CarpetX-AHFD"
@@ -185,14 +185,14 @@ IO::out_proc_every \= 1
 
 CarpetX::out_metadata \= no
 
-CarpetX::out_silo_vars \= \"
-ADMBaseX::metric
-ADMBaseX::curv
-ADMBaseX::lapse
-ADMBaseX::shift
-Z4c::allC
+# CarpetX::out_silo_vars \= \"
+# ADMBaseX::metric
+# ADMBaseX::curv
+# ADMBaseX::lapse
+# ADMBaseX::shift
+# Z4c::allC
 # CarpetX::regrid_error
-\"
+# \"
 
 # CarpetX::out_openpmd_vars \= \"
 # ADMBaseX::metric
@@ -460,14 +460,6 @@ parameters/CarpetX::ncells_x=128
 parameters/CarpetX::ncells_y=128
 parameters/CarpetX::ncells_z=128
 parameters/CarpetX::out_metadata=no
-parameters/CarpetX::out_silo_vars="
-ADMBaseX::metric
-ADMBaseX::curv
-ADMBaseX::lapse
-ADMBaseX::shift
-Z4c::allC
-
-"
 parameters/CarpetX::poison_undefined_values=no
 parameters/CarpetX::prolongation_order=5
 parameters/CarpetX::prolongation_type="ddf"
@@ -514,12 +506,12 @@ parameters/Z4c::calc_constraints=yes
 parameters/Z4c::chi_floor=1e-06
 parameters/Z4c::epsdiss=0.32
 run_date="Aug 16 2023"
-run_time="11:25:37-0500"
+run_time="11:55:20-0500"
 cctk_iteration=0
 cctk_time=0
 simulation="done"
 run_date="Aug 16 2023"
-run_time="11:26:07-0500"
+run_time="11:55:41-0500"
 cctk_iteration=0
 cctk_time=0
 simulation="done"
