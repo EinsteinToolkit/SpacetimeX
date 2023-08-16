@@ -1,0 +1,541 @@
+jobid="run-find_1_horizon-login2.frontera.tacc.utexas.edu-acw6923-2023.08.16-18.02.08-70250"
+jobtype="default"
+app_title=""
+start_time="Aug 16 2023 13:02:08-0500"
+project_name=""
+output_files="find_1_horizon"
+host="login2.frontera.tacc.utexas.edu"
+nprocs=1
+portal_username=""
+local_username="acw6923"
+parameter_filename="find_1_horizon.par"
+executable="../../../../exe/cactus_CarpetX-QLM-new"
+data_directory="find_1_horizon"
+app_visibility="public"
+notification_reports=""
+notification_methods=""
+Cactus_version="4.14.0"
+config_id="config-CarpetX-QLM-new-login1.frontera.tacc.utexas.edu-work2-09319-acw6923-frontera-Cactus"
+build_id="build-CarpetX-QLM-new-login1.frontera.tacc.utexas.edu-acw6923-2023.08.15-17.41.40-125655"
+compile_date="Aug 15 2023"
+compile_time="12:42:51"
+simulation_id="run-find_1_horizon-login2.frontera.tacc.utexas.edu-acw6923-2023.08.16-18.02.08-70250"
+run_id="run-find_1_horizon-login2.frontera.tacc.utexas.edu-acw6923-2023.08.16-18.02.08-70250"
+run_user="acw6923"
+run_date="Aug 16 2023"
+run_time="13:02:08-0500"
+run_host="login2.frontera.tacc.utexas.edu"
+run_title=""
+argc=2
+argv[0]="../../../../exe/cactus_CarpetX-QLM-new"
+argv[1]="find_1_horizon.par"
+parameter_filename="find_1_horizon.par"
+parameter_file="ActiveThorns \= \"
+ADMBaseX
+AEILocalInterp
+AHFinderDirect
+CarpetX
+Coordinates
+Formaline
+IOUtil
+ODESolvers
+QuasiLocalMeasures
+SystemTopology
+SphericalSurface
+TimerReport
+TmunuBaseX
+TwoPunctures
+Weyl
+Z4c
+\"
+
+Cactus::cctk_show_schedule \= no
+
+Cactus::presync_mode \= \"mixed-error\"
+
+Cactus::terminate \= \"iteration\"
+Cactus::cctk_itlast \= 0
+Cactus::cctk_final_time \= 300.0
+# Cactus::max_runtime \= 30   # minutes
+Cactus::max_runtime \= 60 + 30   # minutes
+
+CarpetX::verbose \= yes
+CarpetX::poison_undefined_values \= no
+
+CarpetX::xmin \= 2
+CarpetX::ymin \= -2
+CarpetX::zmin \= -2
+
+CarpetX::xmax \= 6
+CarpetX::ymax \= 2
+CarpetX::zmax \= 2
+
+CarpetX::ncells_x \= 128
+CarpetX::ncells_y \= 128
+CarpetX::ncells_z \= 128
+
+CarpetX::max_tile_size_x \= 1024000
+CarpetX::max_tile_size_y \= 4
+CarpetX::max_tile_size_z \= 4
+
+CarpetX::boundary_x \= \"dirichlet\"
+CarpetX::boundary_y \= \"dirichlet\"
+CarpetX::boundary_z \= \"dirichlet\"
+CarpetX::boundary_upper_x \= \"dirichlet\"
+CarpetX::boundary_upper_y \= \"dirichlet\"
+CarpetX::boundary_upper_z \= \"dirichlet\"
+
+CarpetX::ghost_size \= 3
+CarpetX::interpolation_order \= 4
+
+CarpetX::max_num_levels \= 2
+CarpetX::regrid_every \= 32
+CarpetX::regrid_error_threshold \= 0.9
+
+CarpetX::prolongation_type \= \"ddf\"
+CarpetX::prolongation_order \= 5
+
+ODESolvers::verbose \= no
+ODESolvers::method \= \"RK4\"
+CarpetX::dtfac \= 0.25
+
+ADMBaseX::initial_data \= \"TwoPunctures\"
+ADMBaseX::initial_lapse \= \"TwoPunctures-averaged\"
+
+# QC-0 setup
+TwoPunctures::par_b \= 4
+TwoPunctures::par_m_plus \=  0.4824
+TwoPunctures::par_m_minus \=  0.4824
+TwoPunctures::par_P_plus [1] \= +0.114
+TwoPunctures::par_P_minus[1] \= -0.114
+
+TwoPunctures::grid_setup_method \= \"evaluation\"
+
+TwoPunctures::TP_epsilon \= 1.0e-2
+TwoPunctures::TP_Tiny    \= 1.0e-2
+
+TwoPunctures::verbose \= yes
+
+Z4c::calc_ADM_vars \= yes                  # for Weyl
+Z4c::calc_ADMRHS_vars \= yes               # for Weyl
+Z4c::calc_constraints \= yes
+
+Z4c::chi_floor \= 1.0e-6
+Z4c::alphaG_floor \= 1.0e-8
+Z4c::epsdiss \= 0.32
+
+################################################################################
+## Apparent Horizons
+#################################################################################
+
+AHFinderDirect::N_horizons                               \= 1
+AHFinderDirect::find_every                               \= 1
+AHFinderDirect::output_h_every                           \= 0
+AHFinderDirect::max_Newton_iterations__initial           \= 50
+AHFinderDirect::max_Newton_iterations__subsequent        \= 50
+AHFinderDirect::max_allowable_Theta_growth_iterations    \= 10
+AHFinderDirect::max_allowable_Theta_nonshrink_iterations \= 10
+AHFinderDirect::geometry_interpolator_name               \= \"Lagrange polynomial interpolation\"
+AHFinderDirect::geometry_interpolator_pars \= \"order\=4 boundary_off_centering_tolerance\={1.0e-10 1.0e-10 1.0e-10 1.0e-10 1.0e-10 1.0e-10} boundary_extrapolation_tolerance\={0.0 0.0 0.0 0.0 0.0 0.0}\"
+AHFinderDirect::surface_interpolator_name                \= \"Lagrange polynomial interpolation\"
+AHFinderDirect::surface_interpolator_pars                \= \"order\=3\"
+AHFinderDirect::verbose_level                            \= \"physics details\"
+AHFinderDirect::move_origins                             \= yes
+
+AHFinderDirect::initial_guess_method[1] \= \"coordinate sphere\"
+AHFinderDirect::origin_x                             [1] \= 4.0
+AHFinderDirect::initial_guess__coord_sphere__x_center[1] \= 4.0
+AHFinderDirect::initial_guess__coord_sphere__radius  [1] \= 0.5
+AHFinderDirect::which_surface_to_store_info          [1] \= 0
+AHFinderDirect::set_mask_for_individual_horizon      [1] \= no
+AHFinderDirect::reset_horizon_after_not_finding      [1] \= no
+AHFinderDirect::max_allowable_horizon_radius         [1] \= 3
+
+################################################################################
+## Spherical surfaces
+#################################################################################
+
+SphericalSurface::nsurfaces             \= 1
+SphericalSurface::maxntheta             \= 66
+SphericalSurface::maxnphi               \= 124
+SphericalSurface::verbose               \= no
+
+# Horizon 1
+SphericalSurface::ntheta            [0] \= 41
+SphericalSurface::nphi              [0] \= 80
+SphericalSurface::nghoststheta      [0] \= 2
+SphericalSurface::nghostsphi        [0] \= 2
+
+################################################################################
+## Isolated Horizons
+#################################################################################
+
+QuasiLocalMeasures::verbose                \= yes
+QuasiLocalMeasures::veryverbose            \= yes
+QuasiLocalMeasures::interpolator           \= \"Lagrange polynomial interpolation\"
+QuasiLocalMeasures::interpolator_options   \= \"order\=4\"
+QuasiLocalMeasures::spatial_order          \= 4
+QuasiLocalMeasures::num_surfaces           \= 1
+QuasiLocalMeasures::surface_index      [0] \= 0
+QuasiLocalMeasures::output_vtk_every       \= 1
+
+IO::out_dir \= $parfile
+IO::out_every \= 1
+IO::out_mode \= \"np\"                       # \"proc\", \"np\", \"onefile\"
+IO::out_proc_every \= 1
+
+CarpetX::out_metadata \= no
+
+# CarpetX::out_silo_vars \= \"
+# ADMBaseX::metric
+# ADMBaseX::curv
+# ADMBaseX::lapse
+# ADMBaseX::shift
+# Z4c::allC
+# CarpetX::regrid_error
+# \"
+
+# CarpetX::out_openpmd_vars \= \"
+# ADMBaseX::metric
+# ADMBaseX::curv
+# ADMBaseX::lapse
+# ADMBaseX::shift
+# Weyl::Psi4re
+# Weyl::Psi4im
+# Z4c::allC
+# #TODO Z4cNRPy::allCGF
+# CarpetX::regrid_error
+# \"
+
+CarpetX::out_tsv_vars \= \"
+QuasiLocalMeasures::qlm_scalars
+#ADMBaseX::lapse
+#ADMBaseX::shift
+#ADMBaseX::metric
+#ADMBaseX::curv
+#Z4c::allC
+\"
+
+TimerReport::out_every \= 512
+TimerReport::out_filename \= \"TimerReport\"
+TimerReport::output_schedule_timers \= no
+TimerReport::n_top_timers \= 100
+"
+current_dir="/work2/09319/acw6923/frontera/Cactus/repos/spacetimex/QuasiLocalMeasures/par"
+out_dir="find_1_horizon"
+thorns/ADIOS2="active"
+thorns/ADMBaseX="active"
+thorns/AEILocalInterp="active"
+thorns/AHFinderDirect="active"
+thorns/AHFinderX="inactive"
+thorns/Algo="inactive"
+thorns/AMReX="active"
+thorns/Arith="active"
+thorns/BLAS="active"
+thorns/Boost="inactive"
+thorns/Boundary="inactive"
+thorns/BoxInBox="inactive"
+thorns/BrillLindquist="inactive"
+thorns/Cactus="active"
+thorns/CarpetX="active"
+thorns/CoordBase="inactive"
+thorns/Coordinates="active"
+thorns/Cowling="inactive"
+thorns/Derivs="inactive"
+thorns/ErrorEstimator="inactive"
+thorns/FFTW3="inactive"
+thorns/FluxWaveToyX="inactive"
+thorns/Formaline="active"
+thorns/Fortran="active"
+thorns/GSL="active"
+thorns/HDF5="active"
+thorns/hwloc="active"
+thorns/HydroBaseX="inactive"
+thorns/InitBase="inactive"
+thorns/IOUtil="active"
+thorns/LAPACK="active"
+thorns/libjpeg="inactive"
+thorns/Loop="active"
+thorns/LORENE="inactive"
+thorns/MemSpeed="inactive"
+thorns/MPI="active"
+thorns/NaNCatcher="inactive"
+thorns/Nice="inactive"
+thorns/NoMPI="inactive"
+thorns/NSIMD="active"
+thorns/ODESolvers="active"
+thorns/openPMD="active"
+thorns/OpenSSL="inactive"
+thorns/PAPI="inactive"
+thorns/pthreads="active"
+thorns/Punctures="inactive"
+thorns/PunctureTracker="inactive"
+thorns/QuasiLocalMeasures="active"
+thorns/Silo="active"
+thorns/SIMDWaveToyX="inactive"
+thorns/SpacetimeWaveToyX="inactive"
+thorns/SphericalSurface="active"
+thorns/ssht="inactive"
+thorns/StaggeredWaveToyX="inactive"
+thorns/StaticTrumpet="inactive"
+thorns/SymBase="inactive"
+thorns/SystemStatistics="inactive"
+thorns/SystemTopology="active"
+thorns/TerminationTrigger="inactive"
+thorns/TestArrayGroup="inactive"
+thorns/TestArrays="inactive"
+thorns/TestBoundaries="inactive"
+thorns/TestBoxInBox="inactive"
+thorns/TestComplex="inactive"
+thorns/TestCoordinates="inactive"
+thorns/TestFortranCrayPointers="inactive"
+thorns/TestFortranDependencies1="inactive"
+thorns/TestFortranDependencies2="inactive"
+thorns/TestFpointerNULL="inactive"
+thorns/TestFreeF90="inactive"
+thorns/TestInclude1="inactive"
+thorns/TestInclude2="inactive"
+thorns/TestInterpolate="inactive"
+thorns/TestMath="inactive"
+thorns/TestNorms="inactive"
+thorns/TestODESolvers="inactive"
+thorns/TestODESolvers2="inactive"
+thorns/TestOutput="inactive"
+thorns/TestPar="inactive"
+thorns/TestProlongate="inactive"
+thorns/TestReduce="inactive"
+thorns/TestSchedule="inactive"
+thorns/TestStrings="inactive"
+thorns/TestSymmetries="inactive"
+thorns/TestTable="inactive"
+thorns/TestTimers="inactive"
+thorns/TestTypes="inactive"
+thorns/TGRtensor="active"
+thorns/Time="inactive"
+thorns/TimerReport="active"
+thorns/TmunuBaseX="active"
+thorns/Trigger="inactive"
+thorns/TwoPunctures="active"
+thorns/Vectors="inactive"
+thorns/WatchDog="inactive"
+thorns/WaveToyX="inactive"
+thorns/Weyl="active"
+thorns/yaml_cpp="active"
+thorns/Z4c="active"
+thorns/zlib="active"
+thorn_arrangements/ADIOS2="ExternalLibraries"
+thorn_arrangements/ADMBaseX="CarpetX"
+thorn_arrangements/AEILocalInterp="Numerical"
+thorn_arrangements/AHFinderDirect="SpacetimeX"
+thorn_arrangements/AHFinderX="SpacetimeX"
+thorn_arrangements/AMReX="ExternalLibraries"
+thorn_arrangements/Algo="CarpetX"
+thorn_arrangements/Arith="CarpetX"
+thorn_arrangements/BLAS="ExternalLibraries"
+thorn_arrangements/Boost="ExternalLibraries"
+thorn_arrangements/Boundary="CactusBase"
+thorn_arrangements/BoxInBox="CarpetX"
+thorn_arrangements/BrillLindquist="SpacetimeX"
+thorn_arrangements/CarpetX="CarpetX"
+thorn_arrangements/CoordBase="CactusBase"
+thorn_arrangements/Coordinates="CarpetX"
+thorn_arrangements/Cowling="SpacetimeX"
+thorn_arrangements/Derivs="CarpetX"
+thorn_arrangements/ErrorEstimator="CarpetX"
+thorn_arrangements/FFTW3="ExternalLibraries"
+thorn_arrangements/FluxWaveToyX="CarpetX"
+thorn_arrangements/Formaline="CactusUtils"
+thorn_arrangements/Fortran="CactusBase"
+thorn_arrangements/GSL="ExternalLibraries"
+thorn_arrangements/HDF5="ExternalLibraries"
+thorn_arrangements/HydroBaseX="CarpetX"
+thorn_arrangements/IOUtil="CactusBase"
+thorn_arrangements/InitBase="CactusBase"
+thorn_arrangements/LAPACK="ExternalLibraries"
+thorn_arrangements/LORENE="ExternalLibraries"
+thorn_arrangements/Loop="CarpetX"
+thorn_arrangements/MPI="ExternalLibraries"
+thorn_arrangements/MemSpeed="CactusUtils"
+thorn_arrangements/NSIMD="ExternalLibraries"
+thorn_arrangements/NaNCatcher="CactusUtils"
+thorn_arrangements/Nice="CactusUtils"
+thorn_arrangements/NoMPI="CactusUtils"
+thorn_arrangements/ODESolvers="CarpetX"
+thorn_arrangements/OpenSSL="ExternalLibraries"
+thorn_arrangements/PAPI="ExternalLibraries"
+thorn_arrangements/PunctureTracker="SpacetimeX"
+thorn_arrangements/Punctures="SpacetimeX"
+thorn_arrangements/QuasiLocalMeasures="SpacetimeX"
+thorn_arrangements/SIMDWaveToyX="CarpetX"
+thorn_arrangements/Silo="ExternalLibraries"
+thorn_arrangements/SpacetimeWaveToyX="CarpetX"
+thorn_arrangements/SphericalSurface="SpacetimeX"
+thorn_arrangements/StaggeredWaveToyX="CarpetX"
+thorn_arrangements/StaticTrumpet="SpacetimeX"
+thorn_arrangements/SymBase="CactusBase"
+thorn_arrangements/SystemStatistics="CactusUtils"
+thorn_arrangements/SystemTopology="CactusUtils"
+thorn_arrangements/TGRtensor="SpacetimeX"
+thorn_arrangements/TerminationTrigger="CactusUtils"
+thorn_arrangements/TestArrayGroup="CarpetX"
+thorn_arrangements/TestArrays="CactusTest"
+thorn_arrangements/TestBoundaries="CarpetX"
+thorn_arrangements/TestBoxInBox="CarpetX"
+thorn_arrangements/TestComplex="CactusTest"
+thorn_arrangements/TestCoordinates="CactusTest"
+thorn_arrangements/TestFortranCrayPointers="CactusTest"
+thorn_arrangements/TestFortranDependencies1="CactusTest"
+thorn_arrangements/TestFortranDependencies2="CactusTest"
+thorn_arrangements/TestFpointerNULL="CactusTest"
+thorn_arrangements/TestFreeF90="CactusTest"
+thorn_arrangements/TestInclude1="CactusTest"
+thorn_arrangements/TestInclude2="CactusTest"
+thorn_arrangements/TestInterpolate="CarpetX"
+thorn_arrangements/TestMath="CactusTest"
+thorn_arrangements/TestNorms="CarpetX"
+thorn_arrangements/TestODESolvers="CarpetX"
+thorn_arrangements/TestODESolvers2="CarpetX"
+thorn_arrangements/TestOutput="CarpetX"
+thorn_arrangements/TestPar="CactusTest"
+thorn_arrangements/TestProlongate="CarpetX"
+thorn_arrangements/TestReduce="CactusTest"
+thorn_arrangements/TestSchedule="CactusTest"
+thorn_arrangements/TestStrings="CactusTest"
+thorn_arrangements/TestSymmetries="CarpetX"
+thorn_arrangements/TestTable="CactusTest"
+thorn_arrangements/TestTimers="CactusTest"
+thorn_arrangements/TestTypes="CactusTest"
+thorn_arrangements/Time="CactusBase"
+thorn_arrangements/TimerReport="CactusUtils"
+thorn_arrangements/TmunuBaseX="CarpetX"
+thorn_arrangements/Trigger="CactusUtils"
+thorn_arrangements/TwoPunctures="SpacetimeX"
+thorn_arrangements/Vectors="CactusUtils"
+thorn_arrangements/WatchDog="CactusUtils"
+thorn_arrangements/WaveToyX="CarpetX"
+thorn_arrangements/Weyl="SpacetimeX"
+thorn_arrangements/Z4c="SpacetimeX"
+thorn_arrangements/hwloc="ExternalLibraries"
+thorn_arrangements/libjpeg="ExternalLibraries"
+thorn_arrangements/openPMD="ExternalLibraries"
+thorn_arrangements/pthreads="ExternalLibraries"
+thorn_arrangements/ssht="ExternalLibraries"
+thorn_arrangements/yaml_cpp="ExternalLibraries"
+thorn_arrangements/zlib="ExternalLibraries"
+parameters/ADMBaseX::initial_data="TwoPunctures"
+parameters/ADMBaseX::initial_lapse="TwoPunctures-averaged"
+parameters/AHFinderDirect::N_horizons=1
+parameters/AHFinderDirect::find_every=1
+parameters/AHFinderDirect::geometry_interpolator_name="Lagrange polynomial interpolation"
+parameters/AHFinderDirect::geometry_interpolator_pars="order\=4 boundary_off_centering_tolerance\={1.0e-10 1.0e-10 1.0e-10 1.0e-10 1.0e-10 1.0e-10} boundary_extrapolation_tolerance\={0.0 0.0 0.0 0.0 0.0 0.0}"
+parameters/AHFinderDirect::initial_guess__coord_sphere__radius[1]=0.5
+parameters/AHFinderDirect::initial_guess__coord_sphere__x_center[1]=4
+parameters/AHFinderDirect::initial_guess_method[1]="coordinate sphere"
+parameters/AHFinderDirect::max_Newton_iterations__initial=50
+parameters/AHFinderDirect::max_Newton_iterations__subsequent=50
+parameters/AHFinderDirect::max_allowable_Theta_growth_iterations=10
+parameters/AHFinderDirect::max_allowable_Theta_nonshrink_iterations=10
+parameters/AHFinderDirect::max_allowable_horizon_radius[1]=3
+parameters/AHFinderDirect::move_origins=yes
+parameters/AHFinderDirect::origin_x[1]=4
+parameters/AHFinderDirect::output_h_every=0
+parameters/AHFinderDirect::reset_horizon_after_not_finding[1]=no
+parameters/AHFinderDirect::set_mask_for_individual_horizon[1]=no
+parameters/AHFinderDirect::surface_interpolator_name="Lagrange polynomial interpolation"
+parameters/AHFinderDirect::surface_interpolator_pars="order\=3"
+parameters/AHFinderDirect::verbose_level="physics details"
+parameters/AHFinderDirect::which_surface_to_store_info[1]=0
+parameters/Cactus::cctk_final_time=300
+parameters/Cactus::cctk_itlast=0
+parameters/Cactus::cctk_show_schedule=no
+parameters/Cactus::max_runtime=90
+parameters/Cactus::presync_mode="mixed-error"
+parameters/Cactus::terminate="iteration"
+parameters/CarpetX::boundary_upper_x="dirichlet"
+parameters/CarpetX::boundary_upper_y="dirichlet"
+parameters/CarpetX::boundary_upper_z="dirichlet"
+parameters/CarpetX::boundary_x="dirichlet"
+parameters/CarpetX::boundary_y="dirichlet"
+parameters/CarpetX::boundary_z="dirichlet"
+parameters/CarpetX::dtfac=0.25
+parameters/CarpetX::ghost_size=3
+parameters/CarpetX::interpolation_order=4
+parameters/CarpetX::max_num_levels=2
+parameters/CarpetX::max_tile_size_x=1024000
+parameters/CarpetX::max_tile_size_y=4
+parameters/CarpetX::max_tile_size_z=4
+parameters/CarpetX::ncells_x=128
+parameters/CarpetX::ncells_y=128
+parameters/CarpetX::ncells_z=128
+parameters/CarpetX::out_metadata=no
+parameters/CarpetX::out_tsv_vars="
+QuasiLocalMeasures::qlm_scalars
+
+
+
+
+
+"
+parameters/CarpetX::poison_undefined_values=no
+parameters/CarpetX::prolongation_order=5
+parameters/CarpetX::prolongation_type="ddf"
+parameters/CarpetX::regrid_error_threshold=0.9
+parameters/CarpetX::regrid_every=32
+parameters/CarpetX::verbose=yes
+parameters/CarpetX::xmax=6
+parameters/CarpetX::xmin=2
+parameters/CarpetX::ymax=2
+parameters/CarpetX::ymin=-2
+parameters/CarpetX::zmax=2
+parameters/CarpetX::zmin=-2
+parameters/IO::out_dir="find_1_horizon"
+parameters/IO::out_every=1
+parameters/IO::out_mode="np"
+parameters/IO::out_proc_every=1
+parameters/ODESolvers::method="RK4"
+parameters/ODESolvers::verbose=no
+parameters/QuasiLocalMeasures::interpolator="Lagrange polynomial interpolation"
+parameters/QuasiLocalMeasures::interpolator_options="order\=4"
+parameters/QuasiLocalMeasures::num_surfaces=1
+parameters/QuasiLocalMeasures::output_vtk_every=1
+parameters/QuasiLocalMeasures::spatial_order=4
+parameters/QuasiLocalMeasures::surface_index[0]=0
+parameters/QuasiLocalMeasures::verbose=yes
+parameters/QuasiLocalMeasures::veryverbose=yes
+parameters/SphericalSurface::maxnphi=124
+parameters/SphericalSurface::maxntheta=66
+parameters/SphericalSurface::nghostsphi[0]=2
+parameters/SphericalSurface::nghoststheta[0]=2
+parameters/SphericalSurface::nphi[0]=80
+parameters/SphericalSurface::nsurfaces=1
+parameters/SphericalSurface::ntheta[0]=41
+parameters/SphericalSurface::verbose=no
+parameters/TimerReport::n_top_timers=100
+parameters/TimerReport::out_every=512
+parameters/TimerReport::out_filename="TimerReport"
+parameters/TimerReport::output_schedule_timers=no
+parameters/TwoPunctures::TP_Tiny=0.01
+parameters/TwoPunctures::TP_epsilon=0.01
+parameters/TwoPunctures::grid_setup_method="evaluation"
+parameters/TwoPunctures::par_P_minus[1]=-0.114
+parameters/TwoPunctures::par_P_plus[1]=0.114
+parameters/TwoPunctures::par_b=4
+parameters/TwoPunctures::par_m_minus=0.4824
+parameters/TwoPunctures::par_m_plus=0.4824
+parameters/TwoPunctures::verbose=yes
+parameters/Z4c::alphaG_floor=1e-08
+parameters/Z4c::calc_ADMRHS_vars=yes
+parameters/Z4c::calc_ADM_vars=yes
+parameters/Z4c::calc_constraints=yes
+parameters/Z4c::chi_floor=1e-06
+parameters/Z4c::epsdiss=0.32
+run_date="Aug 16 2023"
+run_time="13:06:05-0500"
+cctk_iteration=0
+cctk_time=0
+simulation="done"
+run_date="Aug 16 2023"
+run_time="13:06:34-0500"
+cctk_iteration=0
+cctk_time=0
+simulation="done"

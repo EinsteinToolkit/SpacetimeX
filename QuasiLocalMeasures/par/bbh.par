@@ -1,0 +1,281 @@
+ActiveThorns = "
+ADMBaseX
+AEILocalInterp
+AHFinderDirect
+CarpetX
+Coordinates
+BoxInBox
+Formaline
+IOUtil
+ODESolvers
+QuasiLocalMeasures
+SystemTopology
+SphericalSurface
+TimerReport
+TmunuBaseX
+TwoPunctures
+Weyl
+Z4c
+PunctureTracker
+"
+
+Cactus::cctk_show_schedule = yes
+
+Cactus::presync_mode = "mixed-error"
+
+Cactus::terminate = "any"
+Cactus::cctk_itlast = 100000
+Cactus::cctk_final_time = 300.0
+Cactus::max_runtime = 23 * 60 + 30   # minutes
+
+CarpetX::verbose = yes
+CarpetX::poison_undefined_values = no
+
+CarpetX::xmin = -400
+CarpetX::ymin = -400
+CarpetX::zmin = -400
+
+CarpetX::xmax = 400
+CarpetX::ymax = 400
+CarpetX::zmax = 400
+
+CarpetX::ncells_x = 200
+CarpetX::ncells_y = 200
+CarpetX::ncells_z = 200
+
+CarpetX::max_tile_size_x = 1024000
+CarpetX::max_tile_size_y = 4
+CarpetX::max_tile_size_z = 4
+
+CarpetX::boundary_x = "dirichlet"
+CarpetX::boundary_y = "dirichlet"
+CarpetX::boundary_z = "dirichlet"
+CarpetX::boundary_upper_x = "dirichlet"
+CarpetX::boundary_upper_y = "dirichlet"
+CarpetX::boundary_upper_z = "dirichlet"
+
+CarpetX::ghost_size = 3
+CarpetX::interpolation_order = 4
+
+# -------------------- BoxInBox -------------------------------------------------
+CarpetX::max_num_levels = 11
+CarpetX::regrid_every = 32
+CarpetX::regrid_error_threshold = 0.9
+
+PunctureTracker::track_boxes = yes
+
+BoxInBox::num_regions = 1
+
+# Region 1
+BoxInBox::shape_1 = "cube"
+BoxInBox::num_levels_1 = 9
+BoxInBox::position_x_1 = +4
+BoxInBox::radius_1[1] = 220
+BoxInBox::radius_1[2] = 110
+BoxInBox::radius_1[3] = 55
+BoxInBox::radius_1[4] = 25
+BoxInBox::radius_1[5] = 10
+BoxInBox::radius_1[6] = 5
+BoxInBox::radius_1[7] = 2
+BoxInBox::radius_1[8] = 1
+
+# Region 2
+BoxInBox::shape_2 = "cube"
+BoxInBox::num_levels_2 = 9
+BoxInBox::position_x_2 = -4
+BoxInBox::radius_2[1] = 220
+BoxInBox::radius_2[2] = 110
+BoxInBox::radius_2[3] = 55
+BoxInBox::radius_2[4] = 25
+BoxInBox::radius_2[5] = 10
+BoxInBox::radius_2[6] = 5
+BoxInBox::radius_2[7] = 2
+BoxInBox::radius_2[8] = 1
+
+
+CarpetX::prolongation_type = "ddf"
+CarpetX::prolongation_order = 5
+
+ODESolvers::verbose = no
+ODESolvers::method = "RK4"
+CarpetX::dtfac = 0.25
+
+ADMBaseX::initial_data = "TwoPunctures"
+ADMBaseX::initial_lapse = "TwoPunctures-averaged"
+
+# QC-0 setup
+TwoPunctures::par_b = 4
+TwoPunctures::par_m_plus =  0.4824
+TwoPunctures::par_m_minus =  0.4824
+TwoPunctures::par_P_plus [1] = +0.114
+TwoPunctures::par_P_minus[1] = -0.114
+
+TwoPunctures::grid_setup_method = "evaluation"
+
+TwoPunctures::TP_epsilon = 1.0e-2
+TwoPunctures::TP_Tiny    = 1.0e-2
+
+TwoPunctures::verbose = yes
+
+Z4c::calc_ADM_vars = yes                  # for Weyl
+Z4c::calc_ADMRHS_vars = yes               # for Weyl
+Z4c::calc_constraints = yes
+
+Z4c::chi_floor = 1.0e-6
+Z4c::alphaG_floor = 1.0e-8
+Z4c::epsdiss = 0.32
+
+# Puncture Tracker
+PunctureTracker::verbose = yes
+
+PunctureTracker::interp_order = 4
+
+PunctureTracker::track    [0] = yes
+PunctureTracker::initial_x[0] = +4
+
+PunctureTracker::track    [1] = yes
+PunctureTracker::initial_x[1] = -4
+
+################################################################################
+## Apparent Horizons
+#################################################################################
+
+AHFinderDirect::N_horizons                               = 2
+AHFinderDirect::find_every                               = 16
+AHFinderDirect::output_h_every                           = 0
+AHFinderDirect::max_Newton_iterations__initial           = 50
+AHFinderDirect::max_Newton_iterations__subsequent        = 50
+AHFinderDirect::max_allowable_Theta_growth_iterations    = 10
+AHFinderDirect::max_allowable_Theta_nonshrink_iterations = 10
+AHFinderDirect::geometry_interpolator_name               = "Lagrange polynomial interpolation"
+AHFinderDirect::geometry_interpolator_pars = "order=4 boundary_off_centering_tolerance={1.0e-10 1.0e-10 1.0e-10 1.0e-10 1.0e-10 1.0e-10} boundary_extrapolation_tolerance={0.0 0.0 0.0 0.0 0.0 0.0}"
+AHFinderDirect::surface_interpolator_name                = "Lagrange polynomial interpolation"
+AHFinderDirect::surface_interpolator_pars                = "order=4"
+AHFinderDirect::verbose_level                            = "physics details"
+AHFinderDirect::move_origins                             = yes
+
+AHFinderDirect::initial_guess_method[1] = "coordinate sphere"
+AHFinderDirect::origin_x                             [1] = 4.0
+AHFinderDirect::initial_guess__coord_sphere__x_center[1] = 4.0
+AHFinderDirect::initial_guess__coord_sphere__radius  [1] = 0.5
+AHFinderDirect::which_surface_to_store_info          [1] = 0
+AHFinderDirect::set_mask_for_individual_horizon      [1] = no
+AHFinderDirect::reset_horizon_after_not_finding      [1] = no
+AHFinderDirect::track_origin_from_grid_scalar        [1] = yes
+AHFinderDirect::track_origin_source_x                [1] = "PunctureTracker::pt_loc_x[0]"
+AHFinderDirect::track_origin_source_y                [1] = "PunctureTracker::pt_loc_y[0]"
+AHFinderDirect::track_origin_source_z                [1] = "PunctureTracker::pt_loc_z[0]"
+AHFinderDirect::max_allowable_horizon_radius         [1] = 3
+
+AHFinderDirect::initial_guess_method[2] = "coordinate sphere"
+AHFinderDirect::origin_x                             [2] = -4.0
+AHFinderDirect::initial_guess__coord_sphere__x_center[2] = -4.0
+AHFinderDirect::initial_guess__coord_sphere__radius  [2] = 0.5
+AHFinderDirect::which_surface_to_store_info          [2] = 1
+AHFinderDirect::set_mask_for_individual_horizon      [2] = no
+AHFinderDirect::reset_horizon_after_not_finding      [2] = no
+AHFinderDirect::track_origin_from_grid_scalar        [2] = yes
+AHFinderDirect::track_origin_source_x                [2] = "PunctureTracker::pt_loc_x[1]"
+AHFinderDirect::track_origin_source_y                [2] = "PunctureTracker::pt_loc_y[1]"
+AHFinderDirect::track_origin_source_z                [2] = "PunctureTracker::pt_loc_z[1]"
+AHFinderDirect::max_allowable_horizon_radius         [2] = 3
+
+# AHFinderDirect::origin_x                             [3] = 0
+# AHFinderDirect::find_after_individual                [3] = $find_cah
+# AHFinderDirect::initial_guess__coord_sphere__x_center[3] = 0
+# AHFinderDirect::initial_guess__coord_sphere__radius  [3] = 1.0
+# AHFinderDirect::which_surface_to_store_info          [3] = 4
+# AHFinderDirect::set_mask_for_individual_horizon      [3] = no
+# AHFinderDirect::max_allowable_horizon_radius         [3] = 6
+
+################################################################################
+## Spherical surfaces
+#################################################################################
+
+SphericalSurface::nsurfaces             = 2
+SphericalSurface::maxntheta             = 66
+SphericalSurface::maxnphi               = 124
+SphericalSurface::verbose               = no
+
+# Horizon 1
+SphericalSurface::ntheta            [0] = 41
+SphericalSurface::nphi              [0] = 80
+SphericalSurface::nghoststheta      [0] = 2
+SphericalSurface::nghostsphi        [0] = 2
+
+# Horizon 2
+SphericalSurface::ntheta            [1] = 41
+SphericalSurface::nphi              [1] = 80
+SphericalSurface::nghoststheta      [1] = 2
+SphericalSurface::nghostsphi        [1] = 2
+
+################################################################################
+## Isolated Horizons
+#################################################################################
+
+QuasiLocalMeasures::verbose                = no
+QuasiLocalMeasures::veryverbose            = no
+QuasiLocalMeasures::interpolator           = "Lagrange polynomial interpolation"
+QuasiLocalMeasures::interpolator_options   = "order=4"
+QuasiLocalMeasures::spatial_order          = 4
+QuasiLocalMeasures::num_surfaces           = 2
+QuasiLocalMeasures::surface_index      [0] = 0
+QuasiLocalMeasures::surface_index      [1] = 1
+#QuasiLocalMeasures::surface_index      [3] = 4
+QuasiLocalMeasures::output_vtk_every       = 512
+
+IO::out_dir = $parfile
+IO::out_every = 512
+IO::out_mode = "np"                       # "proc", "np", "onefile"
+IO::out_proc_every = 1
+
+# IO::checkpoint_dir = "./checkpoints"
+# IO::checkpoint_ID = yes
+# IO::checkpoint_every = 0
+# IO::checkpoint_every_walltime_hours = 3.0
+# IO::checkpoint_on_terminate = yes
+# CarpetX::checkpoint_method = "openpmd"
+# 
+# IO::recover_dir = "./checkpoints"
+# IO::recover = "autoprobe"
+# CarpetX::recover_method = "openpmd"
+
+CarpetX::out_metadata = no
+
+CarpetX::out_silo_vars = "
+ADMBaseX::metric
+ADMBaseX::curv
+ADMBaseX::lapse
+ADMBaseX::shift
+Z4c::allC
+# CarpetX::regrid_error
+"
+
+# CarpetX::out_openpmd_vars = "
+# ADMBaseX::metric
+# ADMBaseX::curv
+# ADMBaseX::lapse
+# ADMBaseX::shift
+# Weyl::Psi4re
+# Weyl::Psi4im
+# Z4c::allC
+# #TODO Z4cNRPy::allCGF
+# CarpetX::regrid_error
+# "
+
+CarpetX::out_tsv_vars = "
+#ADMBaseX::lapse
+#ADMBaseX::shift
+#ADMBaseX::metric
+#ADMBaseX::curv
+#Z4c::allC
+#PunctureTracker::pt_loc
+#PunctureTracker::pt_vel
+QuasiLocalMeasures::qlm_scalars
+"
+
+TimerReport::out_every = 512
+TimerReport::out_filename = "TimerReport"
+TimerReport::output_schedule_timers = no
+# TimerReport::output_all_timers_readable = yes
+TimerReport::n_top_timers = 100
