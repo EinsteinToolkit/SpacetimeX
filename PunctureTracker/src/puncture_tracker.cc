@@ -48,6 +48,7 @@ extern "C" void PunctureTracker_Init(CCTK_ARGUMENTS) {
     }
   }
 	
+	// enabled if refinement regions should follow the punctures
 	if (track_boxes) {
 		const int max_num_regions = 2;
 		for (int i = 0; i < max_num_regions; i++) {
@@ -184,7 +185,7 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
 
       // Some more output
 
-      if (verbose && CCTK_MyProc(cctkGH) == 0) {
+      if (verbose) {
         for (int n = 0; n < max_num_tracked; ++n) {
           if (track[n]) {
             CCTK_VINFO("Shift at puncture #%d is at (%g,%g,%g)", n,
@@ -195,21 +196,19 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
       }
 
       // Check for NaNs and large shift components
-      if (CCTK_MyProc(cctkGH) == 0) {
-        for (int n = 0; n < max_num_tracked; ++n) {
-          if (track[n]) {
-            CCTK_REAL norm = sqrt(pow(pt_betax[n], 2) + pow(pt_betay[n], 2) +
-                                  pow(pt_betaz[n], 2));
+			for (int n = 0; n < max_num_tracked; ++n) {
+				if (track[n]) {
+					CCTK_REAL norm = sqrt(pow(pt_betax[n], 2) + pow(pt_betay[n], 2) +
+																pow(pt_betaz[n], 2));
 
-            if (!CCTK_isfinite(norm) || norm > shift_limit) {
-              CCTK_VERROR("Shift at puncture #%d is (%g,%g,%g).  This likely "
-                          "indicates an error in the simulation.",
-                          n, double(pt_betax[n]), double(pt_betay[n]),
-                          double(pt_betaz[n]));
-            }
-          }
-        }
-      }
+					if (!CCTK_isfinite(norm) || norm > shift_limit) {
+						CCTK_VERROR("Shift at puncture #%d is (%g,%g,%g).  This likely "
+												"indicates an error in the simulation.",
+												n, double(pt_betax[n]), double(pt_betay[n]),
+												double(pt_betaz[n]));
+					}
+				}
+			}
 
       // Time evolution
 
@@ -310,6 +309,5 @@ extern "C" void PunctureTracker_CheckShift(CCTK_ARGUMENTS) {
 		}
 	}
 }
-
 
 } //namespace PunctureTracker
