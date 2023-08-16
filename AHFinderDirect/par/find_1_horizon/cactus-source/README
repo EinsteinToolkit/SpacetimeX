@@ -1,0 +1,17 @@
+README for the Cactus source tree
+
+This directory contains a complete Cactus source tree in several tarballs.
+(A tarball is a file with a suffix like ".tar.gz".)
+The tarballs were created by the thorn AEIThorns/Formaline when the
+corresponding executable was produced, and were stored in the executable.
+Thorn CactusUtils/Formaline contains more information about this feature.
+
+In order to fully recreate the Cactus source tree, unpack all tarballs
+in this directory, e.g. with commands like
+	tar xzf Cactus-source-Cactus.tar.gz
+for all tarballs, or
+	for T in *.tar.gz; do tar xzf $T; done
+in Bash. All tarballs should be unpacked into the same directory.
+
+The files "config-info" and "ThornList" that were used to build the
+executable can then be found in the "configs" subdirectory.
