@@ -78,6 +78,7 @@ subroutine qlm_calculate (CCTK_ARGUMENTS)
            did_allocate = .true.
         end if
      end if
+
      call qlm_interpolate (CCTK_PASS_FTOF, hn)
      
      if (hn > 0) then

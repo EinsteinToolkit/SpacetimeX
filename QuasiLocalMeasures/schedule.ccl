@@ -29,49 +29,7 @@ SCHEDULE qlm_init AT initial
   LANG: Fortran
 } "Initialise quasi-local calculations"
 
-# if (CCTK_IsThornActive("ODESolvers")) {
-#   SCHEDULE GROUP qlm_calc_group IN ODESolvers_PostStep AFTER (SphericalSurface_HasBeenSet TmunuBaseX_SetTmunuVars)
-#   {
-#   } "Schedule group for calculating QLMs"
-# } else {
-#   SCHEDULE GROUP qlm_calc_group AT postregrid AFTER (SphericalSurface_HasBeenSet TmunuBaseX_SetTmunuVars)
-#   {
-#   } "Schedule group for calculating QLMs"
-# 
-#   SCHEDULE GROUP qlm_calc_group AT poststep AFTER (SphericalSurface_HasBeenSet TmunuBaseX_SetTmunuVars)
-#   {
-#   } "Schedule group for calculating QLMs"
-# }
-# 
-# SCHEDULE qlm_calculate IN qlm_calc_group
-# {
-#   OPTIONS: global
-#   LANG: Fortran
-#   STORAGE: qlm_coordinates qlm_coordinates_p
-#   STORAGE: qlm_newman_penrose qlm_weyl_scalars
-#   STORAGE: qlm_ricci_scalars qlm_twometric qlm_killed_twometric 
-#   STORAGE: qlm_invariant_coordinates qlm_multipole_moments qlm_3determinant
-#   TRIGGERS: qlm_state
-#   TRIGGERS: qlm_grid_int qlm_grid_real
-#   TRIGGERS: qlm_shapes qlm_tetrad_l qlm_tetrad_n qlm_tetrad_m
-#   TRIGGERS: qlm_coordinates
-#   TRIGGERS: qlm_newman_penrose qlm_weyl_scalars
-#   TRIGGERS: qlm_ricci_scalars qlm_twometric qlm_killing_vector qlm_killed_twometric
-#   TRIGGERS: qlm_invariant_coordinates qlm_multipole_moments qlm_3determinant
-#   TRIGGERS: qlm_scalars
-#   #READS: qlm_coordinates
-#   #READS: qlm_coordinates_p
-#   #READS: qlm_newman_penrose
-#   #READS: qlm_weyl_scalars
-#   #READS: qlm_ricci_scalars
-#   #READS: qlm_twometric
-#   #READS: qlm_killed_twometric
-#   #READS: qlm_invariant_coordinates
-#   #READS: qlm_multipole_moments
-#   #READS: qlm_3determinant
-# } "Calculate quasi-local quantities"
-
-SCHEDULE qlm_calculate AT analysis AFTER (SphericalSurface_HasBeenSet SetTmunu)
+SCHEDULE qlm_calculate AT analysis AFTER (SphericalSurface_HasBeenSet TmunuBaseX_SetTmunuVars)
 {
   OPTIONS: global
   LANG: Fortran
