@@ -11,24 +11,10 @@ using namespace Loop;
 using namespace std;
 
 extern "C" void ADMBaseX_linear_wave(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTS_ADMBaseX_linear_wave;
+  DECLARE_CCTK_ARGUMENTSX_ADMBaseX_linear_wave;
   DECLARE_CCTK_PARAMETERS;
 
   const CCTK_REAL t = cctk_time;
-
-  const GF3D<CCTK_REAL, 0, 0, 0> gxx_(cctkGH, gxx);
-  const GF3D<CCTK_REAL, 0, 0, 0> gxy_(cctkGH, gxy);
-  const GF3D<CCTK_REAL, 0, 0, 0> gxz_(cctkGH, gxz);
-  const GF3D<CCTK_REAL, 0, 0, 0> gyy_(cctkGH, gyy);
-  const GF3D<CCTK_REAL, 0, 0, 0> gyz_(cctkGH, gyz);
-  const GF3D<CCTK_REAL, 0, 0, 0> gzz_(cctkGH, gzz);
-
-  const GF3D<CCTK_REAL, 0, 0, 0> kxx_(cctkGH, kxx);
-  const GF3D<CCTK_REAL, 0, 0, 0> kxy_(cctkGH, kxy);
-  const GF3D<CCTK_REAL, 0, 0, 0> kxz_(cctkGH, kxz);
-  const GF3D<CCTK_REAL, 0, 0, 0> kyy_(cctkGH, kyy);
-  const GF3D<CCTK_REAL, 0, 0, 0> kyz_(cctkGH, kyz);
-  const GF3D<CCTK_REAL, 0, 0, 0> kzz_(cctkGH, kzz);
 
   // See arXiv:1111.2177 [gr-qc], (74-75)
 
@@ -42,20 +28,23 @@ extern "C" void ADMBaseX_linear_wave(CCTK_ARGUMENTS) {
            cos(2 * CCTK_REAL(M_PI) * (p.x - t) / linear_wave_wavelength);
   };
 
-  loop_all<0, 0, 0>(cctkGH, [&](const PointDesc &p) { gxx_(p.I) = 1; });
-  loop_all<0, 0, 0>(cctkGH, [&](const PointDesc &p) { gxy_(p.I) = 0; });
-  loop_all<0, 0, 0>(cctkGH, [&](const PointDesc &p) { gxz_(p.I) = 0; });
-  loop_all<0, 0, 0>(cctkGH, [&](const PointDesc &p) { gyy_(p.I) = 1 + b(p); });
-  loop_all<0, 0, 0>(cctkGH, [&](const PointDesc &p) { gyz_(p.I) = 0; });
-  loop_all<0, 0, 0>(cctkGH, [&](const PointDesc &p) { gzz_(p.I) = 1 - b(p); });
+  grid.loop_all_device<1, 1, 1>(grid.nghostzones,
+                                [=] CCTK_DEVICE(const PointDesc &p)
+                                    CCTK_ATTRIBUTE_ALWAYS_INLINE {
+                                      gxx(p.I) = 1;
+                                      gxy(p.I) = 0;
+                                      gxz(p.I) = 0;
+                                      gyy(p.I) = 1 + b(p);
+                                      gyz(p.I) = 0;
+                                      gzz(p.I) = 1 - b(p);
 
-  loop_all<0, 0, 0>(cctkGH, [&](const PointDesc &p) { kxx_(p.I) = 0; });
-  loop_all<0, 0, 0>(cctkGH, [&](const PointDesc &p) { kxy_(p.I) = 0; });
-  loop_all<0, 0, 0>(cctkGH, [&](const PointDesc &p) { kxz_(p.I) = 0; });
-  loop_all<0, 0, 0>(cctkGH, [&](const PointDesc &p) { kyy_(p.I) = bt(p) / 2; });
-  loop_all<0, 0, 0>(cctkGH, [&](const PointDesc &p) { kyz_(p.I) = 0; });
-  loop_all<0, 0, 0>(cctkGH,
-                    [&](const PointDesc &p) { kzz_(p.I) = -bt(p) / 2; });
+                                      kxx(p.I) = 0;
+                                      kxy(p.I) = 0;
+                                      kxz(p.I) = 0;
+                                      kyy(p.I) = bt(p) / 2;
+                                      kyz(p.I) = 0;
+                                      kzz(p.I) = -bt(p) / 2;
+                                    });
 }
 
 } // namespace ADMBaseX

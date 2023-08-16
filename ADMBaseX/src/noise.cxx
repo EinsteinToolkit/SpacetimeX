@@ -11,7 +11,7 @@ using namespace Loop;
 using namespace std;
 
 extern "C" void ADMBaseX_add_noise(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTS_ADMBaseX_add_noise;
+  DECLARE_CCTK_ARGUMENTSX_ADMBaseX_add_noise;
   DECLARE_CCTK_PARAMETERS;
 
   // Hardware random device
@@ -25,64 +25,35 @@ extern "C" void ADMBaseX_add_noise(CCTK_ARGUMENTS) {
     var += distribution(engine);
   };
 
-  const GF3D<CCTK_REAL, 0, 0, 0> gxx_(cctkGH, gxx);
-  const GF3D<CCTK_REAL, 0, 0, 0> gxy_(cctkGH, gxy);
-  const GF3D<CCTK_REAL, 0, 0, 0> gxz_(cctkGH, gxz);
-  const GF3D<CCTK_REAL, 0, 0, 0> gyy_(cctkGH, gyy);
-  const GF3D<CCTK_REAL, 0, 0, 0> gyz_(cctkGH, gyz);
-  const GF3D<CCTK_REAL, 0, 0, 0> gzz_(cctkGH, gzz);
+  grid.loop_all_device<1, 1, 1>(grid.nghostzones,
+                                [=] CCTK_DEVICE(const PointDesc &p)
+                                    CCTK_ATTRIBUTE_ALWAYS_INLINE {
+                                      add_noise(gxx(p.I));
+                                      add_noise(gxy(p.I));
+                                      add_noise(gxz(p.I));
+                                      add_noise(gyy(p.I));
+                                      add_noise(gyz(p.I));
+                                      add_noise(gzz(p.I));
 
-  const GF3D<CCTK_REAL, 0, 0, 0> kxx_(cctkGH, kxx);
-  const GF3D<CCTK_REAL, 0, 0, 0> kxy_(cctkGH, kxy);
-  const GF3D<CCTK_REAL, 0, 0, 0> kxz_(cctkGH, kxz);
-  const GF3D<CCTK_REAL, 0, 0, 0> kyy_(cctkGH, kyy);
-  const GF3D<CCTK_REAL, 0, 0, 0> kyz_(cctkGH, kyz);
-  const GF3D<CCTK_REAL, 0, 0, 0> kzz_(cctkGH, kzz);
+                                      add_noise(kxx(p.I));
+                                      add_noise(kxy(p.I));
+                                      add_noise(kxz(p.I));
+                                      add_noise(kyy(p.I));
+                                      add_noise(kyz(p.I));
+                                      add_noise(kzz(p.I));
 
-  const GF3D<CCTK_REAL, 0, 0, 0> alp_(cctkGH, alp);
+                                      add_noise(alp(p.I));
 
-  const GF3D<CCTK_REAL, 0, 0, 0> dtalp_(cctkGH, dtalp);
+                                      add_noise(dtalp(p.I));
 
-  const GF3D<CCTK_REAL, 0, 0, 0> betax_(cctkGH, betax);
-  const GF3D<CCTK_REAL, 0, 0, 0> betay_(cctkGH, betay);
-  const GF3D<CCTK_REAL, 0, 0, 0> betaz_(cctkGH, betaz);
+                                      add_noise(betax(p.I));
+                                      add_noise(betay(p.I));
+                                      add_noise(betaz(p.I));
 
-  const GF3D<CCTK_REAL, 0, 0, 0> dtbetax_(cctkGH, dtbetax);
-  const GF3D<CCTK_REAL, 0, 0, 0> dtbetay_(cctkGH, dtbetay);
-  const GF3D<CCTK_REAL, 0, 0, 0> dtbetaz_(cctkGH, dtbetaz);
-
-  loop_int<0, 0, 0>(cctkGH, [&](const PointDesc &p) { add_noise(gxx_(p.I)); });
-  loop_int<0, 0, 0>(cctkGH, [&](const PointDesc &p) { add_noise(gxy_(p.I)); });
-  loop_int<0, 0, 0>(cctkGH, [&](const PointDesc &p) { add_noise(gxz_(p.I)); });
-  loop_int<0, 0, 0>(cctkGH, [&](const PointDesc &p) { add_noise(gyy_(p.I)); });
-  loop_int<0, 0, 0>(cctkGH, [&](const PointDesc &p) { add_noise(gyz_(p.I)); });
-  loop_int<0, 0, 0>(cctkGH, [&](const PointDesc &p) { add_noise(gzz_(p.I)); });
-
-  loop_int<0, 0, 0>(cctkGH, [&](const PointDesc &p) { add_noise(kxx_(p.I)); });
-  loop_int<0, 0, 0>(cctkGH, [&](const PointDesc &p) { add_noise(kxy_(p.I)); });
-  loop_int<0, 0, 0>(cctkGH, [&](const PointDesc &p) { add_noise(kxz_(p.I)); });
-  loop_int<0, 0, 0>(cctkGH, [&](const PointDesc &p) { add_noise(kyy_(p.I)); });
-  loop_int<0, 0, 0>(cctkGH, [&](const PointDesc &p) { add_noise(kyz_(p.I)); });
-  loop_int<0, 0, 0>(cctkGH, [&](const PointDesc &p) { add_noise(kzz_(p.I)); });
-
-  loop_int<0, 0, 0>(cctkGH, [&](const PointDesc &p) { add_noise(alp_(p.I)); });
-
-  loop_int<0, 0, 0>(cctkGH,
-                    [&](const PointDesc &p) { add_noise(dtalp_(p.I)); });
-
-  loop_int<0, 0, 0>(cctkGH,
-                    [&](const PointDesc &p) { add_noise(betax_(p.I)); });
-  loop_int<0, 0, 0>(cctkGH,
-                    [&](const PointDesc &p) { add_noise(betay_(p.I)); });
-  loop_int<0, 0, 0>(cctkGH,
-                    [&](const PointDesc &p) { add_noise(betaz_(p.I)); });
-
-  loop_int<0, 0, 0>(cctkGH,
-                    [&](const PointDesc &p) { add_noise(dtbetax_(p.I)); });
-  loop_int<0, 0, 0>(cctkGH,
-                    [&](const PointDesc &p) { add_noise(dtbetay_(p.I)); });
-  loop_int<0, 0, 0>(cctkGH,
-                    [&](const PointDesc &p) { add_noise(dtbetaz_(p.I)); });
+                                      add_noise(dtbetax(p.I));
+                                      add_noise(dtbetay(p.I));
+                                      add_noise(dtbetaz(p.I));
+                                    });
 }
 
 } // namespace ADMBaseX
