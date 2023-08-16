@@ -1,5 +1,8 @@
+
+
 ActiveThorns = "
 ADMBaseX
+AEILocalInterp
 BoxInBox
 CarpetX
 Coordinates
@@ -59,13 +62,14 @@ CarpetX::regrid_error_threshold = 0.9
 BoxInBox::num_regions = 0
 
 BoxInBox::shape_1 = "cube"
-BoxInBox::num_levels_1 = 5
-BoxInBox::radius_1[1] = 25
-BoxInBox::radius_1[2] = 10
-BoxInBox::radius_1[3] = 5
-BoxInBox::radius_1[4] = 2
-BoxInBox::radius_1[5] = 1
+BoxInBox::num_levels_1 = 6
+BoxInBox::radius_1[1] = 32
+BoxInBox::radius_1[2] = 16
+BoxInBox::radius_1[3] = 8
+BoxInBox::radius_1[4] = 4
+BoxInBox::radius_1[5] = 2
 
+CarpetX::interpolation_order = 4
 CarpetX::prolongation_type = "ddf"
 CarpetX::prolongation_order = 5
 
@@ -90,6 +94,17 @@ TwoPunctures::TP_Tiny    = 1.0e-2
 
 TwoPunctures::verbose = yes
 
+# Puncture Tracker
+
+PunctureTracker::verbose = yes
+PunctureTracker::interp_order = 4
+
+PunctureTracker::track    [0] = yes
+PunctureTracker::initial_x[0] = +1.168642873
+
+PunctureTracker::track    [1] = yes
+PunctureTracker::initial_x[1] = -1.168642873
+
 Z4c::calc_ADM_vars = yes                  # for Weyl
 Z4c::calc_ADMRHS_vars = yes               # for Weyl
 Z4c::calc_constraints = yes
@@ -103,18 +118,18 @@ Z4c::epsdiss = 0.32
 #TODO # Z4cNRPy::eps_diss = 0.32
 
 IO::out_dir = $parfile
-IO::out_every = 128
+IO::out_every = 10
 IO::out_mode = "np"                       # "proc", "np", "onefile"
 IO::out_proc_every = 1
 
-IO::checkpoint_dir = "../checkpoints"
+IO::checkpoint_dir = "./checkpoints"
 IO::checkpoint_ID = yes
 IO::checkpoint_every = 0
 IO::checkpoint_every_walltime_hours = 1.0
 IO::checkpoint_on_terminate = yes
 CarpetX::checkpoint_method = "openpmd"
 
-IO::recover_dir = "../checkpoints"
+IO::recover_dir = "./checkpoints"
 IO::recover = "autoprobe"
 CarpetX::recover_method = "openpmd"
 
@@ -150,6 +165,8 @@ ADMBaseX::shift
 Z4c::allC
 #TODO Z4cNRPy::allCGF
 CarpetX::regrid_error
+PunctureTracker::pt_loc
+PunctureTracker::pt_vel
 "
 
 TimerReport::out_every = 128
