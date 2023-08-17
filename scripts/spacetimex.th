@@ -142,23 +142,20 @@ CarpetX/WaveToyX
 
 # SpaceTimeX thorns
 !TARGET   = $ARR
-!TYPE     = git
-!URL      = https://github.com/acwen11/SpacetimeX.git
-!REPO_PATH= $2
-!REPO_BRANCH = acwen/ahfinderdirect
-!CHECKOUT = 
+!TYPE     = ignore
+!CHECKOUT =
+SpacetimeX/AHFinderDirect
 SpacetimeX/AHFinderX
 # SpacetimeX/BaikalX - broken
 SpacetimeX/BrillLindquist
 SpacetimeX/Cowling
 SpacetimeX/Punctures
+SpacetimeX/SphericalHarmonics
+SpacetimeX/SphericalSurface
 SpacetimeX/StaticTrumpet
 SpacetimeX/TwoPunctures
 SpacetimeX/Weyl
 SpacetimeX/Z4c
-# AHFinderDirect Thorns
-SpacetimeX/AHFinderDirect
-SpacetimeX/SphericalSurface
 
 
 # AsterX thorns
