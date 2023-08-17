@@ -1,0 +1,308 @@
+# util.maple -- Maple utility functions
+# $Header$
+
+#
+# msum - multiple-index sum()
+# arctan_xy - 2-argument arctan() function
+# ssqrt - symbolic sqrt()
+#
+# indices_in_order - list of indices of table/array, in lexicographic order
+# lexorder_integer_list - lexorder() for lists
+# sort_var_list - sort a list of variables into a canonical order
+# lexorder_vars - lexorder() for "interesting" variables
+#
+# gensym - generate a "new" symbol name
+# gensym/init - reinitialize the gensym() global naming counter
+#
+# saveit - optionally save variables for debugging
+#
+
+################################################################################
+################################################################################
+################################################################################
+
+#
+# This function is identical to the standard Maple library function  sum()
+# except that it allows multiple summation indices.  It's usage is best
+# illustrated by a series of examples:
+#
+#	msum('f', 'k'=m..n)
+#		= sum('f', 'k'=m..n)
+#
+#	msum('f', 'k1'=m1..n1, 'k2'=m2..n2)
+#		= sum( 'sum('f', 'k1'=m1..n1)' , 'k2'=m2..n2 )
+#
+#	msum('f', 'k1'=m1..n1, 'k2'=m2..n2, 'k3'=m3..n3)
+#		= sum(
+#			 'sum( 'sum('f', 'k1'=m1..n1)' , 'k2'=m2..n2 )'
+#		       ,
+#			 'k3'=m3..n3
+#		     )
+#
+# Note, in particular, that the summation indices are nested with the
+# innermost summation appearing first.  This is the same nesting convention
+# as Fortran I/O statement's implicit do loops use.
+#
+# Bugs:
+# - The quoting in the code is pretty obscure...
+#
+msum :=
+proc(fn::algebraic)			# varargs
+local expr, sum_index;
+
+if (nargs < 2)
+   then ERROR("must have two or more arguments")
+end if;
+
+expr := fn;
+
+	for sum_index in [args[2..nargs]]
+	do
+	# loop invariant:
+	# msum(fn, <args processed so far>) = sum(expr, sum_index)
+	expr; sum_index; expr:= 'sum'(''%%'', ''%'');
+	end do;
+
+return eval(expr);
+end proc;
+
+################################################################################
+
+#
+# This function computes the 4-quadrant arctangent of  arctan(y/x) .
+# It's "just" a wrapper around the Maple 2-argument arctan function,
+# providing the what-I-find-natural (x,y) argument
+#
+# Arguments:
+# (x,y) = (In) The x,y coordinates.
+#
+arctan_xy :=
+proc(x::algebraic, y::algebraic)
+arctan(y,x);		# !!! reversedargument order !!!
+end proc;
+
+################################################################################
+
+#
+# This function computes the square root of its argument with the
+# symbolic option ==> fewer branch-cut problems.
+#
+ssqrt :=
+proc(x::algebraic)
+sqrt(x, 'symbolic');
+end proc;
+
+################################################################################
+################################################################################
+################################################################################
+
+#
+# This function is identical to Maple's  indices()  built-in function,
+# except that (a) it returns a list, not an expression sequence, and
+# (b) the indices are returned in lexicographic order rather than in
+# Maple's internal hash ordering.
+#
+# Arguments:
+# T = (in) A table or array with (only) integer-sequence indices.
+#
+# Results:
+# The lexicographic-ordered expression sequence of indices is returned
+# as the function result.
+#
+# Bugs:
+# - The function fails if the indices aren't a list of numbers.
+#
+indices_in_order :=
+proc(T::table)
+return sort([indices(T)], lexorder_integer_list);
+end;
+
+###############################################################################
+
+#
+# This function lexicographically orders lists of integers.
+#
+# Arguments:
+# list1 = list of integers to be sorted
+# list2 = list of integers to be sorted
+#
+# Results:
+# The function returns  true  iff  list1 < list2  lexicographically,
+# with the [1] list elements being most significant.
+#
+lexorder_integer_list :=
+proc(list1::list(numeric), list2::list(numeric))
+local len1, len2, k;
+
+len1 := nops(list1);
+len2 := nops(list2);
+
+	for k from 1 to min(len1,len2)
+	do
+	if   (list1[k] < list2[k])
+	   then return true;
+	elif (list1[k] > list2[k])
+	   then return false;
+	fi;
+	end do;
+
+# get to here ==> the shorter list is an exact prefix of the longer one
+#             ==> order the shorter one < the longer one
+return evalb(len1 < len2);
+end;
+
+################################################################################
+
+#
+# This function sorts a list of names (in practice, a list of coordinates)
+# into a canonical order.
+#
+sort_var_list :=
+proc(var_list::list(name))
+option remember;		# performance optimization
+global lexorder_vars;
+
+# only get to here the first time we see a given variable list
+# (i.e. if it's not in the remember table)
+return sort(var_list, lexorder_vars);
+end;
+
+################################################################################
+
+#
+# This function defines a lexical ordering on variable names.
+#
+# Arguments:
+# x, y = Two names to be compared.
+#
+# Results:
+# This function returns true iff a < b, false otherwise.
+#
+lexorder_vars :=
+proc(x::name, y::name)
+option remember;		# performance optimization
+local xposn, yposn;
+global
+  @include "../maple/coords.minc";
+
+if (member(x, xy_all_list, 'xposn') and member(y, xy_all_list, 'yposn'))
+   then return evalb(xposn < yposn);
+   else return lexorder(x, y);
+fi;
+
+end;
+
+################################################################################
+################################################################################
+################################################################################
+
+#
+# This procedure generates a (presumably) new symbol name of the
+# form
+#	cat(base_name,count)
+# where  base_name  is passed as an (optional, with a default value
+# supplied if it's omitted) argument, and  count  is the current
+# value of the global variable
+#	`gensym/counter`
+# which is postincremented after being used.  If the counter is
+# unassigned on entry to this function,  `gensym/init`()  is first
+# called to initialize it.
+#
+# `gensym/init`() may be used to (re)initialize the counter as
+# desired, or `gensym/counter` may be examined or altered directly
+# to otherwise modify the name sequence generated by this function.
+#
+# Arguments:
+# base_name = (in) (optional) The base name for the name generation.
+#			      This argument defaults to `temp_` ifo
+#			      omitted.
+#
+# Bugs:
+# No checks are made for whether the names in question are indeed
+# unassigned.
+#
+gensym :=
+proc(opt_base_name::string)
+global `gensym/counter`;		# in out
+local base_name, tn;
+
+if (nargs >= 1)
+   then base_name := opt_base_name;
+   else base_name := '`temp_`';
+end if;
+
+# force an initialization if it hasn't been done before
+if (not assigned(`gensym/counter`))
+   then `gensym/init`();
+end if;
+
+tn := cat(base_name, `gensym/counter`);
+`gensym/counter` := `gensym/counter` + 1;
+
+tn; return '%';
+end proc;
+
+################################################################################
+
+#
+# This procedure (re)initializes the gensym() global naming counter.
+#
+# Arguments:
+# initial_counter = (in) (optional)
+#			 The naming counter value to (re)initialize with.
+#			 This argument defaults to 1 if omitted.
+#
+`gensym/init` :=
+proc(opt_initial_counter::integer)
+global `gensym/counter`;		# in out
+local initial_counter;
+
+if (nargs >= 1)
+   then initial_counter := opt_initial_counter;
+   else initial_counter := 1;
+end if;
+
+`gensym/counter` := initial_counter;
+NULL;
+end proc;
+
+################################################################################
+################################################################################
+################################################################################
+
+#
+# This function optionally saves a local variable to a global variable
+# for later examination.  This is useful for debugging purposes, since
+# Maple doesn't have a proper debugger :-( .
+#
+# Arguments (explicit):
+# n = (in) An integer controlling how important this saveit() call is;
+#	   the saving will only be done if `saveit/level` >= n, i.e.
+#	   smaller values of n make the saving more likely.
+# fn = (in) The calling function or subsystem's name.
+# label = (in) A string identifying this saveit() call among all those
+#	       within the calling function.
+# expr = (in) The temporary result to save.
+#
+# Arguments (implicit, as global variables)
+# `saveit/level` = (in) (optional) If this name is assigned (as determined
+#				  by the  assigned()  function), this
+#				  function does the saving.  Otherwise,
+#				  this function is a nop.
+#
+saveit :=
+proc(n::integer, fn::{procedure,string}, label::string, expr::anything)
+global `saveit/level`;
+local save_name;
+
+if ( assigned(`saveit/level`)
+     and type(`saveit/level`, integer)
+     and (`saveit/level` >= n) )
+   then
+	save_name := cat(convert(fn,string),"/",label);
+	printf("      --> `%s`\n", save_name);
+	assign(  convert(eval(save_name,1),name) = expr  );
+end if;
+
+NULL;
+end proc;

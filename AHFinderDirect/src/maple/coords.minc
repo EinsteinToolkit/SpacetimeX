@@ -1,0 +1,19 @@
+# coords.minc -- global variables for coordinates
+# $Header$
+
+# Kronecker delta
+delta,
+
+# number of coordinates
+N,				# number of spatial coordinates
+N_ang,				# number of angular spatial coordinates
+
+# coordinates
+xx, yy, zz,			# Cartesian coordinates
+x_xyz, x_xyz_list, x_xyz_set,	# ... array/list/set of these
+r, r__fnd,			# radial coordinate,
+				# ... inert and as fn(xx,yy,zz) coords
+rho, sigma,			# generic patch coordinates
+y_rs, y_rs_list, y_rs_set,	# array and list of generic patch coordinates
+xy_all_list, xy_all_set		# union of Cartesian and generic patch coords
+			# no comma

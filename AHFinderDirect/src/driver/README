@@ -1,0 +1,47 @@
+This directory contains top-level routines to find the apparent horizon
+and interface with the rest of Cactus.
+
+The main source files in this directory are as follows:
+
+README.parallel
+	design notes for the parallel/multiprocessor algorithms
+	and data structures
+
+driver.hh
+	overall header file for routines in this directory
+
+state.cc
+	state information (data structures) kept across Cactus scheduler calls
+
+setup.cc		# sees CCTK_ARGUMENTS, CCTK_PARAMETERS
+	this is called from the scheduler to setup our data structures
+
+find_horizons.cc	# sees CCTK_ARGUMENTS, CCTK_PARAMETERS
+	this is called from the scheduler to find the apparent horizon(s)
+	in a slice
+
+announce.cc		# sees CCTK_ARGUMENTS, CCTK_PARAMETERS
+	this is called from the scheduler to announce apparent horizon
+	info to other thorns
+
+mask.cc			# sees CCTK_ARGUMENTS, CCTK_PARAMETERS
+	this is called from the scheduler to set an excision mask or masks
+
+initial_guess.cc
+	this sets up the initial guess(es) for the horizon position(s)
+
+Newton.cc		# sees cGH (for interprocessor broadcasts)
+			# uses CCTK_ReduceLocArrayToArray1D() for
+			#   interprocessor broadcast/synchronization
+	this solves the Theta(h) = 0 equations by Newton's method
+
+io.cc
+	I/O routines
+
+ellipsoid.maple
+	this is a Maple script to compute the intersection of a given
+	ray with an ellipsoid; this is used in setting up the initial guess
+ellipsoid.c
+	this is the Maple-generated code from "ellipsoid.maple"
+ellipsoid.log
+	this is the standard output from running "ellipsoid.maple"

@@ -1,0 +1,247 @@
+AHFinderDirect Code Style
+=========================
+$Header: /usr/local/svn/cvs-repositories/numrelcvs/AEIThorns/AHFinderDirect/src/CODESTYLE,v 1.6 2003-08-18 10:01:01 jthorn Exp $
+
+This file documents some general programming conventions used in this
+thorn.
+
+File Naming
+===========
+*.c, *.h	C code, headers
+*.cc, *.hh	C++ code, headers
+
+At least as of version 7, Maple doesn't have a usable preprocessor,
+so I've written my own (in Perl); it lives in misc/mpp.
+
+*.maple		Maple code (input to my Maple preprocessor)
+*.minc		Maple headers to be @included by my Maple preprocessor
+*.mm		Maple code (output from my Maple preprocessr)
+
+None of my header files ever #includes another file, so in theory there's
+no problem with multiple inclusion.  However, to work around C++ compiler
+problems, some header files are still explicitly protected against multiple
+inclusion with the standard #ifndef trick; see "C++ Templates" below for
+details.
+
+
+Configuration
+=============
+
+Only a few options are configured at compile-time; these use #defines
+in src/include/config.h.
+
+
+Code Layout/Indentation
+========================
+
+Most comments are C++-style //-to-end-of-line comments.  In C files,
+or in header files which have to be C-compatible, I use C-style
+/* comments */.
+
+I like to make the two branches of an if-else statement look symmetrical:
+so I use
+  #define then   /* empty */
+with usage as shown below.
+
+A lot of the code uses the generic floating-point data type
+  typedef CCTK_REAL fp;
+
+Almost (but not quite) all the code fits into 80 columns.
+
+The indentation style is a bit unusual, and is best described by the
+following examples.  Roughly speaking, indentation depth reflects execution
+frequency.  Normal indentation is 1 tab stop = 8 spaces.  Sometimes a
+block of code is "outdented" back towards the left margin if it's too
+deeply indented to fit easily in an 80-column window.
+
+Examples:
+
+<surrounding code>
+if (condition #1)
+   then <if-condition-#1-true code>
+   else <if-condition-#1-false code>
+if (condition #2)
+   then {
+	<if-condition-#2-true code>
+	<if-condition-#2-true code>
+	}
+   else {
+	<if-condition-false code>
+	<if-condition-false code>
+	}
+
+<surrounding code>
+	while (condition)
+	{
+	<loop body>
+	<loop body>
+	}
+
+<surrounding code>
+	for (int i = 0 ; i < N ; ++i)
+	{
+	<loop body>
+	<loop body>
+	}
+
+// if there are multiple for-loops in the same scope using the same
+// loop variable, I add extra (redundant) { } around the loops so the
+// code will compile unchanged under both the archaic and the modern
+// for-loop declaration scope rules
+<surrounding code>
+	  {
+	for (int i = 0 ; i < N ; ++i)
+	{
+	<loop #1 body>
+	<loop #1 body>
+	}
+	  }
+	  {
+	for (int i = 0 ; i < N ; ++i)
+	{
+	<loop #2 body>
+	<loop #2 body>
+	}
+	  }
+
+
+All switch statements should have a  default:  case (which often just
+does an  error_exit()).
+
+<surrounding code>
+switch	(expression)
+	{
+case 42:
+	<code for this case>
+	<code for this case>
+	break;
+case 69:
+	<code for this case>
+	<code for this case>
+	break;
+case 105:
+	<code for this case>
+	<code for this case>
+	break;
+default:
+	<code for this case>
+	<code for this case>
+	break;
+	}
+
+//
+// block comment describing function
+//
+int foo(fp x, int bar, int baz)
+{
+<body of function>
+<body of function>
+}
+
+All code should be fully type-secure: there is no aliasing of different
+data types.  const qualifiers are used wherever possible, and all code
+should be const-correct.
+
+Most casts are new-style  const_cast<...>(...)  or  static_cast<...>(...) .
+There are no  reinterpret_cast<...>(...)  or  dynamic_cast<...>(...) .
+There are no C-style casts  (type) value .  The only function-style
+casts   type(value)  are to cast numeric datatypes to int/double for
+printf()-style printing, eg
+
+	//
+	// we don't know at compile-time whether the type  fp  is
+	// C float or double
+	//
+	void print_x(fp x)
+	{
+	printf("x=%g\n", double(x));
+	}
+
+
+Error Handling
+==============
+
+For historical reasons, the code uses two slightly different mechanisms
+for "print an error message and abort the Cactus run" error handling:
+* Lower-level code (in src/{jtutil,patch,gr,elliptic}/) uses error_exit()
+  (defined in src/include/stdc.h):
+	if (user input was very bad)
+	   then error_exit(ERROR_EXIT,
+"***** function_name(): user input was really bad\n"
+"                       printf(3)-style string and following arguments\n"
+"                       to describe what went wrong"
+			   ,
+			   foo, var, double(baz));		/*NOTREACHED*/
+  Here the first argument is ERROR_EXIT for "bad user input" errors,
+  or PANIC_EXIT for "this should never happen" failure of internal
+  consistency checks.  For this thorn, error_exit() is implemented as
+  a call to...
+* Higher-level code (in src/{driver,elliptic,gr}) uses the standard
+  Cactus CCTK_VWarn(), generally giving FATAL_ERROR (defined in
+  src/include/config.h) as the warning level.
+
+The code uses the standard Cactus CCTK_VInfo() to print informational
+messages describing what it's doing.
+
+
+C++ Classes and Libraries
+=========================
+
+All the main data structures are C++ classes, but there are also plenty
+of C-style structs.  struct foo  is for "dumb data", and has at most
+contructors.
+
+class foo  is for full-fledged C++ classes; these have no public data
+members.  data members are always declared at the end of the class, and
+have names with a trailing underscore; no other identifiers in this thorn
+have such names.
+
+Most "large" classes are non-copyable and non-assignable.  Right now
+I write this explicitly in each class; once compilers improve a bit more
+and boost becomes more widely deployed it would be cleaner to convert this
+to inheriting from boost::noncopyable.
+
+In the same genre, once compilers improve a *lot* more :), most/all
+of the raw new[]-array references should probably be converted to
+boost::array, and my jtutil::array[1234]d<> classes should be converted
+to boost::multi_array.
+
+
+C++ Templates
+=============
+
+I use C++ templates, but not for anything fancy, just simple containers.
+I instantiate all templates explicitly.
+
+Some C++ compilers offer "automatic" template instantiation.  In practice
+this often causes compilation to fail when the compiler can't find .cc
+files in other directories, so I highly recommend turning *off* all
+automatic template instantiation "features" when compiling this thorn.
+
+When using the DEC/Compaq/HP/whatever-their-corporate-name-is-this-week
+C++ compiler (version 6.3.6.8) under Alpha Linux, even with automatic
+template instiation disabled, the compiler *still* seems to include some
+header files multiple times.  To avoid duplicate-definition errors caused
+by this, I have protected all the header files in the subdirectories
+   include/
+   jtutil/
+   elliptic/
+against multiple inclusion with the standard #ifndef trick.
+
+
+Miscellaneous
+=============
+
+All I/O is done using C stdio (printf() and friends); the C++ iostreams
+system isn't used.
+
+Some Cactus parameter names, and some C++ enumeration and function 
+names, contain the substring "__" (two consecutive underscores).
+According to the C++ standard, such names are reserved to the [compiler]
+implementation, so this code isn't strictly legal.  In practice, so
+far I haven't had any problems...
+
+Each .cc source file should begin with a "table of comments" block
+comment listing all the functions defined in the file.  Functions with
+a "///" comment (or "**" for C) are local to the file; functions with
+a "//" comment (or "*" for C) are visible to the linker.

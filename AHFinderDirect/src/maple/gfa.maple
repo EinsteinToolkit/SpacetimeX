@@ -1,0 +1,313 @@
+# gfa.maple -- low-level gridfn array "database"
+# $Header$
+#
+# ***** gridfn arrays *****
+# ***** functional dependences *****
+# make_gfa - construct a new gridfn array
+# assert_fnd_exists - assert (verify) that a given gridfn array fnd form exists
+# Maple_name - Maple name of functional-dependence form
+#
+# index/symmetric3_23 - Maple indexing fn for rank 3 array sym on axes 23
+#
+# print_symmetric3_23 - prettyprint a symmetric3_23 array
+#
+
+################################################################################
+
+#
+# ***** gridfn arrays *****
+#
+
+#
+# The basic data objects for the Maple code are grid function arrays,
+# a.k.a. gridfn arrays, such as the metric g_dd, the Christoffel symbols
+# Gamma_udd, etc etc.
+#
+# By convention, the name of a nonscalar geometric object ends with an 
+# underscore ("_") followed by a sequence of "d" or "u" specifying whether
+# the indices are down (covariant) or up (contravariant).  Thus, for
+# example, g_dd is the covariant metric, while g_uu is the inverse metric.
+#
+# Scalar geometric objects are represented by Maple scalars, while
+# nonscalar objects (often but not necessarily tensors) are represented
+# by Maple arrays, using Maple indexing functions for any symmetries
+# or sparsity.  For example, the metric  g_dd  is represented by an
+# array
+#	array(1..N, 1..N, symmetric)
+# By convention, for a symmetric array of this type, we only compute
+# the upper triangle.
+#
+
+################################################################################
+
+#
+# ***** functional dependences *****
+#
+
+#
+# Within the Maple code, we distinguish between two distinct forms
+# that a gridfn array may take:
+# - The "inert" form of a gridfn array represents (only) the symmetries,
+#   zero (or nonzero but constant) elements, and indexing semantics of
+#   the gridfn array.
+# - The "functional dependence" form of a gridfn array additionally
+#   represents how that gridfn array is computed from other gridfn
+#   arrays.
+#
+# For example, consider the inverse metric  g_uu .  It's inert form
+# is a 3*3 symmetric array, with all elements being unassigned symbols
+# (i.e. evaluating to themselves, as is usual in Maple).  It's functional
+# dependence form, in contrast, is also a 3*3 symmetric array, but its
+# elements are expressions giving the inverse-metric elements in terms
+# of components of the metric and/or the metric determinant.
+#
+# Any given gridfn array may exist in either or (the usual case) both
+# an inert form and a functional dependence forms.  There may also be
+# multiple functional dependence forms, corresponding to alternative
+# formulas for its computation.)
+#
+# The inert form of a gridfn array is represented by a Maple variable
+# or array (see below) of the same name (eg  g_uu ), unassigned except
+# for any symmetries and/or zero components the gridfn array has.
+#
+# The functional dependence form of a gridfn array is represented by
+# a Maple array (see below) with a name formed by appending "__fnd"
+# to the gridfn array's name (eg  g_uu__fnd ); this array has the same
+# symmetries as the corresponding inert Maple array, but only those
+# elements needed will be assigned.  If there are multiple functional
+# dependence forms, by convention each uses a name beginning in "__"
+# and ending in "fnd", eg  H__ps_fnd .
+#
+# The PDE compiler normally generates C code referring to the (inert)
+# gridfn array names, so these should be valid C variable names.
+#
+
+#
+# To allow some run-time error checking, we keep a global table
+# of all the gridfn array functional-dependence forms:
+#	`gfa/fnd_table`
+#	... table index is  gfa__fnd_name
+#	... table value is  true
+# assert_fnd_exists() uses this table to verify that a given gridfn
+# array functional-dependence form does indeed exist.
+#
+
+#
+# Functional-dependence forms may be multilevel, as in (eg)
+#  g_dd__Kerr_fnd__ps_fnd .  cat() may be used to combine names in
+# this manner.
+#
+
+################################################################################
+
+#
+# This function makes the Maple representation of a single gridfn array.
+#
+# Arguments:
+# gfa_name = (out*) The Maple variable to be created for the gridfn
+#		    array.  This argument should be passed as an
+#		    unevaluated (quoted) name.
+# fnd_name_set = (in) A set of functional dependence types the gridfn
+#		      array is to have.  The set's members should be
+#		      drawn from from {inert, fnd, ...} as appropriate,
+#		      where the special value  inert  refers to the
+#		      inert form.
+# index_bounds = (in) The list of index bounds for the gridfn array,
+# index_fn = (in) The name of the array indexing function, if any, or
+#		  'none' if the gridfn array has no symmetries and thus
+#		  should be represented by a Maple array with the standard
+#		  "ordinary array" indexing semantics.
+#
+# Thus, for example, the calls
+#	make_gfa('g', {inert, fnd}, [], none);
+#	make_gfa('g_dd', {inert}, [1..N, 1..N], symmetric);
+#	make_gfa('R_dd', {inert, fnd}, [1..N, 1..N], symmetric);
+#	make_gfa('Gamma_udd', {inert, fnd}, [1..N, 1..N, 1..N], symmetric3_23);
+# would set up the Maple representations of the metric determinant,
+# the metric, the Ricci tensor, and the Christoffel symbols respectively.
+#
+make_gfa :=
+proc(gfa_name::name,
+     fnd_name_set::set(name),
+     index_bounds::list(integer..integer),
+     index_fn::{identical(none), name})	# note "name" here, not "procedure",
+					# since we'll get the name of the
+					# indexing fn, which may not have
+					# been assigned its procedure yet
+global N, `gfa/fnd_table`;
+local fnd_name, var_name, index_fn_seq;
+
+# firewall checks
+if (not type(N, integer))
+   then ERROR("must set up coordinates first!");
+end if;
+if ((index_bounds = []) and (index_fn <> 'none'))
+   then ERROR("not meaningful to specify a symmetry function for a scalar!",
+	      "   gfa_name=",gfa_name);
+end if;
+
+# create the Maple variable(s)
+	for fnd_name in fnd_name_set
+	do
+	var_name := Maple_name(gfa_name, fnd_name);
+	if (assigned(`gfa/fnd_table`[eval(var_name,1)]))
+	   then ERROR("duplicate gfa/fnd definition!",
+		      "   gfa_name=", gfa_name,
+		      "   fnd_name_set=", fnd_name_set);
+	end if;
+	`gfa/fnd_table`[eval(var_name,1)] := true;
+	if (index_bounds = [])
+	   then # scalar
+		unassign(  eval(var_name,1)  );
+	   else # array
+		if (index_fn = 'none')
+		   then index_fn_seq := NULL;
+		   else index_fn_seq := index_fn;
+		end if;
+		assign(
+		    eval(var_name,1) = array(index_fn_seq, op(index_bounds))
+		      );
+	end if;
+	end do;
+
+NULL;
+end proc;
+
+################################################################################
+
+#
+# This function checks that a given gridfn array functional-dependence
+# form exists.  If so, this function is a no-op; if not, this function
+# calls ERROR().  Hence after calling this function, the caller can assume
+# that the given functional-dependence form does indeed exist.
+#
+# This function may be called with either 1 or 2 arguments (the two
+# types of calls are equivalent).
+#
+# Arguments (1-argument form):
+# gfa_name = The name of the gridfn array itself.  In this case the
+#	     fnd name defaults to `fnd`.
+#
+# Arguments (2-argument form):
+# gfa_name = The name of the gridfn array itself, eg `g_dd`.
+# fnd_name = The name of the fnd itself, eg `fnd`.
+#
+assert_fnd_exists :=
+proc(gfa_name::name, fnd_name::name)
+global `gfa/fnd_table`;
+local var_name;
+
+var_name := Maple_name(gfa_name, args[2..nargs]);
+
+if (not assigned(`gfa/fnd_table`[eval(var_name,1)]))
+   then ERROR("functional-dependence form doesn't exist!",
+	      "var_name=",var_name);
+end if;
+end proc;
+
+################################################################################
+
+#
+# This function computes the Maple name corresponding to a given
+# gridfn array and functional dependence form.
+#
+# Arguments:
+# gfa_name = The name of the gridfn array itself, eg `g_dd`.
+# fnd_name = (optional)
+#	     The name of the functional-dependence form, eg `fnd`,
+#	     or the special name 'inert'.  If this argument is omitted
+#	     it defaults to 'inert'.
+#
+Maple_name :=
+proc(gfa_name::name, fnd_name::name)
+if ((nargs = 1) or (fnd_name = 'inert'))
+   then return gfa_name;
+   else return cat(gfa_name, "__", fnd_name);
+end if;
+end proc;
+
+################################################################################
+################################################################################
+################################################################################
+
+#
+# This function is a Maple indexing function for a rank 3 table/array
+# which is symmetric in the 2nd and 3rd indices.  This function is
+# called automagically by Maple whenever a component of such an array
+# is referenced.
+#
+# The ordering is done using the Maple  sort()  function, which sorts
+# numbers numerically, strings lexicographically, and "other things"
+# by machine address.
+#
+# Arguments:
+# ilist = (in) The indices to be used.  There must be exactly 3 of these.
+# tab = (in out) The table/array to be indexed.  This uses any remaining
+#		 indexing methods.
+# vlist = (optional)
+#	  If present, this is a list of the values to be assigned to
+#	  the (lvalue) table entry.
+#
+`index/symmetric3_23` :=
+proc(ilist::list, tab::table, vlist::list)
+local k, i, j, index_seq;
+
+if (not (nops(ilist) = 3))
+   then ERROR(`must have exactly 3 indices!`);
+end if;
+
+# ... note we need eval() here to get actual integers,
+#     rather than variable names whose values are integers
+k := eval(ilist[1]);
+i := eval(ilist[2]);
+j := eval(ilist[3]);
+
+index_seq := k, op(sort([i,j]));
+
+if (nargs = 2)
+   then return tab[index_seq];		# rvalue
+   else tab[index_seq] := op(vlist);	# lvalue
+end if;
+end proc;
+
+################################################################################
+################################################################################
+################################################################################
+
+#
+# This function prettyprints a symmetric3_23 array
+#
+# Arguments:
+# A = (in) The array to be prettyprinted
+#
+# Results:
+# There is no explicit result; the array is prettyprinted as a side effect.
+#
+print_symmetric3_23 :=
+proc(A::array)
+local bounds, k, i, j, M23;
+
+if (op(1, eval(A)) <> 'symmetric3_23')
+   then ERROR(`can only print symmetric3_23 arrays`);
+end if;
+
+bounds := op(2, eval(A));
+
+M23 := array(bounds[2..3], symmetric);
+
+	for k in $(bounds[1]) do
+
+		for i in $(bounds[2]) do
+		for j in $(bounds[3]) do
+		if (i <= j)		# only need upper triangle in (i,j)
+		   then M23[i,j] := A[k,i,j];
+		end if;
+		end do;
+		end do;
+
+	printf("[%d] = \n", k);
+	print(M23);
+	end do;
+
+NULL;
+end proc;

@@ -1,0 +1,338 @@
+# Schedule definitions for thorn AHFinderDirect
+# $Header$
+storage: ah_radius ah_origin ah_centroid ah_flags
+storage: ahmask[1]
+
+#
+# setup
+#
+schedule AHFinderDirect_setup at CCTK_BASEGRID        \
+   after SpatialCoordinates
+   {
+   lang: C
+   options: global
+   WRITES: AHFinderDirect::ah_centroid, ah_flags
+   } "setup data structures"
+
+schedule AHFinderDirect_import_mask at CCTK_POSTREGRIDINITIAL \
+ before AHFinderDirect_find_horizons
+ {
+ lang: C
+ WRITES: AHFinderDirect::ahmask(everywhere)
+ options: local
+ } "import the excision mask"
+
+
+schedule AHFinderDirect_import_mask at CCTK_INITIAL \
+ before AHFinderDirect_find_horizons
+ {
+ lang: C
+ WRITES: AHFinderDirect::ahmask(everywhere)
+ options: local
+ } "import the excision mask"
+
+#
+# checkpoint/recover support
+#
+schedule AHFinderDirect_recover at CCTK_POST_RECOVER_VARIABLES
+   {
+   lang: C
+   options: global
+   } "import horizon data from Cactus variables"
+
+#
+# find horizons
+#
+if (run_at_CCTK_ANALYSIS != 0)
+  {
+  schedule AHFinderDirect_find_horizons at CCTK_ANALYSIS
+     {
+     lang: C
+     options: global
+     } "find apparent horizon(s) after this time step"
+  }
+if (run_at_CCTK_POSTSTEP != 0)
+  {
+  schedule AHFinderDirect_find_horizons at CCTK_POSTSTEP
+     {
+     lang: C
+     options: global
+     } "find apparent horizon(s) after this time step"
+  }
+if (run_at_CCTK_POSTINITIAL != 0)
+  {
+  schedule AHFinderDirect_find_horizons at CCTK_POSTINITIAL
+     {
+     lang: C
+     options: global
+     } "find apparent horizon(s) after this time step"
+  }
+if (run_at_CCTK_POSTPOSTINITIAL != 0)
+  {
+  schedule AHFinderDirect_find_horizons at CCTK_POSTPOSTINITIAL
+     {
+     lang: C
+     options: global
+     } "find apparent horizon(s) after this time step"
+  }
+if (run_at_CCTK_POST_RECOVER_VARIABLES != 0)
+  {
+  schedule AHFinderDirect_find_horizons at CCTK_POST_RECOVER_VARIABLES \
+           after MoL_PostStep
+     {
+     lang: C
+     options: global
+     } "find apparent horizon(s) after this time step"
+  }
+
+#
+# find horizons, set excision mask, maybe announce centroid to other thorns
+#
+# FIXME: the name  AHFinderDirect_maybe_do_masks  is archaic,
+#        AHFinderDirect_do_masks  would be more apt
+#
+# We use two Cactus Groups here:
+#  group_for_mask_stuff
+#    group_where_mask_is_set
+#      AHFinderDirect_maybe_do_masks
+# this way other thorns can schedule routines which need to run immediately
+# before/after we set the mask in group_for_mask_stuff before/after
+# group_where_mask_is_set, without having to know in what higher-level
+# Cactus schedule bins/groups this thorn runs.
+#
+if (run_at_CCTK_ANALYSIS != 0)
+  {
+  schedule AHFinderDirect_import_mask at CCTK_ANALYSIS \
+     before AHFinderDirect_find_horizons
+     {
+     lang: C
+     options: local
+     WRITES: AHFinderDirect::ahmask(everywhere)
+     } "import the excision mask"
+
+  schedule AHFinderDirect_store at CCTK_ANALYSIS \
+     after AHFinderDirect_find_horizons \
+     before SphericalSurface_HasBeenSet
+     {
+     lang: C
+     options: global
+     } "store apparent horizon(s) into spherical surface(s)"
+
+  schedule AHFinderDirect_save at CCTK_ANALYSIS \
+     after AHFinderDirect_find_horizons \
+     {
+     lang: C
+     options: global
+     } "save apparent horizon(s) into Cactus variables"
+
+  if (which_horizon_to_announce_centroid != 0)
+    {
+    schedule AHFinderDirect_announce at CCTK_ANALYSIS \
+       before DriftCorrect \
+       after AHFinderDirect_find_horizons
+       {
+       lang: C
+       options: global
+       } "announce horizon position(s) to other thorns"
+    }
+
+  # schedule AHFinderDirect_maybe_do_masks at CCTK_ANALYSIS \
+  #    after AHFinderDirect_find_horizons
+  #    {
+  #    lang: C
+  #    } "set mask(s) based on apparent horizon position(s)"
+  }
+if (run_at_CCTK_POSTSTEP != 0)
+  {
+  schedule AHFinderDirect_import_mask at CCTK_POSTSTEP \
+     before AHFinderDirect_find_horizons
+     {
+     lang: C
+     WRITES: AHFinderDirect::ahmask(everywhere)
+     options: local
+     } "import the excision mask"
+
+  schedule AHFinderDirect_store at CCTK_POSTSTEP \
+     after AHFinderDirect_find_horizons \
+     before SphericalSurface_HasBeenSet
+     {
+     lang: C
+     options: global
+     } "store apparent horizon(s) into spherical surface(s)"
+
+  schedule AHFinderDirect_save at CCTK_POSTSTEP \
+     after AHFinderDirect_find_horizons \
+     {
+     lang: C
+     options: global
+     } "save apparent horizon(s) into Cactus variables"
+
+  if (which_horizon_to_announce_centroid != 0)
+    {
+    schedule AHFinderDirect_announce at CCTK_POSTSTEP \
+       before DriftCorrect \
+       after AHFinderDirect_find_horizons
+       {
+       lang: C
+       options: global
+       } "announce horizon position(s) to other thorns"
+    }
+
+  # schedule AHFinderDirect_maybe_do_masks at CCTK_POSTSTEP \
+  #    after AHFinderDirect_find_horizons
+  #    {
+  #    lang: C
+  #    } "set mask(s) based on apparent horizon position(s)"
+  }
+if (run_at_CCTK_POSTINITIAL != 0)
+  {
+  schedule AHFinderDirect_import_mask at CCTK_POSTINITIAL \
+     before AHFinderDirect_find_horizons
+     {
+     lang: C
+     WRITES: AHFinderDirect::ahmask(everywhere)
+     options: local
+     } "import the excision mask"
+
+  schedule AHFinderDirect_store at CCTK_POSTINITIAL \
+     after AHFinderDirect_find_horizons \
+     before SphericalSurface_HasBeenSet
+     {
+     lang: C
+     options: global
+     } "store apparent horizon(s) into spherical surface(s)"
+
+  schedule AHFinderDirect_save at CCTK_POSTINITIAL \
+     after AHFinderDirect_find_horizons \
+     {
+     lang: C
+     options: global
+     } "save apparent horizon(s) into Cactus variables"
+
+  if (which_horizon_to_announce_centroid != 0)
+    {
+    schedule AHFinderDirect_announce at CCTK_POSTINITIAL \
+       before DriftCorrect \
+       after AHFinderDirect_find_horizons
+       {
+       lang: C
+       options: global
+       } "announce horizon position(s) to other thorns"
+    }
+
+  # schedule AHFinderDirect_maybe_do_masks at CCTK_POSTINITIAL \
+  #    after AHFinderDirect_find_horizons
+  #    {
+  #    lang: C
+  #    } "set mask(s) based on apparent horizon position(s)"
+  }
+
+
+if (run_at_CCTK_POSTPOSTINITIAL != 0)
+  {
+  schedule AHFinderDirect_import_mask at CCTK_POSTPOSTINITIAL \
+     before AHFinderDirect_find_horizons
+     {
+     lang: C
+     WRITES: AHFinderDirect::ahmask(everywhere)
+     options: local
+     } "import the excision mask"
+
+  schedule AHFinderDirect_store at CCTK_POSTPOSTINITIAL \
+     after AHFinderDirect_find_horizons
+     {
+     lang: C
+     options: global
+     } "store apparent horizon(s) into spherical surface(s)"
+
+  schedule AHFinderDirect_save at CCTK_POSTPOSTINITIAL \
+     after AHFinderDirect_find_horizons \
+     {
+     lang: C
+     options: global
+     } "save apparent horizon(s) into Cactus variables"
+
+  if (which_horizon_to_announce_centroid != 0)
+    {
+    schedule AHFinderDirect_announce at CCTK_POSTPOSTINITIAL \
+       before DriftCorrect \
+       after AHFinderDirect_find_horizons
+       {
+       lang: C
+       options: global
+       } "announce horizon position(s) to other thorns"
+    }
+
+  # schedule AHFinderDirect_maybe_do_masks at CCTK_POSTPOSTINITIAL \
+  #    after AHFinderDirect_find_horizons
+  #    {
+  #    lang: C
+  #    } "set mask(s) based on apparent horizon position(s)"
+  }
+if (run_at_CCTK_POST_RECOVER_VARIABLES != 0)
+  {
+  schedule AHFinderDirect_import_mask at CCTK_POST_RECOVER_VARIABLES \
+     before AHFinderDirect_find_horizons
+     {
+     lang: C
+     WRITES: AHFinderDirect::ahmask(everywhere)
+     options: local
+     } "import the excision mask"
+
+  schedule AHFinderDirect_store at CCTK_POST_RECOVER_VARIABLES \
+     after AHFinderDirect_find_horizons \
+     before SphericalSurface_HasBeenSet
+     {
+     lang: C
+     options: global
+     } "store apparent horizon(s) into spherical surface(s)"
+
+  schedule AHFinderDirect_save at CCTK_POST_RECOVER_VARIABLES \
+     after AHFinderDirect_find_horizons
+     {
+     lang: C
+     options: global
+     } "save apparent horizon(s) into Cactus variables"
+
+  if (which_horizon_to_announce_centroid != 0)
+    {
+    schedule AHFinderDirect_announce at CCTK_POST_RECOVER_VARIABLES \
+       before DriftCorrect \
+       after AHFinderDirect_find_horizons
+       {
+       lang: C
+       options: global
+       } "announce horizon position(s) to other thorns"
+    }
+
+  # schedule AHFinderDirect_maybe_do_masks at CCTK_POST_RECOVER_VARIABLES \
+  #    after AHFinderDirect_find_horizons
+  #    {
+  #    lang: C
+  #    } "set mask(s) based on apparent horizon position(s)"
+  }
+
+# TODO: Don't call this, since no horizon has been found yet
+# schedule AHFinderDirect_maybe_do_masks at CCTK_POSTREGRIDINITIAL \
+#    after (MaskOne MaskZero)
+#    {
+#    lang: C
+#    } "set mask(s) based on apparent horizon position(s)"
+# 
+# schedule AHFinderDirect_maybe_do_masks at CCTK_POSTREGRID \
+#    after (MaskOne MaskZero)
+#    {
+#    lang: C
+#    } "set mask(s) based on apparent horizon position(s)"
+# 
+########################################
+
+##
+## uncomment this if you want to use the test driver
+##  src/util/test_patch_system.cc
+##
+##schedule test_patch_system at CCTK_POSTINITIAL
+##{
+##LANG: C
+##OPTIONS: global
+##} "test driver to verify that src/util/ and src/jtutil/ code works properly"

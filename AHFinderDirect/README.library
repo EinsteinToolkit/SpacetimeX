@@ -1,0 +1,73 @@
+Library Configuration
+=====================
+$Header$
+
+By default this thorn doesn't use any external libraries, and you
+can ignore the instructions in this file.
+
+
+Using the LAPACK and BLAS Libraries
+===================================
+However, if this thorn is configured to use the LAPACK and BLAS
+libraries (see README for details), then you need to configure Cactus
+to use these libraries; this file describes how to do this.
+
+Basically, you just need to set
+   LAPACK=yes
+when configuring your Cactus configuration.
+
+If all goes well, Cactus will find the LAPACK and BLAS libraries and give
+during the configure process saying that it found them.  Otherwise, the
+configure process will abort with a message saying that you need to set
+the configure variable LAPACK_DIR to a directory (or blank-separated list
+of directories) containing the LAPACK and BLAS libraries.
+
+[If you don't have LAPACK/BLAS installed on your system already, you
+can get Fortran 77 source code and/or binaries for various architectures,
+from http://www.netlib.org/lapack/ and http://www.netlib.org/blas/
+respectively.  But many systems have these installed already -- try
+'locate liblapack' and 'locate libblas' on your system.]
+
+If the LAPACK and/or BLAS libraries were compiled with a (Fortran)
+compiler which is *not* used to compile any part of this Cactus'
+configuration, then you may also need to set the configure variables
+   LAPACK_EXTRA_LIBS = the name (or blank-separated list of names) of
+                       that (Fortran) compiler's run-time support
+                       library(ies)
+   LAPACK_EXTRA_LIB_DIRS = the directory (or blank-separated list of
+                           directories) containing that library(ies)
+
+For example, if your LAPACK and/or BLAS were compiled with the GNU g77
+compiler (as is common on GNU/Linux and *BSD systems), and you are *not*
+using g77 to compile any part of your Cactus configuration (maybe because
+you're using a different Fortran compiler), then you may need to set the
+environment variables to point to the g77 support library g2c:
+  LAPACK_EXTRA_LIBS = g2c
+  LAPACK_EXTRA_LIBDIRS = `g77 --print-file-name=libg2c.a | xargs basename`
+
+For example, on the AEI xeons the settings would be
+   LAPACK_EXTRA_LIBS = g2c
+   LAPACK_EXTRA_LIBDIRS = `g77 --print-file-name=libg2c.a | xargs dirname`
+
+All of these settings are of configure variables, i.e. you set them either
+on the command line when configuring,
+   % gmake my-configuration LAPACK=yes
+or as assignments in your ~/.cactus/config file,
+   % cat ~/.cactus/config
+   LAPACK=yes
+   LAPACK_EXTRA_LIBS=g2c
+   LAPACK_EXTRA_LIB_DIRS=/usr/lib/gcc-lib/i386-redhat-linux/2.96
+
+
+Compiler Version Compatability
+==============================
+All of Cactus -- including any external libraries -- need not be
+compiled with the same compilers, but the compilers must be link-compatible.
+In practice this isn't usually a problem.  However, as an example of what
+*not* to do, consider using libraries compiled with a gcc 2.* version
+(e.g. the system default libraries on many GNU/Linux distributions as
+of late 2002), combined with thorns compiled with a gcc 3.* version.
+gcc 2.* and 3.* are *not* link-compatible, so if you're lucky this
+combination will give all sorts of wierd errors in linking.  If you're
+unlucky it will link ok but then crash (or even worse, just give wrong
+results) at run-time.

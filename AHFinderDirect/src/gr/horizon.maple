@@ -1,0 +1,331 @@
+# horizon.maple - evaluate $H$ = LHS of horizon function
+# $Header$
+#
+# horizon - overall driver
+## non_unit_normal - compute s_d
+## non_unit_normal_deriv - compute partial_d_s_d
+## expansion - compute Theta_[ABCD],Theta = fn(s_d__fnd) = fn(h)
+## expansion_Jacobian - compute Jacobian coeffs for Theta_[ABCD], Theta
+#
+
+################################################################################
+################################################################################
+################################################################################
+
+#
+# This function is a driver to compute, and optionally generate C code
+# for, the LHS of the apparent horizon equation, H.
+#
+# Inputs:
+#	h
+#
+# Outputs:
+#   Theta = Theta__fnd(h, ...)
+#   partial_Theta_wrt_partial_d_h__fnd  = partial_Theta_wrt_partial_d_h(h, ...)
+#   partial_Theta_wrt_partial_dd_h__fnd = partial_Theta_wrt_partial_dd_h(h, ...)
+#
+horizon :=
+proc(cg_flag::boolean)
+
+non_unit_normal();
+non_unit_normal_deriv();
+expansion(cg_flag);
+expansion_Jacobian(cg_flag);
+
+NULL;
+end proc;
+
+################################################################################
+
+#
+# This function computes the xyz components of the non-unit
+# outward-pointing normal (covector) to the horizon, s_d = s_d(h),
+# using the equation on p.7.1 of my apparent horizon finding notes.
+#
+# This function does *NOT* generate any C code.
+#
+# Outputs:
+#   s_d = s_d__fnd( x_xyz, X_ud, Diff(h,y_rs) )
+#
+non_unit_normal :=
+proc()
+global
+  @include "../maple/coords.minc",
+  @include "../maple/gfa.minc",
+  @include "../gr/gr_gfas.minc";
+local i, u;
+
+printf("%a...\n", procname);
+
+assert_fnd_exists(h);
+assert_fnd_exists(X_ud);
+assert_fnd_exists(s_d, fnd);
+
+	for i from 1 to N
+	do
+	s_d__fnd[i] := x_xyz[i]/r
+		       - sum('X_ud[u,i]*Diff(h,y_rs[u])', 'u'=1..N_ang);
+	end do;
+
+NULL;
+end proc;
+
+################################################################################
+
+#
+# This function computes the xyz derivatives of the non-unit outward-pointing
+# normal (covector) to the horizon, using the equation on p.7.2 of my
+# apparent horizon finding notes.
+#
+# This function does *NOT* generate any C code.
+#
+# Inputs:
+#   s_d = s_d__fnd( x_xyz, X_ud, Diff(h,y_rs) )
+#
+# Outputs:
+#   partial_d_s_d = partial_d_s_d__fnd( x_xyz, X_ud, X_udd,
+#					Diff(h,y_rs), Diff(h,y_rs,y_rs) )
+#
+non_unit_normal_deriv :=
+proc()
+global
+  @include "../maple/coords.minc",
+  @include "../maple/gfa.minc",
+  @include "../gr/gr_gfas.minc";
+local temp, i, j, k, u, v;
+
+printf("%a...\n", procname);
+
+assert_fnd_exists(h);
+assert_fnd_exists(X_ud);
+assert_fnd_exists(X_udd);
+assert_fnd_exists(partial_d_s_d, fnd);
+
+	for i from 1 to N
+	do
+	for j from 1 to N
+	do
+	temp := `if`(i = j,
+		     sum('x_xyz[k]^2', 'k'=1..N) - x_xyz[i]^2,
+		     - x_xyz[i] * x_xyz[j]);
+
+	# simplify likes to put things over a common denominator,
+	# so we only apply it to the individual terms, not to
+	# the whole expression
+	partial_d_s_d__fnd[i,j]
+	   := + simplify(  temp/r^3  )
+	      - simplify(  sum('X_udd[u,i,j]*Diff(h,y_rs[u])', 'u'=1..N_ang)  )
+	      - simplify(  msum('X_ud[u,i]*X_ud[v,j]*Diff(h,y_rs[u],y_rs[v])',
+				'u'=1..N_ang, 'v'=1..N_ang)  );
+	end do;
+	end do;
+
+NULL;
+end proc;
+
+################################################################################
+
+#
+# This function computes the expansion $\Theta$ of a trial horizon surface
+# as a function of 1st and 2nd angular partial derivatives of the surface
+# radius $h$, using equations (14) and (15[abcd]) in my 1996 AH-finding
+# paper, but using partial_d_g_uu[k,i,j] instead of Diff(g_uu[i,j], x_xyz[k]).
+#
+# These equations give Theta_[ABCD] and Theta as functions of s_d, but
+# here we use s_d__fnd, which we assume is already given in terms of angular
+# derivatives of h.  The result is that we compute Theta_[ABCD] and Theta
+# directly in terms of 1st and 2nd angular derivatives of h, without s_d
+# ever appearing in our final results.
+#
+# This function also optionally generates C code for the computation
+# of Theta_[ABCD].  It does *not* compute C code for the computation of
+# Theta itself, since we may want to check that Theta_D > 0 in the C
+# code before we compute Theta itself.
+#
+# Inputs:
+#   s_d = s_d__fnd( x_xyz, X_ud, Diff(h,y_rs) )
+#   partial_d_s_d = partial_d_s_d__fnd( x_xyz, X_ud, X_udd,
+#					Diff(h,y_rs), Diff(h,y_rs,y_rs) )
+#
+# Outputs:
+#   Theta_A = Theta_A__fnd( x_xyz, X_ud, X_udd, g_uu, partial_d_g_uu,
+#			    Diff(h,y_rs), Diff(h,y_rs,y_rs) )
+#   Theta_B = Theta_B__fnd( x_xyz, X_ud, X_udd,
+#			    g_uu, partial_d_g_uu, partial_d_ln_sqrt_g,
+#			    Diff(h,y_rs), Diff(h,y_rs,y_rs) )
+#   Theta_C = Theta_C__fnd( x_xyz, X_ud, K_uu, Diff(h,y_rs) )
+#   Theta_D = Theta_D__fnd( x_xyz, X_ud, g_uu, Diff(h,y_rs) )
+#   ---------------------------------------------------------------
+#   Theta = Theta__fnd(Theta_A__fnd, Theta_B__fnd, Theta_C__fnd, Theta_D__fnd)
+#
+expansion :=
+proc(cg_flag::boolean)
+global
+  @include "../maple/coords.minc",
+  @include "../maple/gfa.minc",
+  @include "../gr/gr_gfas.minc";
+local i,j,k,l;
+
+printf("%a...\n", procname);
+
+assert_fnd_exists(g_uu);
+assert_fnd_exists(K_uu);
+assert_fnd_exists(partial_d_ln_sqrt_g);
+assert_fnd_exists(partial_d_g_uu);
+assert_fnd_exists(s_d, fnd);
+assert_fnd_exists(partial_d_s_d, fnd);
+
+#
+# n.b. no simplify() in these subexpressions; empirically it makes
+#      them much *more* complicated (measured by codegen(...,optimized))
+#
+
+# (15a) in my paper
+Theta_A__fnd
+    := - msum('g_uu[i,k]*s_d__fnd[k] * g_uu[j,l]*s_d__fnd[l]
+				     * partial_d_s_d__fnd[i,j]',
+	      'i'=1..N, 'j'=1..N, 'k'=1..N, 'l'=1..N)
+       - (1/2)*msum('g_uu[i,j]*s_d__fnd[j]
+		     * partial_d_g_uu[i,k,l] * s_d__fnd[k]*s_d__fnd[l]',
+		    'i'=1..N, 'j'=1..N, 'k'=1..N, 'l'=1..N);
+
+# (15b) in my paper
+Theta_B__fnd
+    := + msum('partial_d_g_uu[i,i,j]*s_d__fnd[j]', 'i'=1..N, 'j'=1..N)
+       + msum('g_uu[i,j]*partial_d_s_d__fnd[i,j]', 'i'=1..N, 'j'=1..N)
+       + msum('g_uu[i,j]*partial_d_ln_sqrt_g[i]*s_d__fnd[j]',
+	      'i'=1..N, 'j'=1..N);
+
+# (15c) in my paper
+Theta_C__fnd := msum('K_uu[i,j]*s_d__fnd[i]*s_d__fnd[j]', 'i'=1..N, 'j'=1..N);
+
+# (15d) in my paper
+Theta_D__fnd := msum('g_uu[i,j]*s_d__fnd[i]*s_d__fnd[j]', 'i'=1..N, 'j'=1..N);
+
+# n.b. no simplify() here, it would try to put things over a common
+#      denominator, which would make the equation *much* more complicated
+Theta__fnd := + Theta_A__fnd/Theta_D__fnd^(3/2)
+	      + Theta_B__fnd/Theta_D__fnd^(1/2)
+	      + Theta_C__fnd/Theta_D__fnd
+	      - K;
+
+if (cg_flag)
+   then codegen2([ Theta_A__fnd, Theta_B__fnd, Theta_C__fnd, Theta_D__fnd],
+		 ['Theta_A',    'Theta_B',    'Theta_C',    'Theta_D'    ],
+		 "../gr.cg/expansion.c");
+fi;
+
+NULL;
+end proc;
+
+################################################################################
+
+#
+# This function computes the Jacobian coefficients for the expansion
+# $\Theta$ of a trial horizon surface with respect to 1st and 2nd angular
+# partial derivatives of the surface radius $h$.  These coefficients
+# are (or at least should be :) the same as those in equation (A1) in
+# my 1996 apparent horizon finding paper, bue here we compute them in
+# a different manner: we have Maple directly differentiate Theta__fnd with
+# respect to Diff(h,y_rs[u]) and Diff(h,y_rs[u],y_rs[v]).  We use the
+# Maple frontend() function to do this.
+#
+# This function also optionally generates C code for the Jacobian
+# coefficients.
+#
+# Inputs:
+#   Theta_A = Theta_A__fnd( x_xyz, X_ud, X_udd, g_uu, partial_d_g_uu,
+#			    Diff(h,y_rs), Diff(h,y_rs,y_rs) )
+#   Theta_B = Theta_B__fnd( x_xyz, X_ud, X_udd,
+#			    g_uu, partial_d_g_uu, partial_d_ln_sqrt_g,
+#			    Diff(h,y_rs), Diff(h,y_rs,y_rs) )
+#   Theta_C = Theta_C__fnd( x_xyz, X_ud, K_uu, Diff(h,y_rs) )
+#   Theta_D = Theta_D__fnd( x_xyz, X_ud, g_uu, Diff(h,y_rs) )
+#   Theta = Theta__fnd(Theta_A__fnd, Theta_B__fnd, Theta_C__fnd, Theta_D__fnd)
+#
+# Outputs:
+#   partial_Theta_A_wrt_partial_d_h	partial_Theta_A_wrt_partial_dd_h
+#   partial_Theta_B_wrt_partial_d_h	partial_Theta_B_wrt_partial_dd_h
+#   partial_Theta_C_wrt_partial_d_h
+#   partial_Theta_D_wrt_partial_d_h
+#   ---------------------------------------------------------------
+#   partial_Theta_wrt_partial_d_h	partial_Theta_wrt_partial_dd_h
+#
+expansion_Jacobian :=
+proc(cg_flag::boolean)
+global
+  @include "../maple/coords.minc",
+  @include "../maple/gfa.minc",
+  @include "../gr/gr_gfas.minc";
+local u,v,
+      temp1,temp2;
+
+printf("%a...\n", procname);
+
+assert_fnd_exists(g_uu);
+assert_fnd_exists(K_uu);
+assert_fnd_exists(partial_d_ln_sqrt_g);
+assert_fnd_exists(partial_d_g_uu);
+assert_fnd_exists(Theta_A);
+assert_fnd_exists(Theta_B);
+assert_fnd_exists(Theta_C);
+assert_fnd_exists(Theta_D);
+
+# Jacobian coefficients of Theta_[ABCD] and Theta wrt Diff(h,y_rs[u])
+	for u from 1 to N_ang
+	do
+	partial_Theta_A_wrt_partial_d_h__fnd[u]
+		:= frontend('diff', [Theta_A__fnd, Diff(h,y_rs[u])]);
+	partial_Theta_B_wrt_partial_d_h__fnd[u]
+		:= frontend('diff', [Theta_B__fnd, Diff(h,y_rs[u])]);
+	partial_Theta_C_wrt_partial_d_h__fnd[u]
+		:= frontend('diff', [Theta_C__fnd, Diff(h,y_rs[u])]);
+	partial_Theta_D_wrt_partial_d_h__fnd[u]
+		:= frontend('diff', [Theta_D__fnd, Diff(h,y_rs[u])]);
+
+	# equation (A1a) in my 1996 apparent horizon finding paper
+	temp1 := + (3/2)*Theta_A/Theta_D^(5/2)
+		 + (1/2)*Theta_B/Theta_D^(3/2);
+	partial_Theta_X_wrt_partial_d_h__fnd[u]
+		:= + partial_Theta_A_wrt_partial_d_h__fnd[u] / Theta_D^(3/2)
+		   + partial_Theta_B_wrt_partial_d_h__fnd[u] / Theta_D^(1/2)
+		   - partial_Theta_D_wrt_partial_d_h__fnd[u] * temp1;
+	temp2 := + Theta_C/Theta_D^2;
+	partial_Theta_Y_wrt_partial_d_h__fnd[u]
+		:= + partial_Theta_C_wrt_partial_d_h__fnd[u] / Theta_D
+		   - partial_Theta_D_wrt_partial_d_h__fnd[u] * temp2;
+	end do;
+
+# Jacobian coefficients of Theta_[AB] and Theta wrt Diff(h,y_rs[u],y_rs[v])
+	for u from 1 to N_ang
+	do
+	for v from u to N_ang
+	do
+	partial_Theta_A_wrt_partial_dd_h__fnd[u,v]
+		:= frontend('diff', [Theta_A__fnd, Diff(h,y_rs[u],y_rs[v])]);
+	partial_Theta_B_wrt_partial_dd_h__fnd[u,v]
+		:= frontend('diff', [Theta_B__fnd, Diff(h,y_rs[u],y_rs[v])]);
+
+	# equation (A1b) in my 1996 apparent horizon finding paper
+	partial_Theta_X_wrt_partial_dd_h__fnd[u,v]
+		:= + partial_Theta_A_wrt_partial_dd_h__fnd[u,v] / Theta_D^(3/2)
+		   + partial_Theta_B_wrt_partial_dd_h__fnd[u,v] / Theta_D^(1/2);
+	partial_Theta_Y_wrt_partial_dd_h__fnd[u,v]
+		:= 0;
+	end do;
+	end do;
+
+if (cg_flag)
+   then codegen2([partial_Theta_X_wrt_partial_d_h__fnd,
+		  partial_Theta_Y_wrt_partial_d_h__fnd,
+		  partial_Theta_X_wrt_partial_dd_h__fnd,
+		  partial_Theta_Y_wrt_partial_dd_h__fnd],
+		 ['partial_Theta_X_wrt_partial_d_h',
+		  'partial_Theta_Y_wrt_partial_d_h',
+		  'partial_Theta_X_wrt_partial_dd_h',
+		  'partial_Theta_Y_wrt_partial_dd_h'],
+		 "../gr.cg/expansion_Jacobian.c");
+fi;
+
+NULL;
+end proc;

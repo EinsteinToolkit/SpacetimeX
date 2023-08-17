@@ -1,0 +1,14 @@
+# gfa.minc -- global variables for gridfn array system and other misc stuff
+# $Header$
+
+# arguments to make_gfa
+inert, none,
+fnd,
+
+# indexing functions
+symmetric3_23,
+
+# coordinate-transformation coefficient gfas
+X_ud, X_ud__fnd,
+X_udd, X_udd__fnd
+		# no comma

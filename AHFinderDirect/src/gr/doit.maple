@@ -1,0 +1,16 @@
+# top-level Maple file to read/run all code in this directory
+# $Header$
+
+read "../maple/setup.mm";
+
+read "setup_gr_gfas.mm";
+setup_gr_gfas();
+
+read "auxiliary.mm";
+read "curvature.mm";
+read "horizon.mm";
+
+`saveit/level` := 10;
+auxiliary(true);
+curvature(true);
+horizon(true);
