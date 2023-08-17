@@ -726,11 +726,13 @@ CarpetX/WaveToyX
 !TARGET   = $ARR
 !TYPE     = ignore
 !CHECKOUT =
+SpacetimeX/AHFinderDirect
 SpacetimeX/AHFinderX
 SpacetimeX/BrillLindquist
 SpacetimeX/Cowling
 SpacetimeX/Punctures
 SpacetimeX/SphericalHarmonics
+SpacetimeX/SphericalSurface
 SpacetimeX/StaticTrumpet
 SpacetimeX/TwoPunctures
 SpacetimeX/Weyl
