@@ -8,8 +8,8 @@ USES INCLUDE HEADER: loop_device.hxx
 
 PUBLIC:
 
-CCTK_REAL eTtt TAGS='checkpoint="no"' TYPE=gf "T_00"
+CCTK_REAL eTtt TAGS='checkpoint="no"' TYPE=gf CENTERING={ccc} "T_00"
 
-CCTK_REAL eTti TAGS='parities={-1 +1 +1   +1 -1 +1   +1 +1 -1} checkpoint="no"' TYPE=gf { eTtx eTty eTtz } "T_0i"
+CCTK_REAL eTti TAGS='parities={-1 +1 +1   +1 -1 +1   +1 +1 -1} checkpoint="no"' TYPE=gf CENTERING={ccc} { eTtx eTty eTtz } "T_0i"
 
-CCTK_REAL eTij TAGS='parities={+1 +1 +1   -1 -1 +1   -1 +1 -1   +1 +1 +1   +1 -1 -1   +1 +1 +1} checkpoint="no"' TYPE=gf { eTxx eTxy eTxz eTyy eTyz eTzz } "T_ij"
+CCTK_REAL eTij TAGS='parities={+1 +1 +1   -1 -1 +1   -1 +1 -1   +1 +1 +1   +1 -1 -1   +1 +1 +1} checkpoint="no"' TYPE=gf CENTERING={ccc} { eTxx eTxy eTxz eTyy eTyz eTzz } "T_ij"
