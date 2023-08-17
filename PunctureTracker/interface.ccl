@@ -1,0 +1,19 @@
+# Interface definition for thorn PunctureTracker
+
+IMPLEMENTS: PunctureTracker
+
+INHERITS: ADMBaseX Coordinates BoxInBox
+
+USES INCLUDE HEADER: loop_device.hxx
+
+PUBLIC:
+
+CCTK_REAL pt_loc[10] TYPE=scalar
+{
+	pt_loc_t pt_loc_x pt_loc_y pt_loc_z
+} "Location of punctures"
+
+CCTK_REAL pt_vel[10] TYPE=scalar
+{
+  pt_vel_t pt_vel_x pt_vel_y pt_vel_z
+} "Velocity of punctures"

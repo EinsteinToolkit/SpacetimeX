@@ -1,0 +1,132 @@
+% *======================================================================*
+%  Cactus Thorn template for ThornGuide documentation
+%  Author: Ian Kelley
+%  Date: Sun Jun 02, 2002
+%  $Header$
+%
+%  Thorn documentation in the latex file doc/documentation.tex
+%  will be included in ThornGuides built with the Cactus make system.
+%  The scripts employed by the make system automatically include
+%  pages about variables, parameters and scheduling parsed from the
+%  relevant thorn CCL files.
+%
+%  This template contains guidelines which help to assure that your
+%  documentation will be correctly added to ThornGuides. More
+%  information is available in the Cactus UsersGuide.
+%
+%  Guidelines:
+%   - Do not change anything before the line
+%       % START CACTUS THORNGUIDE",
+%     except for filling in the title, author, date, etc. fields.
+%        - Each of these fields should only be on ONE line.
+%        - Author names should be separated with a \\ or a comma.
+%   - You can define your own macros, but they must appear after
+%     the START CACTUS THORNGUIDE line, and must not redefine standard
+%     latex commands.
+%   - To avoid name clashes with other thorns, 'labels', 'citations',
+%     'references', and 'image' names should conform to the following
+%     convention:
+%       ARRANGEMENT_THORN_LABEL
+%     For example, an image wave.eps in the arrangement CactusWave and
+%     thorn WaveToyC should be renamed to CactusWave_WaveToyC_wave.eps
+%   - Graphics should only be included using the graphicx package.
+%     More specifically, with the "\includegraphics" command.  Do
+%     not specify any graphic file extensions in your .tex file. This
+%     will allow us to create a PDF version of the ThornGuide
+%     via pdflatex.
+%   - References should be included with the latex "\bibitem" command.
+%   - Use \begin{abstract}...\end{abstract} instead of \abstract{...}
+%   - Do not use \appendix, instead include any appendices you need as
+%     standard sections.
+%   - For the benefit of our Perl scripts, and for future extensions,
+%     please use simple latex.
+%
+% *======================================================================*
+%
+% Example of including a graphic image:
+%    \begin{figure}[ht]
+%       \begin{center}
+%          \includegraphics[width=6cm]{MyArrangement_MyThorn_MyFigure}
+%       \end{center}
+%       \caption{Illustration of this and that}
+%       \label{MyArrangement_MyThorn_MyLabel}
+%    \end{figure}
+%
+% Example of using a label:
+%   \label{MyArrangement_MyThorn_MyLabel}
+%
+% Example of a citation:
+%    \cite{MyArrangement_MyThorn_Author99}
+%
+% Example of including a reference
+%   \bibitem{MyArrangement_MyThorn_Author99}
+%   {J. Author, {\em The Title of the Book, Journal, or periodical}, 1 (1999),
+%   1--16. {\tt http://www.nowhere.com/}}
+%
+% *======================================================================*
+
+% If you are using CVS use this line to give version information
+% $Header$
+
+\documentclass{article}
+
+% Use the Cactus ThornGuide style file
+% (Automatically used from Cactus distribution, if you have a
+%  thorn without the Cactus Flesh download this from the Cactus
+%  homepage at www.cactuscode.org)
+\usepackage{../../../../doc/latex/cactus}
+
+\begin{document}
+
+% The author of the documentation
+\author{Michael Koppitz \textless koppitz@aei.mpg.de\textgreater}
+
+% The title of the document (not necessarily the name of the Thorn)
+\title{PunctureTracker}
+
+% the date your document was last changed, if your document is in CVS,
+% please use:
+\date{$ $Date$ $}
+
+\maketitle
+
+% Do not delete next line
+% START CACTUS THORNGUIDE
+
+% Add all definitions used in this documentation here
+%   \def\mydef etc
+
+% Add an abstract for this thorn's documentation
+\begin{abstract}
+   \texttt{PunctureTracker} tracks black hole Punctures
+   (singularities) by subtracting the value of the shift at the
+   current location (the pucnture is advected with the shift)
+   storing the location in a ``SphericalSurface'' one can use this
+   information in Regrid2 to let the grid follow the BHs.
+\end{abstract}
+
+% The following sections are suggestive only.
+% Remove them or add your own.
+
+\section{Parameters}
+
+   \texttt{PunctureTracker} has the followoing options:
+   -pt\_track\_punctures (boolean, that triggers action)\\
+   -pt\_verbose         (integer that give the verbosity level)\\
+   -pt\_num\_tracked     (integer that tells how many Punctures are to
+   be tracked)\\
+   -pt\_initial\_x (double: Initial x coordinate positions of BHs)\\
+   -pt\_initial\_y     (double: Initial y coordinate positions of BHs)\\
+   -pt\_initial\_z     (double: Initial z coordinate positions of BHs)\\
+   -pt\_which\_surface\_to\_take (integer: which Spherical Surface should
+   be used to store the new puncture location)
+
+\section{Grid Scalars}
+   -(pt\_loc\_x, pt\_loc\_y, pt\_loc\_z) location of puncture
+   -(pt\_shiftx, pt\_shifty, pt\_shiftz) value of shift at location of puncture
+
+
+% Do not delete next line
+% END CACTUS THORNGUIDE
+
+\end{document}
