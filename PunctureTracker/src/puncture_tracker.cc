@@ -113,7 +113,6 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
     return;
   } // TODO: Not used by CarpetX Interpolator
 
-
   // Interpolation parameter table
 	int ierr;
   int param_table_handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);

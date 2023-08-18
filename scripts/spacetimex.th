@@ -731,9 +731,11 @@ SpacetimeX/AHFinderX
 SpacetimeX/BrillLindquist
 SpacetimeX/Cowling
 SpacetimeX/Punctures
+SpacetimeX/QuasiLocalMeasures
 SpacetimeX/SphericalHarmonics
 SpacetimeX/SphericalSurface
 SpacetimeX/StaticTrumpet
+SpacetimeX/TGRtensor
 SpacetimeX/TwoPunctures
 SpacetimeX/Weyl
 SpacetimeX/Z4c
