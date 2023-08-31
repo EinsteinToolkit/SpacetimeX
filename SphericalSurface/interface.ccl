@@ -1,7 +1,7 @@
 # Interface definition for thorn SphericalSurface
 
 IMPLEMENTS: SphericalSurface
-inherits: Coordinates
+inherits: CoordinatesX
 
 
 
