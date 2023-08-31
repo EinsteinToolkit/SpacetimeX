@@ -3,7 +3,7 @@
 IMPLEMENTS: AHFinder
 
 INHERITS: ADMBaseX
-INHERITS: Coordinates
+INHERITS: CoordinatesX
 
 USES INCLUDE HEADER: defs.hxx
 USES INCLUDE HEADER: dual.hxx

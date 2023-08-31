@@ -22,7 +22,7 @@ if (CCTK_Equals(initial_data, "twopunctures"))
     LANG: C
     STORAGE: puncture_u
     # TODO: these WRITES are conditional on parameters
-    READS: Coordinates::vertex_coords(everywhere)
+    READS: CoordinatesX::vertex_coords(everywhere)
     WRITES: ADMBaseX::metric(everywhere)
     WRITES: ADMBaseX::curv(everywhere)
     WRITES: ADMBaseX::lapse(everywhere)
