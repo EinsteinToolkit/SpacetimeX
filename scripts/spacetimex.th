@@ -97,7 +97,11 @@ CactusUtils/WatchDog
 !TYPE     = git
 !URL      = https://github.com/EinsteinToolkit/$1-$2
 !REPO_PATH = ../$1-$2
-!CHECKOUT = ExternalLibraries/OpenBLAS ExternalLibraries/OpenCL ExternalLibraries/pciutils ExternalLibraries/PETSc
+!CHECKOUT =
+ExternalLibraries/OpenBLAS
+ExternalLibraries/OpenCL
+ExternalLibraries/pciutils
+ExternalLibraries/PETSc
 ExternalLibraries/BLAS
 ExternalLibraries/FFTW3
 ExternalLibraries/GSL
