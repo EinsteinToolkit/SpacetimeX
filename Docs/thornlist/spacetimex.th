@@ -162,7 +162,9 @@ CarpetX/TmunuBaseX
 
 # SpacetimeX thorns
 !TARGET   = $ARR
-!TYPE     = ignore
+!TYPE     = git
+!URL      = https://github.com/lwJi/SpacetimeX.git
+!REPO_PATH= $2
 !CHECKOUT =
 SpacetimeX/AHFinderDirect
 SpacetimeX/AHFinderX
