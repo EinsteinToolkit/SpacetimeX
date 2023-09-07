@@ -98,10 +98,6 @@ CactusUtils/WatchDog
 !URL      = https://github.com/EinsteinToolkit/$1-$2
 !REPO_PATH = ../$1-$2
 !CHECKOUT =
-ExternalLibraries/OpenBLAS
-ExternalLibraries/OpenCL
-ExternalLibraries/pciutils
-ExternalLibraries/PETSc
 ExternalLibraries/BLAS
 ExternalLibraries/FFTW3
 ExternalLibraries/GSL
@@ -109,7 +105,6 @@ ExternalLibraries/HDF5
 ExternalLibraries/hwloc
 ExternalLibraries/LAPACK
 ExternalLibraries/libjpeg
-ExternalLibraries/LORENE
 ExternalLibraries/MPI
 ExternalLibraries/OpenSSL
 ExternalLibraries/PAPI
@@ -163,7 +158,6 @@ CarpetX/ErrorEstimator
 CarpetX/HydroBaseX
 CarpetX/Loop
 CarpetX/ODESolvers
-CarpetX/PDESolvers
 CarpetX/TmunuBaseX
 
 # SpacetimeX thorns
