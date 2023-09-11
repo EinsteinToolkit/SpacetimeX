@@ -2,7 +2,7 @@
 
 IMPLEMENTS: PunctureTracker
 
-INHERITS: ADMBaseX Coordinates BoxInBox
+INHERITS: ADMBaseX CoordinatesX BoxInBox
 
 USES INCLUDE HEADER: loop_device.hxx
 
