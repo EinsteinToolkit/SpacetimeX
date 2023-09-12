@@ -301,7 +301,7 @@ extern "C" void PunctureTracker_CheckShift(CCTK_ARGUMENTS) {
 																			[=] CCTK_DEVICE(const PointDesc &p)
 																					CCTK_ATTRIBUTE_ALWAYS_INLINE {
 						if (maximum(abs(p.X - loc_vec)) <= (1 / pow(2, level))) {
-							CCTK_VINFO("Shift at level %d near puncture #%d is {%g, %g, %g} at coords {%g, %g, %g}.", level, n,
+							printf("Shift at level %d near puncture #%d is {%g, %g, %g} at coords {%g, %g, %g}.", level, n,
 								betax_(p.I), betay_(p.I), betaz_(p.I), p.x, p.y, p.z); 
 						}
 					});
