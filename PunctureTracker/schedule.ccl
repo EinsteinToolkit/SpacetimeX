@@ -27,7 +27,7 @@ if (read_shifts)
 		READS: ADMBaseX::shift(interior)
 		READS: BoxInBox::num_levels
 		READS: pt_loc
-		READS: Coordinates::vertex_coords(interior)
+		READS: CoordinatesX::vertex_coords(interior)
 		OPTIONS: LOCAL
 	} "Outputs nearby shift quantities to stdout"
 }

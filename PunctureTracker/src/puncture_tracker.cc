@@ -47,17 +47,17 @@ extern "C" void PunctureTracker_Init(CCTK_ARGUMENTS) {
       pt_vel_z[n] = 0.0;
     }
   }
-	
-	// enabled if refinement regions should follow the punctures
-	if (track_boxes) {
-		const int max_num_regions = 2;
-		for (int i = 0; i < max_num_regions; i++) {
-			CCTK_VINFO("Writing punc coords to box %d.", i);
-			position_x[i] = pt_loc_x[i];
-			position_y[i] = pt_loc_y[i];
-			position_z[i] = pt_loc_z[i];
-		}
-	}
+
+  // enabled if refinement regions should follow the punctures
+  if (track_boxes) {
+    const int max_num_regions = 2;
+    for (int i = 0; i < max_num_regions; i++) {
+      CCTK_VINFO("Writing punc coords to box %d.", i);
+      position_x[i] = pt_loc_x[i];
+      position_y[i] = pt_loc_y[i];
+      position_z[i] = pt_loc_z[i];
+    }
+  }
 }
 
 extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
@@ -87,17 +87,16 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
   }
 
   // Manual time level cycling
-	CCTK_REAL pt_t_prev[max_num_tracked];
+  CCTK_REAL pt_t_prev[max_num_tracked];
 
   for (int n = 0; n < max_num_tracked; ++n) {
     if (track[n]) {
-			pt_t_prev[n] = pt_loc_t[n];
+      pt_t_prev[n] = pt_loc_t[n];
       pt_loc_t[n] = cctk_time;
       pt_vel_t[n] = cctk_time;
+    } else {
+      pt_t_prev[n] = 0.0;
     }
-		else {
-			pt_t_prev[n] = 0.0;
-		}
   }
 
   // Interpolate
@@ -113,9 +112,8 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
     return;
   } // TODO: Not used by CarpetX Interpolator
 
-
   // Interpolation parameter table
-	int ierr;
+  int ierr;
   int param_table_handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
   if (param_table_handle < 0)
     CCTK_VERROR("Can't create parameter table: %d", param_table_handle);
@@ -137,9 +135,9 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
     // Interpolation coordinates
     assert(dim == 3);
     CCTK_POINTER_TO_CONST interp_coords[dim];
-		interp_coords[0] = pt_loc_x;
-		interp_coords[1] = pt_loc_y;
-		interp_coords[2] = pt_loc_z;
+    interp_coords[0] = pt_loc_x;
+    interp_coords[1] = pt_loc_y;
+    interp_coords[2] = pt_loc_z;
 
     // Number of interpolation variables
     int const num_vars = 3;
@@ -171,11 +169,10 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
 
     // Interpolate
     int ierr;
-		ierr = CCTK_InterpGridArrays(
-				cctkGH, dim, operator_handle, param_table_handle, coordsys_handle,
-				num_points, CCTK_VARIABLE_REAL, interp_coords, num_vars,
-				input_array_indices, num_vars, output_array_type_codes,
-				output_arrays);
+    ierr = CCTK_InterpGridArrays(
+        cctkGH, dim, operator_handle, param_table_handle, coordsys_handle,
+        num_points, CCTK_VARIABLE_REAL, interp_coords, num_vars,
+        input_array_indices, num_vars, output_array_type_codes, output_arrays);
     if (ierr < 0) {
       CCTK_WARN(CCTK_WARN_ALERT, "Interpolation error");
       goto label_free_param_table;
@@ -196,19 +193,19 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
       }
 
       // Check for NaNs and large shift components
-			for (int n = 0; n < max_num_tracked; ++n) {
-				if (track[n]) {
-					CCTK_REAL norm = sqrt(pow(pt_betax[n], 2) + pow(pt_betay[n], 2) +
-																pow(pt_betaz[n], 2));
+      for (int n = 0; n < max_num_tracked; ++n) {
+        if (track[n]) {
+          CCTK_REAL norm = sqrt(pow(pt_betax[n], 2) + pow(pt_betay[n], 2) +
+                                pow(pt_betaz[n], 2));
 
-					if (!CCTK_isfinite(norm) || norm > shift_limit) {
-						CCTK_VERROR("Shift at puncture #%d is (%g,%g,%g).  This likely "
-												"indicates an error in the simulation.",
-												n, double(pt_betax[n]), double(pt_betay[n]),
-												double(pt_betaz[n]));
-					}
-				}
-			}
+          if (!CCTK_isfinite(norm) || norm > shift_limit) {
+            CCTK_VERROR("Shift at puncture #%d is (%g,%g,%g).  This likely "
+                        "indicates an error in the simulation.",
+                        n, double(pt_betax[n]), double(pt_betay[n]),
+                        double(pt_betaz[n]));
+          }
+        }
+      }
 
       // Time evolution
 
@@ -241,10 +238,10 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
         loc_global[4 * max_num_tracked + n] = pt_vel_y[n];
         loc_global[5 * max_num_tracked + n] = pt_vel_z[n];
       }
-    } 
+    }
 
-		// CarpetX doesn't register reduction handle, here's a quick fix.
-		MPI_Bcast(loc_global, 6 * max_num_tracked, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    // CarpetX doesn't register reduction handle, here's a quick fix.
+    MPI_Bcast(loc_global, 6 * max_num_tracked, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
     for (int n = 0; n < max_num_tracked; ++n) {
       pt_loc_x[n] = loc_global[n];
@@ -256,14 +253,14 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
     }
   }
 
-	if (track_boxes) {
-		const int max_num_regions = 2;
-		for (int i = 0; i < max_num_regions; i++) {
-			position_x[i] = pt_loc_x[i];
-			position_y[i] = pt_loc_y[i];
-			position_z[i] = pt_loc_z[i];
-		}
-	}
+  if (track_boxes) {
+    const int max_num_regions = 2;
+    for (int i = 0; i < max_num_regions; i++) {
+      position_x[i] = pt_loc_x[i];
+      position_y[i] = pt_loc_y[i];
+      position_z[i] = pt_loc_z[i];
+    }
+  }
 // Done
 
 // Poor man's exception handling
@@ -274,8 +271,8 @@ label_free_param_table:
 using namespace Arith;
 
 extern "C" void PunctureTracker_CheckShift(CCTK_ARGUMENTS) {
-	DECLARE_CCTK_ARGUMENTS_PunctureTracker_CheckShift;
-	DECLARE_CCTK_PARAMETERS;
+  DECLARE_CCTK_ARGUMENTS_PunctureTracker_CheckShift;
+  DECLARE_CCTK_PARAMETERS;
 
   const int dim = 3;
 
@@ -288,26 +285,29 @@ extern "C" void PunctureTracker_CheckShift(CCTK_ARGUMENTS) {
 
   const GridDescBaseDevice grid(cctkGH);
 
-	const int level = ilogb(CCTK_REAL(cctk_levfac[0]));
-	const int finest_lvl = num_levels[0] - 1;	
+  const int level = ilogb(CCTK_REAL(cctk_levfac[0]));
+  const int finest_lvl = num_levels[0] - 1;
 
-	if (level == finest_lvl) {
-		for (int n = 0; n < max_num_tracked; ++n) {
-			if (track[n]) {
+  if (level == finest_lvl) {
+    for (int n = 0; n < max_num_tracked; ++n) {
+      if (track[n]) {
 
-				const vect<CCTK_REAL, dim> loc_vec = {pt_loc_x[n], pt_loc_y[n], pt_loc_z[n]};
+        const vect<CCTK_REAL, dim> loc_vec = {pt_loc_x[n], pt_loc_y[n],
+                                              pt_loc_z[n]};
 
-				grid.loop_all_device<0, 0, 0>(grid.nghostzones,
-																			[=] CCTK_DEVICE(const PointDesc &p)
-																					CCTK_ATTRIBUTE_ALWAYS_INLINE {
-						if (maximum(abs(p.X - loc_vec)) <= (1 / pow(2, level))) {
-							CCTK_VINFO("Shift at level %d near puncture #%d is {%g, %g, %g} at coords {%g, %g, %g}.", level, n,
-								betax_(p.I), betay_(p.I), betaz_(p.I), p.x, p.y, p.z); 
-						}
-					});
-			}
-		}
-	}
+        grid.loop_all_device<0, 0, 0>(
+            grid.nghostzones,
+            [=] CCTK_DEVICE(const PointDesc &p) CCTK_ATTRIBUTE_ALWAYS_INLINE {
+              if (maximum(abs(p.X - loc_vec)) <= (1 / pow(2, level))) {
+                printf("Shift at level %d near puncture #%d is {%g, %g, %g} at "
+                       "coords {%g, %g, %g}.",
+                       level, n, betax_(p.I), betay_(p.I), betaz_(p.I), p.x,
+                       p.y, p.z);
+              }
+            });
+      }
+    }
+  }
 }
 
-} //namespace PunctureTracker
+} // namespace PunctureTracker
