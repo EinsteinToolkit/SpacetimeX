@@ -4,6 +4,7 @@
 SRCS =						\
 	adm.cxx					\
 	adm2.cxx				\
+	apply_newrad.cxx			\
 	constraints.cxx				\
 	enforce.cxx				\
 	initial1.cxx				\

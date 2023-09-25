@@ -12,8 +12,6 @@ BOOLEAN calc_constraints "Calculate constraints" STEERABLE=recover
 {
 } yes
 
-
-
 BOOLEAN set_Theta_zero "set Theta to zero, which converts Z4c to BSSN"
 {
 } no
@@ -57,3 +55,8 @@ CCTK_REAL epsdiss "Dissipation coefficient <arXiv:gr-qc/0610128>" STEERABLE=alwa
 {
   0.0:* :: ""
 } 0.32
+
+KEYWORD boundary_conditions "boundary conditions"{
+  "radiative" :: "radiative boundary conditions using NewRadX"
+  "none"      :: "use CarpetX default BCS"
+} "none"

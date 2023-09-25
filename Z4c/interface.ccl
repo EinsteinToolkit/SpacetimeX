@@ -13,7 +13,7 @@ USES INCLUDE HEADER: simd.hxx
 USES INCLUDE HEADER: sum.hxx
 USES INCLUDE HEADER: vec.hxx
 USES INCLUDE HEADER: vect.hxx
-
+USES INCLUDE HEADER: newradx.hxx
 
 
 CCTK_INT FUNCTION GetCallFunctionCount()
