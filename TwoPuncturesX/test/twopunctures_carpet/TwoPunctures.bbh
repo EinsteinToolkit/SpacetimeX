@@ -3,7 +3,7 @@
 # ==================================
 #
 # This file contains information about the simulation provided by the
-# TwoPunctures thorn.  The format is described in the NR Data Format Document
+# TwoPuncturesX thorn.  The format is described in the NR Data Format Document
 # http://arxiv.org/abs/0709.0093 [draft SVN r707].
 
 [metadata]

@@ -6,7 +6,7 @@ ActiveThorns = "StaticConformal"
 ActiveThorns = "ADMCoupling ADMMacros"
 ActiveThorns = "TmunuBaseX Constants SpaceMask HydroBaseX"
 ActiveThorns = "TOVSolver eos_omni"
-ActiveThorns = "TwoPunctures"
+ActiveThorns = "TwoPuncturesX"
 ActiveThorns = "coordgauge boundary"
 
 Carpet::init_each_timelevel 		= "no"
@@ -39,27 +39,27 @@ ADMBaseX::initial_data		= "twopunctures"
 ADMBaseX::initial_lapse  = "tov"
 ADMBaseX::initial_shift  = "tov"
 
-TwoPunctures::keep_u_around     = yes
-TwoPunctures::schedule_in_ADMBaseX_InitialData = no
+TwoPuncturesX::keep_u_around     = yes
+TwoPuncturesX::schedule_in_ADMBaseX_InitialData = no
 
-TwoPunctures::npoints_A         = 20
-TwoPunctures::npoints_B         = 20
-TwoPunctures::npoints_phi       = 4
-TwoPunctures::Newton_tol        = 1.e-10
-TwoPunctures::grid_setup_method = "evaluation"
-TwoPunctures::TP_Extend_Radius = 1.14
+TwoPuncturesX::npoints_A         = 20
+TwoPuncturesX::npoints_B         = 20
+TwoPuncturesX::npoints_phi       = 4
+TwoPuncturesX::Newton_tol        = 1.e-10
+#TwoPuncturesX::grid_setup_method = "evaluation"
+TwoPuncturesX::TP_Extend_Radius = 1.14
 
-TwoPunctures::par_b             =  30
+TwoPuncturesX::par_b             =  30
 
-TwoPunctures::par_m_plus        =  5.0
-TwoPunctures::par_m_minus       =  0.0
+TwoPuncturesX::par_m_plus        =  5.0
+TwoPuncturesX::par_m_minus       =  0.0
 
-TwoPunctures::Newton_maxit       =  100
-TwoPunctures::use_sources        = 1
-TwoPunctures::do_residuum_debug_output = "no"
-TwoPunctures::do_initial_debug_output = "no"
-TwoPunctures::rescale_sources = "yes"
-TwoPunctures::TP_Tiny = 1.e-10
+TwoPuncturesX::Newton_maxit       =  100
+TwoPuncturesX::use_sources        = 1
+TwoPuncturesX::do_residuum_debug_output = "no"
+TwoPuncturesX::do_initial_debug_output = "no"
+TwoPuncturesX::rescale_sources = "yes"
+TwoPuncturesX::TP_Tiny = 1.e-10
 
 SpaceMask::use_mask = yes
 
@@ -84,9 +84,9 @@ Carpet::init_3_timelevels         = no
 CarpetIOScalar::outScalar_reductions	= "minimum maximum norm1 norm2"
 
 IOScalar::outScalar_every	= 512
-IOScalar::outScalar_vars		= "admbase::metric admbase::curv TwoPunctures::puncture_u HydroBaseX::w_lorentz hydrobase::rho hydrobase::press hydrobase::eps HydroBaseX::vel admbase::lapse admbase::shift"
+IOScalar::outScalar_vars		= "admbase::metric admbase::curv TwoPuncturesX::puncture_u HydroBaseX::w_lorentz hydrobase::rho hydrobase::press hydrobase::eps HydroBaseX::vel admbase::lapse admbase::shift"
 IOASCII::out1D_every		= 512
-IOASCII::out1D_vars		= "admbase::metric admbase::curv TwoPunctures::puncture_u HydroBaseX::w_lorentz hydrobase::rho hydrobase::press hydrobase::eps HydroBaseX::vel admbase::lapse admbase::shift"
+IOASCII::out1D_vars		= "admbase::metric admbase::curv TwoPuncturesX::puncture_u HydroBaseX::w_lorentz hydrobase::rho hydrobase::press hydrobase::eps HydroBaseX::vel admbase::lapse admbase::shift"
 
 admbase::metric_type		= "physical"
 

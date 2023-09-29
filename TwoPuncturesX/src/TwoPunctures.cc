@@ -1,7 +1,6 @@
-/* TwoPunctures:  File  "TwoPunctures.c"*/
+/* TwoPuncturesX:  File  "TwoPuncturesX.c"*/
 
 #include <assert.h>
-#include <stdatomic.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,9 +10,11 @@
 #include <cctk.h>
 #include <cctk_Arguments.h>
 #include <cctk_Parameters.h>
-#include <loopcontrol.h>
+// #include <loopcontrol.h>
 #include "TP_utilities.h"
 #include "TwoPunctures.h"
+
+namespace TwoPuncturesX {
 
 /* Swap two variables */
 static inline void tp_swap(CCTK_REAL *restrict const a,
@@ -25,7 +26,7 @@ static inline void tp_swap(CCTK_REAL *restrict const a,
 #undef SWAP
 #define SWAP(a, b) (tp_swap(&(a), &(b)))
 
-static void set_initial_guess(CCTK_POINTER_TO_CONST cctkGH, derivs v) {
+static void set_initial_guess(const cGH* cctkGH, derivs v) {
   DECLARE_CCTK_PARAMETERS;
 
   int nvar = 1, n1 = npoints_A, n2 = npoints_B, n3 = npoints_phi;
@@ -39,9 +40,9 @@ static void set_initial_guess(CCTK_POINTER_TO_CONST cctkGH, derivs v) {
   if (solve_momentum_constraint)
     nvar = 4;
 
-  s_x = calloc(n1 * n2 * n3, sizeof(CCTK_REAL));
-  s_y = calloc(n1 * n2 * n3, sizeof(CCTK_REAL));
-  s_z = calloc(n1 * n2 * n3, sizeof(CCTK_REAL));
+  s_x = (CCTK_REAL*)calloc(n1 * n2 * n3, sizeof(CCTK_REAL));
+  s_y = (CCTK_REAL*)calloc(n1 * n2 * n3, sizeof(CCTK_REAL));
+  s_z = (CCTK_REAL*)calloc(n1 * n2 * n3, sizeof(CCTK_REAL));
   allocate_derivs(&U, nvar);
   for (ivar = 0; ivar < nvar; ivar++)
     for (i = 0; i < n1; i++)
@@ -168,9 +169,10 @@ static void set_initial_guess(CCTK_POINTER_TO_CONST cctkGH, derivs v) {
 }
 
 /* -------------------------------------------------------------------*/
-void TwoPunctures(CCTK_ARGUMENTS);
-void TwoPunctures(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTS_TwoPunctures;
+extern "C"
+void TwoPuncturesX_TwoPunctures(CCTK_ARGUMENTS);
+void TwoPuncturesX_TwoPunctures(CCTK_ARGUMENTS) {
+  DECLARE_CCTK_ARGUMENTS_TwoPuncturesX_TwoPunctures;
   DECLARE_CCTK_PARAMETERS;
 
   *mp = par_m_plus;
@@ -287,10 +289,10 @@ void TwoPunctures(CCTK_ARGUMENTS) {
 
           /* Set the par_m_plus and par_m_minus parameters */
           sprintf(valbuf, "%.17g", (double)*mp);
-          CCTK_ParameterSet("par_m_plus", "TwoPunctures", valbuf);
+          CCTK_ParameterSet("par_m_plus", "TwoPuncturesX", valbuf);
 
           sprintf(valbuf, "%.17g", (double)*mm);
-          CCTK_ParameterSet("par_m_minus", "TwoPunctures", valbuf);
+          CCTK_ParameterSet("par_m_minus", "TwoPuncturesX", valbuf);
 
         } while ((mp_adm_err > adm_tol) || (mm_adm_err > adm_tol));
 
@@ -405,8 +407,13 @@ void TwoPunctures(CCTK_ARGUMENTS) {
                "with exp %f.",
                (double)initial_lapse_psi_exponent);
 
-  static atomic_flag did_print = ATOMIC_FLAG_INIT;
-  const bool dp = atomic_flag_test_and_set(&did_print);
+  static bool did_print = false;
+  bool dp;
+#pragma omp atomic capture
+  {
+    dp = did_print;
+    did_print = true;
+  }
   if (!dp) {
     CCTK_INFO("Interpolating result");
   }
@@ -415,7 +422,10 @@ void TwoPunctures(CCTK_ARGUMENTS) {
   const int dj = di * cctk_ash[0];
   const int dk = dj * cctk_ash[1];
   const int np = dk * cctk_ash[2];
-  CCTK_LOOP3_ALL(TwoPunctures, cctkGH, i, j, k) {
+  for (int k=cctk_tile_min[2]; k<cctk_tile_max[2]; ++k)
+  for (int j=cctk_tile_min[1]; j<cctk_tile_max[1]; ++j)
+  for (int i=cctk_tile_min[0]; i<cctk_tile_max[0]; ++i)
+  {
 
     const int ind = CCTK_GFINDEX3D(cctkGH, i, j, k);
 
@@ -598,7 +608,6 @@ void TwoPunctures(CCTK_ARGUMENTS) {
       SWAP(kxy[ind], kyz[ind]);
     } /* if swap_xz */
   }
-  CCTK_ENDLOOP3_ALL(TwoPunctures);
 
   if (use_sources && rescale_sources) {
     assert(0); // TODO: Implement via critical region
@@ -606,4 +615,6 @@ void TwoPunctures(CCTK_ARGUMENTS) {
     Rescale_Sources(cctkGH, np, vcoordx, vcoordy, vcoordz, NULL, gxx, gyy, gzz,
                     gxy, gxz, gyz);
   }
+}
+
 }

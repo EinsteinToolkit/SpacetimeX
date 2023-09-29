@@ -1,4 +1,6 @@
-/* TwoPunctures:  File  "TwoPunctures.h"*/
+/* TwoPuncturesX:  File  "TwoPunctures.h"*/
+
+namespace TwoPuncturesX {
 
 #define StencilSize 19
 #define N_PlaneRelax 1
@@ -10,8 +12,8 @@ typedef struct DERIVS {
 } derivs;
 
 /*
-Files of "TwoPunctures":
-        TwoPunctures.c
+Files of "TwoPuncturesX":
+        TwoPuncturesX.c
         FuncAndJacobian.c
         CoordTransf.c
         Equations.c
@@ -20,7 +22,7 @@ Files of "TwoPunctures":
 **************************
 */
 
-/* Routines in  "TwoPunctures.c"*/
+/* Routines in  "TwoPuncturesX.c"*/
 CCTK_REAL TestSolution(CCTK_REAL A, CCTK_REAL B, CCTK_REAL X, CCTK_REAL R,
                        CCTK_REAL phi);
 void TestVector_w(CCTK_REAL *par, int nvar, int n1, int n2, int n3,
@@ -31,7 +33,7 @@ int Index(int ivar, int i, int j, int k, int nvar, int n1, int n2, int n3);
 void allocate_derivs(derivs *v, int n);
 void free_derivs(derivs *v, int n);
 void Derivatives_AB3(int nvar, int n1, int n2, int n3, derivs v);
-void F_of_v(CCTK_POINTER_TO_CONST cctkGH, int nvar, int n1, int n2, int n3,
+void F_of_v(const cGH* cctkGH, int nvar, int n1, int n2, int n3,
             derivs v, CCTK_REAL *F, derivs u);
 void J_times_dv(int nvar, int n1, int n2, int n3, derivs dv, CCTK_REAL *Jdv,
                 derivs u);
@@ -78,9 +80,9 @@ void LinEquations(CCTK_REAL A, CCTK_REAL B, CCTK_REAL X, CCTK_REAL R,
                   CCTK_REAL z, derivs dU, derivs U, CCTK_REAL *values);
 
 /* Routines in  "Newton.c"*/
-void TestRelax(CCTK_POINTER_TO_CONST cctkGH, int nvar, int n1, int n2, int n3,
+void TestRelax(const cGH* cctkGH, int nvar, int n1, int n2, int n3,
                derivs v, CCTK_REAL *dv);
-void Newton(CCTK_POINTER_TO_CONST cctkGH, int nvar, int n1, int n2, int n3,
+void Newton(const cGH* cctkGH, int nvar, int n1, int n2, int n3,
             derivs v, CCTK_REAL tol, int itmax);
 
 /*
@@ -94,3 +96,5 @@ void Newton(CCTK_POINTER_TO_CONST cctkGH, int nvar, int n1, int n2, int n3,
  37: -1.511440809549005e-03
  39: -1.511440809597588e-03
  */
+
+}

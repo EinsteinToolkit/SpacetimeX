@@ -5,7 +5,7 @@ ActiveThorns = "CoordBase SymBase Boundary NanChecker CartGrid3d Time
                 StaticConformal SpaceMask GenericFD CoordGauge
                 ADMCoupling LoopControl
                 TMuNuBase SphericalSurface ADMMacros 
-                TwoPunctures"
+                TwoPuncturesX"
 
 #############################################################
 # Evolution equations
@@ -83,18 +83,18 @@ ADMBaseX::initial_shift   = "zero"
 ADMBaseX::initial_dtlapse = "zero"
 ADMBaseX::initial_dtshift = "zero"
 
-TwoPunctures::par_b          =  1.168642873
-TwoPunctures::par_m_plus     =  0.453
-TwoPunctures::par_m_minus    =  0.453
-TwoPunctures::par_P_plus [1] = +0.3331917498
-TwoPunctures::par_P_minus[1] = -0.3331917498
-TwoPunctures::grid_setup_method         = "Taylor expansion"
-TwoPunctures::verbose = yes
+TwoPuncturesX::par_b          =  1.168642873
+TwoPuncturesX::par_m_plus     =  0.453
+TwoPuncturesX::par_m_minus    =  0.453
+TwoPuncturesX::par_P_plus [1] = +0.3331917498
+TwoPuncturesX::par_P_minus[1] = -0.3331917498
+TwoPuncturesX::grid_setup_method         = "Taylor expansion"
+TwoPuncturesX::verbose = yes
 
 # Low accuracy initial data for fast execution
-TwoPunctures::npoints_A                 = 16
-TwoPunctures::npoints_B                 = 16
-TwoPunctures::npoints_phi               = 8
+TwoPuncturesX::npoints_A                 = 16
+TwoPuncturesX::npoints_B                 = 16
+TwoPuncturesX::npoints_phi               = 8
 
 #############################################################
 # Output

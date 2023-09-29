@@ -1,4 +1,4 @@
-/* TwoPunctures:  File  "utilities.c"*/
+/* TwoPuncturesX:  File  "utilities.c"*/
 
 #include <math.h>
 #include <stdio.h>
@@ -9,13 +9,15 @@
 
 #include "cctk_Functions.h"
 
+namespace TwoPuncturesX {
+
 /*---------------------------------------------------------------------------*/
 int *ivector(long nl, long nh)
 /* allocate an int vector with subscript range v[nl..nh] */
 {
   int *retval;
 
-  retval = malloc(sizeof(int) * (nh - nl + 1));
+  retval = (int*)malloc(sizeof(int) * (nh - nl + 1));
   if (retval == NULL)
     CCTK_ERROR("allocation failure in ivector()");
 
@@ -28,7 +30,7 @@ CCTK_REAL *dvector(long nl, long nh)
 {
   CCTK_REAL *retval;
 
-  retval = malloc(sizeof(CCTK_REAL) * (nh - nl + 1));
+  retval = (CCTK_REAL*)malloc(sizeof(CCTK_REAL) * (nh - nl + 1));
   if (retval == NULL)
     CCTK_ERROR("allocation failure in dvector()");
 
@@ -41,12 +43,12 @@ int **imatrix(long nrl, long nrh, long ncl, long nch)
 {
   int **retval;
 
-  retval = malloc(sizeof(int *) * (nrh - nrl + 1));
+  retval = (int**)malloc(sizeof(int *) * (nrh - nrl + 1));
   if (retval == NULL)
     CCTK_ERROR("allocation failure (1) in imatrix()");
 
   /* get all memory for the matrix in on chunk */
-  retval[0] = malloc(sizeof(int) * (nrh - nrl + 1) * (nch - ncl + 1));
+  retval[0] = (int*)malloc(sizeof(int) * (nrh - nrl + 1) * (nch - ncl + 1));
   if (retval[0] == NULL)
     CCTK_ERROR("allocation failure (2) in imatrix()");
 
@@ -69,12 +71,12 @@ CCTK_REAL **dmatrix(long nrl, long nrh, long ncl, long nch)
 {
   CCTK_REAL **retval;
 
-  retval = malloc(sizeof(CCTK_REAL *) * (nrh - nrl + 1));
+  retval = (CCTK_REAL**)malloc(sizeof(CCTK_REAL *) * (nrh - nrl + 1));
   if (retval == NULL)
     CCTK_ERROR("allocation failure (1) in dmatrix()");
 
   /* get all memory for the matrix in on chunk */
-  retval[0] = malloc(sizeof(CCTK_REAL) * (nrh - nrl + 1) * (nch - ncl + 1));
+  retval[0] = (CCTK_REAL*)malloc(sizeof(CCTK_REAL) * (nrh - nrl + 1) * (nch - ncl + 1));
   if (retval[0] == NULL)
     CCTK_ERROR("allocation failure (2) in dmatrix()");
 
@@ -99,16 +101,16 @@ CCTK_REAL ***d3tensor(long nrl, long nrh, long ncl, long nch, long ndl,
   CCTK_REAL ***retval;
 
   /* get memory for index structures */
-  retval = malloc(sizeof(CCTK_REAL **) * (nrh - nrl + 1));
+  retval = (CCTK_REAL***)malloc(sizeof(CCTK_REAL **) * (nrh - nrl + 1));
   if (retval == NULL)
     CCTK_ERROR("allocation failure (1) in d3tensor()");
 
-  retval[0] = malloc(sizeof(CCTK_REAL *) * (nrh - nrl + 1) * (nch - ncl + 1));
+  retval[0] = (CCTK_REAL**)malloc(sizeof(CCTK_REAL *) * (nrh - nrl + 1) * (nch - ncl + 1));
   if (retval[0] == NULL)
     CCTK_ERROR("allocation failure (2) in d3tensor()");
 
   /* get all memory for the tensor in on chunk */
-  retval[0][0] = malloc(sizeof(CCTK_REAL) * (nrh - nrl + 1) * (nch - ncl + 1) *
+  retval[0][0] = (CCTK_REAL*)malloc(sizeof(CCTK_REAL) * (nrh - nrl + 1) * (nch - ncl + 1) *
                         (ndh - ndl + 1));
   if (retval[0][0] == NULL)
     CCTK_ERROR("allocation failure (3) in d3tensor()");
@@ -474,3 +476,5 @@ scalarproduct(CCTK_REAL *v, CCTK_REAL *w, int n) {
 }
 
 /* -------------------------------------------------------------------------*/
+
+}

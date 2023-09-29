@@ -1,8 +1,10 @@
-/* TwoPunctures:  File  "utilities.h"*/
+/* TwoPuncturesX:  File  "utilities.h"*/
 
 #include <math.h>
 
 #include "cctk.h"
+
+namespace TwoPuncturesX {
 
 #define Pi 3.14159265358979323846264338328
 #define Pih 1.57079632679489661923132169164 /* Pi/2*/
@@ -79,3 +81,5 @@ CCTK_REAL fourev(CCTK_REAL *u, int N, CCTK_REAL x);
 CCTK_REAL norm1(CCTK_REAL *v, int n);
 CCTK_REAL norm2(CCTK_REAL *v, int n);
 CCTK_REAL scalarproduct(CCTK_REAL *v, CCTK_REAL *w, int n);
+
+}

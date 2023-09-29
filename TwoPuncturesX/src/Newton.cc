@@ -1,4 +1,4 @@
-/* TwoPunctures:  File  "Newton.c"*/
+/* TwoPuncturesX:  File  "Newton.c"*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,7 +11,9 @@
 #include "TP_utilities.h"
 #include "TwoPunctures.h"
 
-static int bicgstab(CCTK_POINTER_TO_CONST const cctkGH, int const nvar,
+namespace TwoPuncturesX {
+
+static int bicgstab(const cGH* const cctkGH, int const nvar,
                     int const n1, int const n2, int const n3, derivs v,
                     derivs dv, int const output, int const itmax,
                     CCTK_REAL const tol, CCTK_REAL *restrict const normres);
@@ -219,7 +221,7 @@ static void relax(CCTK_REAL *restrict const dv, int const nvar, int const n1,
 }
 
 /* --------------------------------------------------------------------------*/
-void TestRelax(CCTK_POINTER_TO_CONST cctkGH, int nvar, int n1, int n2, int n3,
+void TestRelax(const cGH* cctkGH, int nvar, int n1, int n2, int n3,
                derivs v, CCTK_REAL *dv) {
   DECLARE_CCTK_PARAMETERS;
   int ntotal = n1 * n2 * n3 * nvar, **cols, *ncols, maxcol = StencilSize * nvar,
@@ -267,7 +269,7 @@ void TestRelax(CCTK_POINTER_TO_CONST cctkGH, int nvar, int n1, int n2, int n3,
 }
 
 /* --------------------------------------------------------------------------*/
-static int bicgstab(CCTK_POINTER_TO_CONST const cctkGH, int const nvar,
+static int bicgstab(const cGH* const cctkGH, int const nvar,
                     int const n1, int const n2, int const n3, derivs v,
                     derivs dv, int const output, int const itmax,
                     CCTK_REAL const tol, CCTK_REAL *restrict const normres) {
@@ -434,7 +436,7 @@ static int bicgstab(CCTK_POINTER_TO_CONST const cctkGH, int const nvar,
 }
 
 /* -------------------------------------------------------------------*/
-void Newton(CCTK_POINTER_TO_CONST const cctkGH, int const nvar, int const n1,
+void Newton(const cGH* const cctkGH, int const nvar, int const n1,
             int const n2, int const n3, derivs v, CCTK_REAL const tol,
             int const itmax) {
   DECLARE_CCTK_PARAMETERS;
@@ -491,3 +493,5 @@ void Newton(CCTK_POINTER_TO_CONST const cctkGH, int const nvar, int const n1,
 }
 
 /* -------------------------------------------------------------------*/
+
+}
