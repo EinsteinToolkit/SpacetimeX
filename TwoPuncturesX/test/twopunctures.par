@@ -5,7 +5,7 @@ ActiveThorns = "PUGH PUGHReduce PUGHSlab LocalReduce"
 ActiveThorns = "IOASCII IOBasic IOUtil"
 ActiveThorns = "ADMBaseX StaticConformal"
 ActiveThorns = "TmunuBaseX ADMConstraints ADMCoupling ADMMacros SpaceMask"
-ActiveThorns = "TwoPunctures"
+ActiveThorns = "TwoPuncturesX"
 
 Cactus::cctk_itlast		= 0
 
@@ -25,23 +25,23 @@ Driver::global_nz		= 35
 
 ADMBaseX::initial_data		= "twopunctures"
 
-TwoPunctures::keep_u_around     = yes
+TwoPuncturesX::keep_u_around     = yes
 
-TwoPunctures::npoints_A         = 20
-TwoPunctures::npoints_B         = 20
-TwoPunctures::npoints_phi       = 12
+TwoPuncturesX::npoints_A         = 20
+TwoPuncturesX::npoints_B         = 20
+TwoPuncturesX::npoints_phi       = 12
 
-TwoPunctures::par_b             =  1.5
+TwoPuncturesX::par_b             =  1.5
 
-TwoPunctures::par_m_plus        =  1.5
-TwoPunctures::par_P_plus[1]     =  2.0
-TwoPunctures::par_S_plus[1]     =  0.5
-TwoPunctures::par_S_plus[2]     = -0.5
+TwoPuncturesX::par_m_plus        =  1.5
+TwoPuncturesX::par_P_plus[1]     =  2.0
+TwoPuncturesX::par_S_plus[1]     =  0.5
+TwoPuncturesX::par_S_plus[2]     = -0.5
 
-TwoPunctures::par_m_minus       =  1.0
-TwoPunctures::par_P_minus[1]    = -2.0
-TwoPunctures::par_S_minus[0]    = -1.0
-TwoPunctures::par_S_minus[2]    = -1.0
+TwoPuncturesX::par_m_minus       =  1.0
+TwoPuncturesX::par_P_minus[1]    = -2.0
+TwoPuncturesX::par_S_minus[0]    = -1.0
+TwoPuncturesX::par_S_minus[2]    = -1.0
 
 ADMBaseX::lapse_evolution_method	= "static"
 ADMBaseX::initial_lapse		= "one"
@@ -50,7 +50,7 @@ IO::out_dir			= $parfile
 IO::out_fileinfo		= "axis labels"
 
 IOBasic::outScalar_every	= 1
-IOBasic::outScalar_vars		= "admbase::metric admbase::curv admconstraints::hamiltonian admconstraints::momentum TwoPunctures::puncture_u"
+IOBasic::outScalar_vars		= "admbase::metric admbase::curv admconstraints::hamiltonian admconstraints::momentum TwoPuncturesX::puncture_u"
 
 IOASCII::out1D_every		= 1
-IOASCII::out1D_vars		= "admbase::metric admbase::curv admconstraints::hamiltonian admconstraints::momentum TwoPunctures::puncture_u"
+IOASCII::out1D_vars		= "admbase::metric admbase::curv admconstraints::hamiltonian admconstraints::momentum TwoPuncturesX::puncture_u"

@@ -1,4 +1,4 @@
-/* TwoPunctures:  File  "Equations.c"*/
+/* TwoPuncturesX:  File  "Equations.c"*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,6 +8,8 @@
 #include "cctk_Parameters.h"
 #include "TP_utilities.h"
 #include "TwoPunctures.h"
+
+namespace TwoPuncturesX {
 
 /* U.d0[ivar]   = U[ivar];  (ivar = 0..nvar-1) */
 /* U.d1[ivar]   = U[ivar]_x;  */
@@ -180,3 +182,5 @@ void LinEquations(CCTK_REAL A, CCTK_REAL B, CCTK_REAL X, CCTK_REAL R,
 }
 
 /*-----------------------------------------------------------*/
+
+}

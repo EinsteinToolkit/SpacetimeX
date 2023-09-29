@@ -1,4 +1,4 @@
-/* TwoPunctures:  File  "CoordTransf.c"*/
+/* TwoPuncturesX:  File  "CoordTransf.c"*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,6 +11,8 @@
 #include "cctk_Parameters.h"
 #include "TP_utilities.h"
 #include "TwoPunctures.h"
+
+namespace TwoPuncturesX {
 
 /*-----------------------------------------------------------*/
 void AB_To_XR(int nvar, CCTK_REAL A, CCTK_REAL B, CCTK_REAL *X, CCTK_REAL *R,
@@ -151,3 +153,5 @@ void rx3_To_xyz(int nvar, CCTK_REAL x, CCTK_REAL r, CCTK_REAL phi, CCTK_REAL *y,
 }
 
 /*-----------------------------------------------------------*/
+
+}

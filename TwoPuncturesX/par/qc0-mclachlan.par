@@ -251,7 +251,7 @@ ADMMacros::spatial_order = 4
 
 
 
-ActiveThorns = "TwoPunctures"
+ActiveThorns = "TwoPuncturesX"
 
 ADMBaseX::metric_type = "physical"
 
@@ -264,18 +264,18 @@ ADMBaseX::initial_dtshift = "zero"
 # needed for AHFinderDirect
 ADMBaseX::metric_timelevels = 3
 
-TwoPunctures::par_b          =  1.168642873
-TwoPunctures::par_m_plus     =  0.453
-TwoPunctures::par_m_minus    =  0.453
-TwoPunctures::par_P_plus [1] = +0.3331917498
-TwoPunctures::par_P_minus[1] = -0.3331917498
+TwoPuncturesX::par_b          =  1.168642873
+TwoPuncturesX::par_m_plus     =  0.453
+TwoPuncturesX::par_m_minus    =  0.453
+TwoPuncturesX::par_P_plus [1] = +0.3331917498
+TwoPuncturesX::par_P_minus[1] = -0.3331917498
 
-#TODO# TwoPunctures::grid_setup_method = "evaluation"
+#TODO# TwoPuncturesX::grid_setup_method = "evaluation"
 
-TwoPunctures::TP_epsilon = 1.0e-2
-TwoPunctures::TP_Tiny    = 1.0e-2
+TwoPuncturesX::TP_epsilon = 1.0e-2
+TwoPuncturesX::TP_Tiny    = 1.0e-2
 
-TwoPunctures::verbose = yes
+TwoPuncturesX::verbose = yes
 
 
 

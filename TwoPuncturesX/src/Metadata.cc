@@ -9,15 +9,15 @@
 using namespace std;
 
 extern "C"
-void TwoPunctures_Metadata (CCTK_ARGUMENTS)
+void TwoPuncturesX_Metadata (CCTK_ARGUMENTS)
 {
-  DECLARE_CCTK_ARGUMENTS_TwoPunctures_Metadata;
+  DECLARE_CCTK_ARGUMENTS_TwoPuncturesX_Metadata;
   DECLARE_CCTK_PARAMETERS;
 
   if (CCTK_MyProc(cctkGH) == 0)
   {
     ofstream o;
-    o.open(string(string(out_dir) + "/TwoPunctures.bbh").c_str());
+    o.open(string(string(out_dir) + "/TwoPuncturesX.bbh").c_str());
 
     o << setprecision(17);
 
@@ -27,7 +27,7 @@ void TwoPunctures_Metadata (CCTK_ARGUMENTS)
 # ==================================\n\
 #\n\
 # This file contains information about the simulation provided by the\n\
-# TwoPunctures thorn.  The format is described in the NR Data Format Document\n\
+# TwoPuncturesX thorn.  The format is described in the NR Data Format Document\n\
 # http://arxiv.org/abs/0709.0093 [draft SVN r707].\n\
 " << "\n";
 

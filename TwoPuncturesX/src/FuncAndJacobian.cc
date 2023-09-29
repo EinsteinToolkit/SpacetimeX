@@ -1,4 +1,4 @@
-/* TwoPunctures:  File  "FuncAndJacobian.c"*/
+/* TwoPuncturesX:  File  "FuncAndJacobian.c"*/
 
 #include <assert.h>
 #include <stdio.h>
@@ -11,6 +11,8 @@
 #include "cctk_Parameters.h"
 #include "TP_utilities.h"
 #include "TwoPunctures.h"
+
+namespace TwoPuncturesX {
 
 #define FAC sin(al) * sin(be) * sin(al) * sin(be) * sin(al) * sin(be)
 /*#define FAC sin(al)*sin(be)*sin(al)*sin(be)*/
@@ -167,7 +169,7 @@ void Derivatives_AB3(int nvar, int n1, int n2, int n3, derivs v) {
 }
 
 /* --------------------------------------------------------------------------*/
-void F_of_v(CCTK_POINTER_TO_CONST cctkGH, int nvar, int n1, int n2, int n3,
+void F_of_v(const cGH* cctkGH, int nvar, int n1, int n2, int n3,
             derivs v, CCTK_REAL *F, derivs u) {
   /*      Calculates the left hand sides of the non-linear equations
    * F_m(v_n)=0*/
@@ -184,13 +186,13 @@ void F_of_v(CCTK_POINTER_TO_CONST cctkGH, int nvar, int n1, int n2, int n3,
   values = dvector(0, nvar - 1);
   allocate_derivs(&U, nvar);
 
-  sources = calloc(n1 * n2 * n3, sizeof(CCTK_REAL));
+  sources = (CCTK_REAL*)calloc(n1 * n2 * n3, sizeof(CCTK_REAL));
   if (use_sources) {
     CCTK_REAL *s_x, *s_y, *s_z;
     CCTK_INT i3D;
-    s_x = calloc(n1 * n2 * n3, sizeof(CCTK_REAL));
-    s_y = calloc(n1 * n2 * n3, sizeof(CCTK_REAL));
-    s_z = calloc(n1 * n2 * n3, sizeof(CCTK_REAL));
+    s_x = (CCTK_REAL*)calloc(n1 * n2 * n3, sizeof(CCTK_REAL));
+    s_y = (CCTK_REAL*)calloc(n1 * n2 * n3, sizeof(CCTK_REAL));
+    s_z = (CCTK_REAL*)calloc(n1 * n2 * n3, sizeof(CCTK_REAL));
     for (i = 0; i < n1; i++)
       for (j = 0; j < n2; j++)
         for (k = 0; k < n3; k++) {
@@ -931,4 +933,6 @@ void SpecCoef(int n1, int n2, int n3, int ivar, CCTK_REAL *v, CCTK_REAL *cf) {
   free_dvector(p, 0, N);
   free_d3tensor(values3, 0, n1, 0, n2, 0, n3);
   free_d3tensor(values4, 0, n1, 0, n2, 0, n3);
+}
+
 }
