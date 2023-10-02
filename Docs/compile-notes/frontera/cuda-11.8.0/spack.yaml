@@ -19,47 +19,47 @@ spack:
     - silo@4.10.2 +hdf5
     - yaml-cpp
     - zlib
+    - gsl
       #    - petsc @3.17 +cuda +fftw +hwloc +openmp
-      #    - gsl
       #    - openblas
   packages:
-    #petsc:
-    #  buildable: false
-    #  externals:
-    #  - spec: petsc@3.17
-    #    prefix: /home1/apps/intel19/impi19_0/petsc/3.17
     hwloc:
       buildable: false
       externals:
       - spec: hwloc@1.11.12
         prefix: /opt/apps/hwloc/1.11.12
+    intel-mkl:
+      buildable: false
+      externals:
+      - spec: intel-mkl@23.1.0
+        prefix: /opt/intel/oneapi/mkl/2023.1.0
+    libfabric:
+      buildable: false
+      externals:
+      - spec: libfabric@2021.9.0
+        prefix: /opt/intel/oneapi/mpi/2021.9.0/libfabric/lib
+    intel-oneapi-mpi:
+      buildable: false
+      externals:
+      - spec: intel-oneapi-mpi@2021.9.0
+        prefix: /opt/intel/oneapi
+    mpi:
+      buildable: false
+    #petsc:
+    #  buildable: false
+    #  externals:
+    #  - spec: petsc@3.17
+    #    prefix: /home1/apps/intel19/impi19_0/petsc/3.17
     #cmake:
     #  buildable: false
     #  externals:
     #  - spec: cmake@3.24.2
     #    prefix: /opt/apps/cmake/3.24.2
-    intel-mkl:
-      buildable: false
-      externals:
-      - spec: intel-mkl@19.1.1
-        prefix: /opt/intel/compilers_and_libraries_2020.1.217/linux/mkl
-    fftw:
-      buildable: false
-      externals:
-      - spec: fftw@3.3.10
-        prefix: /opt/apps/intel19/impi19_0/fftw3/3.3.10
-    libfabric:
-      buildable: false
-      externals:
-      - spec: libfabric@19.0.9
-        prefix: /opt/intel/compilers_and_libraries_2020.4.304/linux/mpi/intel64/libfabric/lib
-    intel-mpi:
-      buildable: false
-      externals:
-      - spec: intel-mpi@19.0.9
-        prefix: /opt/intel/compilers_and_libraries_2020.4.304/linux/mpi
-    mpi:
-      buildable: false
+    #fftw:
+    #  buildable: false
+    #  externals:
+    #  - spec: fftw@3.3.10
+    #    prefix: /opt/apps/intel19/impi19_0/fftw3/3.3.10
   specs:
   - matrix:
     - [$%compilers]
