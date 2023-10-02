@@ -17,7 +17,7 @@
     ```bash
     curl -kLO https://raw.githubusercontent.com/gridaphobe/CRL/master/GetComponents
     chmod a+x GetComponents
-    ./GetComponents --root Cactus --parallel --no-shallow https://raw.githubusercontent.com/lwJi/SpacetimeX/main/scripts/spacetimex.th
+    ./GetComponents --root Cactus --parallel --no-shallow https://raw.githubusercontent.com/lwJi/SpacetimeX/main/Docs/thornlist/spacetimex.th
     ```
 
 ## Intel-Oneapi version (`oneapi@2023.1.0`)
