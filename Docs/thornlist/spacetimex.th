@@ -107,7 +107,7 @@ ExternalLibraries/LAPACK
 ExternalLibraries/libjpeg
 ExternalLibraries/MPI
 ExternalLibraries/OpenSSL
-ExternalLibraries/PAPI
+#ExternalLibraries/PAPI
 ExternalLibraries/pthreads
 ExternalLibraries/zlib
 
