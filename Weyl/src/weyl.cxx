@@ -10,7 +10,7 @@
 #endif
 #endif
 
-#include "derivs.hxx"
+#include "derivs_spacetimex.hxx"
 #include "physics.hxx"
 #include "weyl_vars.hxx"
 
@@ -26,6 +26,8 @@
 #include <cctk_Parameters.h>
 
 #include <cmath>
+
+using namespace derivs_spacetimex;
 
 namespace Weyl {
 using namespace Arith;

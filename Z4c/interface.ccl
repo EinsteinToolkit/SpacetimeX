@@ -14,6 +14,10 @@ USES INCLUDE HEADER: sum.hxx
 USES INCLUDE HEADER: vec.hxx
 USES INCLUDE HEADER: vect.hxx
 
+INHERITS: Derivs
+
+USES INCLUDE HEADER: derivs_spacetimex.hxx
+
 
 
 CCTK_INT FUNCTION GetCallFunctionCount()

@@ -15,6 +15,10 @@ USES INCLUDE HEADER: ten3.hxx
 USES INCLUDE HEADER: vec.hxx
 USES INCLUDE HEADER: vect.hxx
 
+INHERITS: Derivs
+
+USES INCLUDE HEADER: derivs_spacetimex.hxx
+
 
 
 # TODO: Declare these variables without ghost zones?

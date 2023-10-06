@@ -144,7 +144,8 @@ Numerical/AEILocalInterp
 # CarpetX thorns
 !TARGET   = $ARR
 !TYPE     = git
-!URL      = https://github.com/eschnett/CarpetX.git
+!URL      = https://github.com/stevenrbrandt/CarpetX.git
+!REPO_BRANCH = unify-derivs
 !REPO_PATH= $2
 !CHECKOUT =
 CarpetX/ADMBaseX

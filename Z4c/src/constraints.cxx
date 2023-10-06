@@ -8,7 +8,7 @@
 #endif
 #endif
 
-#include "derivs.hxx"
+#include "derivs_spacetimex.hxx"
 #include "physics.hxx"
 #include "z4c_vars.hxx"
 
@@ -24,6 +24,8 @@
 #endif
 
 #include <cmath>
+
+using namespace derivs_spacetimex;
 
 namespace Z4c {
 using namespace Arith;

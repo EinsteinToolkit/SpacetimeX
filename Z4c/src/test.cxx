@@ -1,4 +1,4 @@
-#include "derivs.hxx"
+#include "derivs_spacetimex.hxx"
 #include "physics.hxx"
 
 #include <defs.hxx>
@@ -12,6 +12,8 @@
 #include <cmath>
 #include <iostream>
 #include <random>
+
+using namespace derivs_spacetimex;
 
 namespace Z4c {
 using namespace std;

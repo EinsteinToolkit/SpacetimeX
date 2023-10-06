@@ -1,7 +1,7 @@
 #ifndef WEYL_VARS_HXX
 #define WEYL_VARS_HXX
 
-#include "derivs.hxx"
+#include "derivs_spacetimex.hxx"
 #include "physics.hxx"
 
 #include <cplx.hxx>

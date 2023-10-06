@@ -1,4 +1,4 @@
-#include "derivs.hxx"
+#include "derivs_spacetimex.hxx"
 #include "physics.hxx"
 
 #include <loop_device.hxx>
@@ -10,6 +10,8 @@
 #ifdef __CUDACC__
 #include <nvToolsExt.h>
 #endif
+
+using namespace derivs_spacetimex;
 
 namespace Z4c {
 using namespace Arith;
