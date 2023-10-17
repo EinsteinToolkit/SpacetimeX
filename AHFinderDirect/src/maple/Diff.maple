@@ -1,0 +1,274 @@
+# Diff.maple -- Diff() and friends
+# $Header$
+
+#
+# simplify/Diff - simplify(...) function for expressions containing Diff()
+# Diff - "inert" derivative function (low-level simplifications)
+# Diff/gridfn - simplifications that know about gridfns
+#
+
+################################################################################
+################################################################################
+################################################################################
+
+#
+# This function is called automatically by  simplify()  whenever
+#  simplify()'s  argument contains a  Diff()  call.  This interface
+# to  simplify()  is described in
+#	Michael B. Monagan
+#	"Tips for Maple Users"
+#	The Maple Technical Newsletter
+#	Issue 10 (Fall 1993), p.10-18, especially p.17-18
+# but not in the Maple library manual or the online help, which both
+# imply that  simplify(..., Diff)  is needed for this procedure to be
+# invoked).
+#
+# This function recurses over the expression structure.  For each
+#  Diff() call, it calls  Diff()  itself to do "basic" derivative
+# simplifications, then calls `Diff/gridfn`() to do further simplifications
+# based on gridfn properties.
+#
+# expr = (in) An expression to be simplified.
+#
+# Results:
+# The function returns the "simplified" expression.
+#
+`simplify/Diff` :=
+proc(expr)
+option remember;		# performance optimization
+local temp;
+
+# recurse on tables, equations, lists, sets, sums, products, powers
+if type(expr, {table, `=`, list, set, `+`, `*`, `^`})
+   then return map(simplify, expr);
+end if;
+
+# return unchanged on numbers, names, procedures
+if type(expr, {numeric, name, procedure})
+   then return expr;
+end if;
+
+# function call ==> simplify  Diff()  calls, recurse on others
+if type(expr, function)
+   then
+	if (op(0, expr) = 'Diff')
+	   then return Diff(op(expr));	# "basic" derivative simplifications
+	   else
+		temp := map(simplify, [op(expr)]);
+		op(0,expr); return '%'(op(temp));
+	end if;
+end if;
+
+# unknown type
+ERROR(`expr has unknown type`, `whattype(expr)=`, whattype(expr));
+
+end proc;
+
+################################################################################
+
+#
+# This function implements some of the more useful simplification
+# rules of algebra and calculus for Maple's "inert" differentiation
+# function  Diff() .  It then calls  `Diff/gridfn`()  to do any
+# further simplifications based on gridfn properties.
+#
+# In particular:
+# - It distributes over sums.
+# - It distributes over leading numeric factors.  (Maple's built-in
+#   simplifier will always make numeric factors leading.)
+# - It knows that derivatives of numeric constants are zero.
+# - It knows that the derivative of a name with respect to itself is one.
+# - It knows the product rule
+#	Diff(f*g,x) = Diff(f,x)*g + f*Diff(g,x)
+# - It knows the power rule
+#	Diff(f^n,x) = n * f^(n-1) * Diff(f,x)
+# - It flattens multi-level "Diff() trees", i.e. it makes the transformation
+#	Diff(Diff(f,x),y) = Diff(f,x,y);
+# - It canonicalizes the order of the things we're differentiating with
+#   respect to, so that  simplify()  will recognize that derivatives
+#   commute, i.e. that
+#	Diff(f,x,y) = Diff(f,y,x)
+#
+# Arguments:
+# operand = (in) The thing to be differentiated.
+# var_seq = (in) (varargs) An expression sequence of the variables to
+#			   differentiate with respect to.
+#
+unprotect('Diff');
+Diff :=
+proc(operand)			# varargs
+option remember;		# performance optimization
+local var_list,
+      nn, nderiv,
+      op_cdr,
+      f, g, x, x_car, x_cdr, temp,
+      n,
+      inner_operand, inner_var_list, k,
+      sorted_var_list,
+      operand2, var_seq2;
+
+var_list := [args[2..nargs]];
+
+nn := nops(operand);
+nderiv := nops(var_list);
+
+##print(`Diff():  nn=`,nn,`  nderiv=`,nderiv,
+##      `  operand=`,operand,`  var_list=`,var_list);
+
+# distribute (recurse) over sums
+if (type(operand, `+`))
+   then return simplify(
+		  sum('Diff(op(k, operand), op(var_list))', 'k'=1..nn)
+		       );
+end if;
+
+# distribute (recurse) over leading numeric factors
+if (type(operand, `*`) and (nn >= 1) and type(op(1,operand), numeric))
+   then
+	op_cdr := product('op(k,operand)', 'k'=2..nn);
+	return simplify(  op(1,operand) * Diff(op_cdr, op(var_list))  );
+end if;
+
+# derivatives of numbers are zero
+if (type(operand, numeric))
+   then return 0;
+end if;
+
+# derivative of a name with respect to itself is one
+if (type(operand, name) and (var_list = [operand]))
+   then return 1;
+end if;
+
+# implement the product rule
+# ... we actually implement it only for a 1st derivative of the
+#     product of two factors; for fancier cases we recurse
+if (type(operand, `*`))
+   then
+	if (nn = 0)
+	   then # empty product = 1
+		return 0;		# ==> Diff(1) = 0
+
+	elif (nn = 1)
+	   then # singleton product is equal to the single factor
+		return simplify(  Diff(op(1,operand), op(var_list))  );
+
+	elif (nn >= 2)
+	   then # nontrivial product rule case
+
+		# note that if we have more than 2 factors, g will
+		# be the product of the cdr of the factor list, so
+		# our later  Diff(g,...)  calls will recurse as
+		# necessary to handle this case
+
+		f := op(1,operand);
+		g := product('op(k,operand)', 'k'=2..nn);
+
+		if (nderiv = 1)
+		   then # product rule for 1st derivatives:
+			#   Diff(f*g,x) = Diff(f,x)*g + f*Diff(g,x)
+			x := var_list[1];
+
+			return simplify(  Diff(f,x)*g  +  f*Diff(g,x)  );
+
+		   else # product rule for 2nd (and higher) derivatives
+			# ==> recurse on derivatives
+			x_car := var_list[1];
+			x_cdr := var_list[2..nderiv];
+			temp := simplify(  Diff(f*g, x_car)  );
+			return simplify(  Diff(temp, op(x_cdr))  );
+		end if;
+	else ERROR(`impossible value of nn in product rule!`,
+		   `(this should never happen!)`,
+		   `   operand=`,operand,`   nn=`,nn);
+	end if;
+end if;
+
+# implement the power rule
+# ... we actually implement it only for 1st derivatives; for higher
+#     derivatives we recurse
+if (type(operand, `^`))
+   then
+	f := op(1,operand);
+	n := op(2,operand);
+
+	if (nderiv = 1)
+	   then # power rule for 1st derivatives:
+		#   Diff(f^n,x) = n * f^(n-1) * Diff(f,x)
+		x := var_list[1];
+
+		return simplify(  n * f^(n-1) * Diff(f, x)  );
+
+	   else # power rule for 2nd (and higher) derivatives:
+		# ==> recurse on derivatives
+		x_car := var_list[1];
+		x_cdr := var_list[2..nderiv];
+		temp := simplify(  Diff(f^n, x_car)  );
+
+		return simplify(  Diff(temp, op(x_cdr))  );
+	end if;
+end if;
+
+# flatten (recurse on) multi-level "Diff() trees"
+if (type(operand, function) and (op(0, operand) = 'Diff'))
+   then
+	inner_operand := op(1, operand);
+	inner_var_list := [op(2..nn, operand)];
+
+	return simplify(
+		  Diff(inner_operand, op(inner_var_list), op(var_list))
+		       );
+end if;
+
+# canonicalize ordering of derivatives
+sorted_var_list := sort_var_list(var_list);
+
+# simplifications based on gridfn properties known here...
+temp := `Diff/gridfn`(operand, op(sorted_var_list));
+
+# more simplifications based on gridfn properties known in other directories
+if ( type(`Diff/gridfn2`, procedure)
+     and type(temp, function) and (op(0,temp) = 'Diff') )
+   then operand2 := op(1,temp);
+	var_seq2 := op(2..nops(temp), temp);
+	temp := `Diff/gridfn2`(operand2, var_seq2);
+fi;
+
+return temp;
+end proc;
+
+################################################################################
+
+#
+# This function implements further simplification rules for  Diff()
+# based on gridfn properties (or at least those known here).
+#
+# It currently knows about the following simplifications:
+# - Diff(X_ud[u,i], x_xyz[j]) --> X_udd[u,i,j]
+#
+# Anything else is returned unchanged.  (To avoid infinite recursion,
+# such a return is *unevaluated*.)
+#
+# Arguments:
+# operand = (in) The thing to be differentiated.
+# var_seq = (in) (varargs) An expression sequence of the variables to
+#			   differentiate with respect to.
+#
+`Diff/gridfn` :=
+proc(operand)			# varargs
+option remember;		# performance optimization
+global
+  @include "../maple/coords.minc",
+  @include "../maple/gfa.minc",
+  @include "../gr/gr_gfas.minc";
+local var_list, posn;
+
+var_list := [args[2..nargs]];
+
+if ( type(operand, indexed) and (op(0,operand) = 'X_ud')
+     and (nops(var_list) = 1) and member(var_list[1],x_xyz_list,'posn') )
+   then return X_udd[op(operand), posn];
+end if;
+
+# unevaluated return to avoid infinite recursion
+return 'Diff'(operand, op(var_list));
+end proc;

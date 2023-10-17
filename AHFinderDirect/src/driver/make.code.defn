@@ -1,0 +1,13 @@
+# Cactus specification of things to be compiled in this directory
+# $Header$
+
+# Source files in this directory
+SRCS = state.cc \
+       setup.cc find_horizons.cc \
+       initial_guess.cc Newton.cc \
+       io.cc misc-driver.cc \
+       BH_diagnostics.cc horizon_sequence.cc \
+       mask.cc announce.cc aliased_functions.cc
+
+# Subdirectories containing source files
+SUBDIRS =

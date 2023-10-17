@@ -5,7 +5,7 @@ if (test_ah) {
   {
     LANG: C
     OPTIONS: global
-    READS: Coordinates::vertex_coords(everywhere)
+    READS: CoordinatesX::vertex_coords(everywhere)
   } "Test interpolation operators"
 
   SCHEDULE AHFinder_test_sht AT poststep

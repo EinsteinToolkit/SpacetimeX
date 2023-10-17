@@ -1,0 +1,69 @@
+    |\^/|     Maple 7 (DEC ALPHA UNIX)
+._|\|   |/|_. Copyright (c) 2001 by Waterloo Maple Inc.
+ \  MAPLE  /  All rights reserved. Maple is a registered trademark of
+ <____ ____>  Waterloo Maple Inc.
+      |       Type ? for help.
+# test_patch_system.maple -- test function for  test_fd_grid
+# $Id: test_patch_system.maple,v 1.4 2001/09/15 18:06:33 jthorn Exp $
+> 
+# test function
+> fn := exp(sin(1.38*rho)) * tanh(0.17+0.83*sin(sigma)^2);
+                                                                2
+              fn := exp(sin(1.38 rho)) tanh(.17 + .83 sin(sigma) )
+
+> 
+# 1st derivatives
+> diff(fn, rho);			codegen[C](%);
+                                                                      2
+       1.38 cos(1.38 rho) exp(sin(1.38 rho)) tanh(.17 + .83 sin(sigma) )
+
+      t0 = 0.138E1*cos(0.138E1*rho)*exp(sin(0.138E1*rho))*tanh(0.17+0.83*pow(
+sin(sigma),2.0));
+> diff(fn, sigma);		codegen[C](%);
+1.66
+
+                                                     2 2
+    exp(sin(1.38 rho)) (1 - tanh(.17 + .83 sin(sigma) ) ) sin(sigma) cos(sigma)
+
+      t0 = 0.166E1*exp(sin(0.138E1*rho))*(1.0-pow(tanh(0.17+0.83*pow(sin(sigma)
+,2.0)),2.0))*sin(sigma)*cos(sigma);
+> 
+# 2nd derivatives
+> diff(fn, rho,rho);		codegen[C](%);
+                                                                  2
+-1.9044 sin(1.38 rho) exp(sin(1.38 rho)) tanh(.17 + .83 sin(sigma) )
+
+                           2                                             2
+     + 1.9044 cos(1.38 rho)  exp(sin(1.38 rho)) tanh(.17 + .83 sin(sigma) )
+
+      t0 = -0.19044E1*sin(0.138E1*rho)*exp(sin(0.138E1*rho))*tanh(0.17+0.83*pow
+(sin(sigma),2.0))+0.19044E1*pow(cos(0.138E1*rho),2.0)*exp(sin(0.138E1*rho))*
+tanh(0.17+0.83*pow(sin(sigma),2.0));
+> diff(fn, rho,sigma);		codegen[C](%);
+                                                                      2 2
+2.2908 cos(1.38 rho) exp(sin(1.38 rho)) (1 - tanh(.17 + .83 sin(sigma) ) )
+
+    sin(sigma) cos(sigma)
+
+      t0 = 0.22908E1*cos(0.138E1*rho)*exp(sin(0.138E1*rho))*(1.0-pow(tanh(0.17+
+0.83*pow(sin(sigma),2.0)),2.0))*sin(sigma)*cos(sigma);
+> diff(fn, sigma,sigma);		codegen[C](%);
+                                                    2
+-5.5112 exp(sin(1.38 rho)) tanh(.17 + .83 sin(sigma) )
+
+                                  2 2            2           2
+    (1 - tanh(.17 + .83 sin(sigma) ) ) sin(sigma)  cos(sigma)
+
+                                                             2 2            2
+     + 1.66 exp(sin(1.38 rho)) (1 - tanh(.17 + .83 sin(sigma) ) ) cos(sigma)
+
+                                                             2 2            2
+     - 1.66 exp(sin(1.38 rho)) (1 - tanh(.17 + .83 sin(sigma) ) ) sin(sigma)
+
+      t0 = -0.55112E1*exp(sin(0.138E1*rho))*tanh(0.17+0.83*pow(sin(sigma),2.0))
+*(1.0-pow(tanh(0.17+0.83*pow(sin(sigma),2.0)),2.0))*pow(sin(sigma),2.0)*pow(cos
+(sigma),2.0)+0.166E1*exp(sin(0.138E1*rho))*(1.0-pow(tanh(0.17+0.83*pow(sin(
+sigma),2.0)),2.0))*pow(cos(sigma),2.0)-0.166E1*exp(sin(0.138E1*rho))*(1.0-pow(
+tanh(0.17+0.83*pow(sin(sigma),2.0)),2.0))*pow(sin(sigma),2.0);
+> quit
+bytes used=1170560, alloc=1179432, time=0.10

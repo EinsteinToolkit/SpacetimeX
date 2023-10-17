@@ -1,0 +1,123 @@
+# Maple code to set up all gridfn arrays
+# $Header$
+
+#
+# setup_gr_gfas - setup all the GR gfas
+# `Diff/gridfn2` - Diff() simplification based on gridfn properties known here
+#
+
+################################################################################
+
+setup_gr_gfas :=
+proc()
+global
+  @include "../maple/coords.minc",
+  @include "../maple/gfa.minc",
+  @include "../gr/gr_gfas.minc";
+
+# metric and extrinsic curvature
+make_gfa('g_dd', {inert}, [1..N, 1..N], symmetric);
+make_gfa('K_dd', {inert}, [1..N, 1..N], symmetric);
+
+# index-raised and contracted metric and extrinsic curvature
+make_gfa('g_uu', {inert,fnd}, [1..N, 1..N], symmetric);
+make_gfa('K_uu', {inert,fnd}, [1..N, 1..N], symmetric);
+make_gfa('K', {inert,fnd}, [], none);
+
+# xyz partial derivatives of metric
+# ... as far as Maple is concerned, these are indeed separate gridfns;
+#     the derivatives are actually taken by the interpolator
+make_gfa('partial_d_g_dd', {inert}, [1..N, 1..N, 1..N], symmetric3_23);
+
+# xyz partial derivatives of metric determinant
+make_gfa('partial_d_ln_sqrt_g', {inert,fnd}, [1..N], none);
+
+# xyz partial derivatives of inverse metric
+# (computed in terms of xyz derivatives of g_dd)
+make_gfa('partial_d_g_uu', {inert,fnd}, [1..N, 1..N, 1..N], symmetric3_23);
+
+# radius of horizon
+make_gfa('h', {inert,fnd}, [], none);
+
+# outward-pointing *non*-unit normal (covector) to horizon
+# and it's xyz-coordinate partial derivatives
+make_gfa('s_d', {inert,fnd}, [1..N], none);
+make_gfa('partial_d_s_d', {inert,fnd}, [1..N, 1..N], none);
+
+# expansion of horizon and subexpressions for computing it
+# ... these are defined by (14) and (15) in my 1996 AH-finding paper
+#     except I now use Theta instead of H for the LHS
+make_gfa('Theta_A', {inert,fnd}, [], none);
+make_gfa('Theta_B', {inert,fnd}, [], none);
+make_gfa('Theta_C', {inert,fnd}, [], none);
+make_gfa('Theta_D', {inert,fnd}, [], none);
+make_gfa('Theta', {inert,fnd}, [], none);
+
+# 1st derivatives of Theta[ABCD] and of Theta
+make_gfa('partial_d_Theta_A', {inert,fnd}, [1..N], none);
+make_gfa('partial_d_Theta_B', {inert,fnd}, [1..N], none);
+make_gfa('partial_d_Theta_C', {inert,fnd}, [1..N], none);
+make_gfa('partial_d_Theta_D', {inert,fnd}, [1..N], none);
+make_gfa('partial_d_Theta', {inert,fnd}, [1..N], none);
+
+# Jacobian coefficients for Theta[ABCD]
+# these are the partial derivatives of Theta[ABCD]
+# ... wrt Diff(h,x_rs[x])
+make_gfa('partial_Theta_A_wrt_partial_d_h', {inert,fnd}, [1..N_ang], none);
+make_gfa('partial_Theta_B_wrt_partial_d_h', {inert,fnd}, [1..N_ang], none);
+make_gfa('partial_Theta_C_wrt_partial_d_h', {inert,fnd}, [1..N_ang], none);
+make_gfa('partial_Theta_D_wrt_partial_d_h', {inert,fnd}, [1..N_ang], none);
+# ... wrt Diff(h,x_rs[x],x_rs[y])
+make_gfa('partial_Theta_A_wrt_partial_dd_h', {inert,fnd},
+	 [1..N_ang, 1..N_ang], symmetric);
+make_gfa('partial_Theta_B_wrt_partial_dd_h', {inert,fnd},
+	 [1..N_ang, 1..N_ang], symmetric);
+
+# Jacobian coefficients for Theta itself
+make_gfa('partial_Theta_X_wrt_partial_d_h', {inert,fnd}, [1..N_ang], none);
+make_gfa('partial_Theta_Y_wrt_partial_d_h', {inert,fnd}, [1..N_ang], none);
+make_gfa('partial_Theta_X_wrt_partial_dd_h', {inert,fnd},
+	 [1..N_ang, 1..N_ang], symmetric);
+make_gfa('partial_Theta_Y_wrt_partial_dd_h', {inert,fnd},
+	 [1..N_ang, 1..N_ang], symmetric);
+
+NULL;
+end proc;
+
+
+################################################################################
+
+#
+# This function implements further simplification rules for  Diff()
+# based on gridfn properties which are known here but not in ../maple/.
+#
+# It currently knows about the following simplifications:
+# - Diff(g_dd[i,j], x_xyz[k]) --> partial_d_g_dd[k,i,j]
+#
+# Anything else is returned unchanged.  (To avoid infinite recursion,
+# such a return is *unevaluated*.)
+#
+# Arguments:
+# operand = (in) The thing to be differentiated.
+# var_seq = (in) (varargs) An expression sequence of the variables to
+#			   differentiate with respect to.
+#
+`Diff/gridfn2` :=
+proc(operand)			# varargs
+option remember;		# performance optimization
+global
+  @include "../maple/coords.minc",
+  @include "../maple/gfa.minc",
+  @include "../gr/gr_gfas.minc";
+local var_list, posn;
+
+var_list := [args[2..nargs]];
+
+if ( type(operand, indexed) and (op(0,operand) = 'g_dd')
+     and (nops(var_list) = 1) and member(var_list[1],x_xyz_list,'posn') )
+   then return partial_d_g_dd[posn, op(operand)];
+end if;
+
+# unevaluated return to avoid infinite recursion
+return 'Diff'(operand, op(var_list));
+end proc;

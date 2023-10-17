@@ -1,0 +1,39 @@
+# Schedule definitions for thorn TwoPuncturesX
+
+if (CCTK_Equals(initial_data, "twopunctures"))
+{
+  STORAGE: energy, angular_momentum, puncture_adm_mass, bare_mass
+
+  if (keep_u_around) {
+    STORAGE: puncture_u
+  }
+
+  SCHEDULE TwoPuncturesX_ParamCheck AT paramcheck
+  {
+    LANG: C
+  } "Check parameters and thorn needs"
+
+  SCHEDULE GROUP TwoPuncturesX_Group IN ADMBaseX_InitialData
+  {
+  } "TwoPuncturesX initial data group"
+
+  SCHEDULE TwoPuncturesX_TwoPunctures IN TwoPuncturesX_Group
+  {
+    LANG: C
+    STORAGE: puncture_u
+    # TODO: these WRITES are conditional on parameters
+    READS: CoordinatesX::vertex_coords(everywhere)
+    WRITES: ADMBaseX::metric(everywhere)
+    WRITES: ADMBaseX::curv(everywhere)
+    WRITES: ADMBaseX::lapse(everywhere)
+    WRITES: puncture_u(everywhere)
+    WRITES: mp, mm, mp_adm, mm_adm, E, J1, J2, J3
+  } "Create puncture black hole initial data"
+
+  SCHEDULE TwoPuncturesX_Metadata IN TwoPuncturesX_Group AFTER TwoPuncturesX
+  {
+    LANG: C
+    OPTIONS: global
+    READS: mp, mm, mp_adm, mm_adm, E, J1, J2, J3
+  } "Output TwoPuncturesX metadata"
+}

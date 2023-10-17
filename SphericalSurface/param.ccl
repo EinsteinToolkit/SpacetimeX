@@ -1,0 +1,159 @@
+# Parameter definitions for thorn SphericalSurface
+
+RESTRICTED:
+
+# You can enlarge the possible number of surfaces by changing the maximum
+# 42 in the parameter nsurfaces, and by changing the array sizes [42] found
+# in many of the parameters below.
+
+CCTK_INT nsurfaces "Number of surfaces" STEERABLE=recover
+{
+  0:42 :: ""
+} 0
+
+# can be queried via SphericalSurface_IdFromName()
+CCTK_STRING name[42] "User friendly name of spherical surface" STEERABLE=always
+{
+  ""   :: "none set"
+  ".*" :: "any string"
+} ""
+
+
+# Warning: this will MPI hang when the number of components per refinement
+# level differs between processors
+BOOLEAN auto_res[42] "Automatically determine resolution according to radius and Cartesian resolution"
+{
+} no
+
+
+CCTK_REAL auto_res_ratio[42] "Multiplicative factor by which we want to scale the resolution with respect to Cartesian resolution"
+{
+  0:* :: ""
+} 2.0
+
+
+KEYWORD auto_res_grid[42] "Choose resolution according to how grids overlap"   
+{
+  "fully contained" :: "SF must be fully contained in Cartesian grid"
+  "overlap"         :: "SF overlaps with grid"
+  "multipatch"      :: "SF potentially overlaps with a spherical mutipatch grid"
+} "fully contained"
+
+
+
+BOOLEAN verbose "Shall I be verbose?"
+{
+} no
+
+
+# Default parameter values do not trigger accumulator expressions.
+# Therefore the default values here must be large enough for the default
+# surface shape.
+
+# These parameters change the size of a checkpointed grid array. When changing them you will have to skip recovering sf_radius.
+
+#CCTK_INT maxntheta "do not set this parameter directly" ACCUMULATOR=((x>y)*x+!(x>y)*y)
+CCTK_INT maxntheta "Maximum number of grid points in the theta direction" STEERABLE=RECOVER
+{
+  0:* :: ""
+} 19
+
+#CCTK_INT maxnphi "do not set this parameter directly" ACCUMULATOR=((x>y)*x+!(x>y)*y)
+CCTK_INT maxnphi "Maximum number of grid points in the phi direction" STEERABLE=RECOVER
+{
+  0:* :: ""
+} 38
+
+
+CCTK_INT ntheta[42] "Number of grid points in the theta direction" STEERABLE=always #ACCUMULATOR-BASE maxntheta
+{
+  0:* :: "must be at least 3*nghoststheta"
+} 19
+
+CCTK_INT nphi[42] "Number of grid points in the phi direction" STEERABLE=always #ACCUMULATOR-BASE maxnphi
+{
+  0:* :: "must be at least 3*nghostsphi"
+} 38
+
+
+
+CCTK_INT nghoststheta[42] "Number of ghost zones in the theta direction" STEERABLE=always #ACCUMULATOR-BASE maxnghoststheta
+{
+  0:* :: ""
+} 2
+
+CCTK_INT nghostsphi[42] "Number of ghost zones in the phi direction" STEERABLE=always #ACCUMULATOR-BASE maxnghostsphi
+{
+  0:* :: ""
+} 2
+
+
+
+BOOLEAN symmetric_x[42] "Reflection symmetry in the x direction" STEERABLE=always
+{
+} no
+
+BOOLEAN symmetric_y[42] "Reflection symmetry in the y direction" STEERABLE=always
+{
+} no
+
+BOOLEAN symmetric_z[42] "Reflection symmetry in the z direction" STEERABLE=always
+{
+} no
+
+
+
+PRIVATE:
+
+
+
+
+
+# Place a surfaces at a certain location
+
+CCTK_REAL origin_x[42] "Origin for surface" STEERABLE=always
+{
+  * :: "origin"
+} 0.0
+
+CCTK_REAL origin_y[42] "Origin for surface" STEERABLE=always
+{
+  * :: "origin"
+} 0.0
+
+CCTK_REAL origin_z[42] "Origin for surface" STEERABLE=always
+{
+  * :: "origin"
+} 0.0
+
+
+
+BOOLEAN set_spherical[42] "Place surface at a certain radius" STEERABLE=always
+{
+} no
+
+CCTK_REAL radius[42] "Radius for surface" STEERABLE=always
+{
+  * :: "radius"
+} 0.0
+
+
+
+BOOLEAN set_elliptic[42] "Place surface at a certain radius" STEERABLE=always
+{
+} no
+
+CCTK_REAL radius_x[42] "Radius for surface" STEERABLE=always
+{
+  * :: "radius"
+} 0.0
+
+CCTK_REAL radius_y[42] "Radius for surface" STEERABLE=always
+{
+  * :: "radius"
+} 0.0
+
+CCTK_REAL radius_z[42] "Radius for surface" STEERABLE=always
+{
+  * :: "radius"
+} 0.0

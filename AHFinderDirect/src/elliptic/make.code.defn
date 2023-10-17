@@ -1,0 +1,10 @@
+# Cactus specification of things to be compiled in this directory
+# $Header$
+
+# Source files in this directory
+SRCS = Jacobian.cc \
+       dense_Jacobian.cc lapack_wrapper.F77 \
+       row_sparse_Jacobian.cc
+
+# Subdirectories containing source files
+SUBDIRS =

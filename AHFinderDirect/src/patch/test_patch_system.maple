@@ -1,0 +1,14 @@
+# test_patch_system.maple -- test function for  test_fd_grid
+# $Header$
+
+# test function
+fn := exp(sin(1.38*rho)) * tanh(0.17+0.83*sin(sigma)^2);
+
+# 1st derivatives
+diff(fn, rho);			codegen[C](%);
+diff(fn, sigma);		codegen[C](%);
+
+# 2nd derivatives
+diff(fn, rho,rho);		codegen[C](%);
+diff(fn, rho,sigma);		codegen[C](%);
+diff(fn, sigma,sigma);		codegen[C](%);
