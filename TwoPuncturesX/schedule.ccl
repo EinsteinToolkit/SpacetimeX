@@ -23,11 +23,12 @@ if (CCTK_Equals(initial_data, "twopunctures"))
     STORAGE: puncture_u
     # TODO: these WRITES are conditional on parameters
     READS: CoordinatesX::vertex_coords(everywhere)
-    WRITES: ADMBaseX::metric(everywhere)
-    WRITES: ADMBaseX::curv(everywhere)
-    WRITES: ADMBaseX::lapse(everywhere)
+    WRITES: ADMBaseX::metric(interior)
+    WRITES: ADMBaseX::curv(interior)
+    WRITES: ADMBaseX::lapse(interior)
     WRITES: puncture_u(everywhere)
     WRITES: mp, mm, mp_adm, mm_adm, E, J1, J2, J3
+    SYNC: ADMBaseX::metric ADMBaseX::lapse ADMBaseX::curv
   } "Create puncture black hole initial data"
 
   SCHEDULE TwoPuncturesX_Metadata IN TwoPuncturesX_Group AFTER TwoPuncturesX
