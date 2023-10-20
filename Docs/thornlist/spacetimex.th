@@ -107,7 +107,7 @@ ExternalLibraries/LAPACK
 ExternalLibraries/libjpeg
 ExternalLibraries/MPI
 ExternalLibraries/OpenSSL
-ExternalLibraries/PAPI
+#ExternalLibraries/PAPI
 ExternalLibraries/pthreads
 ExternalLibraries/zlib
 
@@ -170,11 +170,12 @@ SpacetimeX/AHFinderDirect
 SpacetimeX/AHFinderX
 SpacetimeX/BrillLindquist
 SpacetimeX/Cowling
+SpacetimeX/NewRadX
 SpacetimeX/Punctures
 SpacetimeX/PunctureTracker
 SpacetimeX/SphericalHarmonics
 SpacetimeX/SphericalSurface
 SpacetimeX/StaticTrumpet
-SpacetimeX/TwoPunctures
+SpacetimeX/TwoPuncturesX
 SpacetimeX/Weyl
 SpacetimeX/Z4c

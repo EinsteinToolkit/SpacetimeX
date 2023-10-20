@@ -1,0 +1,96 @@
+ActiveThorns = "Boundary CartGrid3D Time CoordBase SymBase LocalReduce"
+ActiveThorns = "Loopcontrol InitBase Carpet CarpetLib CarpetInterp CarpetReduce CarpetSlab CarpetIOASCII CarpetIOBasic IOUtil CarpetIOScalar CarpetIOHDF5"
+
+ActiveThorns = "ADMBaseX"
+ActiveThorns = "StaticConformal"
+ActiveThorns = "ADMCoupling ADMMacros"
+ActiveThorns = "TmunuBaseX Constants SpaceMask HydroBaseX"
+ActiveThorns = "TOVSolver eos_omni"
+ActiveThorns = "TwoPuncturesX"
+ActiveThorns = "coordgauge boundary"
+
+Carpet::init_each_timelevel 		= "no"
+InitBase::initial_data_setup_method	= "init_all_levels"
+
+Cactus::cctk_itlast = 0
+
+Time::dtfac			= 0.25
+
+CoordBase::domainsize = minmax
+
+driver::ghost_size                = 3
+
+Carpet::domain_from_coordbase = "yes"
+CoordBase::xmin = -60.0
+CoordBase::ymin =   0.0
+CoordBase::zmin =   0.0
+CoordBase::xmax =  60.0
+CoordBase::ymax =  60.0
+CoordBase::zmax =  60.0
+CoordBase::dx   =   3.0
+CoordBase::dy   =   3.0
+CoordBase::dz   =   3.0
+
+CartGrid3D::type         = "coordbase"
+CartGrid3D::domain       = "full"
+CartGrid3D::avoid_origin = "no"
+
+ADMBaseX::initial_data		= "twopunctures"
+ADMBaseX::initial_lapse  = "tov"
+ADMBaseX::initial_shift  = "tov"
+
+TwoPuncturesX::keep_u_around     = yes
+TwoPuncturesX::schedule_in_ADMBaseX_InitialData = no
+
+TwoPuncturesX::npoints_A         = 20
+TwoPuncturesX::npoints_B         = 20
+TwoPuncturesX::npoints_phi       = 4
+TwoPuncturesX::Newton_tol        = 1.e-10
+TwoPuncturesX::grid_setup_method = "evaluation"
+TwoPuncturesX::TP_Extend_Radius = 1.14
+
+TwoPuncturesX::par_b             =  30
+
+TwoPuncturesX::par_m_plus        =  5.0
+TwoPuncturesX::par_m_minus       =  0.0
+
+TwoPuncturesX::Newton_maxit       =  100
+TwoPuncturesX::use_sources        = 1
+TwoPuncturesX::do_residuum_debug_output = "no"
+TwoPuncturesX::do_initial_debug_output = "no"
+TwoPuncturesX::rescale_sources = "yes"
+TwoPuncturesX::TP_Tiny = 1.e-10
+
+SpaceMask::use_mask = yes
+
+TOVSolver::TOV_Enforce_Interpolation = "yes"
+TOVSolver::TOV_Num_Radial     = 1000000
+TOVSolver::TOV_dr[0]          = 5.e-5
+TOVSolver::TOV_Position_x[0]  = -30
+TOVSolver::TOV_Rho_Central[0] = 5.e-4
+TOVSolver::TOV_Gamma          = 2.0
+TOVSolver::TOV_K              = 100.0
+
+IO::out_dir			= $parfile
+IO::out_fileinfo= "axis labels"
+
+Carpet::max_refinement_levels = 10
+carpet::enable_all_storage        = no
+Carpet::prolongation_order_space  = 3
+Carpet::prolongation_order_time   = 2
+Carpet::convergence_level         = 0
+Carpet::init_3_timelevels         = no
+
+CarpetIOScalar::outScalar_reductions	= "minimum maximum norm1 norm2"
+
+IOScalar::outScalar_every	= 512
+IOScalar::outScalar_vars		= "admbase::metric admbase::curv TwoPuncturesX::puncture_u HydroBaseX::w_lorentz hydrobase::rho hydrobase::press hydrobase::eps HydroBaseX::vel admbase::lapse admbase::shift"
+IOASCII::out1D_every		= 512
+IOASCII::out1D_vars		= "admbase::metric admbase::curv TwoPuncturesX::puncture_u HydroBaseX::w_lorentz hydrobase::rho hydrobase::press hydrobase::eps HydroBaseX::vel admbase::lapse admbase::shift"
+
+admbase::metric_type		= "physical"
+
+boundary::radpower      = 2
+
+admmacros::spatial_order    = 4
+
