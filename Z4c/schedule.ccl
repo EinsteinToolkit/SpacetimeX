@@ -258,7 +258,7 @@ SCHEDULE Z4c_RHS IN Z4c_RHSGroup
 } "Calculate Z4c RHS"
 
 if (CCTK_Equals(boundary_conditions, "radiative")) {
-  SCHEDULE Z4c_apply_boundary_conditions IN Z4c_RHSGroup AFTER Z4c_RHS
+  SCHEDULE apply_boundary_conditions IN Z4c_RHSGroup AFTER Z4c_RHS
   {
     LANG: C
     READS: chi(interior)

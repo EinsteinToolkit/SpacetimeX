@@ -10,8 +10,8 @@ using namespace NewRadX;
 
 namespace Z4c {
 
-extern "C" void Z4c_apply_boundary_conditions(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTSX_Z4c_apply_boundary_conditions;
+extern "C" void apply_boundary_conditions(CCTK_ARGUMENTS) {
+  DECLARE_CCTK_ARGUMENTSX_apply_boundary_conditions;
   DECLARE_CCTK_PARAMETERS;
 
   NewRadX_Apply(cctkGH, chi, chi_rhs, 0, 1, 1);
