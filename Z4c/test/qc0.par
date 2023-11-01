@@ -35,9 +35,9 @@ CarpetX::xmax = 8.0
 CarpetX::ymax = 8.0
 CarpetX::zmax = 8.0
 
-CarpetX::ncells_x = 16
-CarpetX::ncells_y = 16
-CarpetX::ncells_z = 16 / 2
+CarpetX::ncells_x = 64
+CarpetX::ncells_y = 64
+CarpetX::ncells_z = 64 / 2
 
 CarpetX::max_tile_size_x = 1024000
 CarpetX::max_tile_size_y = 4
