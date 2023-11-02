@@ -27,17 +27,17 @@ Cactus::cctk_itlast = 3
 CarpetX::verbose = no
 CarpetX::poison_undefined_values = no
 
-CarpetX::xmin = -8.0
-CarpetX::ymin = -8.0
-CarpetX::zmin = 0.0
+CarpetX::xmin = -20.0
+CarpetX::ymin = -20.0
+CarpetX::zmin = -20.0
 
-CarpetX::xmax = 8.0
-CarpetX::ymax = 8.0
-CarpetX::zmax = 8.0
+CarpetX::xmax = 20.0
+CarpetX::ymax = 20.0
+CarpetX::zmax = 20.0
 
-CarpetX::ncells_x = 64
-CarpetX::ncells_y = 64
-CarpetX::ncells_z = 64 / 2
+CarpetX::ncells_x = 80
+CarpetX::ncells_y = 80
+CarpetX::ncells_z = 80 / 2
 
 CarpetX::max_tile_size_x = 1024000
 CarpetX::max_tile_size_y = 4
@@ -110,6 +110,5 @@ ADMBaseX::lapse
 ADMBaseX::shift
 Weyl::Psi4re
 Weyl::Psi4im
-Z4c::allC
 "
 
