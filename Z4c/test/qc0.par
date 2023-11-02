@@ -92,8 +92,6 @@ Z4c::alphaG_floor = 1.0e-8
 Z4c::epsdiss = 0.32
 Z4c::boundary_conditions = "radiative"
 
-NewRadX::run_test = "yes"
-
 IO::out_dir = $parfile
 IO::out_every = 1
 IO::parfile_write = no
