@@ -80,6 +80,8 @@ TwoPuncturesX::grid_setup_method = "evaluation"
 
 TwoPuncturesX::TP_epsilon = 1.0e-2
 TwoPuncturesX::TP_Tiny    = 1.0e-2
+TwoPuncturesX::adm_tol = 1e-6
+TwoPuncturesX::Newton_tol = 1e-6
 
 TwoPuncturesX::verbose = yes
 

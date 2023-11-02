@@ -7,7 +7,7 @@
 # http://arxiv.org/abs/0709.0093 [draft SVN r707].
 
 [metadata]
-initial-ADM-energy            = 1.0078764405959679
+initial-ADM-energy            = 1.0078760168653187
 initial-ADM-angular-momentumx = 0
 initial-ADM-angular-momentumy = 0
 initial-ADM-angular-momentumz = 0.77876432749233837
@@ -32,7 +32,7 @@ initial-bh-spin1z             = 0
 initial-bh-spin2x             = 0
 initial-bh-spin2y             = 0
 initial-bh-spin2z             = 0
-initial-bh-puncture-adm-mass1 = 0.51681739110192049
-initial-bh-puncture-adm-mass2 = 0.51681739110191771
+initial-bh-puncture-adm-mass1 = 0.51681735719054789
+initial-bh-puncture-adm-mass2 = 0.51681735717297639
 initial-bh-puncture-bare-mass1 = 0.45300000000000001
 initial-bh-puncture-bare-mass2 = 0.45300000000000001
