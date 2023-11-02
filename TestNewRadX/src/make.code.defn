@@ -1,7 +1,7 @@
-# Main make.code.defn file for thorn NewRadX
+# Main make.code.defn file for thorn TestNewRadX
 
 # Source files in this directory
-SRCS = newradx.cxx
+SRCS = test_newradx.cxx
 
 # Subdirectories containing source files
 SUBDIRS =

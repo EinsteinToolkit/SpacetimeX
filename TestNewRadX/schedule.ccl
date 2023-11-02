@@ -1,0 +1,40 @@
+# Schedule definitions for thorn TestNewRadX 
+
+STORAGE: state
+
+SCHEDULE TestNewRadX_Init AT initial
+{
+  LANG: C
+  WRITES: state(interior)
+  SYNC: state
+} "Initialize scalar wave state"
+
+SCHEDULE TestNewRadX_EstimateError AT postinitial
+{
+  LANG: C
+  READS: state(everywhere)
+  WRITES: CarpetX::regrid_error(interior)
+} "Estimate error for regridding"
+
+SCHEDULE TestNewRadX_EstimateError AT poststep
+{
+  LANG: C
+  READS: state(everywhere)
+  WRITES: CarpetX::regrid_error(interior)
+} "Estimate error for regridding"
+
+SCHEDULE TestNewRadX_RHS IN ODESolvers_RHS
+{
+  LANG: C
+  READS: state(everywhere)
+  WRITES: rhs(interior)
+  SYNC: rhs
+} "Calculate scalar wave RHS"
+
+SCHEDULE TestNewRadX_CompareSolution IN ODESolvers_PostStep
+{
+  LANG: C
+  READS: state(interior)
+  WRITES: error(interior)
+  SYNC: error
+} "Calculate error between numerical and analytic solutions"
