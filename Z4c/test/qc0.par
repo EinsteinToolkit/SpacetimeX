@@ -13,7 +13,6 @@ IOUtil
 ODESolvers
 TmunuBaseX
 TwoPuncturesX
-Weyl
 Z4c
 "
 
@@ -84,8 +83,8 @@ TwoPuncturesX::TP_Tiny    = 1.0e-2
 
 TwoPuncturesX::verbose = yes
 
-Z4c::calc_ADM_vars = yes                  # for Weyl
-Z4c::calc_ADMRHS_vars = yes               # for Weyl
+Z4c::calc_ADM_vars = yes             
+Z4c::calc_ADMRHS_vars = yes
 Z4c::calc_constraints = yes
 
 Z4c::chi_floor = 1.0e-6
@@ -108,7 +107,5 @@ ADMBaseX::metric
 ADMBaseX::curv
 ADMBaseX::lapse
 ADMBaseX::shift
-Weyl::Psi4re
-Weyl::Psi4im
 "
 
