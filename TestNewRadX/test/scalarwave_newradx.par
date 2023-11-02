@@ -2,6 +2,7 @@ ActiveThorns = "
     CarpetX
     ODESolvers
     NewRadX
+    TestNewRadX
 "
 
 $nlevels = 1
@@ -58,22 +59,21 @@ IO::out_every = 1
 CarpetX::out_metadata = no
 CarpetX::out_tsv_every = 30
 CarpetX::out_tsv_vars = "
-  NewRadX::uu
-  NewRadX::vv
-  NewRadX::uu_err
-  NewRadX::vv_err
+  TestNewRadX::uu
+  TestNewRadX::vv
+  TestNewRadX::uu_err
+  TestNewRadX::vv_err
 "
 # CarpetX::out_norm_omit_unstable = yes
 # CarpetX::out_norm_vars          = "all"
 # CarpetX::out_silo_vars          = "all"
 
-NewRadX::run_test             = yes
-NewRadX::test_use_newradx     = yes
-NewRadX::test_add_dissipation = yes
-NewRadX::eps_dissipation      = 0.2
-NewRadX::n_falloff            = 2.0
-NewRadX::gaussian_a0          = 1.0
-NewRadX::gaussian_w0          = 0.5
-NewRadX::gaussian_x0          = 3.0
-NewRadX::gaussian_y0          = 4.0
-NewRadX::gaussian_z0          = 0.0
+TestNewRadX::test_use_newradx     = yes
+TestNewRadX::test_add_dissipation = yes
+TestNewRadX::eps_dissipation      = 0.2
+TestNewRadX::n_falloff            = 2.0
+TestNewRadX::gaussian_a0          = 1.0
+TestNewRadX::gaussian_w0          = 0.5
+TestNewRadX::gaussian_x0          = 3.0
+TestNewRadX::gaussian_y0          = 4.0
+TestNewRadX::gaussian_z0          = 0.0

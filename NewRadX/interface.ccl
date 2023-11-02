@@ -2,28 +2,8 @@
 
 IMPLEMENTS: NewRadX
 
-USES INCLUDE HEADER: loop.hxx
+INHERITS: CarpetX
+
 USES INCLUDE HEADER: loop_device.hxx
 
 INCLUDE HEADER: newradx.hxx in newradx.hxx
-
-INHERITS: CarpetX
-
-# Scalar field grid functions for the unit test
-CCTK_REAL state TYPE=gf CENTERING={VVV} TAGS='rhs="rhs"'
-{
-  uu
-  vv
-} "Scalar wave state vector: scalar field and its time derivative"
-
-CCTK_REAL rhs TYPE=gf CENTERING={VVV} TAGS='checkpoint="no"'
-{
-  uu_rhs
-  vv_rhs
-} "RHS of scalar wave state vector"
-
-CCTK_REAL error TYPE=gf CENTERING={VVV} TAGS='checkpoint="no"'
-{
-  uu_err
-  vv_err
-} "Error in scalar wave state vector"
