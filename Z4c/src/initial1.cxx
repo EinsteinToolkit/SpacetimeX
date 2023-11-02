@@ -22,7 +22,7 @@ using namespace std;
 extern "C" void Z4c_Initial1(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_Z4c_Initial1;
 
-  const array<int, dim> indextype = {0, 0, 0};
+  const array<int, dim> indextype = {1, 1, 1};
   const GF3D2layout layout1(cctkGH, indextype);
 
   const smat<GF3D2<const CCTK_REAL>, 3> gf_g1{
@@ -80,7 +80,7 @@ extern "C" void Z4c_Initial1(CCTK_ARGUMENTS) {
 #ifdef __CUDACC__
   const nvtxRangeId_t range = nvtxRangeStartA("Z4c_Initial1::initial1");
 #endif
-  grid.loop_int_device<0, 0, 0, vsize>(
+  grid.loop_int_device<1, 1, 1, vsize>(
       grid.nghostzones, [=] ARITH_DEVICE(const PointDesc &p) ARITH_INLINE {
         const vbool mask = mask_for_loop_tail<vbool>(p.i, p.imax);
         const GF3D2index index1(layout1, p.I);

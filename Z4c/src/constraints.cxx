@@ -40,11 +40,11 @@ extern "C" void Z4c_Constraints(CCTK_ARGUMENTS) {
 
   //
 
-  const array<int, dim> indextype = {0, 0, 0};
+  const array<int, dim> indextype = {1, 1, 1};
   const array<int, dim> nghostzones = {cctk_nghostzones[0], cctk_nghostzones[1],
                                        cctk_nghostzones[2]};
   vect<int, dim> imin, imax;
-  GridDescBase(cctkGH).box_int<0, 0, 0>(nghostzones, imin, imax);
+  GridDescBase(cctkGH).box_int<1, 1, 1>(nghostzones, imin, imax);
   // Suffix 1: with ghost zones, suffix 0: without ghost zones
   const GF3D2layout layout1(cctkGH, indextype);
   const GF3D5layout layout0(imin, imax);
@@ -187,7 +187,7 @@ extern "C" void Z4c_Constraints(CCTK_ARGUMENTS) {
 #ifdef __CUDACC__
   const nvtxRangeId_t range = nvtxRangeStartA("Z4c_Constraints::constraints");
 #endif
-  grid.loop_int_device<0, 0, 0, vsize>(
+  grid.loop_int_device<1, 1, 1, vsize>(
       grid.nghostzones, [=] ARITH_DEVICE(const PointDesc &p) ARITH_INLINE {
         const vbool mask = mask_for_loop_tail<vbool>(p.i, p.imax);
         const GF3D2index index1(layout1, p.I);

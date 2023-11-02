@@ -36,7 +36,7 @@ template <typename T> class field {
 
 public:
   field(const GridDescBase &grid) : grid(grid) {
-    grid.box_all<0, 0, 0>(grid.nghostzones, imin, imax);
+    grid.box_all<1, 1, 1>(grid.nghostzones, imin, imax);
     ptrdiff_t str = 1;
     for (int d = 0; d < dim; ++d) {
       istr[d] = str;

@@ -328,7 +328,7 @@ calc_derivs(const cGH *restrict const cctkGH, const GF3D2<const T> &gf1,
   const vec<CCTK_REAL, dim> dx([&](int a) { return CCTK_DELTA_SPACE(a); });
 
   const Loop::GridDescBaseDevice grid(cctkGH);
-  grid.loop_int_device<0, 0, 0, vsize>(
+  grid.loop_int_device<1, 1, 1, vsize>(
       grid.nghostzones, [=] ARITH_DEVICE(const PointDesc &p) ARITH_INLINE {
         const vbool mask = mask_for_loop_tail<vbool>(p.i, p.imax);
         const GF3D5index index0(layout0, p.I);
@@ -353,7 +353,7 @@ calc_derivs2(const cGH *restrict const cctkGH, const GF3D2<const T> &gf1,
   const vec<CCTK_REAL, dim> dx([&](int a) { return CCTK_DELTA_SPACE(a); });
 
   const Loop::GridDescBaseDevice grid(cctkGH);
-  grid.loop_int_device<0, 0, 0, vsize>(
+  grid.loop_int_device<1, 1, 1, vsize>(
       grid.nghostzones, [=] ARITH_DEVICE(const PointDesc &p) ARITH_INLINE {
         const vbool mask = mask_for_loop_tail<vbool>(p.i, p.imax);
         const int vavail = p.imax - p.i;
@@ -424,7 +424,7 @@ apply_upwind_diss(const cGH *restrict const cctkGH, const GF3D2<const T> &gf_,
   if (epsdiss == 0) {
 
     const Loop::GridDescBaseDevice grid(cctkGH);
-    grid.loop_int_device<0, 0, 0, vsize>(
+    grid.loop_int_device<1, 1, 1, vsize>(
         grid.nghostzones, [=] ARITH_DEVICE(const PointDesc &p) ARITH_INLINE {
           const vbool mask = mask_for_loop_tail<vbool>(p.i, p.imax);
           const vec<vreal, dim> betaG = gf_betaG_(mask, p.I);
@@ -437,7 +437,7 @@ apply_upwind_diss(const cGH *restrict const cctkGH, const GF3D2<const T> &gf_,
   } else {
 
     const Loop::GridDescBaseDevice grid(cctkGH);
-    grid.loop_int_device<0, 0, 0, vsize>(
+    grid.loop_int_device<1, 1, 1, vsize>(
         grid.nghostzones, [=] ARITH_DEVICE(const PointDesc &p) ARITH_INLINE {
           const vbool mask = mask_for_loop_tail<vbool>(p.i, p.imax);
           const vec<vreal, dim> betaG = gf_betaG_(mask, p.I);

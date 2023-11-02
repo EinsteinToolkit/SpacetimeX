@@ -24,7 +24,7 @@ extern "C" void Z4c_ADM(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_Z4c_ADM;
   DECLARE_CCTK_PARAMETERS;
 
-  const array<int, dim> indextype = {0, 0, 0};
+  const array<int, dim> indextype = {1, 1, 1};
   const GF3D2layout layout1(cctkGH, indextype);
 
   const GF3D2<const CCTK_REAL> gf_chi1(layout1, chi);
@@ -91,7 +91,7 @@ extern "C" void Z4c_ADM(CCTK_ARGUMENTS) {
 #ifdef __CUDACC__
   const nvtxRangeId_t range = nvtxRangeStartA("Z4c_ADM::adm");
 #endif
-  grid.loop_all_device<0, 0, 0, vsize>(
+  grid.loop_all_device<1, 1, 1, vsize>(
       grid.nghostzones, [=] ARITH_DEVICE(const PointDesc &p) ARITH_INLINE {
         const vbool mask = mask_for_loop_tail<vbool>(p.i, p.imax);
         const GF3D2index index1(layout1, p.I);
