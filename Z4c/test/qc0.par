@@ -34,9 +34,9 @@ CarpetX::xmax = 20.0
 CarpetX::ymax = 20.0
 CarpetX::zmax = 20.0
 
-CarpetX::ncells_x = 80
-CarpetX::ncells_y = 80
-CarpetX::ncells_z = 80 / 2
+CarpetX::ncells_x = 48
+CarpetX::ncells_y = 48
+CarpetX::ncells_z = 24
 
 CarpetX::max_tile_size_x = 1024000
 CarpetX::max_tile_size_y = 4
@@ -52,7 +52,7 @@ CarpetX::boundary_upper_z = "dirichlet"
 
 CarpetX::ghost_size = 3
 
-CarpetX::max_num_levels = 2
+CarpetX::max_num_levels = 1
 CarpetX::regrid_every = 16
 CarpetX::regrid_error_threshold = 0.03125
 
@@ -75,6 +75,10 @@ TwoPuncturesX::par_m_plus =  0.453
 TwoPuncturesX::par_m_minus =  0.453
 TwoPuncturesX::par_P_plus [1] = +0.3331917498
 TwoPuncturesX::par_P_minus[1] = -0.3331917498
+
+TwoPuncturesX::npoints_A = 16
+TwoPuncturesX::npoints_B = 16
+TwoPuncturesX::npoints_phi = 8
 
 TwoPuncturesX::grid_setup_method = "evaluation"
 
