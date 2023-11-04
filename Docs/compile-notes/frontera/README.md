@@ -32,6 +32,15 @@
     
     - `spack compiler find`
 
+* Make `silo@4.10.2` work with `hdf5@1.12.1`
+
+    - modify `/var/spack/repos/builtin/packages/silo/package.py`:
+
+        ```bash
+        -    depends_on("hdf5@1.8:1.10", when="@:4.10+hdf5")
+        +    depends_on("hdf5@1.8:", when="@:4.10+hdf5")
+        ```
+
 * Create a dir where you want put `view` in (say `/work2/.../username/frontera/SpackView/oneapi`)
 
 * Replace the last line of `oneapi-23.1.0/spack.yaml` with your own dir (say `/work2/.../username/frontera/SpackView/oneapi/view`)
