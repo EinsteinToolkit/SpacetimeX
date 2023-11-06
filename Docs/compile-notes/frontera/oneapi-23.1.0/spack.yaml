@@ -7,8 +7,9 @@ spack:
   - compilers:
     - oneapi@2023.1.0
   - packages:
+    - gmake@4.3
     - adios2
-    - amrex ~fortran +hdf5 +openmp +particles
+    - amrex dimensions=3 ~fortran +hdf5 +openmp +particles
     - boost cxxstd=17 +filesystem +mpi +system
     - fftw +mpi +openmp
     - hwloc @1.11.12
@@ -16,7 +17,7 @@ spack:
     - openpmd-api @0.15.1
     - ssht
     - hdf5 +cxx +fortran +hl +mpi +threadsafe
-    - silo +hdf5 cflags="-Wno-incompatible-function-pointer-types -Wno-int-conversion"
+    - silo +hdf5
     - yaml-cpp
     - zlib
     - gsl
