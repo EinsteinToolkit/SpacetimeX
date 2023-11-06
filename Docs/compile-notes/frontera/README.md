@@ -27,8 +27,8 @@
 
     ```bash
     cd Cactus
-    gmake SpacetimeX-oneapi options=repos/SpacetimeX/Docs/compile-notes/frontera/configs/config_frontera_oneapi.cfg
-    cp repos/SpacetimeX/Docs/thornlist/spactimex.th configs/SpacetimeX-oneapi/ThornList
+    gmake SpacetimeX-oneapi options=repos/SpacetimeX/Docs/compile-notes/frontera/configs/config-frontera-oneapi.cfg
+    cp repos/SpacetimeX/Docs/thornlist/spacetimex.th configs/SpacetimeX-oneapi/ThornList
     gmake -j24 SpacetimeX-oneapi
     ```
 
@@ -83,8 +83,8 @@
 
     ```bash
     cd Cactus
-    gmake SpacetimeX-oneapi options=repos/SpacetimeX/Docs/compile-notes/frontera/configs/config_frontera_oneapi.cfg
-    cp repos/SpacetimeX/Docs/thornlist/spactimex.th configs/SpacetimeX-oneapi/ThornList
+    gmake SpacetimeX-oneapi options=repos/SpacetimeX/Docs/compile-notes/frontera/configs/config-frontera-oneapi.cfg
+    cp repos/SpacetimeX/Docs/thornlist/spacetimex.th configs/SpacetimeX-oneapi/ThornList
     gmake -j24 SpacetimeX-oneapi
     ```
 
@@ -124,7 +124,7 @@
     spack load gcc@11.2.0
     spack load cuda@11.8.0
     cd Cactus
-    gmake SpacetimeX-cuda options=repos/SpacetimeX/Docs/compile-notes/frontera/configs/config_frontera_cuda.cfg
-    cp repos/SpacetimeX/Docs/thornlist/spactimex.th configs/SpacetimeX-cuda/ThornList
+    gmake SpacetimeX-cuda options=repos/SpacetimeX/Docs/compile-notes/frontera/configs/config-frontera-cuda.cfg
+    cp repos/SpacetimeX/Docs/thornlist/spacetimex.th configs/SpacetimeX-cuda/ThornList
     gmake -j16 SpacetimeX-cuda
     ```
