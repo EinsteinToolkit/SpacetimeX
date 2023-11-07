@@ -1,0 +1,115 @@
+
+# run.me:
+# run.cores: 40
+# run.memory: 1.0e9
+# run.time: 7200.0
+
+ActiveThorns = "
+ADMBaseX
+CarpetX
+CoordinatesX
+ErrorEstimator
+IOUtil
+ODESolvers
+TmunuBaseX
+TwoPuncturesX
+Z4c
+"
+
+Cactus::cctk_show_schedule = no
+
+Cactus::presync_mode = "mixed-error"
+
+Cactus::terminate = "iteration"
+Cactus::cctk_itlast = 3
+
+CarpetX::verbose = no
+CarpetX::poison_undefined_values = no
+
+CarpetX::xmin = -20.0
+CarpetX::ymin = -20.0
+CarpetX::zmin = -20.0
+
+CarpetX::xmax = 20.0
+CarpetX::ymax = 20.0
+CarpetX::zmax = 20.0
+
+CarpetX::ncells_x = 48
+CarpetX::ncells_y = 48
+CarpetX::ncells_z = 24
+
+CarpetX::max_tile_size_x = 1024000
+CarpetX::max_tile_size_y = 4
+CarpetX::max_tile_size_z = 4
+
+CarpetX::reflection_z = yes
+
+CarpetX::boundary_x = "dirichlet"
+CarpetX::boundary_y = "dirichlet"
+CarpetX::boundary_upper_x = "dirichlet"
+CarpetX::boundary_upper_y = "dirichlet"
+CarpetX::boundary_upper_z = "dirichlet"
+
+CarpetX::ghost_size = 3
+
+CarpetX::max_num_levels = 1
+CarpetX::regrid_every = 16
+CarpetX::regrid_error_threshold = 0.03125
+
+ErrorEstimator::region_shape = "cube"
+ErrorEstimator::scale_by_resolution = yes
+
+CarpetX::prolongation_type = "ddf"
+CarpetX::prolongation_order = 5
+
+ODESolvers::verbose = no
+ODESolvers::method = "RK4"
+CarpetX::dtfac = 0.25
+
+ADMBaseX::initial_data = "TwoPunctures"
+ADMBaseX::initial_lapse = "TwoPunctures-averaged"
+
+# QC-0 setup
+TwoPuncturesX::par_b =  1.168642873
+TwoPuncturesX::par_m_plus =  0.453
+TwoPuncturesX::par_m_minus =  0.453
+TwoPuncturesX::par_P_plus [1] = +0.3331917498
+TwoPuncturesX::par_P_minus[1] = -0.3331917498
+
+TwoPuncturesX::npoints_A = 16
+TwoPuncturesX::npoints_B = 16
+TwoPuncturesX::npoints_phi = 8
+
+TwoPuncturesX::grid_setup_method = "evaluation"
+
+TwoPuncturesX::TP_epsilon = 1.0e-2
+TwoPuncturesX::TP_Tiny    = 1.0e-2
+TwoPuncturesX::adm_tol = 1e-6
+TwoPuncturesX::Newton_tol = 1e-6
+
+TwoPuncturesX::verbose = yes
+
+Z4c::calc_ADM_vars = yes             
+Z4c::calc_ADMRHS_vars = yes
+Z4c::calc_constraints = yes
+
+Z4c::chi_floor = 1.0e-6
+Z4c::alphaG_floor = 1.0e-8
+Z4c::epsdiss = 0.32
+Z4c::boundary_conditions = "radiative"
+
+IO::out_dir = $parfile
+IO::out_every = 1
+IO::parfile_write = no
+
+CarpetX::out_metadata = no
+CarpetX::out_norm_vars = " "
+CarpetX::out_norm_omit_unstable = yes
+
+CarpetX::out_tsv_vars = "
+ADMBaseX::metric
+ADMBaseX::curv
+ADMBaseX::lapse
+ADMBaseX::shift
+"
+

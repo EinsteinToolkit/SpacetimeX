@@ -1,3 +1,9 @@
 # Configuration definition for thorn NewRadX
 
-REQUIRES GSL Loop
+REQUIRES Loop
+
+PROVIDES NewRadX
+{
+}
+
+REQUIRES NewRadX
