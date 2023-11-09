@@ -110,7 +110,7 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
   };
 
   const Loop::GridDescBaseDevice grid(cctkGH);
-  grid.loop_outermost_int<0, 0, 0>(
+  grid.loop_outermost_int<1, 1, 1>(
       grid.nghostzones,
       [=] CCTK_DEVICE CCTK_HOST(const Loop::PointDesc &p)
           CCTK_ATTRIBUTE_ALWAYS_INLINE {
