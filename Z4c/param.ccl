@@ -60,7 +60,7 @@ CCTK_REAL epsdiss "Dissipation coefficient <arXiv:gr-qc/0610128>" STEERABLE=alwa
 CCTK_REAL n_falloff "Exponent of the falloff term r^(-n_falloff) in the scalar field potential"
 {
   0.0:* :: ""
-} 2.0
+} 1.0
 
 KEYWORD boundary_conditions "boundary conditions"{
   "radiative" :: "radiative boundary conditions using NewRadX"
