@@ -5,5 +5,3 @@ REQUIRES Loop
 PROVIDES NewRadX
 {
 }
-
-REQUIRES NewRadX

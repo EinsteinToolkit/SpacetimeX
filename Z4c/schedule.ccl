@@ -257,8 +257,8 @@ SCHEDULE Z4c_RHS IN Z4c_RHSGroup
   SYNC: betaG_rhs
 } "Calculate Z4c RHS"
 
-if (CCTK_Equals(boundary_conditions, "radiative")) {
-  SCHEDULE apply_boundary_conditions IN Z4c_RHSGroup AFTER Z4c_RHS
+if (CCTK_Equals(boundary_conditions, "NewRadX")) {
+  SCHEDULE Z4c_apply_newradx_boundary_conditions IN Z4c_RHSGroup AFTER Z4c_RHS
   {
     LANG: C
     READS: chi(everywhere)
@@ -285,5 +285,5 @@ if (CCTK_Equals(boundary_conditions, "radiative")) {
     WRITES: Theta_rhs(interior)
     WRITES: alphaG_rhs(interior)
     WRITES: betaG_rhs(interior)
-  } "Apply NewRad boundary conditions to Z4c RHS variables"
+  } "Apply radiative boundary conditions to Z4c RHS variables using NewRadX"
 }
