@@ -1,0 +1,38 @@
+# ==================================
+# Numerical Relativity Metadata file
+# ==================================
+#
+# This file contains information about the simulation provided by the
+# TwoPuncturesX thorn.  The format is described in the NR Data Format Document
+# http://arxiv.org/abs/0709.0093 [draft SVN r707].
+
+[metadata]
+initial-ADM-energy            = 1.0078763090171796
+initial-ADM-angular-momentumx = 0
+initial-ADM-angular-momentumy = 0
+initial-ADM-angular-momentumz = 0.77876432749233837
+initial-separation            = 2.3372857460000001
+initial-data-type             = Bowen-York
+initial-data-bibtex-keys      = Bowen:1980yu Brandt:1997tf Ansorg:2004ds
+initial-bh-position1x         = 1.168642873
+initial-bh-position1y         = 0
+initial-bh-position1z         = 0
+initial-bh-position2x         = -1.168642873
+initial-bh-position2y         = 0
+initial-bh-position2z         = 0
+initial-bh-momentum1x         = 0
+initial-bh-momentum1y         = 0.33319174979999999
+initial-bh-momentum1z         = 0
+initial-bh-momentum2x         = 0
+initial-bh-momentum2y         = -0.33319174979999999
+initial-bh-momentum2z         = 0
+initial-bh-spin1x             = 0
+initial-bh-spin1y             = 0
+initial-bh-spin1z             = 0
+initial-bh-spin2x             = 0
+initial-bh-spin2y             = 0
+initial-bh-spin2z             = 0
+initial-bh-puncture-adm-mass1 = 0.51681958833218156
+initial-bh-puncture-adm-mass2 = 0.51681958829931418
+initial-bh-puncture-bare-mass1 = 0.45300000000000001
+initial-bh-puncture-bare-mass2 = 0.45300000000000001
