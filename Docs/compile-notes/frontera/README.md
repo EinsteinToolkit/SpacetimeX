@@ -34,24 +34,25 @@
 
 ### CUDA version (`cuda@11.8.0`)
 
+* Load `intel/19.1.1`
+
+    - `module reset` or `module load intel/19.1.1`
+
+* Install SpacetimeX
+
+    ```bash
+    . /work2/08708/liwei/frontera/SpackSource/spack/share/spack/setup-env.sh
+    spack load gcc@11.2.0
+    spack load cuda@11.8.0
+
+    cd Cactus
+    gmake SpacetimeX-cuda options=repos/SpacetimeX/Docs/compile-notes/frontera/configs/config-frontera-cuda-intel.cfg
+    cp repos/SpacetimeX/Docs/thornlist/spacetimex.th configs/SpacetimeX-cuda/ThornList
+    gmake -j16 SpacetimeX-cuda
+    ```
+
 
 ## The Long Way
-
-* Download spack
-
-    - `git clone -c feature.manyFiles=true https://github.com/spack/spack.git`
-    
-    - use `develop` branch: (maybe `git checkout 141c7de5`)
-
-    - fix error with `krb5%oneapi` temporary:
-        * modify `var/spack/repos/builtin/packages/bison/package.py` line 68
-        ```bash
-        +    conflicts(
-        +       "%oneapi",
-        +       msg="bison may have unexpected behaviours with oneapi, \
-        +               see https://github.com/spack/spack/issues/37172",
-        +    )
-        ```
 
 ### Intel-Oneapi version (`oneapi@2023.1.0`)
 
@@ -59,7 +60,11 @@
 
     - `module load intel/23.1.0`
 
-* Setup spack
+* Download spack
+
+    - `git clone -c feature.manyFiles=true https://github.com/spack/spack.git`
+
+    - use `develop` branch: (maybe `git checkout 141c7de5`)
 
     - `. share/spack/setup-env.sh`
     
@@ -69,7 +74,7 @@
 
 * Replace the last line of `oneapi-23.1.0/spack.yaml` with your own dir (say `/work2/.../username/frontera/SpackView/oneapi/view`)
 
-* Replace the dir `/work2/08708/liwei/frontera/SpackView/oneapi/view` in `configs/config_frontera_oneapi.cfg` (with say `/work2/.../username/frontera/SpackView/oneapi/view`)
+* Replace the dir `/work2/08708/liwei/frontera/SpackView/oneapi/view` (with say `/work2/.../username/frontera/SpackView/oneapi/view`) in `configs/config-frontera-oneapi.cfg`
 
 * Install other required packages
 
@@ -88,43 +93,52 @@
     gmake -j24 SpacetimeX-oneapi
     ```
 
-* More tricks:
 
-    * Make `silo@4.10.2` work with `hdf5@1.12.1`:
-    
-        modify `/var/spack/repos/builtin/packages/silo/package.py`:
+### Cuda version (`cuda@11.8.0` with `intel@23.1.0`)
 
-        ```bash
-        -    depends_on("hdf5@1.8:1.10", when="@:4.10+hdf5")
-        +    depends_on("hdf5@1.8:", when="@:4.10+hdf5")
-        ```
+* Load `intel/19.1.1`
 
+    - `module reset` or `module load intel/19.1.1`
 
-### CUDA version (`cuda@11.8.0`)
+* Download spack
 
-* Make sure rerun `spack install gcc@11.2.0 %gcc@4.8.5` again on `rtx-dev` or `rtx`
+    - `git clone -c feature.manyFiles=true https://github.com/spack/spack.git`
 
-* Create a dir where you want put `view` in (say `/work2/.../username/frontera/SpackView/cuda`)
+    - `git checkout relesases/v0.21`
 
-* Replace the last line of `cuda-11.8.0/spack_yaml` with your dir (say `/work2/.../username/frontera/SpackView/cuda/view`)
+    - `. share/spack/setup-env.sh`
 
-* Replace the dir `/work2/08708/liwei/frontera/SpackView/cuda/view` in `configs/config_frontera_cuda.cfg` (with say `/work2/.../username/frontera/SpackView/cuda/view`)
+    - `spack compiler find`
+
+* Install gcc@11.2.0
+
+```bash
+spack install gcc@11.2.0 %gcc@4.8.5
+spack compiler add ...  # ... is the last line of previous command
+```
+
+* Create a dir where you want put `view` in (say `/work2/.../username/frontera/SpackView/cuda-intel`)
+
+* Replace the last line of `cuda-11.8.0-intel/spack_yaml` with your dir (say `/work2/.../username/frontera/SpackView/cuda-intel/view`)
+
+* Replace the dir `/work2/08708/liwei/frontera/SpackView/cuda-intel/view` (with say `/work2/.../username/frontera/SpackView/cuda-intel/view`)
+in `config-frontera-cuda-intel.cfg`
 
 * Install other required packages
 
-    ```bash
-    env TMPDIR=$WORK/tmp spack --env-dir ./cuda-11.8.0 compiler find
-    env TMPDIR=$WORK/tmp spack --env-dir ./cuda-11.8.0 concretize --force
-    env TMPDIR=$WORK/tmp spack --env-dir ./cuda-11.8.0 install --fail-fast
-    ```
+```bash
+env TMPDIR=$WORK/tmp spack --env-dir ./cuda-11.8.0-intel compiler find view-cuda-compilers
+env TMPDIR=$WORK/tmp spack --env-dir ./cuda-11.8.0-intel concretize --force
+env TMPDIR=$WORK/tmp spack --env-dir ./cuda-11.8.0-intel install --fail-fast
+```
 
 * Install SpacetimeX
 
-    ```bash
-    spack load gcc@11.2.0
-    spack load cuda@11.8.0
-    cd Cactus
-    gmake SpacetimeX-cuda options=repos/SpacetimeX/Docs/compile-notes/frontera/configs/config-frontera-cuda.cfg
-    cp repos/SpacetimeX/Docs/thornlist/spacetimex.th configs/SpacetimeX-cuda/ThornList
-    gmake -j16 SpacetimeX-cuda
-    ```
+```bash
+spack load gcc@11.2.0
+spack load cuda@11.8.0
+cd Cactus
+gmake SpacetimeX-cuda options=config-frontera-cuda-intel.cfg
+cp repos/SpacetimeX/Docs/thornlist/spacetimex.th configs/SpacetimeX-cuda/ThornList
+gmake -j16 SpacetimeX-cuda
+```
