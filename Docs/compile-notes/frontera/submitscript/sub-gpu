@@ -1,0 +1,27 @@
+#!/bin/bash
+
+#SBATCH -J qc0_X_N4
+#SBATCH -p rtx-dev         # Queue (partition) name
+#SBATCH -N 1               # Total # of nodes 40
+#SBATCH -n 4               # Total # of mpi tasks 280
+#SBATCH -o myjob.o%j       # Name of stdout output file
+#SBATCH -e myjob.e%j       # Name of stderr error file
+#SBATCH -t 02:00:00        # Run time (hh:mm:ss)
+#SBATCH -A PHY20010        # Project/Allocation name (req'd if you have more than 1)
+#SBATCH --ntasks-per-node=4
+#SBATCH --gpu-bind=map_gpu:0,1,2,3
+
+##SBATCH --mail-type=all    # Send email at begin and end of job
+##SBATCH --mail-user=@rit.edu
+
+# Any other commands must follow all #SBATCH directives...
+#export OMP_NUM_THREADS=1
+
+module reset
+ml
+
+source /work2/08708/liwei/frontera/SpackSource/spack/share/spack/setup-env.sh
+spack load gcc@11.2.0
+spack load cuda@11.8.0
+
+ibrun ./cactus_SpacetimeX-cuda qc0.par
