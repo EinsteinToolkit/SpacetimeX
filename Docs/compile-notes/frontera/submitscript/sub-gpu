@@ -8,8 +8,9 @@
 #SBATCH -e myjob.e%j       # Name of stderr error file
 #SBATCH -t 02:00:00        # Run time (hh:mm:ss)
 #SBATCH -A PHY20010        # Project/Allocation name (req'd if you have more than 1)
-#SBATCH --ntasks-per-node=4
-#SBATCH --gpu-bind=map_gpu:0,1,2,3
+
+##SBATCH --ntasks-per-node=4
+##SBATCH --gpu-bind=map_gpu:0,1,2,3
 
 ##SBATCH --mail-type=all    # Send email at begin and end of job
 ##SBATCH --mail-user=@rit.edu
