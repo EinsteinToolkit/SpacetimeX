@@ -1,7 +1,7 @@
 # source $WORK/SpackSource/spack/share/spack/setup-env.sh
-# env TMPDIR=$WORK/tmp spack --env-dir $WORK/Tools/spack-files/frontera/github/cuda-11.8.0-intel compiler find view-cuda-compilers &&
-# env TMPDIR=$WORK/tmp spack --env-dir $WORK/Tools/spack-files/frontera/github/cuda-11.8.0-intel concretize --force &&
-# env TMPDIR=$WORK/tmp spack --env-dir $WORK/Tools/spack-files/frontera/github/cuda-11.8.0-intel install --fail-fast
+# env TMPDIR=$WORK/tmp spack --env-dir $WORK/Tools/spack-files/frontera/github/gcc11.2.0-cuda11.8.0-impi19.0.9 compiler find view-cuda-compilers &&
+# env TMPDIR=$WORK/tmp spack --env-dir $WORK/Tools/spack-files/frontera/github/gcc11.2.0-cuda11.8.0-impi19.0.9 concretize --force &&
+# env TMPDIR=$WORK/tmp spack --env-dir $WORK/Tools/spack-files/frontera/github/gcc11.2.0-cuda11.8.0-impi19.0.9 install --fail-fast
 spack:
   definitions:
   - compilers:
@@ -72,4 +72,4 @@ spack:
   concretizer:
     reuse: false
     unify: true
-  view: /work2/08708/liwei/frontera/SpackView/cuda-intel/view
+  view: /work2/08708/liwei/frontera/SpackView/gcc11.2.0-cuda11.8.0-impi19.0.9/view

@@ -46,7 +46,7 @@
     spack load cuda@11.8.0
 
     cd Cactus
-    gmake SpacetimeX-cuda options=repos/SpacetimeX/Docs/compile-notes/frontera/configs/config-frontera-cuda-intel.cfg
+    gmake SpacetimeX-cuda options=repos/SpacetimeX/Docs/compile-notes/frontera/configs/config-frontera-gcc-cuda-impi.cfg
     cp repos/SpacetimeX/Docs/thornlist/spacetimex.th configs/SpacetimeX-cuda/ThornList
     gmake -j16 SpacetimeX-cuda
     ```
@@ -117,19 +117,19 @@ spack install gcc@11.2.0 %gcc@4.8.5
 spack compiler add ...  # ... is the last line of previous command
 ```
 
-* Create a dir where you want put `view` in (say `/work2/.../username/frontera/SpackView/cuda-intel`)
+* Create a dir where you want put `view` in (say `/work2/.../username/frontera/SpackView/gcc11.2.0-cuda11.8.0-impi19.0.9`)
 
-* Replace the last line of `cuda-11.8.0-intel/spack_yaml` with your dir (say `/work2/.../username/frontera/SpackView/cuda-intel/view`)
+* Replace the last line of `gcc11.2.0-cuda11.8.0-impi19.0.9/spack_yaml` with your dir (say `/work2/.../username/frontera/SpackView/gcc11.2.0-cuda11.8.0-impi19.0.9/view`)
 
-* Replace the dir `/work2/08708/liwei/frontera/SpackView/cuda-intel/view` (with say `/work2/.../username/frontera/SpackView/cuda-intel/view`)
-in `config-frontera-cuda-intel.cfg`
+* Replace the dir `/work2/08708/liwei/frontera/SpackView/gcc11.2.0-cuda11.8.0-impi19.0.9/view` (with say `/work2/.../username/frontera/SpackView/gcc11.2.0-cuda11.8.0-impi19.0.9/view`)
+in `config-frontera-gcc11.2.0-cuda11.8.0-impi19.0.9.cfg`
 
 * Install other required packages
 
 ```bash
-env TMPDIR=$WORK/tmp spack --env-dir ./cuda-11.8.0-intel compiler find view-cuda-compilers
-env TMPDIR=$WORK/tmp spack --env-dir ./cuda-11.8.0-intel concretize --force
-env TMPDIR=$WORK/tmp spack --env-dir ./cuda-11.8.0-intel install --fail-fast
+env TMPDIR=$WORK/tmp spack --env-dir ./gcc11.2.0-cuda11.8.0-impi19.0.9 compiler find view-cuda-compilers
+env TMPDIR=$WORK/tmp spack --env-dir ./gcc11.2.0-cuda11.8.0-impi19.0.9 concretize --force
+env TMPDIR=$WORK/tmp spack --env-dir ./gcc11.2.0-cuda11.8.0-impi19.0.9 install --fail-fast
 ```
 
 * Install SpacetimeX
@@ -138,7 +138,7 @@ env TMPDIR=$WORK/tmp spack --env-dir ./cuda-11.8.0-intel install --fail-fast
 spack load gcc@11.2.0
 spack load cuda@11.8.0
 cd Cactus
-gmake SpacetimeX-cuda options=config-frontera-cuda-intel.cfg
+gmake SpacetimeX-cuda options=config-frontera-gcc-cuda-impi.cfg
 cp repos/SpacetimeX/Docs/thornlist/spacetimex.th configs/SpacetimeX-cuda/ThornList
 gmake -j16 SpacetimeX-cuda
 ```
