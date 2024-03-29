@@ -27,7 +27,7 @@
 
     ```bash
     cd Cactus
-    gmake SpacetimeX-oneapi options=repos/SpacetimeX/Docs/compile-notes/frontera/configs/config-frontera-oneapi.cfg
+    gmake SpacetimeX-oneapi options=repos/SpacetimeX/Docs/compile-notes/frontera/configs/config-frontera-oneapi-impi.cfg
     cp repos/SpacetimeX/Docs/thornlist/spacetimex.th configs/SpacetimeX-oneapi/ThornList
     gmake -j24 SpacetimeX-oneapi
     ```
@@ -72,23 +72,23 @@
 
 * Create a dir where you want put `view` in (say `/work2/.../username/frontera/SpackView/oneapi`)
 
-* Replace the last line of `oneapi-23.1.0/spack.yaml` with your own dir (say `/work2/.../username/frontera/SpackView/oneapi/view`)
+* Replace the last line of `oneapi23.1.0-impi21.9.0/spack.yaml` with your own dir (say `/work2/.../username/frontera/SpackView/oneapi/view`)
 
-* Replace the dir `/work2/08708/liwei/frontera/SpackView/oneapi/view` (with say `/work2/.../username/frontera/SpackView/oneapi/view`) in `configs/config-frontera-oneapi.cfg`
+* Replace the dir `/work2/08708/liwei/frontera/SpackView/oneapi23.1.0-impi21.9.0/view` (with say `/work2/.../username/frontera/SpackView/oneapi/view`) in `configs/config-frontera-oneapi-impi.cfg`
 
 * Install other required packages
 
     ```bash
-    env TMPDIR=$WORK/tmp spack --env-dir ./oneapi-23.1.0 compiler find
-    env TMPDIR=$WORK/tmp spack --env-dir ./oneapi-23.1.0 concretize --force
-    env TMPDIR=$WORK/tmp spack --env-dir ./oneapi-23.1.0 install --fail-fast
+    env TMPDIR=$WORK/tmp spack --env-dir ./oneapi23.1.0-impi21.9.0 compiler find
+    env TMPDIR=$WORK/tmp spack --env-dir ./oneapi23.1.0-impi21.9.0 concretize --force
+    env TMPDIR=$WORK/tmp spack --env-dir ./oneapi23.1.0-impi21.9.0 install --fail-fast
     ```
 
 * Install SpacetimeX
 
     ```bash
     cd Cactus
-    gmake SpacetimeX-oneapi options=repos/SpacetimeX/Docs/compile-notes/frontera/configs/config-frontera-oneapi.cfg
+    gmake SpacetimeX-oneapi options=config-frontera-oneapi-impi.cfg
     cp repos/SpacetimeX/Docs/thornlist/spacetimex.th configs/SpacetimeX-oneapi/ThornList
     gmake -j24 SpacetimeX-oneapi
     ```
@@ -117,12 +117,12 @@ spack install gcc@11.2.0 %gcc@4.8.5
 spack compiler add ...  # ... is the last line of previous command
 ```
 
-* Create a dir where you want put `view` in (say `/work2/.../username/frontera/SpackView/gcc11.2.0-cuda11.8.0-impi19.0.9`)
+* Create a dir where you want put `view` in (say `/work2/.../username/frontera/SpackView/cuda`)
 
-* Replace the last line of `gcc11.2.0-cuda11.8.0-impi19.0.9/spack_yaml` with your dir (say `/work2/.../username/frontera/SpackView/gcc11.2.0-cuda11.8.0-impi19.0.9/view`)
+* Replace the last line of `gcc11.2.0-cuda11.8.0-impi19.0.9/spack_yaml` with your dir (say `/work2/.../username/frontera/SpackView/cuda/view`)
 
-* Replace the dir `/work2/08708/liwei/frontera/SpackView/gcc11.2.0-cuda11.8.0-impi19.0.9/view` (with say `/work2/.../username/frontera/SpackView/gcc11.2.0-cuda11.8.0-impi19.0.9/view`)
-in `config-frontera-gcc11.2.0-cuda11.8.0-impi19.0.9.cfg`
+* Replace the dir `/work2/08708/liwei/frontera/SpackView/gcc11.2.0-cuda11.8.0-impi19.0.9/view` (with say `/work2/.../username/frontera/SpackView/cuda/view`)
+in `config-frontera-gcc-cuda-impi.cfg`
 
 * Install other required packages
 
