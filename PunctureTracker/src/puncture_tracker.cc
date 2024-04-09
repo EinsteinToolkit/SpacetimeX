@@ -106,7 +106,7 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
 
   // Interpolation operator
   const int operator_handle =
-      CCTK_InterpHandle("Lagrange polynomial interpolation");
+      CCTK_InterpHandle("CarpetX");
   if (operator_handle < 0) {
     CCTK_WARN(CCTK_WARN_ALERT, "Can't get interpolation handle");
     return;
@@ -169,7 +169,7 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
 
     // Interpolate
     int ierr;
-    ierr = CCTK_InterpGridArrays(
+    ierr = DriverInterpolate(
         cctkGH, dim, operator_handle, param_table_handle, coordsys_handle,
         num_points, CCTK_VARIABLE_REAL, interp_coords, num_vars,
         input_array_indices, num_vars, output_array_type_codes, output_arrays);
