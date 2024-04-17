@@ -91,7 +91,7 @@
 % the date your document was last changed, if your document is in CVS,
 % please use:
 %    \date{$ $Date$ $}
-\date{July 27 2023}
+\date{April 17 2024}
 
 \maketitle
 
@@ -103,8 +103,10 @@
 
 % Add an abstract for this thorn's documentation
 \begin{abstract}
-This thorn implements the radiative boundary condition originally introduced
-in the Carpet-based NewRad thorn.
+This thorn implements radiative boundary conditions for \code{CarpetX}. The
+original implementation was introduced in the \code{Carpet}-based \code{NewRad}
+thorn in the \code{EinsteinEvolve}~\cite{SpacetimeX_NewRadX_EinsteinEvolve}
+arrangement.
 \end{abstract}
 
 % The following sections are suggestive only.
@@ -112,22 +114,22 @@ in the Carpet-based NewRad thorn.
 
 \section{Introduction}
 This thorn provides routines to implement radiative boundary conditions as
-described in section VI of~\cite{EinsteinEvolve_NewRad_Alcubierre:2002kk}:
+described in section VI of~\cite{SpacetimeX_NewRadX_Alcubierre:2002kk}:
 \begin{equation}
 f = f_0 + u(r - v t)/r\mbox{,}
-\label{eqn:EinsteinEvolve_NewRad_bc}
+\label{eqn:SpacetimeX_NewRadX_bc}
 \end{equation}
 in its differential form
 \begin{equation}
 \partial_t f + v \partial_r f - v\,(f - f_0) = 0\mbox{,}
-\label{eqn:EinsteinEvolve_NewRad_diff_bc}
+\label{eqn:SpacetimeX_NewRadX_diff_bc}
 \end{equation}
 where $v$ is the asymptotic propagation speed of the field $f$ and $f_0$
 is its asymptotic value.
 
 \section{Physical System}
 % RH: this is copied verbatim from Alcubierre:2002kk
-Quoting~\cite{EinsteinEvolve_NewRad_Alcubierre:2002kk}:
+Quoting~\cite{SpacetimeX_NewRadX_Alcubierre:2002kk}:
 
 At the outer boundary we use a radiation (Sommerfeld) boundary
 condition.  We start from the assumption that near the boundary all
@@ -184,7 +186,7 @@ or in Cartesian coordinates
 \begin{equation}
 \frac{x_i}{r} \, \partial_t f + v \partial_i f + \frac{v x_i}{r^2} \,
 \left( f - f_0 \right) \simeq \frac{x_i h'(t)}{r^{n+1}} .
-\label{eqn:EinsteinEvolve_NewRad_num_bc}
+\label{eqn:SpacetimeX_NewRadX_num_bc}
 \end{equation}
 
 This expression still contains the unknown function $h'(t)$. Having
@@ -195,26 +197,33 @@ almost completely eliminates the bad transient caused by the radiative
 boundary condition on its own.
 
 \section{Numerical Implementation}
-The thorn implements to ingredients for the evolution.
-\begin{enumerate}
-\item the boundary condition~\eqref{eqn:EinsteinEvolve_NewRad_num_bc},
-\item a routine to extrapolate the contracted Christoffel symbols
-$g^{jk} \Gamma^i_{jk}$ (\code{Xt1}\ldots\code{Xt3} in the code) into the
-outer boundaries at $t=0$.
-\end{enumerate}
+The thorn implements the boundary condition
+~\eqref{eqn:SpacetimeX_NewRadX_num_bc} for the evolution.  The original
+\code{Carpet}-based version of \code{NewRad} provides an additional
+routine \code{ExtrapolateGammas}, which can be used to extrapolate
+a grid function from the interior to the outer boundaries at $t=0$.
+Originally, this was used in the BSSN evolution thorn \code{ML\_BSSN}
+on the contracted Christoffel symbols
+$g^{jk} \Gamma^i_{jk}$ (\code{Xt1}\ldots\code{Xt3} in the code).
+This extrapolation routine is not yet ported over to the current version
+of \code{NewRadX}.
 
-\subsection{Extrapolation}
-At outer boundary points, as determined by \code{GenericFD}'s routine
-\code{GenericFD\_GetBoundaryInfo} we use cubic polynomials along the
-normal of the boundary to extrapolate data from the interior into the
-boundary region. Due to the use of cubic polynomial we require at least
-four (4) points of valid data to be available for the extrapolation.
-This \emph{includes} ghost zones, which are assumed to contain valid
-data in the interior of the domain.
+
+% \subsection{Extrapolation}
+% In the \code{CarpetX} version of NewRadX, the boundary information is
+% obtained from the \code{Loop} thorn.
+%
+% At outer boundary points, as determined by \code{GenericFD}'s routine
+% \code{GenericFD\_GetBoundaryInfo} we use cubic polynomials along the
+% normal of the boundary to extrapolate data from the interior into the
+% boundary region. Due to the use of cubic polynomial we require at least
+% four (4) points of valid data to be available for the extrapolation.
+% This \emph{includes} ghost zones, which are assumed to contain valid
+% data in the interior of the domain.
 
 \subsection{Radiative boundary condition}
 The derivatives $\partial_i f$ appearing in
-\eqref{eqn:EinsteinEvolve_NewRad_num_bc} are approximated as
+\eqref{eqn:SpacetimeX_NewRadX_num_bc} are approximated as
 2\textsuperscript{nd} order accurate finite difference expressions using
 centred expressions
 \begin{equation}
@@ -233,99 +242,129 @@ Finally we try to extrapolate for the part of the boundary
 that does not behave as a pure wave (i.e.\ Coulomb type
 terms caused by infall of the coordinate lines).
 
-This we do by comparing the source term one grid point
+This we do by comparing the source term \code{nghostzones} grid points
 away from the boundary (which we already have), to what
 we would have obtained if we had used the boundary
-condition there.  The difference gives us an idea of the
+condition there. The difference gives us an idea of the
 missing part and we extrapolate that to the boundary
 assuming a power-law decay.
 
 \section{Using This Thorn}
-The thorn exports two aliased functions \code{ExtrapolateGammas} and
-\code{NewRad\_Apply} that should be used in \code{INITIAL} and
-\code{MoL\_CalcRHS} respectively to extrapolate the contracted
-Christoffel symbols and apply radiative boundary conditions to evolved
-variables respectively.
+The thorn provides the routine \code{NewRadX\_Apply}, which should be scheduled
+in the \code{ODESolvers\_RHS} bin to apply radiative boundary conditions on
+evolved variables.  To use it in an evolution thorn, it can either be called
+inside the RHS evaluation routine, or scheduled in a separate function right
+after the RHS routine.
 
-There call signatures are:
+The call signature is:
 \begin{verbatim}
-CCTK_INT FUNCTION                         \
-    ExtrapolateGammas                     \
-        (CCTK_POINTER_TO_CONST IN cctkGH, \
-         CCTK_REAL ARRAY INOUT var)
-
-CCTK_INT FUNCTION                         \
-    NewRad_Apply                          \
-        (CCTK_POINTER_TO_CONST IN cctkGH, \
-         CCTK_REAL ARRAY IN var,          \
-         CCTK_REAL ARRAY INOUT rhs,       \
-         CCTK_REAL IN var0,               \
-         CCTK_REAL IN v0,                 \
-         CCTK_INT IN radpower)
+void NewRadX_Apply                               \
+        (const cGH *restrict const cctkGH,       \
+         const Loop::GF3D2<const CCTK_REAL> var, \
+         Loop::GF3D2<CCTK_REAL> rhs,             \
+         CCTK_REAL var0,                         \
+         CCTK_REAL v0,                           \
+         CCTK_REAL radpower)
 \end{verbatim}
 where \code{var0} corresponds to $f_0$, \code{v0} is $v$ and
 \code{radpower} is the assumed decay exponent $n$.
 
 \subsection{Obtaining This Thorn}
-The thorn is part of the EinsteinEvolve arrangement available on
-bitbucket.
+The thorn is part of the \code{SpacetimeX} arrangement available on
+GitHub.
 \begin{verbatim}
-git clone git@bitbucket.org:einsteintoolkit/einsteinevolve.git
+git clone git@github.com:lwJi/SpacetimeX.git
 \end{verbatim}
 
 \subsection{Basic Usage}
+For an overview of the implementation and usage of this thorn, please
+see~\cite{SpacetimeX_NewRadX_intro_presentation} for a presentation by
+Alexandru Dima and Cheng-Hsin Cheng during the weekly \code{CarpetX}
+developer meetings.
+
 
 \subsection{Special Behaviour}
-If the parameter \code{z\_is\_radial} is set it assumes that the $z$
-direction is a radial direction and uses this to evaluate the radial
-derivative in \eqref{eqn:EinsteinEvolve_NewRad_num_bc}. This is the case
-for the multi-patch coordinate systems provided by the
-\code{Llama}~\cite{EinsteinEvolve_NewRad_llamacode} infrastructure.
+In contrast with the \code{Carpet}-version of \code{NewRad}, which updates
+the RHS variables on the physical outer boundary of the simulation domain,
+\code{NewRadX} updates them on the so-called ``outermost interior points''.
+These points are defined as the interior points which are located
+\code{nghostzones} or fewer grid points from the outer boundary.
+Therefore, the boundary conditions are effectively applied on a smaller,
+artificial boundary that now reside within what \code{CarpetX} considers
+as the interior.
+
+It is necessary to introduce this change because
+
+
+Currently, this thorn only supports single-patch, Cartesian grids provided by
+\code{CarpetX},
+but not multi-patch coordinate systems.
+
 
 \subsection{Interaction With Other Thorns}
-This thorn requires thorn \code{GenericFD} which is part of
-\code{Kranc}~\cite{EinsteinEvolve_NewRad_kranccode}.
+This thorn requires thorn \code{Loop} which is part of
+\code{CarpetX}.
 
 \subsection{Examples}
-The best example is likely to inspect the source code \code{ML\_BSSN}
-and \code{ML\_BSSN\_Helper}, namely:
+The simplest example is likely to inspect the source code for
+\code{TestNewRadX}, which is a thorn from \code{SpacetimeX} that tests the
+boundary condition on the evolution of a scalar pulse on flat background.
+Here the boundary conditions are applied in the RHS calculation routine
+\code{TestNewRadX\_RHS}, where \code{NewRadX\_Apply} is called after the main
+loop that updates the RHS of the state variables in the interior.
+
+\begin{verbatim}
+<configuration.ccl>
+REQUIRES Loop NewRadX
+\end{verbatim}
 
 \begin{verbatim}
 <interface.ccl>
-CCTK_INT FUNCTION                         \
-    NewRad_Apply                          \
-        (CCTK_POINTER_TO_CONST IN cctkGH, \
-         CCTK_REAL ARRAY IN var,          \
-         CCTK_REAL ARRAY INOUT rhs,       \
-         CCTK_REAL IN var0,               \
-         CCTK_REAL IN v0,                 \
-         CCTK_INT IN radpower)
-USES FUNCTION NewRad_Apply
+USES INCLUDE HEADER: newradx.hxx
 \end{verbatim}
 
 \begin{verbatim}
 <schedule.ccl>
-SCHEDULE ML_BSSN_NewRad IN MoL_CalcRHS AFTER ML_BSSN_EvolutionInterior
+SCHEDULE TestNewRadX_RHS IN ODESolvers_RHS
 {
   LANG: C
-  # No need to sync here -- the RHS variables are never synced
-} "Apply NewRad boundary conditions to RHS"
+  READS: state(everywhere)
+  WRITES: rhs(interior)
+  SYNC: rhs
+} "Calculate scalar wave RHS"
 \end{verbatim}
 
 \begin{verbatim}
-<NewRad.cc>
-#include "cctk_Arguments.h"
-#include "cctk_Functions.h"
+<test_newradx.cxx>
+#include <newradx.hxx>
 
-void ML_BSSN_NewRad(CCTK_ARGUMENTS)
-{
-  DECLARE_CCTK_ARGUMENTS;
+extern "C" void TestNewRadX_RHS(CCTK_ARGUMENTS) {
+  DECLARE_CCTK_ARGUMENTSX_TestNewRadX_RHS;
+  DECLARE_CCTK_PARAMETERS;
 
-  const int radpower = 2; // for example
+  /* First loop over the interior to update RHS of the state variables */
+  grid.loop_int_device<0, 0, 0>(grid.nghostzones,
+                                [=] CCTK_DEVICE(const Loop::PointDesc &p)
+                                    CCTK_ATTRIBUTE_ALWAYS_INLINE {
+                                      uu_rhs(p.I) = vv(p.I);
+                                      vv_rhs(p.I) = Laplacian_4thorder(uu, p);
+                                    });
 
-  NewRad_Apply(cctkGH, gt12, gt12rhs, 0.0, 1.0, radpower);
+  /* After RHS grid functions are updated, apply boundary conditions */
+  if (test_use_newradx) {
+    NewRadX::NewRadX_Apply(cctkGH, uu, uu_rhs, 0, 1, n_falloff);
+    NewRadX::NewRadX_Apply(cctkGH, vv, vv_rhs, 0, 1, n_falloff + 1);
+  }
+
 }
 \end{verbatim}
+
+
+Other examples of \code{CarpetX} evolution thorns that use \code{NewRadX}
+include \code{CanudaX\_BSSNMoL}\cite{SpacetimeX_NewRadX_CanudaX_BSSNMoL},
+\code{AsterX}\cite{SpacetimeX_NewRadX_AsterX}, and
+\code{Z4c}\cite{SpacetimeX_NewRadX_Z4c}.
+
 
 \subsection{Support and Feedback}
 Please use the Einstein Toolkit mailing list
@@ -336,30 +375,45 @@ Please use the Einstein Toolkit mailing list
 \subsection{Thorn Source Code}
 \begin{itemize}
 \item Initial version of method likely by Miguel Alcubierre;
-\item Carpet version of code by Erik Schnetter;
-\item CarpetX version of code by Cheng-Hsin Cheng, Jake Doherty, Michail Chabanov, Alexandru Dima.
+\item \code{Carpet} version of code by Erik Schnetter;
+\item \code{CarpetX} version of code by Cheng-Hsin Cheng, Jake Doherty,
+  Michail Chabanov, Alexandru Dima.
 \end{itemize}
 
 \subsection{Thorn Documentation}
 \begin{itemize}
 \item Initial version by Roland Haas using text by Miguel, Erik.
-\item Current version by Alexandru Dima.
+\item Current version by Alexandru Dima and Cheng-Hsin Cheng.
 \end{itemize}
 
 \subsection{Acknowledgements}
-This documentation copies text from comments in the source code as well
-as the paper~\cite{EinsteinEvolve_NewRad_Alcubierre:2002kk}.
+This documentation is based on the original one for the \code{Carpet} version
+of \code{NewRad}, which copies text from comments in the source code as well
+as the paper~\cite{SpacetimeX_NewRadX_Alcubierre:2002kk}.
 
 \begin{thebibliography}{9}
-\bibitem{EinsteinEvolve_NewRad_Alcubierre:2002kk}
+
+\bibitem{SpacetimeX_NewRadX_EinsteinEvolve} ``EinsteinEvolve``,
+  \url{https://bitbucket.org/einsteintoolkit/einsteinevolve}.
+
+\bibitem{SpacetimeX_NewRadX_Alcubierre:2002kk}
   M.~Alcubierre, B.~Bruegmann, P.~Diener, M.~Koppitz, D.~Pollney, E.~Seidel and R.~Takahashi,
   ``Gauge conditions for long term numerical black hole evolutions without excision,''
   Phys.\ Rev.\ D {\bf 67}, 084023 (2003)
   doi:10.1103/PhysRevD.67.084023
   [gr-qc/0206072].
-\bibitem{EinsteinEvolve_NewRad_kranccode} ``Kranc: Kranc assembles
-numerical code``, \url{http://kranccode.org/}.
-\bibitem{EinsteinEvolve_NewRad_llamacode} ``The Llama code``, \url{https://llamacode.bitbucket.io/}.
+
+\bibitem{SpacetimeX_NewRadX_intro_presentation} ``NewRadX Intro``,
+  \url{https://github.com/eschnett/CarpetX/wiki/NewRadX-Intro}.
+
+\bibitem{SpacetimeX_NewRadX_CanudaX_BSSNMoL} ``CanudaX\_Lean``,
+  \url{https://bitbucket.org/canuda/canudax_lean}.
+
+\bibitem{SpacetimeX_NewRadX_AsterX} ``AsterX'',
+  \url{https://github.com/jaykalinani/AsterX}.
+
+\bibitem{SpacetimeX_NewRadX_Z4c} ``Z4c'',
+  \url{https://github.com/lwJi/SpacetimeX/tree/main/Z4c}.
 
 \end{thebibliography}
 
