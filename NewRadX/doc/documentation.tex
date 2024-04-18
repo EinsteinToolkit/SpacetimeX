@@ -289,16 +289,15 @@ the RHS variables on the physical outer boundary of the simulation domain,
 \code{NewRadX} updates them on the so-called ``outermost interior points''.
 These points are defined as the interior points which are located
 \code{nghostzones} or fewer grid points from the outer boundary.
-Therefore, the boundary conditions are effectively applied on a smaller,
-artificial boundary that now reside within what \code{CarpetX} considers
-as the interior.
-
-It is necessary to introduce this change because
+Therefore, the boundary conditions are effectively applied on a set of points
+that are labelled as ``interior'' in \code{CarpetX}.
+It is necessary to introduce this change because imposing a wave-like time
+evolution on the \code{CarpetX} ``proper'' boundary points is incompatible with the
+synchronization conducted by AMReX.
 
 
 Currently, this thorn only supports single-patch, Cartesian grids provided by
-\code{CarpetX},
-but not multi-patch coordinate systems.
+\code{CarpetX}, but not multi-patch coordinate systems.
 
 
 \subsection{Interaction With Other Thorns}
@@ -361,9 +360,8 @@ extern "C" void TestNewRadX_RHS(CCTK_ARGUMENTS) {
 
 
 Other examples of \code{CarpetX} evolution thorns that use \code{NewRadX}
-include \code{CanudaX\_BSSNMoL}\cite{SpacetimeX_NewRadX_CanudaX_BSSNMoL},
-\code{AsterX}\cite{SpacetimeX_NewRadX_AsterX}, and
-\code{Z4c}\cite{SpacetimeX_NewRadX_Z4c}.
+include \code{CanudaX\_BSSNMoL}\cite{SpacetimeX_NewRadX_CanudaX_BSSNMoL}
+and \code{Z4c}\cite{SpacetimeX_NewRadX_Z4c}.
 
 
 \subsection{Support and Feedback}
@@ -408,9 +406,6 @@ as the paper~\cite{SpacetimeX_NewRadX_Alcubierre:2002kk}.
 
 \bibitem{SpacetimeX_NewRadX_CanudaX_BSSNMoL} ``CanudaX\_Lean``,
   \url{https://bitbucket.org/canuda/canudax_lean}.
-
-\bibitem{SpacetimeX_NewRadX_AsterX} ``AsterX'',
-  \url{https://github.com/jaykalinani/AsterX}.
 
 \bibitem{SpacetimeX_NewRadX_Z4c} ``Z4c'',
   \url{https://github.com/lwJi/SpacetimeX/tree/main/Z4c}.
