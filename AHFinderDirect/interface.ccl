@@ -148,3 +148,20 @@ FUNCTION sf_IdFromName (CCTK_INT IN id, CCTK_POINTER_TO_CONST IN name)
 USES FUNCTION sf_IdFromName
 
 ################################################################################
+
+# CarpetX Interpolator
+CCTK_INT FUNCTION DriverInterpolate(
+  CCTK_POINTER_TO_CONST IN cctkGH,
+  CCTK_INT IN N_dims,
+  CCTK_INT IN local_interp_handle,
+  CCTK_INT IN param_table_handle,
+  CCTK_INT IN coord_system_handle,
+  CCTK_INT IN N_interp_points,
+  CCTK_INT IN interp_coords_type,
+  CCTK_POINTER_TO_CONST ARRAY IN interp_coords,
+  CCTK_INT IN N_input_arrays,
+  CCTK_INT ARRAY IN input_array_indices,
+  CCTK_INT IN N_output_arrays,
+  CCTK_INT ARRAY IN output_array_types,
+  CCTK_POINTER ARRAY IN output_arrays)
+REQUIRES FUNCTION DriverInterpolate
