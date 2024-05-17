@@ -64,7 +64,7 @@
 
     - `git clone -c feature.manyFiles=true https://github.com/spack/spack.git`
 
-    - use `develop` branch: (maybe `git checkout 141c7de5`)
+    - `git checkout releases/v0.20`
 
     - `. share/spack/setup-env.sh`
     
@@ -94,7 +94,7 @@
     ```
 
 
-### Cuda version (`cuda@11.8.0` with `intel@23.1.0`)
+### Cuda version (`cuda@11.8.0` with `intel@19.1.1`)
 
 * Load `intel/19.1.1`
 
