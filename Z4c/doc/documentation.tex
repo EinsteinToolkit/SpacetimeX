@@ -1,0 +1,151 @@
+% *======================================================================*
+%  Cactus Thorn template for ThornGuide documentation
+%  Author: Ian Kelley
+%  Date: Sun Jun 02, 2002
+%  $Header: /cactusdevcvs/Cactus/doc/ThornGuide/template.tex,v 1.12 2004/01/07 20:12:39 rideout Exp $
+%
+%  Thorn documentation in the latex file doc/documentation.tex
+%  will be included in ThornGuides built with the Cactus make system.
+%  The scripts employed by the make system automatically include
+%  pages about variables, parameters and scheduling parsed from the
+%  relevant thorn CCL files.
+%
+%  This template contains guidelines which help to assure that your
+%  documentation will be correctly added to ThornGuides. More
+%  information is available in the Cactus UsersGuide.
+%
+%  Guidelines:
+%   - Do not change anything before the line
+%       % START CACTUS THORNGUIDE",
+%     except for filling in the title, author, date, etc. fields.
+%        - Each of these fields should only be on ONE line.
+%        - Author names should be separated with a \\ or a comma.
+%   - You can define your own macros, but they must appear after
+%     the START CACTUS THORNGUIDE line, and must not redefine standard
+%     latex commands.
+%   - To avoid name clashes with other thorns, 'labels', 'citations',
+%     'references', and 'image' names should conform to the following
+%     convention:
+%       ARRANGEMENT_THORN_LABEL
+%     For example, an image wave.eps in the arrangement CactusWave and
+%     thorn WaveToyC should be renamed to CactusWave_WaveToyC_wave.eps
+%   - Graphics should only be included using the graphicx package.
+%     More specifically, with the "\includegraphics" command.  Do
+%     not specify any graphic file extensions in your .tex file. This
+%     will allow us to create a PDF version of the ThornGuide
+%     via pdflatex.
+%   - References should be included with the latex "\bibitem" command.
+%   - Use \begin{abstract}...\end{abstract} instead of \abstract{...}
+%   - Do not use \appendix, instead include any appendices you need as
+%     standard sections.
+%   - For the benefit of our Perl scripts, and for future extensions,
+%     please use simple latex.
+%
+% *======================================================================*
+%
+% Example of including a graphic image:
+%    \begin{figure}[ht]
+% 	\begin{center}
+%    	   \includegraphics[width=6cm]{MyArrangement_MyThorn_MyFigure}
+% 	\end{center}
+% 	\caption{Illustration of this and that}
+% 	\label{MyArrangement_MyThorn_MyLabel}
+%    \end{figure}
+%
+% Example of using a label:
+%   \label{MyArrangement_MyThorn_MyLabel}
+%
+% Example of a citation:
+%    \cite{MyArrangement_MyThorn_Author99}
+%
+% Example of including a reference
+%   \bibitem{MyArrangement_MyThorn_Author99}
+%   {J. Author, {\em The Title of the Book, Journal, or periodical}, 1 (1999),
+%   1--16. {\tt http://www.nowhere.com/}}
+%
+% *======================================================================*
+
+% If you are using CVS use this line to give version information
+% $Header: /cactusdevcvs/Cactus/doc/ThornGuide/template.tex,v 1.12 2004/01/07 20:12:39 rideout Exp $
+
+\documentclass{article}
+
+% Use the Cactus ThornGuide style file
+% (Automatically used from Cactus distribution, if you have a
+%  thorn without the Cactus Flesh download this from the Cactus
+%  homepage at www.cactuscode.org)
+\usepackage{../../../../doc/latex/cactus}
+
+\begin{document}
+
+% The author of the documentation
+\author{Erik Schnetter \textless eschnetter@perimeterinstitute.ca \textgreater}
+
+% The title of the document (not necessarily the name of the Thorn)
+\title{Z4c Thorn for use with CarpetX}
+
+% the date your document was last changed, if your document is in CVS,
+% please use:
+%    \date{$ $Date: 2004/01/07 20:12:39 $ $}
+\date{April 26, 2024}
+
+\maketitle
+
+% Do not delete next line
+% START CACTUS THORNGUIDE
+
+% Add all definitions used in this documentation here
+%   \def\mydef etc
+
+% Add an abstract for this thorn's documentation
+\begin{abstract}
+
+This Thorn implements the Z4c formulation of the Einstein Equations~\cite{Hilditch:2012fp}. It also monitors the stability of those equations~\cite{cao2012numerical}.
+
+\end{abstract}
+
+% The following sections are suggestive only.
+% Remove them or add your own.
+
+\section{Using This Thorn}
+
+The \texttt{SpacetimeX/Z4c} thorn reads (i.e. in \texttt{Z4c\_Initial1}) and, if the parameter \texttt{Z4c::calc\_ADM\_vars} is set (which is \texttt{true} by default), writes (i.e. in \texttt{Z4c\_ADM}) the ADM variables (i.e. \texttt{CarpetX/ADMBaseX}) automatically.
+
+Derivatives are hard-coded to fourth order. However, should it be desired, second order is also possible by editing the constant \texttt{deriv\_order} in \texttt{derivs.hxx} to the value \texttt{2}.
+
+This thorn integrates with the \texttt{CarpetX/ODESolvers} thorn.
+
+\begin{thebibliography}{9}
+@article{Hilditch:2012fp,
+      author         = "Hilditch, David and Bernuzzi, Sebastiano and Thierfelder,
+                        Marcus and Cao, Zhoujian and Tichy, Wolfgang and
+                        Bruegmann, Bernd",
+      title          = "{Compact binary evolutions with the Z4c formulation}",
+      journal        = "Phys. Rev.",
+      volume         = "D88",
+      year           = "2013",
+      pages          = "084057",
+      doi            = "10.1103/PhysRevD.88.084057",
+      eprint         = "1212.2901",
+      archivePrefix  = "arXiv",
+      primaryClass   = "gr-qc",
+      SLACcitation   = "%%CITATION = ARXIV:1212.2901;%%"
+}
+
+@article{cao2012numerical,
+  title={Numerical stability of the Z4c formulation of general relativity},
+  author={Cao, Zhoujian and Hilditch, David},
+  journal={Physical Review D},
+  volume={85},
+  number={12},
+  pages={124032},
+  year={2012},
+  publisher={APS}
+}
+
+\end{thebibliography}
+
+% Do not delete next line
+% END CACTUS THORNGUIDE
+
+\end{document}
