@@ -826,7 +826,7 @@ sleep(1);
 CCTK_Barrier(cgi.GH);
 #endif
 
-status = CCTK_InterpGridArrays(cgi.GH, N_GRID_DIMS,
+status = DriverInterpolate(cgi.GH, N_GRID_DIMS,
 			       gi.operator_handle, gi.param_table_handle,
 			       cgi.coord_system_handle,
 			       N_interp_points,
