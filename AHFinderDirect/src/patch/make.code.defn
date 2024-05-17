@@ -1,0 +1,17 @@
+# Cactus specification of things to be compiled in this directory
+# $Header$
+
+# Source files in this directory
+# ... uncomment test_patch_system.cc to test the patch system
+SRCS = coords.cc \
+       grid.cc \
+       fd_grid.cc \
+       patch.cc \
+       ghost_zone.cc \
+       patch_interp.cc \
+       patch_info.cc \
+       patch_system.cc \
+       # test_patch_system.cc
+
+# Subdirectories containing source files
+SUBDIRS =

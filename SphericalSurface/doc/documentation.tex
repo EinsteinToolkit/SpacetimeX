@@ -1,0 +1,316 @@
+% *======================================================================*
+%  Cactus Thorn template for ThornGuide documentation
+%  Author: Ian Kelley
+%  Date: Sun Jun 02, 2002
+%
+%  Thorn documentation in the latex file doc/documentation.tex 
+%  will be included in ThornGuides built with the Cactus make system.
+%  The scripts employed by the make system automatically include 
+%  pages about variables, parameters and scheduling parsed from the 
+%  relevant thorn CCL files.
+%  
+%  This template contains guidelines which help to assure that your     
+%  documentation will be correctly added to ThornGuides. More 
+%  information is available in the Cactus UsersGuide.
+%                                                    
+%  Guidelines:
+%   - Do not change anything before the line
+%       % START CACTUS THORNGUIDE",
+%     except for filling in the title, author, date, etc. fields.
+%        - Each of these fields should only be on ONE line.
+%        - Author names should be separated with a \\ or a comma.
+%   - You can define your own macros, but they must appear after
+%     the START CACTUS THORNGUIDE line, and must not redefine standard 
+%     latex commands.
+%   - To avoid name clashes with other thorns, 'labels', 'citations', 
+%     'references', and 'image' names should conform to the following 
+%     convention:          
+%       ARRANGEMENT_THORN_LABEL
+%     For example, an image wave.eps in the arrangement CactusWave and 
+%     thorn WaveToyC should be renamed to CactusWave_WaveToyC_wave.eps
+%   - Graphics should only be included using the graphicx package. 
+%     More specifically, with the "\includegraphics" command.  Do
+%     not specify any graphic file extensions in your .tex file. This 
+%     will allow us to create a PDF version of the ThornGuide
+%     via pdflatex.
+%   - References should be included with the latex "\bibitem" command. 
+%   - Use \begin{abstract}...\end{abstract} instead of \abstract{...}
+%   - Do not use \appendix, instead include any appendices you need as 
+%     standard sections. 
+%   - For the benefit of our Perl scripts, and for future extensions, 
+%     please use simple latex.     
+%
+% *======================================================================* 
+% 
+% Example of including a graphic image:
+%    \begin{figure}[ht]
+% 	\begin{center}
+%    	   \includegraphics[width=6cm]{MyArrangement_MyThorn_MyFigure}
+% 	\end{center}
+% 	\caption{Illustration of this and that}
+% 	\label{MyArrangement_MyThorn_MyLabel}
+%    \end{figure}
+%
+% Example of using a label:
+%   \label{MyArrangement_MyThorn_MyLabel}
+%
+% Example of a citation:
+%    \cite{MyArrangement_MyThorn_Author99}
+%
+% Example of including a reference
+%   \bibitem{MyArrangement_MyThorn_Author99}
+%   {J. Author, {\em The Title of the Book, Journal, or periodical}, 1 (1999), 
+%   1--16. {\tt http://www.nowhere.com/}}
+%
+% *======================================================================* 
+
+\documentclass{article}
+
+% Use the Cactus ThornGuide style file
+% (Automatically used from Cactus distribution, if you have a 
+%  thorn without the Cactus Flesh download this from the Cactus
+%  homepage at www.cactuscode.org)
+\usepackage{../../../../doc/latex/cactus}
+
+\begin{document}
+
+% The author of the documentation
+\author{Erik Schnetter \textless schnetter@cct.lsu.edu\textgreater}
+
+% The title of the document (not necessarily the name of the Thorn)
+\title{SphericalSurface}
+
+% the date your document was last changed
+\date{2007-03-06}
+
+\maketitle
+
+% Do not delete next line
+% START CACTUS THORNGUIDE
+
+% Add all definitions used in this documentation here 
+%   \def\mydef etc
+
+\begin{abstract}
+This thorn provides a repository for two-dimensional surfaces with
+spherical topology.  This thorn does not actually do anything with
+these surfaces, but allows other thorns to store and retrieve the
+surfaces and some associated information.  The exact interpretation of
+the stored quantities is up to the using thorns, but certain standard
+definitions are suggested.
+\end{abstract}
+
+
+
+\section{Introduction}
+
+Many thorns work on manifolds that are two-dimensional, closed
+surfaces.  Examples are apparent and event horizons, or the surfaces
+on which gravitational waves are extracted.  Other such surfaces might
+be excision or outer boundaries (although these are currently not
+treated as such).  There is a need to have a common representation for
+such surfaces, so that the surface-finding thorns and the thorns
+working with these surfaces can be independent.  A common
+representation will also facilitate visualisation.  This thorn
+\texttt{SphericalSurface} provides just such a common representation.
+
+This thorn is not meant to do anything else but be a ``repository''
+for surfaces.  It is up to the surface-finding and surface-using
+thorns to agree on the details of the information stored.  Of course,
+standard definitions for the stored quantities are suggested.  (For
+example, there is no exact definition of the quadrupole moment,
+because this definition will depend on the kind of surface that is
+stored.  However, it is specified that the quadrupole moment should be
+calculate with respect to the centroid, and that it should not be
+trace-free.)
+
+This thorn provides storage for several independent surfaces,
+identified by an \emph{index}.  It is up to the user to specify,
+probably in the parameter file, which thorns use what surfaces for
+what purpose.
+
+
+
+\section{Surface Definition}
+
+This thorn provides, for each surface, a two-dimensional grid array
+\code{sf\_radius} and grid scalars \code{sf\_origin\_x},
+\code{sf\_origin\_y}, and \code{sf\_origin\_z}.  The number of
+surfaces is determined by the parameter \code{nsurfaces}, which has
+to be set in the parameter file.
+
+\code{sf\_radius} should contain the radius of the surface as
+measured from its origin, where the arrays indices vary in the
+$\theta$ and $\phi$ direction, respectively.  Both the radius array
+and the surface origin are supposed to be set when a surface is
+stored.
+
+The coordinates on the surface, i.e.\ the grid origin and spacing in
+the $\theta$ and $\phi$ directions, is available from the grid scalars
+\code{sf\_origin\_theta}, \code{sf\_origin\_phi},
+\code{sf\_delta\_theta}, and \code{sf\_delta\_phi}.  These grid
+scalars are set by the thorn SphericalSurface in the \code{basegrid}
+bin, and are meant to be read-only for other thorns.
+
+
+
+\begin{quotation}
+\subsection*{A note on vector grid variables}
+
+A relatively new addition to Cactus (in November 2003) are vector grid
+variables.  These are essentially arrays of grid variables.  Thorn
+SphericalSurface makes use of these by storing the surfaces in such
+arrays.  That means that in order to access data from a single
+surface, on has to use the corresponding surface index as array index.
+In a similar manner, thorn SurfaceIndex uses array parameters for its
+parameters (except certain global ones).
+
+This should be kept in mind when writing source code.  C has the
+unfortunate property of converting arrays into meaningless integers if
+an array subscript is accidentally omitted.  Fortran knows whole-array
+expressions, meaning that it would act on all surfaces instead of a
+single one if an array subscript is accidentally omitted.
+
+Each element of a vector grid function is a grid function.  (The term
+``grid function vector'' might have been more appropriate.)  As such,
+it has a name, which can be used e.g.\ for output.  The name consists
+of the vector grid function name to which the surface index in square
+brackets has been appended.
+\end{quotation}
+
+
+
+\subsection{Global Surface Quantities}
+
+In many cases, only some abstract information about the surface is of
+interest, such as its mean radius or its quadrupole moment.  For that
+purpose there are additional grid scalars that carry this information.
+These grid scalars are also supposed to be set when a surface is
+stored.  These grid scalars are
+\begin{description}
+
+\item[\code{sf\_mean\_radius}] Mean of the surface radius.  This
+should be the arithmetic mean where the radii have been weighted with
+$\sin\theta$, or a suitable generalisation thereof.  This quantity is
+also supposed to be a measure of the surface's monopole moment.  One
+suggested expression is $M=\sqrt{A}$ with $A = \int_S d\Omega\, r^2 /
+\int_S d\Omega$.
+
+\item[\code{sf\_min\_radius}, \code{sf\_max\_radius}] Minimum and
+maximum of the surface radius.
+
+\item[\code{sf\_centroid\_x}, \code{sf\_centroid\_y},
+\code{sf\_centroid\_z}] The centre of the surface.  While the
+quantities \code{sf\_origin\_*} denote the point from which the
+radius of the surface is measured, the quantities
+\code{sf\_centroid\_*} should contain the point which is
+``logically'' the centre of the surface.  This quantity is supposed to
+be a measure of the dipole moment of the surface.  One suggested
+expression is $D^i = \int_S d\Omega\, x^i / A$.
+
+\item[\code{sf\_quadrupole\_xx}, \code{sf\_quadrupole\_xy},
+\code{sf\_quadrupole\_xz}, \code{sf\_quadrupole\_yy},
+\code{sf\_quadrupole\_yz}, \code{sf\_quadrupole\_zz}] The
+quadrupole moment of the surface. This should be the full quadrupole
+moment and not a trace-free quantity.  One suggested expression is
+$Q^{ij} = \int_S d\Omega\, y^i y^j / A$ with $y^i = x^i - D^i$.
+
+\item[\code{sf\_min\_x}, \code{sf\_min\_y}, \code{sf\_min\_z},
+\code{sf\_max\_x}, \code{sf\_max\_y}, \code{sf\_max\_z}] The
+bounding box of the surface.
+
+\end{description}
+Note that the integral expressions are only suggestions which should
+be adapted to whatever is natural for the stored surface.  The
+suggested integral expressions also depend on the metric which is
+used; this should be a ``natural'' metric for the surface.  E.g.\ for
+apparent horizons, this might be the induced two-metric $q_{ij}$ from
+the projection of the ADM three-metric $\gamma_{ij}$.
+
+
+
+\subsection{Validity of Surface Data}
+
+There is also an integer flag \code{valid} available.  Its
+definition is up to the surface-providing thorn.  The following
+interpretations are \emph{suggested}:
+\begin{description}
+
+\item[zero:] No surface is provided at this time step.
+
+\item[negative:] No surface could be found at this time step.
+
+\item[positive:] The surface data are valid.
+
+\end{description}
+Note that, if this flag is used, it is necessary to set this flag at
+every iteration.  This flag is not automatically reset to zero.
+
+
+
+\section{Surface Array Shape}
+
+The number of grid points in the radius array \code{sf\_radius} is
+determined by the parameters \code{ntheta} and \code{nphi}.  These
+arrays exist for each surface.  (Internally, thorn SphericalSurface
+stores all surfaces with the same array shape \code{maxntheta} and
+\code{maxnphi}, so that the parameters  \code{ntheta} and
+\code{nphi} must not be used for index calculations.  Use the
+surfaces \code{lsh} instead.)  The surface array shape includes
+ghost or boundary zones at the array edges.  These ghost zones have
+the same size for all surfaces.
+
+Note that because the radius arrays are stored with larger size
+$\code{maxntheta} \times \code{maxnphi}$, the actual radius data
+(of size
+$\code{ntheta[surface\_number]} \times \code{nphi[surface\_number]}$
+elements) is in general {\em not contiguous in memory.\/}
+If you want to interpolate a SphericalSurface surface radius,
+you need to either copy the radius data to a contiguous 2-D array of size
+$\code{ntheta[surface\_number]} \times \code{nphi[surface\_number]}$,
+or use an interpolator which supports such non-contiguous input arrays.
+The AEIThorns/AEILocalInterp local interpolation thorn supports these
+via the \code{input\_array\_strides} parameter-table option.
+See the AEILocalInterp thorn guide for details.
+
+
+
+\section{Surface Symmetries}
+
+It is often the case that one uses symmetries to reduce the size of
+the simulation domain, such as octant or quadrant mode.  Whenever a
+symmetry plane intersects a surface, only part of the surface is
+actually stored.  The user has to define the symmetries of each
+surface in the parameter file via the parameters
+\code{sf\_symmetry\_x}, \code{sf\_symmetry\_y}, and
+\code{sf\_symmetry\_z}.  They indicate that a 
+reflection symmetry exists in the corresponding direction.  The
+surface origin is required to lie in the corresponding symmetry
+planes.
+
+Thorn SphericalSurface takes these symmetries into account when it
+calculates the grid spacing and the origin of the surface coordinates
+$\theta$ and $\phi$.
+
+
+
+\section{Input and Output}
+
+As the surfaces are stored as grid variables, the standard input and
+output routines will work for them.  The standard visualisation tools
+will be able to visualise them.  The surfaces will also automatically
+be checkpointed and restored.
+
+
+
+\subsection{Acknowledgements}
+
+This thorn was suggested during meetings of the numerical relativity
+group at the AEI.  Jonathan Thornburg provided many detailed and
+useful suggestions.  Ed Evans, Carsten Gundlach, Ian Hawke, and Denis
+Pollney contributed comments and suggestions.
+
+% Do not delete next line
+% END CACTUS THORNGUIDE
+
+\end{document}

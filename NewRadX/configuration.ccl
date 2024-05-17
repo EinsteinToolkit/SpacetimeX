@@ -1,0 +1,7 @@
+# Configuration definition for thorn NewRadX
+
+REQUIRES Loop
+
+PROVIDES NewRadX
+{
+}

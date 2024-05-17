@@ -1,0 +1,69 @@
+osmium.aei.mpg.de	# OpenBSD 3.1
+gcc version 2.95.3 20010125 (prerelease)
+Sun Oct  6 21:15:55 EDT 2002
+CXX='/usr/bin/g++ -W -Wall -ansi -pedantic'
+==> #include <vector.h>; vector is ok
+==> #include <vector.h>; std::vector is ok
+==> #include <vector.h>; using std::vector; vector is ok
+==> #include <vector.h>; using namespace std; vector is ok
+==> #include <vector>; vector is ok (THIS SHOULD FAIL)
+==> #include <vector>; std::vector is ok
+==> #include <vector>; using std::vector; vector is ok
+==> #include <vector>; using namespace std; vector is ok
+
+xeon21.aei.mpg.de
+gcc version 2.96 20000731 (Red Hat Linux 7.1 2.96-98)
+Mon Oct  7 18:38:20 CEST 2002
+CXX='/usr/bin/g++ -W -Wall -pedantic -ansi'
+==> #include <vector.h>; vector is ok
+==> #include <vector.h>; std::vector is ok
+==> #include <vector.h>; using std::vector; vector is ok
+==> #include <vector.h>; using namespace std; vector is ok
+==> #include <vector>; vector is ok (THIS SHOULD FAIL)
+==> #include <vector>; std::vector is ok
+==> #include <vector>; using std::vector; vector is ok
+==> #include <vector>; using namespace std; vector is ok
+
+xeon21.aei.mpg.de
+g++ (GCC) 3.2
+Mon Oct  7 18:34:53 CEST 2002
+CXX='/scratch/jthorn/local/bin/g++ -W -Wall -ansi -pedantic'
+==> #include <vector.h>; vector is ok
+==> #include <vector.h>; std::vector is ok
+==> #include <vector.h>; using std::vector; vector is ok
+==> #include <vector.h>; using namespace std; vector is ok
+==> #include <vector>; std::vector is ok
+==> #include <vector>; using std::vector; vector is ok
+==> #include <vector>; using namespace std; vector is ok
+
+xeon21.aei.mpg.de
+Intel(R) C++ Compiler for 32-bit applications, Version 5.0.1   Build 010730D0
+Mon Oct  7 18:36:42 CEST 2002
+CXX='icc -Xc -ansi'
+==> #include <vector>; std::vector is ok
+==> #include <vector>; using std::vector; vector is ok
+==> #include <vector>; using namespace std; vector is ok
+
+origin.aei.mpg.de
+MIPSpro Compilers: Version 7.3.1.2m
+Mon Oct  7 20:31:11 CEST 2002
+CXX='CC -LANG:std'
+==> #include <vector.h>; vector is ok
+all others fail
+
+Hitachi using sCC (native)
+options:  -64 -stl -O3 -pvec -predicate -model=F1
+all tests fail (internal compiler error)
+
+Hitachi using sCC (native)
+options:  -stl -O3 -pvec -predicate -model=F1
+==> #include <vector>; std::vector is ok
+==> #include <vector>; using std::vector; vector is ok
+==> #include <vector>; using namespace std; vector is ok
+
+Loslobos using pgCC version 3.2-3
+options: -tused -O2
+==> #include <vector>; vector is ok (THIS SHOULD FAIL)
+==> #include <vector>; std::vector is ok
+==> #include <vector>; using std::vector; vector is ok
+==> #include <vector>; using namespace std; vector is ok

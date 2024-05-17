@@ -1,0 +1,43 @@
+# coord_derivs.maple -- compute derivatives of (mu,nu,phi) wrt (x,y,z)
+# $Header$
+
+mu  := arctan(y/z);
+nu  := arctan(x/z);
+phi := arctan(y/x);
+
+########################################
+
+simplify(diff(mu,x));
+simplify(diff(mu,y));
+simplify(diff(mu,z));
+
+simplify(diff(nu,x));
+simplify(diff(nu,y));
+simplify(diff(nu,z));
+
+simplify(diff(phi,x));
+simplify(diff(phi,y));
+simplify(diff(phi,z));
+
+########################################
+
+simplify(diff(mu,x,x));
+simplify(diff(mu,x,y));
+simplify(diff(mu,x,z));
+simplify(diff(mu,y,y));
+simplify(diff(mu,y,z));
+simplify(diff(mu,z,z));
+
+simplify(diff(nu,x,x));
+simplify(diff(nu,x,y));
+simplify(diff(nu,x,z));
+simplify(diff(nu,y,y));
+simplify(diff(nu,y,z));
+simplify(diff(nu,z,z));
+
+simplify(diff(phi,x,x));
+simplify(diff(phi,x,y));
+simplify(diff(phi,x,z));
+simplify(diff(phi,y,y));
+simplify(diff(phi,y,z));
+simplify(diff(phi,z,z));

@@ -247,12 +247,43 @@ SCHEDULE Z4c_RHS IN Z4c_RHSGroup
   WRITES: Theta_rhs(interior)
   WRITES: alphaG_rhs(interior)
   WRITES: betaG_rhs(interior)
-  # SYNC: chi_rhs
-  # SYNC: gamma_tilde_rhs
-  # SYNC: K_hat_rhs
-  # SYNC: A_tilde_rhs
-  # SYNC: Gam_tilde_rhs
-  # SYNC: Theta_rhs
-  # SYNC: alphaG_rhs
-  # SYNC: betaG_rhs
+  SYNC: chi_rhs
+  SYNC: gamma_tilde_rhs
+  SYNC: K_hat_rhs
+  SYNC: A_tilde_rhs
+  SYNC: Gam_tilde_rhs
+  SYNC: Theta_rhs
+  SYNC: alphaG_rhs
+  SYNC: betaG_rhs
 } "Calculate Z4c RHS"
+
+if (CCTK_Equals(boundary_conditions, "NewRadX")) {
+  SCHEDULE Z4c_apply_newradx_boundary_conditions IN Z4c_RHSGroup AFTER Z4c_RHS
+  {
+    LANG: C
+    READS: chi(everywhere)
+    READS: gamma_tilde(everywhere)
+    READS: K_hat(everywhere)
+    READS: A_tilde(everywhere)
+    READS: Gam_tilde(everywhere)
+    READS: Theta(everywhere)
+    READS: alphaG(everywhere)
+    READS: betaG(everywhere)
+    READS: chi_rhs(everywhere)
+    READS: gamma_tilde_rhs(everywhere)
+    READS: K_hat_rhs(everywhere)
+    READS: A_tilde_rhs(everywhere)
+    READS: Gam_tilde_rhs(everywhere)
+    READS: Theta_rhs(everywhere)
+    READS: alphaG_rhs(everywhere)
+    READS: betaG_rhs(everywhere)
+    WRITES: chi_rhs(interior)
+    WRITES: gamma_tilde_rhs(interior)
+    WRITES: K_hat_rhs(interior)
+    WRITES: A_tilde_rhs(interior)
+    WRITES: Gam_tilde_rhs(interior)
+    WRITES: Theta_rhs(interior)
+    WRITES: alphaG_rhs(interior)
+    WRITES: betaG_rhs(interior)
+  } "Apply radiative boundary conditions to Z4c RHS variables using NewRadX"
+}

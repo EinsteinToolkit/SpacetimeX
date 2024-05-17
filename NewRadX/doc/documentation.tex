@@ -1,0 +1,418 @@
+% *======================================================================*
+%  Cactus Thorn template for ThornGuide documentation
+%  Author: Ian Kelley
+%  Date: Sun Jun 02, 2002
+%  $Header$
+%
+%  Thorn documentation in the latex file doc/documentation.tex
+%  will be included in ThornGuides built with the Cactus make system.
+%  The scripts employed by the make system automatically include
+%  pages about variables, parameters and scheduling parsed from the
+%  relevant thorn CCL files.
+%
+%  This template contains guidelines which help to assure that your
+%  documentation will be correctly added to ThornGuides. More
+%  information is available in the Cactus UsersGuide.
+%
+%  Guidelines:
+%   - Do not change anything before the line
+%       % START CACTUS THORNGUIDE",
+%     except for filling in the title, author, date, etc. fields.
+%        - Each of these fields should only be on ONE line.
+%        - Author names should be separated with a \\ or a comma.
+%   - You can define your own macros, but they must appear after
+%     the START CACTUS THORNGUIDE line, and must not redefine standard
+%     latex commands.
+%   - To avoid name clashes with other thorns, 'labels', 'citations',
+%     'references', and 'image' names should conform to the following
+%     convention:
+%       ARRANGEMENT_THORN_LABEL
+%     For example, an image wave.eps in the arrangement CactusWave and
+%     thorn WaveToyC should be renamed to CactusWave_WaveToyC_wave.eps
+%   - Graphics should only be included using the graphicx package.
+%     More specifically, with the "\includegraphics" command.  Do
+%     not specify any graphic file extensions in your .tex file. This
+%     will allow us to create a PDF version of the ThornGuide
+%     via pdflatex.
+%   - References should be included with the latex "\bibitem" command.
+%   - Use \begin{abstract}...\end{abstract} instead of \abstract{...}
+%   - Do not use \appendix, instead include any appendices you need as
+%     standard sections.
+%   - For the benefit of our Perl scripts, and for future extensions,
+%     please use simple latex.
+%
+% *======================================================================*
+%
+% Example of including a graphic image:
+%    \begin{figure}[ht]
+% 	\begin{center}
+%    	   \includegraphics[width=6cm]{MyArrangement_MyThorn_MyFigure}
+% 	\end{center}
+% 	\caption{Illustration of this and that}
+% 	\label{MyArrangement_MyThorn_MyLabel}
+%    \end{figure}
+%
+% Example of using a label:
+%   \label{MyArrangement_MyThorn_MyLabel}
+%
+% Example of a citation:
+%    \cite{MyArrangement_MyThorn_Author99}
+%
+% Example of including a reference
+%   \bibitem{MyArrangement_MyThorn_Author99}
+%   {J. Author, {\em The Title of the Book, Journal, or periodical}, 1 (1999),
+%   1--16. {\tt http://www.nowhere.com/}}
+%
+% *======================================================================*
+
+% If you are using CVS use this line to give version information
+% $Header$
+
+\documentclass{article}
+
+% Use the Cactus ThornGuide style file
+% (Automatically used from Cactus distribution, if you have a
+%  thorn without the Cactus Flesh download this from the Cactus
+%  homepage at www.cactuscode.org)
+\usepackage{../../../../doc/latex/cactus}
+
+\begin{document}
+
+% The author of the documentation
+\author{Cheng-Hsin Cheng,
+  Jake Doherty,
+  Michail Chabanov,
+	Alexandru Dima
+	}
+
+% The title of the document (not necessarily the name of the Thorn)
+\title{NewRadX}
+
+% the date your document was last changed, if your document is in CVS,
+% please use:
+%    \date{$ $Date$ $}
+\date{April 17 2024}
+
+\maketitle
+
+% Do not delete next line
+% START CACTUS THORNGUIDE
+
+% Add all definitions used in this documentation here
+%   \def\mydef etc
+
+% Add an abstract for this thorn's documentation
+\begin{abstract}
+This thorn implements radiative boundary conditions for \code{CarpetX}. The
+original implementation was introduced in the \code{Carpet}-based \code{NewRad}
+thorn in the \code{EinsteinEvolve}~\cite{SpacetimeX_NewRadX_EinsteinEvolve}
+arrangement.
+\end{abstract}
+
+% The following sections are suggestive only.
+% Remove them or add your own.
+
+\section{Introduction}
+This thorn provides routines to implement radiative boundary conditions as
+described in section VI of~\cite{SpacetimeX_NewRadX_Alcubierre:2002kk}:
+\begin{equation}
+f = f_0 + u(r - v t)/r\mbox{,}
+\label{eqn:SpacetimeX_NewRadX_bc}
+\end{equation}
+in its differential form
+\begin{equation}
+\partial_t f + v \partial_r f - v\,(f - f_0) = 0\mbox{,}
+\label{eqn:SpacetimeX_NewRadX_diff_bc}
+\end{equation}
+where $v$ is the asymptotic propagation speed of the field $f$ and $f_0$
+is its asymptotic value.
+
+\section{Physical System}
+% RH: this is copied verbatim from Alcubierre:2002kk
+Quoting~\cite{SpacetimeX_NewRadX_Alcubierre:2002kk}:
+
+At the outer boundary we use a radiation (Sommerfeld) boundary
+condition.  We start from the assumption that near the boundary all
+fields behave as spherical waves, namely we impose the condition
+\begin{equation}
+f = f_0 + u(r-vt)/r .
+\label{eq:radiation}
+\end{equation}
+Where $f_0$ is the asymptotic value of a given dynamical variable
+(typically 1 for the lapse and diagonal metric components, and zero
+for everything else), and $v$ is some wave speed.  If our
+boundary is sufficiently far away one can safely assume that the speed
+of light is 1, so $v=1$ for most fields.  However, the gauge variables
+can easily propagate with a different speed implying a different value
+of $v$.
+
+In practice, we do not use the boundary condition~(\ref{eq:radiation})
+as it stands, but rather we use it in differential form:
+\begin{equation}
+\partial_t f + v \partial_r f - v \, (f - f_0)/r = 0 .
+\end{equation}
+Since our code is written in Cartesian coordinates, we transform the
+last condition to
+\begin{equation}
+\frac{x_i}{r} \, \partial_t f + v \partial_i f + \frac{v x_i}{r^2} \,
+\left( f - f_0 \right) = 0 .
+\end{equation}
+We finite difference this condition consistently to second order in
+both space and time and apply it to all dynamic variables (with
+possible different values of $f_0$ and $v$) at all boundaries.
+
+There is a final subtlety in our boundary treatment.  Wave propagation
+is not the only reason why fields evolve near a boundary.  Simple
+infall of the coordinate observers will cause some small evolution as
+well, and such evolution is poorly modeled by a propagating wave. This
+is particularly important at early times, when the radiative boundary
+condition introduces a bad transient effect. In order to minimize the
+error at our boundaries introduced by such non-wavelike evolution, we
+allow for boundary behavior of the form:
+\begin{equation}
+f = f_0 + u(r-vt)/r + h(t)/r^n ,
+\label{eq:radpower}
+\end{equation}
+with $h$ a function of $t$ alone and $n$ some unknown power. This
+leads to the differential equation
+\begin{eqnarray}
+\partial_t f + v \partial_r f
+- \frac{v}{r} \, (f - f_0) &=&
+\frac{v h(t)}{r^{n+1}} \left( 1 - n v \right)
++ \frac{h'(t)}{r^n} \nonumber \\
+&\simeq& \frac{h'(t)}{r^n} \qquad \mathrm{for\ large\ } r ,
+\end{eqnarray}
+or in Cartesian coordinates
+\begin{equation}
+\frac{x_i}{r} \, \partial_t f + v \partial_i f + \frac{v x_i}{r^2} \,
+\left( f - f_0 \right) \simeq \frac{x_i h'(t)}{r^{n+1}} .
+\label{eqn:SpacetimeX_NewRadX_num_bc}
+\end{equation}
+
+This expression still contains the unknown function $h'(t)$. Having
+chosen a value of $n$, one can evaluate the above expression one point
+away from the boundary to solve for $h'(t)$, and then use this value
+at the boundary itself.  Empirically, we have found that taking $n=3$
+almost completely eliminates the bad transient caused by the radiative
+boundary condition on its own.
+
+\section{Numerical Implementation}
+The thorn implements the boundary condition
+~\eqref{eqn:SpacetimeX_NewRadX_num_bc} for the evolution.  The original
+\code{Carpet}-based version of \code{NewRad} provides an additional
+routine \code{ExtrapolateGammas}, which can be used to extrapolate
+a grid function from the interior to the outer boundaries at $t=0$.
+Originally, this was used in the BSSN evolution thorn \code{ML\_BSSN}
+on the contracted Christoffel symbols
+$g^{jk} \Gamma^i_{jk}$ (\code{Xt1}\ldots\code{Xt3} in the code).
+This extrapolation routine is not yet ported over to the current version
+of \code{NewRadX}.
+
+
+% \subsection{Extrapolation}
+% In the \code{CarpetX} version of NewRadX, the boundary information is
+% obtained from the \code{Loop} thorn.
+%
+% At outer boundary points, as determined by \code{GenericFD}'s routine
+% \code{GenericFD\_GetBoundaryInfo} we use cubic polynomials along the
+% normal of the boundary to extrapolate data from the interior into the
+% boundary region. Due to the use of cubic polynomial we require at least
+% four (4) points of valid data to be available for the extrapolation.
+% This \emph{includes} ghost zones, which are assumed to contain valid
+% data in the interior of the domain.
+
+\subsection{Radiative boundary condition}
+The derivatives $\partial_i f$ appearing in
+\eqref{eqn:SpacetimeX_NewRadX_num_bc} are approximated as
+2\textsuperscript{nd} order accurate finite difference expressions using
+centred expressions
+\begin{equation}
+f'(x) \approx \frac{f(x-\Delta x) - f(x+\Delta x)}{2\Delta x}
+\end{equation}
+and one sided expressions
+\begin{equation}
+f'(x) \approx \pm\frac{3 f(x) - 4 f(x\mp\Delta x) + f(x\mp2\Delta
+x)}{2\Delta x}\mbox{,}
+\end{equation}
+for boundaries around the $\pm$ coordinate direction.
+
+% copied from newrad.cc so likely originally written by Miguel
+% Alcubierre.
+Finally we try to extrapolate for the part of the boundary
+that does not behave as a pure wave (i.e.\ Coulomb type
+terms caused by infall of the coordinate lines).
+
+This we do by comparing the source term \code{nghostzones} grid points
+away from the boundary (which we already have), to what
+we would have obtained if we had used the boundary
+condition there. The difference gives us an idea of the
+missing part and we extrapolate that to the boundary
+assuming a power-law decay.
+
+\section{Using This Thorn}
+The thorn provides the routine \code{NewRadX\_Apply}, which should be scheduled
+in the \code{ODESolvers\_RHS} bin to apply radiative boundary conditions on
+evolved variables.  To use it in an evolution thorn, it can either be called
+inside the RHS evaluation routine, or scheduled in a separate function right
+after the RHS routine.
+
+The call signature is:
+\begin{verbatim}
+void NewRadX_Apply                               \
+        (const cGH *restrict const cctkGH,       \
+         const Loop::GF3D2<const CCTK_REAL> var, \
+         Loop::GF3D2<CCTK_REAL> rhs,             \
+         CCTK_REAL var0,                         \
+         CCTK_REAL v0,                           \
+         CCTK_REAL radpower)
+\end{verbatim}
+where \code{var0} corresponds to $f_0$, \code{v0} is $v$ and
+\code{radpower} is the assumed decay exponent $n$.
+
+\subsection{Obtaining This Thorn}
+The thorn is part of the \code{SpacetimeX} arrangement available on
+GitHub.
+\begin{verbatim}
+git clone git@github.com:lwJi/SpacetimeX.git
+\end{verbatim}
+
+\subsection{Basic Usage}
+For an overview of the implementation and usage of this thorn, please
+see~\cite{SpacetimeX_NewRadX_intro_presentation} for a presentation by
+Alexandru Dima and Cheng-Hsin Cheng during the weekly \code{CarpetX}
+developer meetings.
+
+
+\subsection{Special Behaviour}
+In contrast with the \code{Carpet}-version of \code{NewRad}, which updates
+the RHS variables on the physical outer boundary of the simulation domain,
+\code{NewRadX} updates them on the so-called ``outermost interior points''.
+These points are defined as the interior points which are located
+\code{nghostzones} or fewer grid points from the outer boundary.
+Therefore, the boundary conditions are effectively applied on a set of points
+that are labelled as ``interior'' in \code{CarpetX}.
+It is necessary to introduce this change because imposing a wave-like time
+evolution on the \code{CarpetX} ``proper'' boundary points is incompatible with the
+synchronization conducted by AMReX.
+
+
+Currently, this thorn only supports single-patch, Cartesian grids provided by
+\code{CarpetX}, but not multi-patch coordinate systems.
+
+
+\subsection{Interaction With Other Thorns}
+This thorn requires thorn \code{Loop} which is part of
+\code{CarpetX}.
+
+\subsection{Examples}
+The simplest example is likely to inspect the source code for
+\code{TestNewRadX}, which is a thorn from \code{SpacetimeX} that tests the
+boundary condition on the evolution of a scalar pulse on flat background.
+Here the boundary conditions are applied in the RHS calculation routine
+\code{TestNewRadX\_RHS}, where \code{NewRadX\_Apply} is called after the main
+loop that updates the RHS of the state variables in the interior.
+
+\begin{verbatim}
+<configuration.ccl>
+REQUIRES Loop NewRadX
+\end{verbatim}
+
+\begin{verbatim}
+<interface.ccl>
+USES INCLUDE HEADER: newradx.hxx
+\end{verbatim}
+
+\begin{verbatim}
+<schedule.ccl>
+SCHEDULE TestNewRadX_RHS IN ODESolvers_RHS
+{
+  LANG: C
+  READS: state(everywhere)
+  WRITES: rhs(interior)
+  SYNC: rhs
+} "Calculate scalar wave RHS"
+\end{verbatim}
+
+\begin{verbatim}
+<test_newradx.cxx>
+#include <newradx.hxx>
+
+extern "C" void TestNewRadX_RHS(CCTK_ARGUMENTS) {
+  DECLARE_CCTK_ARGUMENTSX_TestNewRadX_RHS;
+  DECLARE_CCTK_PARAMETERS;
+
+  /* First loop over the interior to update RHS of the state variables */
+  grid.loop_int_device<0, 0, 0>(grid.nghostzones,
+                                [=] CCTK_DEVICE(const Loop::PointDesc &p)
+                                    CCTK_ATTRIBUTE_ALWAYS_INLINE {
+                                      uu_rhs(p.I) = vv(p.I);
+                                      vv_rhs(p.I) = Laplacian_4thorder(uu, p);
+                                    });
+
+  /* After RHS grid functions are updated, apply boundary conditions */
+  if (test_use_newradx) {
+    NewRadX::NewRadX_Apply(cctkGH, uu, uu_rhs, 0, 1, n_falloff);
+    NewRadX::NewRadX_Apply(cctkGH, vv, vv_rhs, 0, 1, n_falloff + 1);
+  }
+
+}
+\end{verbatim}
+
+
+Other examples of \code{CarpetX} evolution thorns that use \code{NewRadX}
+include \code{CanudaX\_BSSNMoL}\cite{SpacetimeX_NewRadX_CanudaX_BSSNMoL}
+and \code{Z4c}\cite{SpacetimeX_NewRadX_Z4c}.
+
+
+\subsection{Support and Feedback}
+Please use the Einstein Toolkit mailing list
+\url{users@einsteintoolkit.org} to report issues and ask for help.
+
+\section{History}
+
+\subsection{Thorn Source Code}
+\begin{itemize}
+\item Initial version of method likely by Miguel Alcubierre;
+\item \code{Carpet} version of code by Erik Schnetter;
+\item \code{CarpetX} version of code by Cheng-Hsin Cheng, Jake Doherty,
+  Michail Chabanov, Alexandru Dima.
+\end{itemize}
+
+\subsection{Thorn Documentation}
+\begin{itemize}
+\item Initial version by Roland Haas using text by Miguel, Erik.
+\item Current version by Alexandru Dima and Cheng-Hsin Cheng.
+\end{itemize}
+
+\subsection{Acknowledgements}
+This documentation is based on the original one for the \code{Carpet} version
+of \code{NewRad}, which copies text from comments in the source code as well
+as the paper~\cite{SpacetimeX_NewRadX_Alcubierre:2002kk}.
+
+\begin{thebibliography}{9}
+
+\bibitem{SpacetimeX_NewRadX_EinsteinEvolve} ``EinsteinEvolve``,
+  \url{https://bitbucket.org/einsteintoolkit/einsteinevolve}.
+
+\bibitem{SpacetimeX_NewRadX_Alcubierre:2002kk}
+  M.~Alcubierre, B.~Bruegmann, P.~Diener, M.~Koppitz, D.~Pollney, E.~Seidel and R.~Takahashi,
+  ``Gauge conditions for long term numerical black hole evolutions without excision,''
+  Phys.\ Rev.\ D {\bf 67}, 084023 (2003)
+  doi:10.1103/PhysRevD.67.084023
+  [gr-qc/0206072].
+
+\bibitem{SpacetimeX_NewRadX_intro_presentation} ``NewRadX Intro``,
+  \url{https://github.com/eschnett/CarpetX/wiki/NewRadX-Intro}.
+
+\bibitem{SpacetimeX_NewRadX_CanudaX_BSSNMoL} ``CanudaX\_Lean``,
+  \url{https://bitbucket.org/canuda/canudax_lean}.
+
+\bibitem{SpacetimeX_NewRadX_Z4c} ``Z4c'',
+  \url{https://github.com/lwJi/SpacetimeX/tree/main/Z4c}.
+
+\end{thebibliography}
+
+% Do not delete next line
+% END CACTUS THORNGUIDE
+
+\end{document}

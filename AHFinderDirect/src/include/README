@@ -1,0 +1,15 @@
+This directory holds header files common to all of this thorn.
+
+fake_cctk.h
+	is a fake version of "cctk.h" for non-Cactus standalone test
+	compilations, containing typedefs for CCTK_INT, CCTK_REAL, etc
+
+stdc.h
+	is a low-level file defining Jonathan Thornburg's "dialect" of C,
+	including the "then" pseudo-keyword you'll see all through the
+	source code
+
+config.hh
+	defines compile-time configuration for this thorn, eg the "fp"
+	typedef (= CCTK_REAL), the choice of 2nd vs 4th order finite
+	differencing, etc etc

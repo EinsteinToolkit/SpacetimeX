@@ -1,0 +1,12 @@
+# Compare AHFinderDirect's output files (suffix "gp") and Cactus
+# output files (suffixes "xg" and "asc).  Ignore OpenDX control files
+# (suffix "dx").
+EXTENSIONS gp
+
+ABSTOL 1e-8
+RELTOL 1e-8
+
+TEST recoverML
+{
+  NPROCS 1
+}

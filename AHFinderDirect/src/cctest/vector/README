@@ -1,0 +1,28 @@
+$Header$
+
+This directory contains a set of "hello, world" programs to test how
+C++ namespaces are handled for the STL vector class.
+
+Each .cc file is a "hello, world\n" program using a particular set of
+options for what header file to #include, what (if any) using declarations
+or definitions to use, and whether or not to use an explicit std::
+qualifier when referring to the vector class.
+
+According to standard C++, #include <vector> puts names *only* in the
+std:: namespace, so the vector-global.cc program should fail to compile.
+All the other programs should be legal in standard C++.
+
+					what to		what namespace		how we call	status
+					#include?	are we using		vector()?	in
+							vector() in?				standard
+								using?				C++
+
+vector_h-global.cc			<vector.h>	global	--		vector()	ok
+vector_h-std:std-vector.cc		<vector.h>	std	--		std::vector()	ok
+vector_h-std:using-std-vector.cc	<vector.h>	std	std::vector;	vector()	ok
+vector_h-std:using-namespace-std.cc	<vector.h>	std	namespace std;	vector()	ok
+
+vector-global.cc			<vector>	global	--		vector()	WRONG
+vector-std:std-vector.cc		<vector>	std	--		std::vector()	ok
+vector-std:using-std-vector.cc		<vector>	std	std::vector;	vector()	ok
+vector-std:using-namespace-std.cc	<vector>	std	namespace std;	vector()	ok

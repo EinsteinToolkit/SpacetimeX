@@ -13,7 +13,6 @@ BOOLEAN calc_constraints "Calculate constraints" STEERABLE=recover
 } yes
 
 
-
 BOOLEAN set_Theta_zero "set Theta to zero, which converts Z4c to BSSN"
 {
 } no
@@ -57,3 +56,48 @@ CCTK_REAL epsdiss "Dissipation coefficient <arXiv:gr-qc/0610128>" STEERABLE=alwa
 {
   0.0:* :: ""
 } 0.32
+
+KEYWORD boundary_conditions "boundary conditions"{
+  "NewRadX" :: "radiative boundary conditions using NewRadX"
+  "CarpetX" :: "use CarpetX default boundary conditions"
+} "CarpetX"
+
+CCTK_INT n_chi "n power of outgoing boundary r^n fall off rate for chi"
+{
+  0:2           :: "1 is reasonable"
+} 1
+
+CCTK_INT n_gammat "n power of outgoing boundary r^n fall off rate for gammat_ij"
+{
+  0:2           :: "1 is reasonable"
+} 1
+
+CCTK_INT n_Kh "n power of outgoing boundary r^n fall off rate for Kh"
+{
+  0:2           :: "Maybe 1?"
+} 1
+
+CCTK_INT n_At "n power of outgoing boundary r^n fall off rate for At_ij"
+{
+  0:2           :: "Maybe 1?"
+} 1
+
+CCTK_INT n_Gamt "n power of outgoing boundary r^n fall off rate for Gamt^i"
+{
+  0:2           :: "Maybe 1?"
+} 1
+
+CCTK_INT n_Theta "n power of outgoing boundary r^n fall off rate for Theta"
+{
+  0:2           :: "Maybe 1?"
+} 1
+
+CCTK_INT n_alphaG "n power of outgoing boundary r^n fall off rate for alpha"
+{
+  0:2           :: "1 is my guess"
+} 1
+
+CCTK_INT n_betaG "n power of outgoing boundary r^n fall off rate for beta"
+{
+  0:2           :: "1 is my guess"
+} 1
