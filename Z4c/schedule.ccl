@@ -23,6 +23,53 @@ STORAGE: Theta_rhs
 STORAGE: alphaG_rhs
 STORAGE: betaG_rhs
 
+if(use_subcycling_wip) {
+  STORAGE: chi_old
+  STORAGE: gamma_tilde_old
+  STORAGE: K_hat_old
+  STORAGE: A_tilde_old
+  STORAGE: Gam_tilde_old
+  STORAGE: Theta_old
+  STORAGE: alphaG_old
+  STORAGE: betaG_old
+
+  STORAGE: chi_k1
+  STORAGE: gamma_tilde_k1
+  STORAGE: K_hat_k1
+  STORAGE: A_tilde_k1
+  STORAGE: Gam_tilde_k1
+  STORAGE: Theta_k1
+  STORAGE: alphaG_k1
+  STORAGE: betaG_k1
+
+  STORAGE: chi_k2
+  STORAGE: gamma_tilde_k2
+  STORAGE: K_hat_k2
+  STORAGE: A_tilde_k2
+  STORAGE: Gam_tilde_k2
+  STORAGE: Theta_k2
+  STORAGE: alphaG_k2
+  STORAGE: betaG_k2
+
+  STORAGE: chi_k3
+  STORAGE: gamma_tilde_k3
+  STORAGE: K_hat_k3
+  STORAGE: A_tilde_k3
+  STORAGE: Gam_tilde_k3
+  STORAGE: Theta_k3
+  STORAGE: alphaG_k3
+  STORAGE: betaG_k3
+
+  STORAGE: chi_k4
+  STORAGE: gamma_tilde_k4
+  STORAGE: K_hat_k4
+  STORAGE: A_tilde_k4
+  STORAGE: Gam_tilde_k4
+  STORAGE: Theta_k4
+  STORAGE: alphaG_k4
+  STORAGE: betaG_k4
+}
+
 
 
 ################################################################################
