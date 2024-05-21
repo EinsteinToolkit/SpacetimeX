@@ -296,6 +296,51 @@ SCHEDULE Z4c_RHS IN Z4c_RHSGroup
   WRITES: betaG_rhs(interior)
 } "Calculate Z4c RHS"
 
+SCHEDULE Z4c_SyncKsOld IN ODESolvers_SyncKsOld
+{
+  LANG: C
+  SYNC: chi_old
+  SYNC: gamma_tilde_old
+  SYNC: K_hat_old
+  SYNC: A_tilde_old
+  SYNC: Gam_tilde_old
+  SYNC: Theta_old
+  SYNC: alphaG_old
+  SYNC: betaG_old
+  SYNC: chi_k1
+  SYNC: gamma_tilde_k1
+  SYNC: K_hat_k1
+  SYNC: A_tilde_k1
+  SYNC: Gam_tilde_k1
+  SYNC: Theta_k1
+  SYNC: alphaG_k1
+  SYNC: betaG_k1
+  SYNC: chi_k2
+  SYNC: gamma_tilde_k2
+  SYNC: K_hat_k2
+  SYNC: A_tilde_k2
+  SYNC: Gam_tilde_k2
+  SYNC: Theta_k2
+  SYNC: alphaG_k2
+  SYNC: betaG_k2
+  SYNC: chi_k3
+  SYNC: gamma_tilde_k3
+  SYNC: K_hat_k3
+  SYNC: A_tilde_k3
+  SYNC: Gam_tilde_k3
+  SYNC: Theta_k3
+  SYNC: alphaG_k3
+  SYNC: betaG_k3
+  SYNC: chi_k4
+  SYNC: gamma_tilde_k4
+  SYNC: K_hat_k4
+  SYNC: A_tilde_k4
+  SYNC: Gam_tilde_k4
+  SYNC: Theta_k4
+  SYNC: alphaG_k4
+  SYNC: betaG_k4
+} "Sync old and ks"
+
 if (CCTK_Equals(boundary_conditions, "NewRadX")) {
   SCHEDULE Z4c_apply_newradx_boundary_conditions IN Z4c_RHSGroup AFTER Z4c_RHS
   {
