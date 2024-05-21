@@ -145,6 +145,7 @@ Numerical/AEILocalInterp
 !TARGET   = $ARR
 !TYPE     = git
 !URL      = https://github.com/EinsteinToolkit/CarpetX.git
+!REPO_BRANCH = feature/subcycle
 !REPO_PATH= $2
 !CHECKOUT =
 CarpetX/ADMBaseX
