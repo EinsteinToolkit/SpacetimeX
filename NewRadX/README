@@ -1,0 +1,16 @@
+Cactus Code Thorn NewRadX
+Author(s)    : Alexandru Dima <adima@uniroma1.it>
+               Cheng-Hsin Cheng <chcheng3@illinois.edu>
+               Michail Chabanov <micsma@rit.edu>
+               Jake Doherty <jakedoherty@utexas.edu>
+Maintainer(s): Cheng-Hsin Cheng <chcheng3@illinois.edu>
+Licence      : GPL
+--------------------------------------------------------------------------
+
+1. Purpose
+
+This thorn provides a CarpetX-compatible implementation of radiative
+boundary conditions. It is based on the "NewRad" thorn from the
+EinsteinEvolve arrangement for Carpet, originally implemented in BSSN_MoL.
+
+For more details, see the documentation in the ThornGuide.
