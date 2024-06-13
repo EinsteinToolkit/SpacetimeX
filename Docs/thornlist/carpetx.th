@@ -159,24 +159,3 @@ CarpetX/HydroBaseX
 CarpetX/Loop
 CarpetX/ODESolvers
 CarpetX/TmunuBaseX
-
-# SpacetimeX thorns
-!TARGET   = $ARR
-!TYPE     = git
-!URL      = https://github.com/EinsteinToolkit/SpacetimeX.git
-!REPO_PATH= $2
-!CHECKOUT =
-SpacetimeX/AHFinderDirect
-SpacetimeX/AHFinderX
-SpacetimeX/BrillLindquist
-SpacetimeX/Cowling
-SpacetimeX/NewRadX
-SpacetimeX/TestNewRadX
-SpacetimeX/Punctures
-SpacetimeX/PunctureTracker
-SpacetimeX/SphericalHarmonics
-SpacetimeX/SphericalSurface
-SpacetimeX/StaticTrumpet
-SpacetimeX/TwoPuncturesX
-SpacetimeX/Weyl
-SpacetimeX/Z4c

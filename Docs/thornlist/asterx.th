@@ -180,3 +180,16 @@ SpacetimeX/StaticTrumpet
 SpacetimeX/TwoPuncturesX
 SpacetimeX/Weyl
 SpacetimeX/Z4c
+
+# AsterX thorns
+!TARGET   = $ARR
+!TYPE     = git
+!URL      = https://github.com/jaykalinani/AsterX.git
+!REPO_PATH= $2
+!CHECKOUT =
+AsterX/AsterSeeds
+AsterX/AsterX
+AsterX/Con2PrimFactory
+AsterX/EOSX
+AsterX/ReconX
+AsterX/TOVSolverX
