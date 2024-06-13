@@ -9,4 +9,6 @@ cd build
 . Load-Module-AMReX.sh
 . Export-AMReX.sh
 . Compile-AMReX.sh
+make -j8 install
+make test_install
 ```

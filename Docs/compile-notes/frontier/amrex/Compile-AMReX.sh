@@ -1,5 +1,5 @@
 cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-      -DCMAKE_INSTALL_PREFIX=${HOME}/local \
+      -DCMAKE_INSTALL_PREFIX=${HOME}/local/amrex-24.06 \
       -DCMAKE_PREFIX_PATH='/opt/rocm-6.0.0/lib/cmake/AMDDeviceLibs;/opt/rocm-6.0.0/lib/cmake/amd_comgr;/opt/rocm-6.0.0/lib/cmake/hip;/opt/rocm-6.0.0/lib/cmake/hiprand;/opt/rocm-6.0.0/lib/cmake/hsa-runtime64;/opt/rocm-6.0.0/lib/cmake/rocprim;/opt/rocm/lib/cmake/rocrand' \
       -DAMReX_GPU_BACKEND=HIP \
       -DAMReX_AMD_ARCH=gfx90a \
