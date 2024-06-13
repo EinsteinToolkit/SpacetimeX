@@ -2,13 +2,15 @@
 
 ## Compile AMReX
 
-```
+```bash
 cd amrex
 mkdir build
 cd build
-. Load-Module-AMReX.sh
-. Export-AMReX.sh
-. Compile-AMReX.sh
+
+source Load-Module-AMReX.sh
+source Export-AMReX.sh
+source Compile-AMReX.sh
+
 make -j8 install
 make test_install
 ```
