@@ -1,3 +1,5 @@
+#!/bin/bash
+
 module purge
 module load PrgEnv-cray/8.5.0
 module load cce/17.0.0

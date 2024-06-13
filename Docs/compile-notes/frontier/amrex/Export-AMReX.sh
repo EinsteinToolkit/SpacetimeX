@@ -1,3 +1,5 @@
+#!/bin/bash
+
 export MPICH_GPU_SUPPORT_ENABLED=1
 export AMREX_AMD_ARCH=gfx90a
 export CC=$(which cc)
