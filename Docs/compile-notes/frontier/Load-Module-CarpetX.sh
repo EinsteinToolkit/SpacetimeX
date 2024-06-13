@@ -7,6 +7,14 @@ module load cpe/23.12
 module load rocm/6.0.0
 module load craype-accel-amd-gfx90a
 module load craype-x86-trento
+module load openpmd-api
+module load boost
+module load cray-fftw
+module load cray-hdf5-parallel
+module load gsl
+module load hwloc
+module load openblas
+module load zlib
 module unload darshan-runtime
 
 
