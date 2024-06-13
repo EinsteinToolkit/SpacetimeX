@@ -15,6 +15,8 @@ module load gsl
 module load hwloc
 module load openblas
 module load zlib
+module load adios2
+module load libjpeg-turbo
 module unload darshan-runtime
 
 
