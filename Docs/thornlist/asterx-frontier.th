@@ -120,7 +120,7 @@ ExternalLibraries/zlib
 ExternalLibraries/ADIOS2
 ExternalLibraries/AMReX
 #ExternalLibraries/NSIMD
-ExternalLibraries/openPMD
+#ExternalLibraries/openPMD
 ExternalLibraries/Silo
 ExternalLibraries/ssht
 ExternalLibraries/yaml_cpp
