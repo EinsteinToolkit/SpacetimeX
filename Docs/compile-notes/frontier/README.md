@@ -1,13 +1,22 @@
-# Compile on Frontier
+# Compile CarpetX (Frontier)
 
-## Compile CarpetX
+* Download CarpetX and SpacetimeX
+
+    ```bash
+    curl -kLO https://raw.githubusercontent.com/gridaphobe/CRL/master/GetComponents
+    chmod a+x GetComponents
+    ./GetComponents --root Cactus --parallel --no-shallow https://raw.githubusercontent.com/lwJi/SpacetimeX/main/Docs/thornlist/spacetimex.th
+    ```
+
+## The Short Way
+
 
 ### cce-17.0.0
 
 * Load modules
 
 ```bash
-source Load-Module-CarpetX-cce17.sh
+source repos/SpacetimeX/Docs/compile-notes/frontier/Load-Module-CarpetX-cce17.sh
 ```
 
 * Install AsterX
@@ -20,14 +29,12 @@ gmake -j24 AsterX
 ```
 
 
-
-
 ### cce-15.0.0
 
 * Load modules
 
 ```bash
-source Load-Module-CarpetX-cce15.sh
+source repos/SpacetimeX/Docs/compile-notes/frontier/Load-Module-CarpetX-cce15.sh
 ```
 
 * Install AsterX
@@ -41,18 +48,26 @@ gmake -j24 AsterX
 
 
 
+## The Long Way
 
-## Compile AMReX
+### Compile AMReX
+
+* Clone `amrex`
+
+```bash
+git clone https://github.com/AMReX-Codes/amrex.git
+```
+
+* Install `amrex` to `$HOME/local/amrex-24.06`
 
 ```bash
 cd amrex
 mkdir build
 cd build
 
-source Load-Module-AMReX.sh
-source Export-AMReX.sh
-source Compile-AMReX.sh
+source repos/SpacetimeX/Docs/compile-notes/frontier/amrex/Load-Module-AMReX.sh
+source repos/SpacetimeX/Docs/compile-notes/frontier/amrex/Export-AMReX.sh
+source repos/SpacetimeX/Docs/compile-notes/frontier/amrex/Compile-AMReX.sh
 
-make -j8 install
-make test_install
+make -j24 install
 ```
