@@ -2,8 +2,8 @@
 
 export MPICH_GPU_SUPPORT_ENABLED=1
 export AMREX_AMD_ARCH=gfx90a
-export CC=$(which cc)
-export CXX=$(which CC)
+export CC=$(which hipcc)
+export CXX=$(which hipcc)
 export FC=$(which ftn)
 export CFLAGS="-I${ROCM_PATH}/include"
 export CXXFLAGS="-I${ROCM_PATH}/include -Wno-pass-failed"
