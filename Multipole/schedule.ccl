@@ -13,7 +13,7 @@ schedule Multipole_Calc at analysis after Weyl_Weyl #after (calc_np,PsiKadelia,A
 {
   LANG: C
   OPTIONS: GLOBAL
-  Reads: Coordinates::vertex_coords
+  Reads: CoordinatesX::vertex_coords
   Writes: Multipole::harmonics(everywhere)
 } "Calculate Multipoles"
 
@@ -21,7 +21,7 @@ if (enable_test)
 {
     schedule Multipole_SetHarmonic at CCTK_INITIAL
     {
-      Reads: Coordinates::vertex_coords
+      Reads: CoordinatesX::vertex_coords
       Writes: Multipole::harmonics(interior)
 			SYNC: Multipole::harmonics
       LANG: C
@@ -38,7 +38,7 @@ if (enable_test_Weyl)
 {
     schedule Multipole_SetHarmonicWeyl at CCTK_INITIAL
     {
-      Reads: Coordinates::vertex_coords
+      Reads: CoordinatesX::vertex_coords
 			WRITES: WeylScal4::Psi4i_group(Interior)
 			WRITES: WeylScal4::Psi4r_group(Interior)
 			SYNC: WeylScal4::Psi4i_group
@@ -52,7 +52,7 @@ if (!enable_test && !enable_test_Weyl)
 	schedule Multipole_Init at initial
 	{
 		LANG: C
-		READS: Coordinates::vertex_coords
+		READS: CoordinatesX::vertex_coords
 		WRITES: Multipole::harmonics(interior)
 		SYNC: Multipole::harmonics
 	} "Init harmonics to zero to make CarpetX happy?"
