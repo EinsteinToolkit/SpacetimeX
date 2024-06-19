@@ -167,47 +167,47 @@ CCTK_REAL DriscollHealy2DIntegral(CCTK_REAL const *const f,
   return hx * hy * integrand_sum;
 }
 
-// 1D integrals
-
-static CCTK_REAL Simpson1DIntegral(CCTK_REAL const *f, int n, CCTK_REAL h)
-{
-  CCTK_REAL integrand_sum = 0;
-  int i = 0;
-
-  assert(f);
-  assert(n > 0);
-  assert(n % 2 == 0);
-
-  int p = n / 2;
-
-  integrand_sum += f[0] + f[n];
-
-  for (i = 1; i <= p-1; i++)
-    integrand_sum += 4 * f[2*i-1] + 2 * f[2*i];
-
-  integrand_sum += 4 * f[2*p-1];
-
-  return 1.0/3.0 * h * integrand_sum;
-}
-
-// 2D integral built up from 1D
-
-static CCTK_REAL Composite2DIntegral(CCTK_REAL const *f, int nx, int ny, CCTK_REAL hx, CCTK_REAL hy)
-{
-  CCTK_REAL integrand_sum = 0;
-
-  assert(nx > 0); assert(ny > 0); assert (f);
-  assert(nx % 2 == 0);
-  assert(ny % 2 == 0);
-
-  CCTK_REAL *g = new CCTK_REAL[ny+1];
-
-  for (int i = 0; i <= ny; i++)
-  {
-    g[i] = Simpson1DIntegral(&f[idx(0,i)], nx, hx);
-  }
-
-  integrand_sum = Simpson1DIntegral(g, ny, hy);
-  delete [] g;
-  return integrand_sum;
-}
+//// 1D integrals
+//
+//static CCTK_REAL Simpson1DIntegral(CCTK_REAL const *f, int n, CCTK_REAL h)
+//{
+//  CCTK_REAL integrand_sum = 0;
+//  int i = 0;
+//
+//  assert(f);
+//  assert(n > 0);
+//  assert(n % 2 == 0);
+//
+//  int p = n / 2;
+//
+//  integrand_sum += f[0] + f[n];
+//
+//  for (i = 1; i <= p-1; i++)
+//    integrand_sum += 4 * f[2*i-1] + 2 * f[2*i];
+//
+//  integrand_sum += 4 * f[2*p-1];
+//
+//  return 1.0/3.0 * h * integrand_sum;
+//}
+//
+//// 2D integral built up from 1D
+//
+//static CCTK_REAL Composite2DIntegral(CCTK_REAL const *f, int nx, int ny, CCTK_REAL hx, CCTK_REAL hy)
+//{
+//  CCTK_REAL integrand_sum = 0;
+//
+//  assert(nx > 0); assert(ny > 0); assert (f);
+//  assert(nx % 2 == 0);
+//  assert(ny % 2 == 0);
+//
+//  CCTK_REAL *g = new CCTK_REAL[ny+1];
+//
+//  for (int i = 0; i <= ny; i++)
+//  {
+//    g[i] = Simpson1DIntegral(&f[idx(0,i)], nx, hx);
+//  }
+//
+//  integrand_sum = Simpson1DIntegral(g, ny, hy);
+//  delete [] g;
+//  return integrand_sum;
+//}
