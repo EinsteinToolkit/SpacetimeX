@@ -18,23 +18,7 @@ namespace WeylScal4 {
 
 extern "C" void WeylScal4_psi4_calc_4th_SelectBCs(CCTK_ARGUMENTS)
 {
-  #ifdef DECLARE_CCTK_ARGUMENTS_WeylScal4_psi4_calc_4th_SelectBCs
-  DECLARE_CCTK_ARGUMENTS_CHECKED(WeylScal4_psi4_calc_4th_SelectBCs);
-  #else
-  DECLARE_CCTK_ARGUMENTS;
-  #endif
-  DECLARE_CCTK_PARAMETERS;
-  
-  if (cctk_iteration % WeylScal4_psi4_calc_4th_calc_every != WeylScal4_psi4_calc_4th_calc_offset)
-    return;
-  CCTK_INT ierr CCTK_ATTRIBUTE_UNUSED = 0;
-  ierr = KrancBdy_SelectGroupForBC(cctkGH, CCTK_ALL_FACES, GetBoundaryWidth(cctkGH), -1 /* no table */, "WeylScal4::Psi4i_group","flat");
-  if (ierr < 0)
-    CCTK_WARN(CCTK_WARN_ALERT, "Failed to register flat BC for WeylScal4::Psi4i_group.");
-  ierr = KrancBdy_SelectGroupForBC(cctkGH, CCTK_ALL_FACES, GetBoundaryWidth(cctkGH), -1 /* no table */, "WeylScal4::Psi4r_group","flat");
-  if (ierr < 0)
-    CCTK_WARN(CCTK_WARN_ALERT, "Failed to register flat BC for WeylScal4::Psi4r_group.");
-  return;
+  DECLARE_CCTK_ARGUMENTSX_WeylScal4_psi4_calc_4th_SelectBCs;
 }
 
 static void WeylScal4_psi4_calc_4th_Body(const cGH* restrict const cctkGH, const int dir, const int face, const CCTK_REAL normal[3], const CCTK_REAL tangentA[3], const CCTK_REAL tangentB[3], const int imin[3], const int imax[3], const int n_subblock_gfs, CCTK_REAL* restrict const subblock_gfs[])
