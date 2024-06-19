@@ -56,7 +56,7 @@ schedule WeylScal4_psi4_calc_4th in WeylScal4_psi4_calc_4th_group
   READS: ADMBaseX::gyy(Everywhere)
   READS: ADMBaseX::gyz(Everywhere)
   READS: ADMBaseX::gzz(Everywhere)
-  READS: Coordinates::vertex_coords(Everywhere)
+  READS: CoordinatesX::vertex_coords(Everywhere)
   WRITES: WeylScal4::Psi4i(Interior)
   WRITES: WeylScal4::Psi4r(Interior)
 } "WeylScal4_psi4_calc_4th"
