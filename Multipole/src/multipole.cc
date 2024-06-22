@@ -184,13 +184,6 @@ static void get_spin_weights(Multipole::variable_desc vars[], int n_vars,
   *n_weights = n_spin_weights;
 }
 
-// For backward compatibility we allow the user to set l_mode instead
-// of l_max, but if it is left at the default of -1, l_max is used.
-static int get_l_max() {
-  DECLARE_CCTK_PARAMETERS;
-  return l_mode == -1 ? l_max : l_mode;
-}
-
 static void
 setup_harmonics(const int spin_weights[max_spin_weights], int n_spin_weights,
                 int lmax, CCTK_REAL th[], CCTK_REAL ph[], int array_size,
@@ -216,34 +209,6 @@ setup_harmonics(const int spin_weights[max_spin_weights], int n_spin_weights,
                                 imY[si][l][m + l]);
       }
     }
-  }
-}
-
-extern "C" void Multipole_ParamCheck(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_PARAMETERS;
-  DECLARE_CCTK_ARGUMENTS;
-
-  if (l_mode != -1) {
-    CCTK_WARN(CCTK_WARN_ALERT,
-              "The parameter l_mode is deprecated. Use l_max instead.  For "
-              "compatibility, l_max = l_mode is being used.");
-  }
-
-  if (!CCTK_Equals(mode_type, "deprecated")) {
-    CCTK_WARN(CCTK_WARN_ALERT, "The parameter mode_type is deprecated and is "
-                               "no longer used.  All modes will be computed.");
-  }
-
-  if (l_min != -1) {
-    CCTK_WARN(CCTK_WARN_ALERT,
-              "The parameter l_min is deprecated and is no longer used.  Modes "
-              "from l = 0 will be computed.");
-  }
-
-  if (m_mode != -100) {
-    CCTK_WARN(
-        CCTK_WARN_ALERT,
-        "The parameter m_mode is deprecated. All m modes will be computed.");
   }
 }
 
@@ -290,7 +255,7 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
   if (out_every == 0 || cctk_iteration % out_every != 0)
     return;
 
-  int lmax = get_l_max();
+  int lmax = l_max;
 
   assert(lmax + 1 <= max_l_modes);
 

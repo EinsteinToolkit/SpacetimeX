@@ -10,12 +10,6 @@ if (enable_test)
 }
 
 
-SCHEDULE Multipole_ParamCheck AT CCTK_PARAMCHECK
-{
-  LANG: C
-  OPTIONS: GLOBAL
-} "Check Multipole parameters"
-
 SCHEDULE Multipole_Calc AT analysis AFTER WeylScal4_psi4_calc_4th
 {
   LANG: C

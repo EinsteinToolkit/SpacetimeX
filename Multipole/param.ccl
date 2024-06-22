@@ -121,34 +121,6 @@ CCTK_BOOLEAN test_mode_proportional_to_r "whether the test spherical harmonic co
 {
 } "no"
 
-
-# This parameter is deprecated and is no longer used
-KEYWORD mode_type "Which type of mode extraction do we have" STEERABLE=always
-{
-  "all modes"     :: "Extract all modes up to (l_mode, m_mode)."
-  "specific mode" :: "Select one specific (l_mode, m_mode) mode"
-  "deprecated"    :: "Deprecated"
-} "deprecated"
-
-# This parameter is deprecated and is no longer used
-CCTK_INT l_min "all modes: above which l mode to calculate/ specific mode: which l mode to extract" STEERABLE=always
-{
-  -1:* :: "Deprecated"
-} -1
-
-# This parameter is deprecated and is only used if set to a nondefault
-# value, in which case it is a synonym for l_max.
-CCTK_INT l_mode "The maximum l mode to extract" STEERABLE=always
-{
-  -1:* :: "Deprecated"
-} -1
-
-# This parameter is deprecated and is no longer used
-CCTK_INT m_mode "all modes: Up to which m mode to calculate/ specific mode: which m mode to extract " STEERABLE=always
-{
-  -100:* :: "Deprecated"
-} -100
-
 CCTK_BOOLEAN output_ascii "Output a simple ASCII file for each mode at each radius"
 {
 } "yes"
