@@ -61,7 +61,7 @@ if (enable_test_Weyl)
 
 if (!enable_test && !enable_test_Weyl)
 {
-	SCHEDULE Multipole_Init AT initial
+	SCHEDULE Multipole_Init AT CCTK_INITIAL
 	{
 		LANG: C
 		READS: CoordinatesX::vertex_coords
