@@ -1,1 +1,10 @@
-SRCS=interpolate.cc multipole.cc utils.cc sphericalharmonic.cc integrate.cc tests.cc
+# Main make.code.defn file for thorn Multipole
+
+# Source files in this directory
+SRCS = \
+  interpolate.cc \
+  multipole.cc \
+  utils.cc \
+  sphericalharmonic.cc \
+  integrate.cc \
+  tests.cc
