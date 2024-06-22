@@ -16,11 +16,6 @@
 
 namespace WeylScal4 {
 
-extern "C" void WeylScal4_psi4_calc_4th_SelectBCs(CCTK_ARGUMENTS)
-{
-  DECLARE_CCTK_ARGUMENTSX_WeylScal4_psi4_calc_4th_SelectBCs;
-}
-
 static void WeylScal4_psi4_calc_4th_Body(const cGH* restrict const cctkGH, const int dir, const int face, const CCTK_REAL normal[3], const CCTK_REAL tangentA[3], const CCTK_REAL tangentB[3], const int imin[3], const int imax[3], const int n_subblock_gfs, CCTK_REAL* restrict const subblock_gfs[])
 {
   DECLARE_CCTK_ARGUMENTS;

@@ -1,54 +1,16 @@
 # File produced by Kranc
 
-STORAGE: Psi4r_group[timelevels]
-STORAGE: Psi4i_group[timelevels]
+STORAGE: Psi4r_group
+STORAGE: Psi4i_group
 
-SCHEDULE GROUP WeylScal4_psi4_calc_4th_group AT initial AFTER Z4c_PostStepGroup2
-{
-} "Group to compute psi4"
-
-if (CCTK_IsThornActive("ODESolvers")) {
-  SCHEDULE GROUP WeylScal4_psi4_calc_4th_group IN ODESolvers_PostStep after ADMBaseX_SetADMVars 
-  {
-  } "Group to compute psi4"
-} else {
-  SCHEDULE GROUP WeylScal4_psi4_calc_4th_group AT postregrid AFTER ADMBaseX_SetADMVars 
-  {
-  } "Group to compute psi4"
-
-  SCHEDULE GROUP WeylScal4_psi4_calc_4th_group AT poststep AFTER ADMBaseX_SetADMVars 
-  {
-  } "Group to compute psi4"
-}
-
-SCHEDULE WeylScal4_psi4_calc_4th IN WeylScal4_psi4_calc_4th_group
+SCHEDULE WeylScal4_psi4_calc_4th AT analysis
 {
   LANG: C
-  READS: ADMBaseX::kxx(everywhere)
-  READS: ADMBaseX::kxy(everywhere)
-  READS: ADMBaseX::kxz(everywhere)
-  READS: ADMBaseX::kyy(everywhere)
-  READS: ADMBaseX::kyz(everywhere)
-  READS: ADMBaseX::kzz(everywhere)
-  READS: ADMBaseX::gxx(everywhere)
-  READS: ADMBaseX::gxy(everywhere)
-  READS: ADMBaseX::gxz(everywhere)
-  READS: ADMBaseX::gyy(everywhere)
-  READS: ADMBaseX::gyz(everywhere)
-  READS: ADMBaseX::gzz(everywhere)
+  READS: ADMBaseX::metric(everywhere)
+  READS: ADMBaseX::curv(everywhere)
   READS: CoordinatesX::vertex_coords(everywhere)
   WRITES: Psi4i_group(interior)
   WRITES: Psi4r_group(interior)
-} "WeylScal4_psi4_calc_4th"
-
-SCHEDULE GROUP WeylScal4_psi4_calc_4th_bc_group IN WeylScal4_psi4_calc_4th_group AFTER WeylScal4_psi4_calc_4th
-{
-} "Group to sync psi4"
-
-SCHEDULE WeylScal4_psi4_calc_4th_SelectBCs IN WeylScal4_psi4_calc_4th_bc_group
-{
-  LANG: C
-  OPTIONS: global
   SYNC: Psi4i_group
   SYNC: Psi4r_group
-} "Sync psi4"
+} "WeylScal4_psi4_calc_4th"
