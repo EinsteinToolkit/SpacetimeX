@@ -1,5 +1,4 @@
 #include "integrate.hxx"
-#include "multipole.hh"
 #include "utils.hxx"
 
 #include <errno.h>

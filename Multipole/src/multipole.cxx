@@ -1,24 +1,18 @@
-#include <stdio.h>
-#include <string.h>
+#include "interpolate.hxx"
+#include "multipole.hxx"
+#include "sphericalharmonic.hxx"
+#include "utils.hxx"
+
 #include <assert.h>
 #include <iomanip>
 #include <sstream>
+#include <stdio.h>
 #include <string>
-#include <vector>
+
 #include <loop_device.hxx>
 
-#include "cctk.h"
-#include "cctk_Arguments.h"
-#include "cctk_Parameters.h"
-#include "cctk_Functions.h"
-
-#include "multipole.hh"
-#include "interpolate.hxx"
-#include "utils.hxx"
-#include "sphericalharmonic.hxx"
-
+namespace Multipole {
 using namespace std;
-using namespace Multipole;
 
 static const int max_vars = 10;
 
@@ -32,7 +26,7 @@ static const int max_m_modes = 2 * max_l_modes + 1;
 
 typedef struct {
   int n_vars;
-  Multipole::variable_desc *vars;
+  variable_desc *vars;
 } variables_desc;
 
 static void fill_variable(int idx, const char *optstring, void *callback_arg) {
@@ -42,7 +36,7 @@ static void fill_variable(int idx, const char *optstring, void *callback_arg) {
   variables_desc *vs = (variables_desc *)callback_arg;
 
   assert(vs->n_vars < max_vars); // Too many variables in the variables list
-  Multipole::variable_desc *v = &vs->vars[vs->n_vars];
+  variable_desc *v = &vs->vars[vs->n_vars];
 
   v->index = idx;
 
@@ -78,7 +72,7 @@ static void fill_variable(int idx, const char *optstring, void *callback_arg) {
 }
 
 static void parse_variables_string(const string &var_string,
-                                   Multipole::variable_desc v[max_vars],
+                                   variable_desc v[max_vars],
                                    int *n_variables) {
   variables_desc vars;
 
@@ -92,9 +86,9 @@ static void parse_variables_string(const string &var_string,
   *n_variables = vars.n_vars;
 }
 
-static void output_modes(CCTK_ARGUMENTS, const Multipole::variable_desc vars[],
+static void output_modes(CCTK_ARGUMENTS, const variable_desc vars[],
                          const CCTK_REAL radii[],
-                         const Multipole::mode_array &modes) {
+                         const mode_array &modes) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
@@ -124,7 +118,7 @@ static void output_modes(CCTK_ARGUMENTS, const Multipole::variable_desc vars[],
   }
 }
 
-static void output_1D(CCTK_ARGUMENTS, const Multipole::variable_desc *v,
+static void output_1D(CCTK_ARGUMENTS, const variable_desc *v,
                       CCTK_REAL rad, CCTK_REAL *th, CCTK_REAL *ph,
                       CCTK_REAL *real, CCTK_REAL *imag, int array_size) {
   DECLARE_CCTK_ARGUMENTS;
@@ -169,7 +163,7 @@ int find_int_in_array(int a, const int array[], int len) {
   return -1;
 }
 
-static void get_spin_weights(Multipole::variable_desc vars[], int n_vars,
+static void get_spin_weights(variable_desc vars[], int n_vars,
                              int spin_weights[max_spin_weights],
                              int *n_weights) {
   int n_spin_weights = 0;
@@ -205,13 +199,14 @@ setup_harmonics(const int spin_weights[max_spin_weights], int n_spin_weights,
         reY[si][l][m + l] = new CCTK_REAL[array_size];
         imY[si][l][m + l] = new CCTK_REAL[array_size];
 
-        Multipole::HarmonicSetup(sw, l, m, array_size, th, ph,
+        HarmonicSetup(sw, l, m, array_size, th, ph,
                                  reY[si][l][m + l], imY[si][l][m + l]);
       }
     }
   }
 }
 
+// Sets harmonic coefficients to zero at init.
 extern "C" void Multipole_Init(CCTK_ARGUMENTS) {
   using namespace Loop;
   DECLARE_CCTK_ARGUMENTS_Multipole_Init;
@@ -233,6 +228,14 @@ extern "C" void Multipole_Init(CCTK_ARGUMENTS) {
                                                });
 }
 
+// This is the main scheduling file.  Because we are completely local here
+// and do not use cactus arrays etc, we schedule only one function and then
+// like program like one would in C, C++ with this function taking the
+// place of int main(void).
+// This function calls functions to accomplish 3 things:
+//   1) Interpolate psi4 onto a sphere
+//   2) Integrate psi4 with the ylm's over that sphere
+//   3) Output the mode decomposed psi4
 extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_Multipole_Calc;
   DECLARE_CCTK_PARAMETERS;
@@ -243,7 +246,7 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
   static CCTK_REAL *real = 0, *imag = 0;
   static CCTK_REAL *reY[max_spin_weights][max_l_modes][max_m_modes];
   static CCTK_REAL *imY[max_spin_weights][max_l_modes][max_m_modes];
-  static Multipole::variable_desc vars[max_vars];
+  static variable_desc vars[max_vars];
   static int n_variables = 0;
   static int spin_weights[max_spin_weights];
   static int n_spin_weights = 0;
@@ -280,7 +283,7 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
     CCTK_VINFO("initialized arrays");
   }
 
-  Multipole::mode_array modes(n_variables, nradii, lmax);
+  mode_array modes(n_variables, nradii, lmax);
   for (int v = 0; v < n_variables; v++) {
     // assert(vars[v].spin_weight == -2);
 
@@ -293,7 +296,7 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
       ScaleCartesian(ntheta, nphi, radius[i], xhat, yhat, zhat, xs, ys, zs);
 
       // Interpolate Psi4r and Psi4i
-      Multipole::Interp(CCTK_PASS_CTOC, xs, ys, zs, vars[v].index,
+      Interp(CCTK_PASS_CTOC, xs, ys, zs, vars[v].index,
                         vars[v].imag_index, real, imag);
 
       for (int l = 0; l <= lmax; l++) {
@@ -311,3 +314,5 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
   } // loop over variables
   output_modes(CCTK_PASS_CTOC, vars, radius, modes);
 }
+
+} // namespace Multipole

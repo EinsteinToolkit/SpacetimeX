@@ -1,6 +1,8 @@
 #ifndef MULTIPOLE_UTILS_HXX
 #define MULTIPOLE_UTILS_HXX
 
+#include "multipole.hxx"
+
 #include <cctk.h>
 #include <cctk_Arguments.h>
 #include <cctk_Parameters.h>
@@ -9,9 +11,6 @@ namespace Multipole {
 using namespace std;
 
 enum mp_coord { mp_theta, mp_phi };
-
-class mode_array;
-struct variable_desc;
 
 static inline int Index_2d(int it, int ip, int ntheta) {
   return it + (ntheta + 1) * ip;
