@@ -9,11 +9,8 @@
 
 namespace Multipole {
 
-/**
- * Multipole::Interp:
- *   This function interpolates psi4 onto the sphere in cartesian
- *   coordinates as created by Multipole::CoordSetup.
- */
+// This function interpolates psi4 onto the sphere in cartesian coordinates as
+// created by Multipole::CoordSetup.
 void Interp(CCTK_ARGUMENTS, CCTK_REAL x[], CCTK_REAL y[], CCTK_REAL z[],
             int real_idx, int imag_idx, CCTK_REAL psi4r[], CCTK_REAL psi4i[]);
 

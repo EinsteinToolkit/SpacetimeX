@@ -33,7 +33,7 @@ static CCTK_REAL test_integral(int n,
 
   for (int ix = 0; ix <= nx; ix++) {
     for (int iy = 0; iy <= ny; iy++) {
-      const int i = Multipole_Index(ix, iy, nx);
+      const int i = Index_2d(ix, iy, nx);
 
       const CCTK_REAL x = ix * dx + 0.5 * dx * is_midpoint;
       const CCTK_REAL y = iy * dy + 0.5 * dy * is_midpoint;
@@ -65,7 +65,7 @@ static CCTK_REAL test_pi_symmetric_sphere_integral(
 
   for (int ith = 0; ith <= nth; ith++) {
     for (int iph = 0; iph <= nph; iph++) {
-      const int i = Multipole_Index(ith, iph, nth);
+      const int i = Index_2d(ith, iph, nth);
 
       const CCTK_REAL th = ith * dth + 0.5 * dth * is_midpoint;
       const CCTK_REAL ph = iph * dph + 0.5 * dph * is_midpoint;
@@ -144,7 +144,7 @@ void Multipole_TestIntegrationSymmetry(CCTK_ARGUMENTS) {
 //   {
 //     for (int iy = 0; iy <= ny; iy++)
 //     {
-//       const int i = Multipole_Index(ix, iy, nx);
+//       const int i = Index_2d(ix, iy, nx);
 
 //       const CCTK_REAL x = ix*dx;
 //       const CCTK_REAL y = iy*dy;
@@ -153,7 +153,7 @@ void Multipole_TestIntegrationSymmetry(CCTK_ARGUMENTS) {
 //     }
 //   }
 
-//   CCTK_REAL result = Multipole_Integrate(int array_size, int nthetap,
+//   CCTK_REAL result = Integrate(int array_size, int nthetap,
 //                                          CCTK_REAL const array1r[], CCTK_REAL
 //                                          const array1i[], CCTK_REAL const
 //                                          array2r[], CCTK_REAL const
@@ -177,7 +177,7 @@ void Multipole_TestOrthonormality(CCTK_ARGUMENTS) {
   CCTK_REAL *yhat = new CCTK_REAL[array_size];
   CCTK_REAL *zhat = new CCTK_REAL[array_size];
 
-  Multipole_CoordSetup(xhat, yhat, zhat, th, ph);
+  CoordSetup(xhat, yhat, zhat, th, ph);
 
   /* Populate spherical-harmonic array */
   CCTK_REAL *reY[1][max_l_modes][max_m_modes];
@@ -215,9 +215,9 @@ void Multipole_TestOrthonormality(CCTK_ARGUMENTS) {
               continue;
 
             CCTK_REAL real_lm = 0.0, imag_lm = 0.0;
-            Multipole_Integrate(array_size, ntheta, reY[sw][li][mi + li],
-                                imY[sw][li][mi + li], reY[sw][l][m + l],
-                                imY[sw][l][m + l], th, ph, &real_lm, &imag_lm);
+            Integrate(array_size, ntheta, reY[sw][li][mi + li],
+                      imY[sw][li][mi + li], reY[sw][l][m + l],
+                      imY[sw][l][m + l], th, ph, &real_lm, &imag_lm);
 
             assert(idx < 1 * N * (N + 1) / 2);
             test_orthonormality[idx++] =

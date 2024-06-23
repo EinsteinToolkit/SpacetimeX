@@ -30,7 +30,9 @@ namespace Multipole {
   (assert((xx) <= nx), assert((xx) >= 0), assert((yy) <= ny),                  \
    assert((yy) >= 0), ((xx) + (yy) * (nx + 1)))
 
+////////////////////////////////////////////////////////////////////////////////
 // Hard coded 2D integrals
+////////////////////////////////////////////////////////////////////////////////
 
 CCTK_REAL Midpoint2DIntegral(CCTK_REAL const *f, int nx, int ny, CCTK_REAL hx,
                              CCTK_REAL hy) {
@@ -168,7 +170,9 @@ CCTK_REAL DriscollHealy2DIntegral(CCTK_REAL const *const f, int const nx,
   return hx * hy * integrand_sum;
 }
 
-//// 1D integrals
+////////////////////////////////////////////////////////////////////////////////
+// 1D integrals
+////////////////////////////////////////////////////////////////////////////////
 //
 // static CCTK_REAL Simpson1DIntegral(CCTK_REAL const *f, int n, CCTK_REAL h)
 //{

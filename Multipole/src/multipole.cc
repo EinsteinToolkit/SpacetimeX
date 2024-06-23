@@ -18,6 +18,7 @@
 #include "sphericalharmonic.hxx"
 
 using namespace std;
+using namespace Multipole;
 
 static const int max_vars = 10;
 
@@ -108,9 +109,8 @@ static void output_modes(CCTK_ARGUMENTS, const Multipole::variable_desc vars[],
               name << "mp_" << vars[v].name << "_l" << l << "_m" << m << "_r"
                    << setiosflags(ios::fixed) << setprecision(2) << rad
                    << ".asc";
-              Multipole_OutputComplexToFile(CCTK_PASS_CTOC, name.str(),
-                                            modes(v, i, l, m, 0),
-                                            modes(v, i, l, m, 1));
+              OutputComplexToFile(CCTK_PASS_CTOC, name.str(),
+                                  modes(v, i, l, m, 0), modes(v, i, l, m, 1));
             }
           }
         }
@@ -119,7 +119,7 @@ static void output_modes(CCTK_ARGUMENTS, const Multipole::variable_desc vars[],
   }
   if (output_hdf5) {
     if (CCTK_MyProc(cctkGH) == 0) {
-      Multipole_OutputComplexToH5File(CCTK_PASS_CTOC, vars, radii, modes);
+      OutputComplexToH5File(CCTK_PASS_CTOC, vars, radii, modes);
     }
   }
 }
@@ -135,19 +135,19 @@ static void output_1D(CCTK_ARGUMENTS, const Multipole::variable_desc *v,
       ostringstream real_base;
       real_base << "mp_" << string(CCTK_VarName(v->index)) << "_r"
                 << setiosflags(ios::fixed) << setprecision(2) << rad;
-      Multipole_Output1D(CCTK_PASS_CTOC, real_base.str() + string(".th.asc"),
-                         array_size, th, ph, mp_theta, real);
-      Multipole_Output1D(CCTK_PASS_CTOC, real_base.str() + string(".ph.asc"),
-                         array_size, th, ph, mp_phi, real);
+      Output1D(CCTK_PASS_CTOC, real_base.str() + string(".th.asc"), array_size,
+               th, ph, mp_theta, real);
+      Output1D(CCTK_PASS_CTOC, real_base.str() + string(".ph.asc"), array_size,
+               th, ph, mp_phi, real);
 
       if (v->imag_index != -1) {
         ostringstream imag_base;
         imag_base << "mp_" << string(CCTK_VarName(v->imag_index)) << "_r"
                   << setiosflags(ios::fixed) << setprecision(2) << rad;
-        Multipole_Output1D(CCTK_PASS_CTOC, imag_base.str() + string(".th.asc"),
-                           array_size, th, ph, mp_theta, imag);
-        Multipole_Output1D(CCTK_PASS_CTOC, imag_base.str() + string(".ph.asc"),
-                           array_size, th, ph, mp_phi, imag);
+        Output1D(CCTK_PASS_CTOC, imag_base.str() + string(".th.asc"),
+                 array_size, th, ph, mp_theta, imag);
+        Output1D(CCTK_PASS_CTOC, imag_base.str() + string(".ph.asc"),
+                 array_size, th, ph, mp_phi, imag);
       }
     }
   }
@@ -273,7 +273,7 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
 
     parse_variables_string(string(variables), vars, &n_variables);
     get_spin_weights(vars, n_variables, spin_weights, &n_spin_weights);
-    Multipole_CoordSetup(xhat, yhat, zhat, th, ph);
+    CoordSetup(xhat, yhat, zhat, th, ph);
     setup_harmonics(spin_weights, n_spin_weights, lmax, th, ph, array_size, reY,
                     imY);
     initialized = true;
@@ -290,8 +290,7 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
 
     for (int i = 0; i < nradii; i++) {
       // Compute x^i = r * \hat x^i
-      Multipole_ScaleCartesian(ntheta, nphi, radius[i], xhat, yhat, zhat, xs,
-                               ys, zs);
+      ScaleCartesian(ntheta, nphi, radius[i], xhat, yhat, zhat, xs, ys, zs);
 
       // Interpolate Psi4r and Psi4i
       Multipole::Interp(CCTK_PASS_CTOC, xs, ys, zs, vars[v].index,
@@ -300,9 +299,9 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
       for (int l = 0; l <= lmax; l++) {
         for (int m = -l; m <= l; m++) {
           // Integrate sYlm (real + i imag) over the sphere at radius r
-          Multipole_Integrate(array_size, ntheta, reY[si][l][m + l],
-                              imY[si][l][m + l], real, imag, th, ph,
-                              &modes(v, i, l, m, 0), &modes(v, i, l, m, 1));
+          Integrate(array_size, ntheta, reY[si][l][m + l], imY[si][l][m + l],
+                    real, imag, th, ph, &modes(v, i, l, m, 0),
+                    &modes(v, i, l, m, 1));
 
         } // loop over m
       } // loop over l

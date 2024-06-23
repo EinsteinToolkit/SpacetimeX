@@ -1,25 +1,24 @@
-#include "utils.hxx"
 #include "integrate.hxx"
 #include "multipole.hh"
+#include "utils.hxx"
 
+#include <errno.h>
+#include <iomanip>
+#include <iostream>
+#include <map>
+#include <math.h>
+#include <sstream>
 #include <stdio.h>
 #include <string.h>
-#include <math.h>
-#include <iomanip>
-#include <sstream>
-#include <string>
-#include <map>
 #include <sys/stat.h>
-#include <errno.h>
-#include <iostream>
 
-#ifdef HAVE_CAPABILITY_HDF5
 // We currently support the HDF5 1.6 API (and when using 1.8 the
 // compatibility mode introduced by H5_USE_16_API).  Several machines
 // in SimFactory use HDF5 1.6, so we cannot drop support for it.  It
 // seems it is hard to support both the 1.6 and 1.8 API
 // simultaneously; for example H5Fopen takes a different number of
 // arguments in the two versions.
+#ifdef HAVE_CAPABILITY_HDF5
 #define H5_USE_16_API
 #include <hdf5.h>
 #endif
@@ -37,14 +36,38 @@
     }                                                                          \
   } while (0)
 
+namespace Multipole {
 using namespace std;
-using namespace Multipole;
 
-////////////////////////////////////////////////////////////////////////
-// File manipulation
-////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// Private functions
+////////////////////////////////////////////////////////////////////////////////
 
-FILE *Multipole_OpenOutputFile(CCTK_ARGUMENTS, const string &name) {
+static bool file_exists(const string &name) {
+  struct stat sts;
+  return !(stat(name.c_str(), &sts) == -1 && errno == ENOENT);
+}
+
+// To test whether a dataset exists, the recommended way in API 1.6
+// is to use H5Gget_objinfo, but this prints an error to stderr if
+// the dataset does not exist.  We explicitly avoid this by wrapping
+// the call in H5E_BEGIN_TRY/H5E_END_TRY statements.  In 1.8,
+// H5Gget_objinfo is deprecated, and H5Lexists does the job.  See
+// http://www.mail-archive.com/hdf-forum@hdfgroup.org/msg00125.html
+static bool dataset_exists(hid_t file, const string &dataset_name) {
+#if 1
+  bool exists;
+  H5E_BEGIN_TRY {
+    exists = H5Gget_objinfo(file, dataset_name.c_str(), 1, NULL) >= 0;
+  }
+  H5E_END_TRY;
+  return exists;
+#else
+  return H5Lexists(file, dataset_name.c_str(), H5P_DEFAULT);
+#endif
+}
+
+FILE *OpenOutputFile(CCTK_ARGUMENTS, const string &name) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
@@ -70,63 +93,34 @@ FILE *Multipole_OpenOutputFile(CCTK_ARGUMENTS, const string &name) {
   return fp;
 }
 
-////////////////////////////////////////////////////////////////////////
-// Unused
-////////////////////////////////////////////////////////////////////////
-
-void Multipole_OutputArray(CCTK_ARGUMENTS, FILE *f, int array_size,
-                           CCTK_REAL const th[], CCTK_REAL const ph[],
-                           CCTK_REAL const xs[], CCTK_REAL const ys[],
-                           CCTK_REAL const zs[], CCTK_REAL const data[]) {
+void OutputComplex(CCTK_ARGUMENTS, FILE *fp, CCTK_REAL redata,
+                   CCTK_REAL imdata) {
   DECLARE_CCTK_PARAMETERS;
   DECLARE_CCTK_ARGUMENTS;
-
-  CCTK_REAL last_ph = ph[0];
-
-  for (int i = 0; i < array_size; i++) {
-    if (ph[i] != last_ph) // Separate blocks for gnuplot
-      fprintf(f, "\n");
-    fprintf(f, "%f %f %f %f %f %f %.19g\n", cctk_time, th[i], ph[i], xs[i],
-            ys[i], zs[i], data[i]);
-    last_ph = ph[i];
-  }
+  fprintf(fp, "%f %.19g %.19g\n", cctk_time, redata, imdata);
 }
 
-void Multipole_OutputArrayToFile(CCTK_ARGUMENTS, const string &name,
-                                 int array_size, CCTK_REAL const th[],
-                                 CCTK_REAL const ph[], CCTK_REAL const xs[],
-                                 CCTK_REAL const ys[], CCTK_REAL const zs[],
-                                 CCTK_REAL const data[]) {
-  DECLARE_CCTK_ARGUMENTS;
+////////////////////////////////////////////////////////////////////////////////
+// Public functions
+////////////////////////////////////////////////////////////////////////////////
 
-  if (FILE *fp = Multipole_OpenOutputFile(CCTK_PASS_CTOC, name)) {
-    Multipole_OutputArray(CCTK_PASS_CTOC, fp, array_size, th, ph, xs, ys, zs,
-                          data);
-    fclose(fp);
-  }
-}
-
-////////////////////////////////////////////////////////////////////////
-// Misc
-////////////////////////////////////////////////////////////////////////
-
-void Multipole_Output1D(CCTK_ARGUMENTS, const string &name, int array_size,
-                        CCTK_REAL const th[], CCTK_REAL const ph[],
-                        mp_coord coord, CCTK_REAL const data[]) {
+void Output1D(CCTK_ARGUMENTS, const string &name, int array_size,
+              CCTK_REAL const th[], CCTK_REAL const ph[], mp_coord coord,
+              CCTK_REAL const data[]) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
-  if (FILE *f = Multipole_OpenOutputFile(CCTK_PASS_CTOC, name)) {
+  if (FILE *f = OpenOutputFile(CCTK_PASS_CTOC, name)) {
     fprintf(f, "\"Time = %.19g\n", cctk_time);
 
     if (coord == mp_theta) {
       for (int i = 0; i <= ntheta; i++) {
-        int idx = Multipole_Index(i, 0, ntheta);
+        int idx = Index_2d(i, 0, ntheta);
         fprintf(f, "%f %.19g\n", th[idx], data[idx]);
       }
     } else if (coord == mp_phi) {
       for (int i = 0; i <= nphi; i++) {
-        int idx = Multipole_Index(ntheta / 4, i, ntheta);
+        int idx = Index_2d(ntheta / 4, i, ntheta);
         fprintf(f, "%f %.19g\n", ph[idx], data[idx]);
       }
     }
@@ -135,62 +129,21 @@ void Multipole_Output1D(CCTK_ARGUMENTS, const string &name, int array_size,
   }
 }
 
-////////////////////////////////////////////////////////////////////////
-// Complex IO
-////////////////////////////////////////////////////////////////////////
-
-void Multipole_OutputComplex(CCTK_ARGUMENTS, FILE *fp, CCTK_REAL redata,
-                             CCTK_REAL imdata) {
-  DECLARE_CCTK_PARAMETERS;
-  DECLARE_CCTK_ARGUMENTS;
-  fprintf(fp, "%f %.19g %.19g\n", cctk_time, redata, imdata);
-}
-
-void Multipole_OutputComplexToFile(CCTK_ARGUMENTS, const string &name,
-                                   CCTK_REAL redata, CCTK_REAL imdata) {
+void OutputComplexToFile(CCTK_ARGUMENTS, const string &name, CCTK_REAL redata,
+                         CCTK_REAL imdata) {
   DECLARE_CCTK_ARGUMENTS;
 
-  if (FILE *fp = Multipole_OpenOutputFile(CCTK_PASS_CTOC, name)) {
-    Multipole_OutputComplex(CCTK_PASS_CTOC, fp, redata, imdata);
+  if (FILE *fp = OpenOutputFile(CCTK_PASS_CTOC, name)) {
+    OutputComplex(CCTK_PASS_CTOC, fp, redata, imdata);
     fclose(fp);
   }
 }
 
-////////////////////////////////////////////////////////////////////////
-// HDF5 complex output
-////////////////////////////////////////////////////////////////////////
+void OutputComplexToH5File(CCTK_ARGUMENTS, const variable_desc vars[],
+                           const CCTK_REAL radii[], const mode_array &modes) {
 
 #ifdef HAVE_CAPABILITY_HDF5
 
-static bool file_exists(const string &name) {
-  struct stat sts;
-  return !(stat(name.c_str(), &sts) == -1 && errno == ENOENT);
-}
-
-static bool dataset_exists(hid_t file, const string &dataset_name) {
-  // To test whether a dataset exists, the recommended way in API 1.6
-  // is to use H5Gget_objinfo, but this prints an error to stderr if
-  // the dataset does not exist.  We explicitly avoid this by wrapping
-  // the call in H5E_BEGIN_TRY/H5E_END_TRY statements.  In 1.8,
-  // H5Gget_objinfo is deprecated, and H5Lexists does the job.  See
-  // http://www.mail-archive.com/hdf-forum@hdfgroup.org/msg00125.html
-
-#if 1
-  bool exists;
-  H5E_BEGIN_TRY {
-    exists = H5Gget_objinfo(file, dataset_name.c_str(), 1, NULL) >= 0;
-  }
-  H5E_END_TRY;
-  return exists;
-#else
-  return H5Lexists(file, dataset_name.c_str(), H5P_DEFAULT);
-#endif
-}
-
-void Multipole_OutputComplexToH5File(CCTK_ARGUMENTS,
-                                     const Multipole::variable_desc vars[],
-                                     const CCTK_REAL radii[],
-                                     const Multipole::mode_array &modes) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
@@ -200,9 +153,10 @@ void Multipole_OutputComplexToH5File(CCTK_ARGUMENTS,
                "Multipole output directory %s could not be created",
                my_out_dir);
 
-  static map<string, bool> checked; // Has the given file been checked
-                                    // for truncation? map<*,bool>
-                                    // defaults to false
+  // Has the given file been checked for truncation? map<*,bool> defaults to
+  // false
+  static map<string, bool> checked;
+
   for (int v = 0; v < modes.get_nvars(); v++) {
     string basename = "mp_" + vars[v].name + ".h5";
     string output_name = my_out_dir + string("/") + basename;
@@ -280,30 +234,20 @@ void Multipole_OutputComplexToH5File(CCTK_ARGUMENTS,
     }
     HDF5_ERROR(H5Fclose(file));
   }
-}
 
 #else
 
-void Multipole_OutputComplexToH5File(CCTK_ARGUMENTS,
-                                     const Multipole::variable_desc vars[],
-                                     const CCTK_REAL radii[],
-                                     const Multipole::mode_array &modes) {
   CCTK_WARN(0, "HDF5 output has been requested but Cactus has been compiled "
                "without HDF5 support");
-}
 
 #endif
+}
 
-////////////////////////////////////////////////////////////////////////
-// Coordinates
-////////////////////////////////////////////////////////////////////////
-
-void Multipole_CoordSetup(CCTK_REAL xhat[], CCTK_REAL yhat[], CCTK_REAL zhat[],
-                          CCTK_REAL th[], CCTK_REAL ph[]) {
+void CoordSetup(CCTK_REAL xhat[], CCTK_REAL yhat[], CCTK_REAL zhat[],
+                CCTK_REAL th[], CCTK_REAL ph[]) {
   DECLARE_CCTK_PARAMETERS;
 
   const CCTK_REAL PI = acos(-1.0);
-
   // Add an offset for midpoint integration.
   CCTK_REAL is_midpoint = 0.0;
   if (CCTK_Equals(integration_method, "midpoint")) {
@@ -313,7 +257,7 @@ void Multipole_CoordSetup(CCTK_REAL xhat[], CCTK_REAL yhat[], CCTK_REAL zhat[],
   const CCTK_REAL dph = 2 * PI / (nphi + is_midpoint);
   for (int it = 0; it <= ntheta; it++) {
     for (int ip = 0; ip <= nphi; ip++) {
-      const int i = Multipole_Index(it, ip, ntheta);
+      const int i = Index_2d(it, ip, ntheta);
       // Check for when midpoint enabled:
       //   dth = PI/(ntheta+1) -> ntheta = PI/dth - 1
       //   th[i] = i * dth + 0.5*dth
@@ -343,14 +287,12 @@ void Multipole_CoordSetup(CCTK_REAL xhat[], CCTK_REAL yhat[], CCTK_REAL zhat[],
   }
 }
 
-void Multipole_ScaleCartesian(int ntheta, int nphi, CCTK_REAL r,
-                              CCTK_REAL const xhat[], CCTK_REAL const yhat[],
-                              CCTK_REAL const zhat[], CCTK_REAL x[],
-                              CCTK_REAL y[], CCTK_REAL z[]) {
+void ScaleCartesian(int ntheta, int nphi, CCTK_REAL r, CCTK_REAL const xhat[],
+                    CCTK_REAL const yhat[], CCTK_REAL const zhat[],
+                    CCTK_REAL x[], CCTK_REAL y[], CCTK_REAL z[]) {
   for (int it = 0; it <= ntheta; it++) {
     for (int ip = 0; ip <= nphi; ip++) {
-      const int i = Multipole_Index(it, ip, ntheta);
-
+      const int i = Index_2d(it, ip, ntheta);
       x[i] = r * xhat[i];
       y[i] = r * yhat[i];
       z[i] = r * zhat[i];
@@ -358,21 +300,16 @@ void Multipole_ScaleCartesian(int ntheta, int nphi, CCTK_REAL r,
   }
 }
 
-////////////////////////////////////////////////////////////////////////
-// Integration
-////////////////////////////////////////////////////////////////////////
-
-void Multipole_Integrate(int array_size, int nthetap, CCTK_REAL const array1r[],
-                         CCTK_REAL const array1i[], CCTK_REAL const array2r[],
-                         CCTK_REAL const array2i[], CCTK_REAL const th[],
-                         CCTK_REAL const ph[], CCTK_REAL *outre,
-                         CCTK_REAL *outim) {
+void Integrate(int array_size, int nthetap, CCTK_REAL const array1r[],
+               CCTK_REAL const array1i[], CCTK_REAL const array2r[],
+               CCTK_REAL const array2i[], CCTK_REAL const th[],
+               CCTK_REAL const ph[], CCTK_REAL *outre, CCTK_REAL *outim) {
   DECLARE_CCTK_PARAMETERS;
 
-  int il = Multipole_Index(0, 0, ntheta);
-  int iu = Multipole_Index(1, 0, ntheta);
+  int il = Index_2d(0, 0, ntheta);
+  int iu = Index_2d(1, 0, ntheta);
   CCTK_REAL dth = th[iu] - th[il];
-  iu = Multipole_Index(0, 1, ntheta);
+  iu = Index_2d(0, 1, ntheta);
   CCTK_REAL dph = ph[iu] - ph[il];
 
   static CCTK_REAL *fr = 0;
@@ -417,3 +354,5 @@ void Multipole_Integrate(int array_size, int nthetap, CCTK_REAL const array1r[],
     CCTK_WARN(CCTK_WARN_ABORT, "internal error");
   }
 }
+
+} // namespace Multipole
