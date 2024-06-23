@@ -7,7 +7,7 @@
 #include "cctk_Arguments.h"
 #include "cctk_Parameters.h"
 
-#include "utils.hh"
+#include "utils.hxx"
 #include "integrate.hxx"
 #include "interpolate.hxx"
 #include "sphericalharmonic.hxx"

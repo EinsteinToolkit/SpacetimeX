@@ -14,7 +14,7 @@
 
 #include "multipole.hh"
 #include "interpolate.hxx"
-#include "utils.hh"
+#include "utils.hxx"
 #include "sphericalharmonic.hxx"
 
 using namespace std;

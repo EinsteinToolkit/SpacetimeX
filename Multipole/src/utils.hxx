@@ -1,9 +1,10 @@
+#ifndef MULTIPOLE_UTILS_HXX
+#define MULTIPOLE_UTILS_HXX
 
-#ifndef __utils_h
-#define __utils_h
+#include <cctk.h>
+#include <cctk_Arguments.h>
+#include <cctk_Parameters.h>
 
-#include "cctk.h"
-#include <string>
 
 using namespace std;
 
@@ -50,4 +51,4 @@ void Multipole_Integrate(int array_size, int ntheta, CCTK_REAL const array1r[],
                          CCTK_REAL const pph[], CCTK_REAL out_arrayr[],
                          CCTK_REAL out_arrayi[]);
 
-#endif
+#endif // #ifndef MULTIPOLE_UTILS_HXX

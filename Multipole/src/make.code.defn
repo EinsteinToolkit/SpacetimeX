@@ -7,4 +7,4 @@ SRCS = \
   multipole.cc \
   sphericalharmonic.cxx \
   tests.cc \
-  utils.cc
+  utils.cxx

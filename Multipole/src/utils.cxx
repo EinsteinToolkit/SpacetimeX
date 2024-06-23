@@ -1,3 +1,7 @@
+#include "utils.hxx"
+#include "integrate.hxx"
+#include "multipole.hh"
+
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
@@ -9,10 +13,6 @@
 #include <errno.h>
 #include <iostream>
 
-#include "cctk.h"
-#include "cctk_Arguments.h"
-#include "cctk_Parameters.h"
-
 #ifdef HAVE_CAPABILITY_HDF5
 // We currently support the HDF5 1.6 API (and when using 1.8 the
 // compatibility mode introduced by H5_USE_16_API).  Several machines
@@ -23,10 +23,6 @@
 #define H5_USE_16_API
 #include <hdf5.h>
 #endif
-
-#include "utils.hh"
-#include "integrate.hxx"
-#include "multipole.hh"
 
 // check return code of HDF5 call abort with an error message if there was an
 // error. adapted from CarpetIOHDF5/src/CarpetIOHDF5.hh.
