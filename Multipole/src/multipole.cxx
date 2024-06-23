@@ -81,66 +81,6 @@ static void parse_variables_string(const string &var_string,
   *n_variables = vars.n_vars;
 }
 
-static void output_modes(CCTK_ARGUMENTS, const variable_desc vars[],
-                         const CCTK_REAL radii[], const mode_array &modes) {
-  DECLARE_CCTK_ARGUMENTS;
-  DECLARE_CCTK_PARAMETERS;
-
-  if (output_ascii) {
-    if (CCTK_MyProc(cctkGH) == 0) {
-      for (int v = 0; v < modes.get_nvars(); v++) {
-        for (int i = 0; i < modes.get_nradii(); i++) {
-          const CCTK_REAL rad = radii[i];
-          for (int l = 0; l <= modes.get_lmax(); l++) {
-            for (int m = -l; m <= l; m++) {
-              ostringstream name;
-              name << "mp_" << vars[v].name << "_l" << l << "_m" << m << "_r"
-                   << setiosflags(ios::fixed) << setprecision(2) << rad
-                   << ".asc";
-              OutputComplexToFile(CCTK_PASS_CTOC, name.str(),
-                                  modes(v, i, l, m, 0), modes(v, i, l, m, 1));
-            }
-          }
-        }
-      }
-    }
-  }
-  if (output_hdf5) {
-    if (CCTK_MyProc(cctkGH) == 0) {
-      OutputComplexToH5File(CCTK_PASS_CTOC, vars, radii, modes);
-    }
-  }
-}
-
-static void output_1D(CCTK_ARGUMENTS, const variable_desc *v, CCTK_REAL rad,
-                      CCTK_REAL *th, CCTK_REAL *ph, CCTK_REAL *real,
-                      CCTK_REAL *imag, int array_size) {
-  DECLARE_CCTK_ARGUMENTS;
-  DECLARE_CCTK_PARAMETERS;
-
-  if (CCTK_MyProc(cctkGH) == 0 && output_ascii) {
-    if (out_1d_every != 0 && cctk_iteration % out_1d_every == 0) {
-      ostringstream real_base;
-      real_base << "mp_" << string(CCTK_VarName(v->index)) << "_r"
-                << setiosflags(ios::fixed) << setprecision(2) << rad;
-      Output1D(CCTK_PASS_CTOC, real_base.str() + string(".th.asc"), array_size,
-               th, ph, mp_theta, real);
-      Output1D(CCTK_PASS_CTOC, real_base.str() + string(".ph.asc"), array_size,
-               th, ph, mp_phi, real);
-
-      if (v->imag_index != -1) {
-        ostringstream imag_base;
-        imag_base << "mp_" << string(CCTK_VarName(v->imag_index)) << "_r"
-                  << setiosflags(ios::fixed) << setprecision(2) << rad;
-        Output1D(CCTK_PASS_CTOC, imag_base.str() + string(".th.asc"),
-                 array_size, th, ph, mp_theta, imag);
-        Output1D(CCTK_PASS_CTOC, imag_base.str() + string(".ph.asc"),
-                 array_size, th, ph, mp_phi, imag);
-      }
-    }
-  }
-}
-
 static void get_spin_weights(variable_desc vars[], int n_vars,
                              int spin_weights[max_spin_weights],
                              int *n_weights) {
@@ -179,6 +119,66 @@ setup_harmonics(const int spin_weights[max_spin_weights], int n_spin_weights,
 
         HarmonicSetup(sw, l, m, array_size, th, ph, reY[si][l][m + l],
                       imY[si][l][m + l]);
+      }
+    }
+  }
+}
+
+static void output_modes(CCTK_ARGUMENTS, const variable_desc vars[],
+                         const CCTK_REAL radii[], const mode_array &modes) {
+  DECLARE_CCTK_ARGUMENTS;
+  DECLARE_CCTK_PARAMETERS;
+
+  if (output_ascii) {
+    if (CCTK_MyProc(cctkGH) == 0) {
+      for (int v = 0; v < modes.get_nvars(); v++) {
+        for (int i = 0; i < modes.get_nradii(); i++) {
+          const CCTK_REAL rad = radii[i];
+          for (int l = 0; l <= modes.get_lmax(); l++) {
+            for (int m = -l; m <= l; m++) {
+              ostringstream name;
+              name << "mp_" << vars[v].name << "_l" << l << "_m" << m << "_r"
+                   << setiosflags(ios::fixed) << setprecision(2) << rad
+                   << ".asc";
+              OutputComplexToFile(CCTK_PASS_CTOC, name.str(),
+                                  modes(v, i, l, m, 0), modes(v, i, l, m, 1));
+            }
+          }
+        }
+      }
+    }
+  }
+  if (output_hdf5) {
+    if (CCTK_MyProc(cctkGH) == 0) {
+      OutputComplexToH5File(CCTK_PASS_CTOC, vars, radii, modes);
+    }
+  }
+}
+
+static void output_1d(CCTK_ARGUMENTS, const variable_desc *v, CCTK_REAL rad,
+                      CCTK_REAL *th, CCTK_REAL *ph, CCTK_REAL *real,
+                      CCTK_REAL *imag, int array_size) {
+  DECLARE_CCTK_ARGUMENTS;
+  DECLARE_CCTK_PARAMETERS;
+
+  if (CCTK_MyProc(cctkGH) == 0 && output_ascii) {
+    if (out_1d_every != 0 && cctk_iteration % out_1d_every == 0) {
+      ostringstream real_base;
+      real_base << "mp_" << string(CCTK_VarName(v->index)) << "_r"
+                << setiosflags(ios::fixed) << setprecision(2) << rad;
+      Output1D(CCTK_PASS_CTOC, real_base.str() + string(".th.asc"), array_size,
+               th, ph, mp_theta, real);
+      Output1D(CCTK_PASS_CTOC, real_base.str() + string(".ph.asc"), array_size,
+               th, ph, mp_phi, real);
+
+      if (v->imag_index != -1) {
+        ostringstream imag_base;
+        imag_base << "mp_" << string(CCTK_VarName(v->imag_index)) << "_r"
+                  << setiosflags(ios::fixed) << setprecision(2) << rad;
+        Output1D(CCTK_PASS_CTOC, imag_base.str() + string(".th.asc"),
+                 array_size, th, ph, mp_theta, imag);
+        Output1D(CCTK_PASS_CTOC, imag_base.str() + string(".ph.asc"),
+                 array_size, th, ph, mp_phi, imag);
       }
     }
   }
@@ -253,9 +253,9 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
   }
 
   mode_array modes(n_variables, nradii, lmax);
+
   for (int v = 0; v < n_variables; v++) {
     // assert(vars[v].spin_weight == -2);
-
     int si =
         find_int_in_array(vars[v].spin_weight, spin_weights, n_spin_weights);
     assert(si != -1);
@@ -277,7 +277,7 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
 
         } // loop over m
       } // loop over l
-      output_1D(CCTK_PASS_CTOC, &vars[v], radius[i], th, ph, real, imag,
+      output_1d(CCTK_PASS_CTOC, &vars[v], radius[i], th, ph, real, imag,
                 array_size);
     } // loop over radii
   } // loop over variables
