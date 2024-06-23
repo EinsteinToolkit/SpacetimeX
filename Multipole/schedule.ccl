@@ -34,7 +34,6 @@ if (enable_test)
   SCHEDULE Multipole_SetHarmonic AT CCTK_INITIAL
   {
     LANG: C
-    READS: CoordinatesX::vertex_coords
     WRITES: Multipole::harmonics(interior)
     SYNC: Multipole::harmonics
   } "Populate grid functions with spherical harmonics"
@@ -51,9 +50,8 @@ if (enable_test_Weyl)
   SCHEDULE Multipole_SetHarmonicWeyl AT CCTK_INITIAL
   {
     LANG: C
-    READS: CoordinatesX::vertex_coords
-    WRITES: WeylScal4::Psi4i_group(Interior)
-    WRITES: WeylScal4::Psi4r_group(Interior)
+    WRITES: WeylScal4::Psi4i_group(interior)
+    WRITES: WeylScal4::Psi4r_group(interior)
     SYNC: WeylScal4::Psi4i_group
     SYNC: WeylScal4::Psi4r_group
   } "Populate Weyl grid functions with spherical harmonics"

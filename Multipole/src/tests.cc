@@ -189,8 +189,8 @@ void Multipole_TestOrthonormality(CCTK_ARGUMENTS) {
         reY[sw][l][m + l] = new CCTK_REAL[array_size];
         imY[sw][l][m + l] = new CCTK_REAL[array_size];
 
-        Multipole_HarmonicSetup(sw, l, m, array_size, th, ph, reY[sw][l][m + l],
-                                imY[sw][l][m + l]);
+        HarmonicSetup(sw, l, m, array_size, th, ph, reY[sw][l][m + l],
+                      imY[sw][l][m + l]);
       }
     }
   }

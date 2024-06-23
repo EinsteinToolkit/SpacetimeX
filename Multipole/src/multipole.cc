@@ -205,8 +205,8 @@ setup_harmonics(const int spin_weights[max_spin_weights], int n_spin_weights,
         reY[si][l][m + l] = new CCTK_REAL[array_size];
         imY[si][l][m + l] = new CCTK_REAL[array_size];
 
-        Multipole_HarmonicSetup(sw, l, m, array_size, th, ph, reY[si][l][m + l],
-                                imY[si][l][m + l]);
+        Multipole::HarmonicSetup(sw, l, m, array_size, th, ph,
+                                 reY[si][l][m + l], imY[si][l][m + l]);
       }
     }
   }
