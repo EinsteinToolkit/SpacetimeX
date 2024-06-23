@@ -5,6 +5,6 @@ SRCS = \
   integrate.cxx \
   interpolate.cxx \
   multipole.cc \
-  sphericalharmonic.cc \
+  sphericalharmonic.cxx \
   tests.cc \
   utils.cc

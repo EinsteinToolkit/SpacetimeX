@@ -1,13 +1,11 @@
+#include "sphericalharmonic.hxx"
+
 #include <math.h>
 #include <assert.h>
 #include <iostream>
 #include <vector>
 #include <loop_device.hxx>
 
-#include "cctk.h"
-#include "cctk_Parameters.h"
-#include "cctk_Arguments.h"
-#include "sphericalharmonic.hh"
 
 static const CCTK_REAL PI = acos(-1.0);
 

@@ -10,7 +10,7 @@
 #include "utils.hh"
 #include "integrate.hxx"
 #include "interpolate.hxx"
-#include "sphericalharmonic.hh"
+#include "sphericalharmonic.hxx"
 
 using namespace Multipole;
 
