@@ -12,7 +12,3 @@
 void Multipole_Interp(CCTK_ARGUMENTS, CCTK_REAL x[], CCTK_REAL y[],
                       CCTK_REAL z[], int real_idx, int imag_idx,
                       CCTK_REAL psi4r[], CCTK_REAL psi4i[]);
-
-void Multipole_InterpVar(CCTK_ARGUMENTS, CCTK_REAL x[], CCTK_REAL y[],
-                         CCTK_REAL z[], const char *var_name,
-                         CCTK_REAL sphere_var[]);
