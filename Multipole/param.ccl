@@ -78,7 +78,7 @@ STEERABLE=recover
   1:* :: ""
 } 100
 
-# there must be no more than max_vars (10) variables, see multipole.cc
+# there must be no more than max_vars (10) variables, see multipole.cxx
 CCTK_STRING variables "What variables to decompose"
 {
     ".*" :: "A list of variables"
@@ -88,7 +88,7 @@ CCTK_BOOLEAN verbose "Output detailed information about what is happening"
 {
 } "no"
 
-# this maximum must match max_l_modes-1 in multipole.cc
+# this maximum must match max_l_modes-1 in multipole.cxx
 CCTK_INT l_max "The maximum l mode to extract" STEERABLE=always
 {
   0:9 :: "l >= 0"

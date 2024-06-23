@@ -1,18 +1,18 @@
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
-#include <assert.h>
-
-#include "cctk.h"
-#include "cctk_Arguments.h"
-#include "cctk_Parameters.h"
-
-#include "utils.hxx"
 #include "integrate.hxx"
 #include "interpolate.hxx"
 #include "sphericalharmonic.hxx"
+#include "utils.hxx"
 
-using namespace Multipole;
+#include <cctk.h>
+#include <cctk_Arguments.h>
+#include <cctk_Parameters.h>
+
+#include <assert.h>
+#include <math.h>
+#include <stdio.h>
+#include <string.h>
+
+namespace Multipole {
 
 static const int max_l_modes = 10;
 static const int max_m_modes = 2 * max_l_modes + 1;
@@ -96,7 +96,7 @@ CCTK_REAL integration_convergence_order(
   return log10(error1 / error2) / log10((CCTK_REAL)n2 / n1);
 }
 
-void Multipole_TestIntegrationConvergence(CCTK_ARGUMENTS) {
+extern "C" void Multipole_TestIntegrationConvergence(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
   *test_simpson_convergence_order = integration_convergence_order(
       &Simpson2DIntegral, test_simpson_result_low, test_simpson_result_high, 0);
@@ -108,7 +108,7 @@ void Multipole_TestIntegrationConvergence(CCTK_ARGUMENTS) {
       1);
 }
 
-void Multipole_TestIntegrationSymmetry(CCTK_ARGUMENTS) {
+extern "C" void Multipole_TestIntegrationSymmetry(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
 
   *test_simpson_pi_symmetry =
@@ -127,44 +127,7 @@ void Multipole_TestIntegrationSymmetry(CCTK_ARGUMENTS) {
          *test_driscollhealy_pi_symmetry);
 }
 
-// void Multipole_TestIntegrate(CCTK_ARGUMENTS)
-// {
-//   const int n = 100;
-
-//   const int nth = n;
-//   const int nph = n;
-//   const int array_size=(nth+1)*(nph+1);
-
-//   CCTK_REAL *f = new CCTK_REAL[array_size];
-
-//   const CCTK_REAL dth = 1/nx;
-//   const CCTK_REAL dph = 1/ny;
-
-//   for (int ix = 0; ix <= nx; ix++)
-//   {
-//     for (int iy = 0; iy <= ny; iy++)
-//     {
-//       const int i = Index_2d(ix, iy, nx);
-
-//       const CCTK_REAL x = ix*dx;
-//       const CCTK_REAL y = iy*dy;
-
-//       f[i] = sin(2*PI*x)*cos(2*PI*y);
-//     }
-//   }
-
-//   CCTK_REAL result = Integrate(int array_size, int nthetap,
-//                                          CCTK_REAL const array1r[], CCTK_REAL
-//                                          const array1i[], CCTK_REAL const
-//                                          array2r[], CCTK_REAL const
-//                                          array2i[], CCTK_REAL const th[],
-//                                          CCTK_REAL const ph[], CCTK_REAL
-//                                          *outre, CCTK_REAL *outim)
-
-//   printf("Integration result: %.19g\n", result);
-// }
-
-void Multipole_TestOrthonormality(CCTK_ARGUMENTS) {
+extern "C" void Multipole_TestOrthonormality(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS
   DECLARE_CCTK_PARAMETERS
 
@@ -245,3 +208,5 @@ void Multipole_TestOrthonormality(CCTK_ARGUMENTS) {
 
   return;
 }
+
+} // namespace Multipole
