@@ -1,6 +1,9 @@
+#include "interpolate.hxx"
+
+#include <math.h>
 #include <stdio.h>
 
-#include "interpolate.hxx"
+namespace Multipole {
 
 static void report_interp_error(int ierr) {
   if (ierr < 0) {
@@ -9,9 +12,9 @@ static void report_interp_error(int ierr) {
   }
 }
 
-void Multipole_Interp(CCTK_ARGUMENTS, CCTK_REAL xs[], CCTK_REAL ys[],
-                      CCTK_REAL zs[], int real_idx, int imag_idx,
-                      CCTK_REAL sphere_real[], CCTK_REAL sphere_imag[]) {
+void Interp(CCTK_ARGUMENTS, CCTK_REAL xs[], CCTK_REAL ys[], CCTK_REAL zs[],
+            int real_idx, int imag_idx, CCTK_REAL sphere_real[],
+            CCTK_REAL sphere_imag[]) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
@@ -79,3 +82,5 @@ void Multipole_Interp(CCTK_ARGUMENTS, CCTK_REAL xs[], CCTK_REAL ys[],
 
   Util_TableDestroy(param_table_handle);
 }
+
+} // namespace Multipole

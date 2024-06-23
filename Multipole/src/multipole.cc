@@ -294,8 +294,8 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
                                ys, zs);
 
       // Interpolate Psi4r and Psi4i
-      Multipole_Interp(CCTK_PASS_CTOC, xs, ys, zs, vars[v].index,
-                       vars[v].imag_index, real, imag);
+      Multipole::Interp(CCTK_PASS_CTOC, xs, ys, zs, vars[v].index,
+                        vars[v].imag_index, real, imag);
 
       for (int l = 0; l <= lmax; l++) {
         for (int m = -l; m <= l; m++) {
