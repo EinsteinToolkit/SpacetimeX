@@ -14,7 +14,6 @@ SCHEDULE Multipole_Calc AT analysis AFTER WeylScal4_psi4_calc_4th
 {
   LANG: C
   OPTIONS: GLOBAL
-  READS: CoordinatesX::vertex_coords
   WRITES: Multipole::harmonics(everywhere)
 } "Calculate Multipoles"
 
@@ -62,7 +61,6 @@ if (!enable_test && !enable_test_Weyl)
 	SCHEDULE Multipole_Init AT CCTK_INITIAL
 	{
 		LANG: C
-		READS: CoordinatesX::vertex_coords
     WRITES: Multipole::harmonics(interior)
     SYNC: Multipole::harmonics
 	} "Init harmonics to zero to make CarpetX happy?"

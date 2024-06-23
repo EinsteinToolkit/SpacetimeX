@@ -38,10 +38,6 @@
 namespace Multipole {
 using namespace std;
 
-////////////////////////////////////////////////////////////////////////////////
-// Private functions
-////////////////////////////////////////////////////////////////////////////////
-
 static bool file_exists(const string &name) {
   struct stat sts;
   return !(stat(name.c_str(), &sts) == -1 && errno == ENOENT);
@@ -98,10 +94,6 @@ void OutputComplex(CCTK_ARGUMENTS, FILE *fp, CCTK_REAL redata,
   DECLARE_CCTK_ARGUMENTS;
   fprintf(fp, "%f %.19g %.19g\n", cctk_time, redata, imdata);
 }
-
-////////////////////////////////////////////////////////////////////////////////
-// Public functions
-////////////////////////////////////////////////////////////////////////////////
 
 void Output1D(CCTK_ARGUMENTS, const string &name, int array_size,
               CCTK_REAL const th[], CCTK_REAL const ph[], mp_coord coord,

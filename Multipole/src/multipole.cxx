@@ -24,11 +24,6 @@ static const int max_spin_weights = max_vars;
 static const int max_l_modes = 10;
 static const int max_m_modes = 2 * max_l_modes + 1;
 
-typedef struct {
-  int n_vars;
-  variable_desc *vars;
-} variables_desc;
-
 static void fill_variable(int idx, const char *optstring, void *callback_arg) {
   assert(idx >= 0);
   assert(callback_arg != 0);
@@ -87,8 +82,7 @@ static void parse_variables_string(const string &var_string,
 }
 
 static void output_modes(CCTK_ARGUMENTS, const variable_desc vars[],
-                         const CCTK_REAL radii[],
-                         const mode_array &modes) {
+                         const CCTK_REAL radii[], const mode_array &modes) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
@@ -118,9 +112,9 @@ static void output_modes(CCTK_ARGUMENTS, const variable_desc vars[],
   }
 }
 
-static void output_1D(CCTK_ARGUMENTS, const variable_desc *v,
-                      CCTK_REAL rad, CCTK_REAL *th, CCTK_REAL *ph,
-                      CCTK_REAL *real, CCTK_REAL *imag, int array_size) {
+static void output_1D(CCTK_ARGUMENTS, const variable_desc *v, CCTK_REAL rad,
+                      CCTK_REAL *th, CCTK_REAL *ph, CCTK_REAL *real,
+                      CCTK_REAL *imag, int array_size) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
@@ -145,22 +139,6 @@ static void output_1D(CCTK_ARGUMENTS, const variable_desc *v,
       }
     }
   }
-}
-
-bool int_in_array(int a, const int array[], int len) {
-  for (int i = 0; i < len; i++) {
-    if (array[i] == a)
-      return true;
-  }
-  return false;
-}
-
-int find_int_in_array(int a, const int array[], int len) {
-  for (int i = 0; i < len; i++) {
-    if (array[i] == a)
-      return i;
-  }
-  return -1;
 }
 
 static void get_spin_weights(variable_desc vars[], int n_vars,
@@ -199,8 +177,8 @@ setup_harmonics(const int spin_weights[max_spin_weights], int n_spin_weights,
         reY[si][l][m + l] = new CCTK_REAL[array_size];
         imY[si][l][m + l] = new CCTK_REAL[array_size];
 
-        HarmonicSetup(sw, l, m, array_size, th, ph,
-                                 reY[si][l][m + l], imY[si][l][m + l]);
+        HarmonicSetup(sw, l, m, array_size, th, ph, reY[si][l][m + l],
+                      imY[si][l][m + l]);
       }
     }
   }
@@ -208,24 +186,15 @@ setup_harmonics(const int spin_weights[max_spin_weights], int n_spin_weights,
 
 // Sets harmonic coefficients to zero at init.
 extern "C" void Multipole_Init(CCTK_ARGUMENTS) {
-  using namespace Loop;
-  DECLARE_CCTK_ARGUMENTS_Multipole_Init;
+  DECLARE_CCTK_ARGUMENTSX_Multipole_Init;
   DECLARE_CCTK_PARAMETERS;
 
-  const int dim = 3;
-
-  const array<int, dim> indextype = {0, 0, 0};
-  const GF3D2layout layout(cctkGH, indextype);
-
-  const GF3D2<CCTK_REAL> re_(layout, harmonic_re);
-  const GF3D2<CCTK_REAL> im_(layout, harmonic_im);
-
-  const GridDescBaseDevice grid(cctkGH);
-  grid.loop_int<0, 0, 0>(grid.nghostzones, [=] CCTK_DEVICE(const PointDesc &p)
-                                               CCTK_ATTRIBUTE_ALWAYS_INLINE {
-                                                 re_(p.I) = 0;
-                                                 im_(p.I) = 0;
-                                               });
+  grid.loop_int<0, 0, 0>(grid.nghostzones,
+                         [=] CCTK_DEVICE(const Loop::PointDesc &p)
+                             CCTK_ATTRIBUTE_ALWAYS_INLINE {
+                               harmonic_re(p.I) = 0;
+                               harmonic_im(p.I) = 0;
+                             });
 }
 
 // This is the main scheduling file.  Because we are completely local here
@@ -296,8 +265,8 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
       ScaleCartesian(ntheta, nphi, radius[i], xhat, yhat, zhat, xs, ys, zs);
 
       // Interpolate Psi4r and Psi4i
-      Interp(CCTK_PASS_CTOC, xs, ys, zs, vars[v].index,
-                        vars[v].imag_index, real, imag);
+      Interp(CCTK_PASS_CTOC, xs, ys, zs, vars[v].index, vars[v].imag_index,
+             real, imag);
 
       for (int l = 0; l <= lmax; l++) {
         for (int m = -l; m <= l; m++) {
@@ -312,6 +281,7 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
                 array_size);
     } // loop over radii
   } // loop over variables
+
   output_modes(CCTK_PASS_CTOC, vars, radius, modes);
 }
 

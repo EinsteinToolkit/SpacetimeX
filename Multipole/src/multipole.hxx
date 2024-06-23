@@ -18,6 +18,11 @@ struct variable_desc {
   std::string name;
 };
 
+struct variables_desc {
+  int n_vars;
+  variable_desc *vars;
+};
+
 // a simple array class to hold complex modes abs(m) <= l, l <= lmax, for
 // nradii radii for nvars variables
 class mode_array {
@@ -56,6 +61,22 @@ private:
   const int lmax;
   std::vector<CCTK_REAL> modes;
 };
+
+inline bool int_in_array(int a, const int array[], int len) {
+  for (int i = 0; i < len; i++) {
+    if (array[i] == a)
+      return true;
+  }
+  return false;
+}
+
+inline int find_int_in_array(int a, const int array[], int len) {
+  for (int i = 0; i < len; i++) {
+    if (array[i] == a)
+      return i;
+  }
+  return -1;
+}
 
 } // namespace Multipole
 

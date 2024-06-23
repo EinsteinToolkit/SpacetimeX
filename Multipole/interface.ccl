@@ -1,6 +1,6 @@
 #interface.ccl for thorn Multipole
-implements: multipole
-inherits:   CoordinatesX WeylScal4
+implements: Multipole
+inherits: WeylScal4
 
 USES INCLUDE HEADER: loop_device.hxx
 
