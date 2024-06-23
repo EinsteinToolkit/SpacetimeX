@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "interpolate.hh"
+#include "interpolate.hxx"
 
 static void report_interp_error(int ierr) {
   if (ierr < 0) {

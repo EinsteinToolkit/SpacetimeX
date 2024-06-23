@@ -2,6 +2,8 @@
 #define MULTIPOLE_INTEGRATE_HXX
 
 #include <cctk.h>
+#include <cctk_Arguments.h>
+#include <cctk_Parameters.h>
 
 namespace Multipole {
 

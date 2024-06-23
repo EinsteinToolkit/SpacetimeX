@@ -13,7 +13,7 @@
 #include "cctk_Functions.h"
 
 #include "multipole.hh"
-#include "interpolate.hh"
+#include "interpolate.hxx"
 #include "utils.hh"
 #include "sphericalharmonic.hh"
 

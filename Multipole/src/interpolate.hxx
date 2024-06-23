@@ -1,3 +1,6 @@
+#ifndef MULTIPOLE_INTERPOLATE_HXX
+#define MULTIPOLE_INTERPOLATE_HXX
+
 #include <math.h>
 
 #include "cctk.h"
@@ -12,3 +15,5 @@
 void Multipole_Interp(CCTK_ARGUMENTS, CCTK_REAL x[], CCTK_REAL y[],
                       CCTK_REAL z[], int real_idx, int imag_idx,
                       CCTK_REAL psi4r[], CCTK_REAL psi4i[]);
+
+#endif // #ifndef MULTIPOLE_INTERPOLATE_HXX
