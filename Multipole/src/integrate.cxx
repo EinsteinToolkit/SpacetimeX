@@ -1,32 +1,32 @@
+#include <assert.h>
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
-#include <math.h>
-#include <assert.h>
 
-#include "cctk.h"
-#include "cctk_Arguments.h"
-#include "cctk_Parameters.h"
+#include <cctk.h>
+#include <cctk_Arguments.h>
+#include <cctk_Parameters.h>
 
-/*
+namespace Multipole {
 
-We will want to integrate functions F(th,ph) from th = 0 to pi, ph = 0
-to 2 pi with a weighting function sin(th).  Alternatively, we might
-want to use u = cos(th) as the variable, in which case we will go from
-u = -1 to 1 and ph = 0 to 2 pi.  For simplicity, we implement an
-integration routine with a weight function of 1, and require the user
-to multiply the integrand by their own weight function.  We divide the
-interval [a,b] into nx subintervals of spacing h = (b-a)/nx.  These
-have coordinates [x_i-1, xi] where x_i = x_0 + i h. So i runs from 0
-to nx.  We require the function to integrate at the points F[x_i,
-y_i].  We have x_0 = a and x_n = b.  Check: x_n = x_0 + n (b-a)/n = a
-+ b - a = b.  Good.
-
-If we are given these points in an array, we also need the width and
-height of the array.  To get an actual integral, we also need the grid
-spacing hx and hy, but these are just multiplied by the result to give
-the integral.
-
-*/
+/**
+ * We will want to integrate functions F(th,ph) from th = 0 to pi, ph = 0
+ * to 2 pi with a weighting function sin(th).  Alternatively, we might
+ * want to use u = cos(th) as the variable, in which case we will go from
+ * u = -1 to 1 and ph = 0 to 2 pi.  For simplicity, we implement an
+ * integration routine with a weight function of 1, and require the user
+ * to multiply the integrand by their own weight function.  We divide the
+ * interval [a,b] into nx subintervals of spacing h = (b-a)/nx.  These
+ * have coordinates [x_i-1, xi] where x_i = x_0 + i h. So i runs from 0
+ * to nx.  We require the function to integrate at the points F[x_i, y_i].
+ * We have x_0 = a and x_n = b.  Check: x_n = x_0 + n (b-a)/n = a + b - a = b.
+ * Good.
+ *
+ * If we are given these points in an array, we also need the width and
+ * height of the array.  To get an actual integral, we also need the grid
+ * spacing hx and hy, but these are just multiplied by the result to give
+ * the integral.
+ */
 
 #define idx(xx, yy)                                                            \
   (assert((xx) <= nx), assert((xx) >= 0), assert((yy) <= ny),                  \
@@ -215,3 +215,5 @@ CCTK_REAL DriscollHealy2DIntegral(CCTK_REAL const *const f, int const nx,
 //  delete [] g;
 //  return integrand_sum;
 //}
+
+} // namespace Multipole

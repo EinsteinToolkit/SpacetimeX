@@ -8,9 +8,11 @@
 #include "cctk_Parameters.h"
 
 #include "utils.hh"
-#include "integrate.hh"
+#include "integrate.hxx"
 #include "interpolate.hh"
 #include "sphericalharmonic.hh"
+
+using namespace Multipole;
 
 static const int max_l_modes = 10;
 static const int max_m_modes = 2 * max_l_modes + 1;

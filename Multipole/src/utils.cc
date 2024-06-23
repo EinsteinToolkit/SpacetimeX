@@ -25,7 +25,7 @@
 #endif
 
 #include "utils.hh"
-#include "integrate.hh"
+#include "integrate.hxx"
 #include "multipole.hh"
 
 // check return code of HDF5 call abort with an error message if there was an
@@ -42,6 +42,7 @@
   } while (0)
 
 using namespace std;
+using namespace Multipole;
 
 ////////////////////////////////////////////////////////////////////////
 // File manipulation

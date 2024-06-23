@@ -2,9 +2,9 @@
 
 # Source files in this directory
 SRCS = \
+  integrate.cxx \
   interpolate.cc \
   multipole.cc \
-  utils.cc \
   sphericalharmonic.cc \
-  integrate.cc \
-  tests.cc
+  tests.cc \
+  utils.cc
