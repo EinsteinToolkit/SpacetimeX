@@ -14,7 +14,6 @@ SCHEDULE Multipole_Calc AT analysis AFTER WeylScal4_psi4_calc_4th
 {
   LANG: C
   OPTIONS: GLOBAL
-  WRITES: Multipole::harmonics(everywhere)
 } "Calculate Multipoles"
 
 
