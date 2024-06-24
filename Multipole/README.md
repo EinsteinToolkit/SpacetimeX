@@ -1,19 +1,14 @@
 
-=========
-Multipole
-=========
+# Multipole
 
-=============    ==============================================================================================
-Authors          Ian Hinder and Andrew Knapp
-Maintainer       Ian Hinder
-Licence          GNU GPL version 2
-Documentation    http://einsteintoolkit.org/documentation/ThornGuide/ThornGuidech133.html#x149-2383000O9
-Download         svn checkout https://svn.einsteintoolkit.org/cactus/EinsteinAnalysis/Multipole/trunk Multipole
-=============    ==============================================================================================
+|Authors          |Ian Hinder and Andrew Knapp (modernized by Liwei Ji, Samuel Cupp, Roland Haas, Allen Wen, Yosef Zlochower) |
+|:----------------|:---------------------------|
+|Maintainer       |Liwei Ji
+|Licence          |GNU GPL version 2
+|Documentation    |http://einsteintoolkit.org/thornguide/EinsteinAnalysis/Multipole/documentation.html
 
----------------------
-Purpose of This Thorn
----------------------
+
+## Purpose of This Thorn
 
 The Multipole thorn performs spherical harmonic mode decomposition of
 Cactus grid functions on coordinate spheres.  It can decompose
@@ -21,28 +16,20 @@ multiple grid functions with any spin-weight on multiple spheres.
 This thorn uses the interpolator interface to access grid functions,
 so works with mesh-refinement and multi-patch.
 
----------------
-Required thorns
----------------
+## Required thorns
 
-* An interpolator, e.g. AEILocalInterp
+* An interpolator
 
---------------
-Related thorns
---------------
+## Related thorns
 
 * WeylScal4 can be used to compute the Weyl scalars, which can then be
   decomposed into modes on coordinate spheres by Multipole.
 
-------------
-Publications
-------------
+## Publications
 
 Multipole has been used in the following publications:
 
----------
-Copyright
----------
+## Copyright
 
 This thorn is copyright (C) 2007-2011 (C) by Ian Hinder and Andrew
 Knapp.
