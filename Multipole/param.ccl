@@ -121,7 +121,7 @@ CCTK_BOOLEAN test_mode_proportional_to_r "whether the test spherical harmonic co
 {
 } "no"
 
-CCTK_BOOLEAN output_ascii "Output a simple ASCII file for each mode at each radius"
+CCTK_BOOLEAN output_tsv "Output a simple ASCII file for each mode at each radius"
 {
 } "yes"
 

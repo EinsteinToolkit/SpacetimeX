@@ -130,7 +130,7 @@ static void output_modes(CCTK_ARGUMENTS, const variable_desc vars[],
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
-  if (output_ascii) {
+  if (output_tsv) {
     if (CCTK_MyProc(cctkGH) == 0) {
       for (int v = 0; v < modes.get_nvars(); v++) {
         for (int i = 0; i < modes.get_nradii(); i++) {
@@ -140,7 +140,7 @@ static void output_modes(CCTK_ARGUMENTS, const variable_desc vars[],
               ostringstream name;
               name << "mp_" << vars[v].name << "_l" << l << "_m" << m << "_r"
                    << setiosflags(ios::fixed) << setprecision(2) << rad
-                   << ".asc";
+                   << ".tsv";
               OutputComplexToFile(CCTK_PASS_CTOC, name.str(),
                                   modes(v, i, l, m, 0), modes(v, i, l, m, 1));
             }
@@ -162,23 +162,23 @@ static void output_1d(CCTK_ARGUMENTS, const variable_desc *v, CCTK_REAL rad,
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
-  if (CCTK_MyProc(cctkGH) == 0 && output_ascii) {
+  if (CCTK_MyProc(cctkGH) == 0 && output_tsv) {
     if (out_1d_every != 0 && cctk_iteration % out_1d_every == 0) {
       ostringstream real_base;
       real_base << "mp_" << string(CCTK_VarName(v->index)) << "_r"
                 << setiosflags(ios::fixed) << setprecision(2) << rad;
-      Output1D(CCTK_PASS_CTOC, real_base.str() + string(".th.asc"), array_size,
+      Output1D(CCTK_PASS_CTOC, real_base.str() + string(".th.tsv"), array_size,
                th, ph, mp_theta, real);
-      Output1D(CCTK_PASS_CTOC, real_base.str() + string(".ph.asc"), array_size,
+      Output1D(CCTK_PASS_CTOC, real_base.str() + string(".ph.tsv"), array_size,
                th, ph, mp_phi, real);
 
       if (v->imag_index != -1) {
         ostringstream imag_base;
         imag_base << "mp_" << string(CCTK_VarName(v->imag_index)) << "_r"
                   << setiosflags(ios::fixed) << setprecision(2) << rad;
-        Output1D(CCTK_PASS_CTOC, imag_base.str() + string(".th.asc"),
+        Output1D(CCTK_PASS_CTOC, imag_base.str() + string(".th.tsv"),
                  array_size, th, ph, mp_theta, imag);
-        Output1D(CCTK_PASS_CTOC, imag_base.str() + string(".ph.asc"),
+        Output1D(CCTK_PASS_CTOC, imag_base.str() + string(".ph.tsv"),
                  array_size, th, ph, mp_phi, imag);
       }
     }
