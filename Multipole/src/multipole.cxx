@@ -126,7 +126,7 @@ setup_harmonics(const int spin_weights[max_spin_weights], int n_spin_weights,
 }
 
 static void output_modes(CCTK_ARGUMENTS, const variable_desc vars[],
-                         const CCTK_REAL radii[], const mode_array &modes) {
+                         const CCTK_REAL radii[], const ModeArray &modes) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
@@ -253,7 +253,7 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
     CCTK_VINFO("initialized arrays");
   }
 
-  mode_array modes(n_variables, nradii, lmax);
+  ModeArray modes(n_variables, nradii, lmax);
 
   for (int v = 0; v < n_variables; v++) {
     // assert(vars[v].spin_weight == -2);

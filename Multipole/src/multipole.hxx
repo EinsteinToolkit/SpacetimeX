@@ -25,12 +25,12 @@ struct variables_desc {
 
 // a simple array class to hold complex modes abs(m) <= l, l <= lmax, for
 // nradii radii for nvars variables
-class mode_array {
+class ModeArray {
 public:
-  mode_array(int nvars_, int nradii_, int lmax_)
+  ModeArray(int nvars_, int nradii_, int lmax_)
       : nvars(nvars_), nradii(nradii_), lmax(lmax_),
         modes(size_t(nvars * nradii * (lmax + 1) * (lmax + 1) * 2)) {}
-  virtual ~mode_array() {}
+  virtual ~ModeArray() {}
   // default copy and assignment is ok
 
   CCTK_REAL &operator()(int v, int ri, int l, int m, bool is_im) {

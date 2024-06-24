@@ -24,7 +24,7 @@ void OutputComplexToFile(CCTK_ARGUMENTS, const string &name, CCTK_REAL redata,
                          CCTK_REAL imdata);
 
 void OutputComplexToH5File(CCTK_ARGUMENTS, const variable_desc vars[],
-                           const CCTK_REAL radii[], const mode_array &modes);
+                           const CCTK_REAL radii[], const ModeArray &modes);
 
 void CoordSetup(CCTK_REAL xhat[], CCTK_REAL yhat[], CCTK_REAL zhat[],
                 CCTK_REAL th[], CCTK_REAL ph[]);
