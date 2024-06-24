@@ -45,14 +45,6 @@ void Interp(CCTK_ARGUMENTS, CCTK_REAL xs[], CCTK_REAL ys[], CCTK_REAL zs[],
                 interp_handle);
 
   // Interpolation parameter table
-  CCTK_INT operations[1][N_dims];
-  for (int var = 0; var < npoints; var++) {
-    operations[0][var] = 0;
-  }
-  int operands[1][N_dims];
-  for (int var = 0; var < npoints; var++) {
-    operands[0][var] = var;
-  }
   int param_table_handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
   ierr = Util_TableSetFromString(param_table_handle, interpolator_pars);
 
