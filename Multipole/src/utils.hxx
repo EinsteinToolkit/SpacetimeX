@@ -33,12 +33,6 @@ void ScaleCartesian(int ntheta, int nphi, CCTK_REAL r, CCTK_REAL const xhat[],
                     CCTK_REAL const yhat[], CCTK_REAL const zhat[],
                     CCTK_REAL x[], CCTK_REAL y[], CCTK_REAL z[]);
 
-void Integrate(int array_size, int ntheta, CCTK_REAL const array1r[],
-               CCTK_REAL const array1i[], CCTK_REAL const array2r[],
-               CCTK_REAL const array2i[], CCTK_REAL const th[],
-               CCTK_REAL const pph[], CCTK_REAL out_arrayr[],
-               CCTK_REAL out_arrayi[]);
-
 } // namespace Multipole
 
 #endif // #ifndef MULTIPOLE_UTILS_HXX

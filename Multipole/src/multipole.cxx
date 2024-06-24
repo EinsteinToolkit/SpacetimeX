@@ -1,3 +1,4 @@
+#include "integrate.hxx"
 #include "interpolate.hxx"
 #include "multipole.hxx"
 #include "sphericalharmonic.hxx"
