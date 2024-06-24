@@ -1,9 +1,9 @@
 
 # Multipole
 
-|Authors          |Ian Hinder and Andrew Knapp (modernized by Liwei Ji, Samuel Cupp, Roland Haas, Allen Wen, Yosef Zlochower) |
+|Authors          |Ian Hinder and Andrew Knapp |
 |:----------------|:---------------------------|
-|Maintainer       |Liwei Ji
+|Maintainer       |Ian Hinder and Liwei Ji
 |Licence          |GNU GPL version 2
 |Documentation    |http://einsteintoolkit.org/thornguide/EinsteinAnalysis/Multipole/documentation.html
 
