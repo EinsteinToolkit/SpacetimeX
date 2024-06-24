@@ -54,23 +54,12 @@ void Interp(CCTK_ARGUMENTS, CCTK_REAL xs[], CCTK_REAL ys[], CCTK_REAL zs[],
     operands[0][var] = var;
   }
   int param_table_handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
-  if (param_table_handle < 0)
-    CCTK_VERROR("Can't create parameter table: %d", param_table_handle);
-  if ((ierr = Util_TableSetInt(param_table_handle, 1, "order")) < 0)
-    CCTK_VERROR("Can't set order in parameter table: %d", ierr);
-  if ((ierr = Util_TableSetIntArray(param_table_handle, N_input_arrays,
-                                    (int const *const)operands,
-                                    "operand_indices")) < 0)
-    CCTK_VERROR("Can't set operand_indices array in parameter table: %d", ierr);
-  if ((ierr = Util_TableSetIntArray(param_table_handle, N_input_arrays,
-                                    (int const *const)operations,
-                                    "operation_codes")) < 0)
-    CCTK_VERROR("Can't set operation_codes array in parameter table: %d", ierr);
+  ierr = Util_TableSetFromString(param_table_handle, interpolator_pars);
 
-  ierr = DriverInterpolate(
-      cctkGH, N_dims, interp_handle, param_table_handle, coord_system_handle,
-      npoints, interp_coords_type_code, interp_coords, N_input_arrays,
-      input_array_indices, N_output_arrays, output_array_types, output_arrays);
+  DriverInterpolate(cctkGH, N_dims, interp_handle, param_table_handle,
+                    coord_system_handle, npoints, interp_coords_type_code,
+                    interp_coords, N_input_arrays, input_array_indices,
+                    N_output_arrays, output_array_types, output_arrays);
 
   report_interp_error(ierr);
 
