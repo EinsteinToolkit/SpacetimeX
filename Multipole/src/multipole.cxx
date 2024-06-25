@@ -22,13 +22,15 @@ static vector<CCTK_REAL> realV, imagV;
 // Y[sw][l][m][i]
 static vector<vector<vector<vector<CCTK_REAL> > > > realY, imagY;
 
+// Parsed  variables
+static vector<VariableParse> vars;
+
 static const int max_vars = 10;
 
 // since each variable can have at most one spin weight, max_vars is a good
 // upper limit for the number of spin weights to expect
 static const int max_spin_weights = max_vars;
 
-static VariableParse vars[max_vars];
 static int n_variables = 0;
 static int spin_weights[max_spin_weights];
 static int n_spin_weights = 0;
@@ -193,19 +195,6 @@ static void output_1d(CCTK_ARGUMENTS, const VariableParse *v, CCTK_REAL rad,
   }
 }
 
-// Sets harmonic coefficients to zero at init.
-extern "C" void Multipole_Init(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTSX_Multipole_Init;
-  DECLARE_CCTK_PARAMETERS;
-
-  grid.loop_int<0, 0, 0>(grid.nghostzones,
-                         [=] CCTK_DEVICE(const Loop::PointDesc &p)
-                             CCTK_ATTRIBUTE_ALWAYS_INLINE {
-                               harmonic_re(p.I) = 0;
-                               harmonic_im(p.I) = 0;
-                             });
-}
-
 extern "C" void Multipole_Setup(CCTK_ARGUMENTS) {
   DECLARE_CCTK_PARAMETERS;
 
@@ -222,12 +211,27 @@ extern "C" void Multipole_Setup(CCTK_ARGUMENTS) {
   yhat.resize(array_size);
   zhat.resize(array_size);
 
-  parse_variables_string(string(variables), vars, &n_variables);
-  get_spin_weights(vars, n_variables, spin_weights, &n_spin_weights);
+  vars.resize(max_vars);
+
+  parse_variables_string(string(variables), vars.data(), &n_variables);
+  get_spin_weights(vars.data(), n_variables, spin_weights, &n_spin_weights);
   CoordSetup(xhat.data(), yhat.data(), zhat.data(), th.data(), ph.data());
   setup_harmonics(spin_weights, n_spin_weights, l_max, th.data(), ph.data(),
                   array_size, realY, imagY);
   CCTK_VINFO("initialized arrays");
+}
+
+// Sets harmonic coefficients to zero at init.
+extern "C" void Multipole_Init(CCTK_ARGUMENTS) {
+  DECLARE_CCTK_ARGUMENTSX_Multipole_Init;
+  DECLARE_CCTK_PARAMETERS;
+
+  grid.loop_int<0, 0, 0>(grid.nghostzones,
+                         [=] CCTK_DEVICE(const Loop::PointDesc &p)
+                             CCTK_ATTRIBUTE_ALWAYS_INLINE {
+                               harmonic_re(p.I) = 0;
+                               harmonic_im(p.I) = 0;
+                             });
 }
 
 // This is the main scheduling file.  Because we are completely local here
@@ -282,7 +286,7 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
     } // loop over radii
   } // loop over variables
 
-  output_modes(CCTK_PASS_CTOC, vars, radius, modes);
+  output_modes(CCTK_PASS_CTOC, vars.data(), radius, modes);
 }
 
 } // namespace Multipole
