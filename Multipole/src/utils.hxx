@@ -23,7 +23,7 @@ void Output1D(CCTK_ARGUMENTS, const string &name, int array_size,
 void OutputComplexToFile(CCTK_ARGUMENTS, const string &name, CCTK_REAL redata,
                          CCTK_REAL imdata);
 
-void OutputComplexToH5File(CCTK_ARGUMENTS, const variable_desc vars[],
+void OutputComplexToH5File(CCTK_ARGUMENTS, const VariableParse vars[],
                            const CCTK_REAL radii[], const ModeArray &modes);
 
 void CoordSetup(CCTK_REAL xhat[], CCTK_REAL yhat[], CCTK_REAL zhat[],

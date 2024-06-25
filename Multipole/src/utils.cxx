@@ -129,7 +129,7 @@ void OutputComplexToFile(CCTK_ARGUMENTS, const string &name, CCTK_REAL redata,
   }
 }
 
-void OutputComplexToH5File(CCTK_ARGUMENTS, const variable_desc vars[],
+void OutputComplexToH5File(CCTK_ARGUMENTS, const VariableParse vars[],
                            const CCTK_REAL radii[], const ModeArray &modes) {
 
 #ifdef HAVE_CAPABILITY_HDF5

@@ -25,35 +25,35 @@ static const int max_spin_weights = max_vars;
 static const int max_l_modes = 10;
 static const int max_m_modes = 2 * max_l_modes + 1;
 
-static void fill_variable(int idx, const char *optstring, void *callback_arg) {
+static void fillVariable(int idx, const char *optString, void *callbackArg) {
   assert(idx >= 0);
-  assert(callback_arg != 0);
+  assert(callbackArg != nullptr);
 
-  variables_desc *vs = (variables_desc *)callback_arg;
+  VariableParseArray *vs = static_cast<VariableParseArray *>(callbackArg);
 
-  assert(vs->n_vars < max_vars); // Too many variables in the variables list
-  variable_desc *v = &vs->vars[vs->n_vars];
+  assert(vs->numVars < max_vars);              // Ensure we don't exceed max_vars
+  VariableParse *v = &vs->vars[vs->numVars++]; // Increment numVars and get
+                                              // reference to next VariableParse
 
   v->index = idx;
 
-  // Default values if there is no option string or if the options are
-  // not present
-  v->imag_index = -1;
-  v->spin_weight = 0;
+  // Initialize default values
+  v->imagIndex = -1;
+  v->spinWeight = 0;
   v->name = string(CCTK_VarName(v->index));
 
-  if (optstring != 0) {
-    int table = Util_TableCreateFromString(optstring);
+  if (optString != nullptr) {
+    int table = Util_TableCreateFromString(optString);
 
     if (table >= 0) {
-      const int buffer_length = 256;
-      char buffer[buffer_length];
+      const int bufferLength = 256;
+      char buffer[bufferLength];
 
-      Util_TableGetInt(table, &v->spin_weight, "sw");
-      if (Util_TableGetString(table, buffer_length, buffer, "cmplx") >= 0) {
-        v->imag_index = CCTK_VarIndex(buffer);
+      Util_TableGetInt(table, &v->spinWeight, "sw");
+      if (Util_TableGetString(table, bufferLength, buffer, "cmplx") >= 0) {
+        v->imagIndex = CCTK_VarIndex(buffer);
       }
-      if (Util_TableGetString(table, buffer_length, buffer, "name") >= 0) {
+      if (Util_TableGetString(table, bufferLength, buffer, "name") >= 0) {
         v->name = string(buffer);
       }
 
@@ -64,33 +64,32 @@ static void fill_variable(int idx, const char *optstring, void *callback_arg) {
       }
     }
   }
-  vs->n_vars++;
 }
 
 static void parse_variables_string(const string &var_string,
-                                   variable_desc v[max_vars],
+                                   VariableParse v[max_vars],
                                    int *n_variables) {
-  variables_desc vars;
+  VariableParseArray vars;
 
-  vars.n_vars = 0;
+  vars.numVars = 0;
   vars.vars = v;
 
-  int ierr = CCTK_TraverseString(var_string.c_str(), fill_variable, &vars,
+  int ierr = CCTK_TraverseString(var_string.c_str(), fillVariable, &vars,
                                  CCTK_GROUP_OR_VAR);
   assert(ierr >= 0);
 
-  *n_variables = vars.n_vars;
+  *n_variables = vars.numVars;
 }
 
-static void get_spin_weights(variable_desc vars[], int n_vars,
+static void get_spin_weights(VariableParse vars[], int n_vars,
                              int spin_weights[max_spin_weights],
                              int *n_weights) {
   int n_spin_weights = 0;
 
   for (int i = 0; i < n_vars; i++) {
-    if (!int_in_array(vars[i].spin_weight, spin_weights, n_spin_weights)) {
+    if (!int_in_array(vars[i].spinWeight, spin_weights, n_spin_weights)) {
       assert(n_spin_weights < max_spin_weights);
-      spin_weights[n_spin_weights] = vars[i].spin_weight;
+      spin_weights[n_spin_weights] = vars[i].spinWeight;
       n_spin_weights++;
     }
   }
@@ -125,7 +124,7 @@ setup_harmonics(const int spin_weights[max_spin_weights], int n_spin_weights,
   }
 }
 
-static void output_modes(CCTK_ARGUMENTS, const variable_desc vars[],
+static void output_modes(CCTK_ARGUMENTS, const VariableParse vars[],
                          const CCTK_REAL radii[], const ModeArray &modes) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
@@ -156,7 +155,7 @@ static void output_modes(CCTK_ARGUMENTS, const variable_desc vars[],
   }
 }
 
-static void output_1d(CCTK_ARGUMENTS, const variable_desc *v, CCTK_REAL rad,
+static void output_1d(CCTK_ARGUMENTS, const VariableParse *v, CCTK_REAL rad,
                       CCTK_REAL *th, CCTK_REAL *ph, CCTK_REAL *real,
                       CCTK_REAL *imag, int array_size) {
   DECLARE_CCTK_ARGUMENTS;
@@ -172,9 +171,9 @@ static void output_1d(CCTK_ARGUMENTS, const variable_desc *v, CCTK_REAL rad,
       Output1D(CCTK_PASS_CTOC, real_base.str() + string(".ph.tsv"), array_size,
                th, ph, mp_phi, real);
 
-      if (v->imag_index != -1) {
+      if (v->imagIndex != -1) {
         ostringstream imag_base;
-        imag_base << "mp_" << string(CCTK_VarName(v->imag_index)) << "_r"
+        imag_base << "mp_" << string(CCTK_VarName(v->imagIndex)) << "_r"
                   << setiosflags(ios::fixed) << setprecision(2) << rad;
         Output1D(CCTK_PASS_CTOC, imag_base.str() + string(".th.tsv"),
                  array_size, th, ph, mp_theta, imag);
@@ -216,7 +215,7 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
   static CCTK_REAL *real = 0, *imag = 0;
   static CCTK_REAL *reY[max_spin_weights][max_l_modes][max_m_modes];
   static CCTK_REAL *imY[max_spin_weights][max_l_modes][max_m_modes];
-  static variable_desc vars[max_vars];
+  static VariableParse vars[max_vars];
   static int n_variables = 0;
   static int spin_weights[max_spin_weights];
   static int n_spin_weights = 0;
@@ -256,9 +255,9 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
   ModeArray modes(n_variables, nradii, lmax);
 
   for (int v = 0; v < n_variables; v++) {
-    // assert(vars[v].spin_weight == -2);
+    // assert(vars[v].spinWeight == -2);
     int si =
-        find_int_in_array(vars[v].spin_weight, spin_weights, n_spin_weights);
+        find_int_in_array(vars[v].spinWeight, spin_weights, n_spin_weights);
     assert(si != -1);
 
     for (int i = 0; i < nradii; i++) {
@@ -266,7 +265,7 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
       ScaleCartesian(ntheta, nphi, radius[i], xhat, yhat, zhat, xs, ys, zs);
 
       // Interpolate Psi4r and Psi4i
-      Interp(CCTK_PASS_CTOC, xs, ys, zs, vars[v].index, vars[v].imag_index,
+      Interp(CCTK_PASS_CTOC, xs, ys, zs, vars[v].index, vars[v].imagIndex,
              real, imag);
 
       for (int l = 0; l <= lmax; l++) {

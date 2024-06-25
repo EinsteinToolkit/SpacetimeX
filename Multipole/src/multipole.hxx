@@ -11,16 +11,16 @@
 namespace Multipole {
 
 // information about variable which we decompose
-struct variable_desc {
+struct VariableParse {
   int index;
-  int imag_index;
-  CCTK_INT spin_weight;
+  int imagIndex;
+  CCTK_INT spinWeight;
   std::string name;
 };
 
-struct variables_desc {
-  int n_vars;
-  variable_desc *vars;
+struct VariableParseArray {
+  int numVars;
+  VariableParse *vars;
 };
 
 // a simple array class to hold complex modes abs(m) <= l, l <= lmax, for
