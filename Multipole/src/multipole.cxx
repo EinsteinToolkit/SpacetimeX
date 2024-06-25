@@ -31,7 +31,6 @@ static const int max_vars = 10;
 // upper limit for the number of spin weights to expect
 static const int max_spin_weights = max_vars;
 
-static int n_variables = 0;
 static int spin_weights[max_spin_weights];
 static int n_spin_weights = 0;
 
@@ -43,19 +42,17 @@ static void fillVariable(int idx, const char *optString, void *callbackArg) {
   assert(idx >= 0);
   assert(callbackArg != nullptr);
 
-  VariableParseArray *vs = static_cast<VariableParseArray *>(callbackArg);
+  vector<VariableParse> *vs = static_cast<vector<VariableParse> *>(callbackArg);
 
-  assert(vs->numVars < max_vars); // Ensure we don't exceed max_vars
-  VariableParse *v =
-      &vs->vars[vs->numVars++]; // Increment numVars and get
-                                // reference to next VariableParse
-
-  v->index = idx;
+  assert(vs->size() < max_vars); // Ensure we don't exceed max_vars
+                                 //
+  VariableParse v;
+  v.index = idx;
 
   // Initialize default values
-  v->imagIndex = -1;
-  v->spinWeight = 0;
-  v->name = string(CCTK_VarName(v->index));
+  v.imagIndex = -1;
+  v.spinWeight = 0;
+  v.name = string(CCTK_VarName(v.index));
 
   if (optString != nullptr) {
     int table = Util_TableCreateFromString(optString);
@@ -64,12 +61,12 @@ static void fillVariable(int idx, const char *optString, void *callbackArg) {
       const int bufferLength = 256;
       char buffer[bufferLength];
 
-      Util_TableGetInt(table, &v->spinWeight, "sw");
+      Util_TableGetInt(table, &v.spinWeight, "sw");
       if (Util_TableGetString(table, bufferLength, buffer, "cmplx") >= 0) {
-        v->imagIndex = CCTK_VarIndex(buffer);
+        v.imagIndex = CCTK_VarIndex(buffer);
       }
       if (Util_TableGetString(table, bufferLength, buffer, "name") >= 0) {
-        v->name = string(buffer);
+        v.name = string(buffer);
       }
 
       const int ierr = Util_TableDestroy(table);
@@ -79,29 +76,22 @@ static void fillVariable(int idx, const char *optString, void *callbackArg) {
       }
     }
   }
+  vs->push_back(v);
 }
 
 static void parse_variables_string(const string &var_string,
-                                   VariableParse v[max_vars],
-                                   int *n_variables) {
-  VariableParseArray vars;
-
-  vars.numVars = 0;
-  vars.vars = v;
-
-  int ierr = CCTK_TraverseString(var_string.c_str(), fillVariable, &vars,
+                                   vector<VariableParse> &vs) {
+  int ierr = CCTK_TraverseString(var_string.c_str(), fillVariable, &vs,
                                  CCTK_GROUP_OR_VAR);
   assert(ierr >= 0);
-
-  *n_variables = vars.numVars;
 }
 
-static void get_spin_weights(VariableParse vars[], int n_vars,
+static void get_spin_weights(vector<VariableParse> vars,
                              int spin_weights[max_spin_weights],
                              int *n_weights) {
   int n_spin_weights = 0;
 
-  for (int i = 0; i < n_vars; i++) {
+  for (size_t i = 0; i < vars.size(); i++) {
     if (!int_in_array(vars[i].spinWeight, spin_weights, n_spin_weights)) {
       assert(n_spin_weights < max_spin_weights);
       spin_weights[n_spin_weights] = vars[i].spinWeight;
@@ -211,10 +201,8 @@ extern "C" void Multipole_Setup(CCTK_ARGUMENTS) {
   yhat.resize(array_size);
   zhat.resize(array_size);
 
-  vars.resize(max_vars);
-
-  parse_variables_string(string(variables), vars.data(), &n_variables);
-  get_spin_weights(vars.data(), n_variables, spin_weights, &n_spin_weights);
+  parse_variables_string(string(variables), vars);
+  get_spin_weights(vars, spin_weights, &n_spin_weights);
   CoordSetup(xhat.data(), yhat.data(), zhat.data(), th.data(), ph.data());
   setup_harmonics(spin_weights, n_spin_weights, l_max, th.data(), ph.data(),
                   array_size, realY, imagY);
@@ -247,6 +235,7 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
   DECLARE_CCTK_PARAMETERS;
 
   const int array_size = (ntheta + 1) * (nphi + 1);
+  const int n_variables = vars.size();
 
   if (out_every == 0 || cctk_iteration % out_every != 0)
     return;
