@@ -15,6 +15,8 @@
 namespace Multipole {
 using namespace std;
 
+static vector<CCTK_REAL> xs, ys, zs, xhat, yhat, zhat;
+static vector<CCTK_REAL> th, ph;
 static vector<CCTK_REAL> realV, imagV;
 
 // Y[sw][l][m][i]
@@ -211,12 +213,6 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_Multipole_Calc;
   DECLARE_CCTK_PARAMETERS;
 
-  static CCTK_REAL *xs, *ys, *zs;
-  static CCTK_REAL *xhat, *yhat, *zhat;
-  static CCTK_REAL *th, *ph;
-  // static CCTK_REAL *realV = 0, *imagV = 0;
-  //  static CCTK_REAL *realY[max_spin_weights][max_l_modes][max_m_modes];
-  //  static CCTK_REAL *imagY[max_spin_weights][max_l_modes][max_m_modes];
   static VariableParse vars[max_vars];
   static int n_variables = 0;
   static int spin_weights[max_spin_weights];
@@ -236,23 +232,20 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
   if (!initialized) {
     realV.resize(array_size);
     imagV.resize(array_size);
-
-    // realV = new CCTK_REAL[array_size];
-    // imagV = new CCTK_REAL[array_size];
-    th = new CCTK_REAL[array_size];
-    ph = new CCTK_REAL[array_size];
-    xs = new CCTK_REAL[array_size];
-    ys = new CCTK_REAL[array_size];
-    zs = new CCTK_REAL[array_size];
-    xhat = new CCTK_REAL[array_size];
-    yhat = new CCTK_REAL[array_size];
-    zhat = new CCTK_REAL[array_size];
+    th.resize(array_size);
+    ph.resize(array_size);
+    xs.resize(array_size);
+    ys.resize(array_size);
+    zs.resize(array_size);
+    xhat.resize(array_size);
+    yhat.resize(array_size);
+    zhat.resize(array_size);
 
     parse_variables_string(string(variables), vars, &n_variables);
     get_spin_weights(vars, n_variables, spin_weights, &n_spin_weights);
-    CoordSetup(xhat, yhat, zhat, th, ph);
-    setup_harmonics(spin_weights, n_spin_weights, lmax, th, ph, array_size,
-                    realY, imagY);
+    CoordSetup(xhat.data(), yhat.data(), zhat.data(), th.data(), ph.data());
+    setup_harmonics(spin_weights, n_spin_weights, lmax, th.data(), ph.data(),
+                    array_size, realY, imagY);
     initialized = true;
     CCTK_VINFO("initialized arrays");
   }
@@ -267,23 +260,24 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
 
     for (int i = 0; i < nradii; i++) {
       // Compute x^i = r * \hat x^i
-      ScaleCartesian(ntheta, nphi, radius[i], xhat, yhat, zhat, xs, ys, zs);
+      ScaleCartesian(ntheta, nphi, radius[i], xhat.data(), yhat.data(),
+                     zhat.data(), xs.data(), ys.data(), zs.data());
 
       // Interpolate Psi4r and Psi4i
-      Interp(CCTK_PASS_CTOC, xs, ys, zs, vars[v].index, vars[v].imagIndex,
-             realV, imagV);
+      Interp(CCTK_PASS_CTOC, xs.data(), ys.data(), zs.data(), vars[v].index,
+             vars[v].imagIndex, realV, imagV);
 
       for (int l = 0; l <= lmax; l++) {
         for (int m = -l; m <= l; m++) {
           // Integrate sYlm (realV + i imagV) over the sphere at radius r
           Integrate(array_size, ntheta, realY[si][l][m + l],
-                    imagY[si][l][m + l], realV, imagV, th, ph,
+                    imagY[si][l][m + l], realV, imagV, th.data(), ph.data(),
                     &modes(v, i, l, m, 0), &modes(v, i, l, m, 1));
 
         } // loop over m
       } // loop over l
-      output_1d(CCTK_PASS_CTOC, &vars[v], radius[i], th, ph, realV.data(),
-                imagV.data(), array_size);
+      output_1d(CCTK_PASS_CTOC, &vars[v], radius[i], th.data(), ph.data(),
+                realV.data(), imagV.data(), array_size);
     } // loop over radii
   } // loop over variables
 
