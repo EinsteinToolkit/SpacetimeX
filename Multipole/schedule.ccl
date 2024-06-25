@@ -10,6 +10,12 @@ if (enable_test)
 }
 
 
+SCHEDULE Multipole_Setup AT wragh
+{
+  LANG: C
+  OPTIONS: GLOBAL
+} "Set up for Calculating Multipoles"
+
 SCHEDULE Multipole_Calc AT analysis AFTER WeylScal4_psi4_calc_4th
 {
   LANG: C

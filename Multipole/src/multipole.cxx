@@ -28,6 +28,11 @@ static const int max_vars = 10;
 // upper limit for the number of spin weights to expect
 static const int max_spin_weights = max_vars;
 
+static VariableParse vars[max_vars];
+static int n_variables = 0;
+static int spin_weights[max_spin_weights];
+static int n_spin_weights = 0;
+
 // modes are 0...max_l_modes-1
 static const int max_l_modes = 10;
 static const int max_m_modes = 2 * max_l_modes + 1;
@@ -201,6 +206,30 @@ extern "C" void Multipole_Init(CCTK_ARGUMENTS) {
                              });
 }
 
+extern "C" void Multipole_Setup(CCTK_ARGUMENTS) {
+  DECLARE_CCTK_PARAMETERS;
+
+  const int array_size = (ntheta + 1) * (nphi + 1);
+
+  realV.resize(array_size);
+  imagV.resize(array_size);
+  th.resize(array_size);
+  ph.resize(array_size);
+  xs.resize(array_size);
+  ys.resize(array_size);
+  zs.resize(array_size);
+  xhat.resize(array_size);
+  yhat.resize(array_size);
+  zhat.resize(array_size);
+
+  parse_variables_string(string(variables), vars, &n_variables);
+  get_spin_weights(vars, n_variables, spin_weights, &n_spin_weights);
+  CoordSetup(xhat.data(), yhat.data(), zhat.data(), th.data(), ph.data());
+  setup_harmonics(spin_weights, n_spin_weights, l_max, th.data(), ph.data(),
+                  array_size, realY, imagY);
+  CCTK_VINFO("initialized arrays");
+}
+
 // This is the main scheduling file.  Because we are completely local here
 // and do not use cactus arrays etc, we schedule only one function and then
 // like program like one would in C, C++ with this function taking the
@@ -213,13 +242,6 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_Multipole_Calc;
   DECLARE_CCTK_PARAMETERS;
 
-  static VariableParse vars[max_vars];
-  static int n_variables = 0;
-  static int spin_weights[max_spin_weights];
-  static int n_spin_weights = 0;
-
-  static bool initialized = false;
-
   const int array_size = (ntheta + 1) * (nphi + 1);
 
   if (out_every == 0 || cctk_iteration % out_every != 0)
@@ -228,27 +250,6 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
   int lmax = l_max;
 
   assert(lmax + 1 <= max_l_modes);
-
-  if (!initialized) {
-    realV.resize(array_size);
-    imagV.resize(array_size);
-    th.resize(array_size);
-    ph.resize(array_size);
-    xs.resize(array_size);
-    ys.resize(array_size);
-    zs.resize(array_size);
-    xhat.resize(array_size);
-    yhat.resize(array_size);
-    zhat.resize(array_size);
-
-    parse_variables_string(string(variables), vars, &n_variables);
-    get_spin_weights(vars, n_variables, spin_weights, &n_spin_weights);
-    CoordSetup(xhat.data(), yhat.data(), zhat.data(), th.data(), ph.data());
-    setup_harmonics(spin_weights, n_spin_weights, lmax, th.data(), ph.data(),
-                    array_size, realY, imagY);
-    initialized = true;
-    CCTK_VINFO("initialized arrays");
-  }
 
   ModeArray modes(n_variables, nradii, lmax);
 
