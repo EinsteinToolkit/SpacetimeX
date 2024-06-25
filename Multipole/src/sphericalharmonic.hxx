@@ -5,13 +5,16 @@
 #include <cctk_Parameters.h>
 #include <cctk_Arguments.h>
 
+#include <vector>
+
 namespace Multipole {
 
 void SphericalHarmonic(int s, int l, int m, CCTK_REAL th, CCTK_REAL ph,
                        CCTK_REAL *reY, CCTK_REAL *imY);
 
 void HarmonicSetup(int s, int l, int m, int array_size, CCTK_REAL const th[],
-                   CCTK_REAL const ph[], CCTK_REAL reY[], CCTK_REAL imY[]);
+                   CCTK_REAL const ph[], std::vector<CCTK_REAL> &reY,
+                   std::vector<CCTK_REAL> &imY);
 
 } // namespace Multipole
 

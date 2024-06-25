@@ -3,7 +3,6 @@
 #include <assert.h>
 #include <iostream>
 #include <math.h>
-#include <vector>
 
 #include <loop_device.hxx>
 
@@ -50,7 +49,8 @@ void SphericalHarmonic(int s, int l, int m, CCTK_REAL th, CCTK_REAL ph,
 }
 
 void HarmonicSetup(int s, int l, int m, int array_size, CCTK_REAL const th[],
-                   CCTK_REAL const ph[], CCTK_REAL reY[], CCTK_REAL imY[]) {
+                   CCTK_REAL const ph[], std::vector<CCTK_REAL> &reY,
+                   std::vector<CCTK_REAL> &imY) {
   for (int i = 0; i < array_size; i++) {
     SphericalHarmonic(s, l, m, th[i], ph[i], &reY[i], &imY[i]);
   }

@@ -171,9 +171,11 @@ CCTK_REAL DriscollHealy2DIntegral(CCTK_REAL const *const f, int const nx,
   return hx * hy * integrand_sum;
 }
 
-void Integrate(int array_size, int nthetap, CCTK_REAL const array1r[],
-               CCTK_REAL const array1i[], CCTK_REAL const array2r[],
-               CCTK_REAL const array2i[], CCTK_REAL const th[],
+void Integrate(int array_size, int nthetap,
+               const std::vector<CCTK_REAL> array1r,
+               const std::vector<CCTK_REAL> array1i,
+               const std::vector<CCTK_REAL> array2r,
+               const std::vector<CCTK_REAL> array2i, CCTK_REAL const th[],
                CCTK_REAL const ph[], CCTK_REAL *outre, CCTK_REAL *outim) {
   DECLARE_CCTK_PARAMETERS;
 

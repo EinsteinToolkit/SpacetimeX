@@ -143,19 +143,23 @@ extern "C" void Multipole_TestOrthonormality(CCTK_ARGUMENTS) {
   CoordSetup(xhat, yhat, zhat, th, ph);
 
   /* Populate spherical-harmonic array */
-  CCTK_REAL *reY[1][max_l_modes][max_m_modes];
-  CCTK_REAL *imY[1][max_l_modes][max_m_modes];
+  vector<vector<vector<vector<CCTK_REAL> > > > reY, imY;
 
   for (int sw = 0; sw <= 0; sw++) {
+    vector<vector<vector<CCTK_REAL> > > reY_s, imY_s;
     for (int l = 0; l < max_l_modes; l++) {
+      vector<vector<CCTK_REAL> > reY_s_l, imY_s_l;
       for (int m = -l; m <= l; m++) {
-        reY[sw][l][m + l] = new CCTK_REAL[array_size];
-        imY[sw][l][m + l] = new CCTK_REAL[array_size];
-
-        HarmonicSetup(sw, l, m, array_size, th, ph, reY[sw][l][m + l],
-                      imY[sw][l][m + l]);
+        vector<CCTK_REAL> reY_s_l_m(array_size), imY_s_l_m(array_size);
+        HarmonicSetup(sw, l, m, array_size, th, ph, reY_s_l_m, imY_s_l_m);
+        reY_s_l.push_back(reY_s_l_m);
+        imY_s_l.push_back(imY_s_l_m);
       }
+      reY_s.push_back(reY_s_l);
+      imY_s.push_back(imY_s_l);
     }
+    reY.push_back(reY_s);
+    imY.push_back(imY_s);
   }
 
   /* Loop over l and m, assign Ylm to (rel,imag), and compute the scalar
@@ -192,14 +196,6 @@ extern "C" void Multipole_TestOrthonormality(CCTK_ARGUMENTS) {
   }
   assert(idx == 1 * N * (N + 1) / 2);
 
-  for (int sw = 0; sw <= 0; sw++) {
-    for (int l = 0; l < max_l_modes; l++) {
-      for (int m = -l; m <= l; m++) {
-        delete[] imY[0][l][m + l];
-        delete[] reY[0][l][m + l];
-      }
-    }
-  }
   delete[] zhat;
   delete[] yhat;
   delete[] xhat;

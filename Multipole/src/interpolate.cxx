@@ -13,8 +13,8 @@ static void report_interp_error(int ierr) {
 }
 
 void Interp(CCTK_ARGUMENTS, CCTK_REAL xs[], CCTK_REAL ys[], CCTK_REAL zs[],
-            int real_idx, int imag_idx, CCTK_REAL sphere_real[],
-            CCTK_REAL sphere_imag[]) {
+            int real_idx, int imag_idx, std::vector<CCTK_REAL> &sphere_real,
+            std::vector<CCTK_REAL> &sphere_imag) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
@@ -29,8 +29,8 @@ void Interp(CCTK_ARGUMENTS, CCTK_REAL xs[], CCTK_REAL ys[], CCTK_REAL zs[],
   const CCTK_INT input_array_indices[2] = {real_idx, imag_idx};
   // Interpolation result
   CCTK_POINTER output_arrays[2];
-  output_arrays[0] = sphere_real;
-  output_arrays[1] = sphere_imag;
+  output_arrays[0] = sphere_real.data();
+  output_arrays[1] = sphere_imag.data();
 
   int ierr = -1;
   /* DriverInterpolate arguments that aren't currently used */

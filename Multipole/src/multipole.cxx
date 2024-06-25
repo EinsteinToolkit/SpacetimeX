@@ -15,6 +15,11 @@
 namespace Multipole {
 using namespace std;
 
+static vector<CCTK_REAL> real, imag;
+
+// Y[sw][l][m][i]
+static vector<vector<vector<vector<CCTK_REAL> > > > reY, imY;
+
 static const int max_vars = 10;
 
 // since each variable can have at most one spin weight, max_vars is a good
@@ -31,9 +36,10 @@ static void fillVariable(int idx, const char *optString, void *callbackArg) {
 
   VariableParseArray *vs = static_cast<VariableParseArray *>(callbackArg);
 
-  assert(vs->numVars < max_vars);              // Ensure we don't exceed max_vars
-  VariableParse *v = &vs->vars[vs->numVars++]; // Increment numVars and get
-                                              // reference to next VariableParse
+  assert(vs->numVars < max_vars); // Ensure we don't exceed max_vars
+  VariableParse *v =
+      &vs->vars[vs->numVars++]; // Increment numVars and get
+                                // reference to next VariableParse
 
   v->index = idx;
 
@@ -96,31 +102,27 @@ static void get_spin_weights(VariableParse vars[], int n_vars,
   *n_weights = n_spin_weights;
 }
 
-static void
-setup_harmonics(const int spin_weights[max_spin_weights], int n_spin_weights,
-                int lmax, CCTK_REAL th[], CCTK_REAL ph[], int array_size,
-                CCTK_REAL *reY[max_spin_weights][max_l_modes][max_m_modes],
-                CCTK_REAL *imY[max_spin_weights][max_l_modes][max_m_modes]) {
-  for (int si = 0; si < max_spin_weights; si++) {
-    for (int l = 0; l < max_l_modes; l++) {
-      for (int mi = 0; mi < max_m_modes; mi++) {
-        reY[si][l][mi] = 0;
-        imY[si][l][mi] = 0;
-      }
-    }
-  }
+static void setup_harmonics(const int spin_weights[max_spin_weights],
+                            int n_spin_weights, int lmax, CCTK_REAL th[],
+                            CCTK_REAL ph[], int array_size,
+                            vector<vector<vector<vector<CCTK_REAL> > > > &reY,
+                            vector<vector<vector<vector<CCTK_REAL> > > > &imY) {
   for (int si = 0; si < n_spin_weights; si++) {
     int sw = spin_weights[si];
-
+    vector<vector<vector<CCTK_REAL> > > reY_s, imY_s;
     for (int l = 0; l <= lmax; l++) {
+      vector<vector<CCTK_REAL> > reY_s_l, imY_s_l;
       for (int m = -l; m <= l; m++) {
-        reY[si][l][m + l] = new CCTK_REAL[array_size];
-        imY[si][l][m + l] = new CCTK_REAL[array_size];
-
-        HarmonicSetup(sw, l, m, array_size, th, ph, reY[si][l][m + l],
-                      imY[si][l][m + l]);
+        vector<CCTK_REAL> reY_s_l_m(array_size), imY_s_l_m(array_size);
+        HarmonicSetup(sw, l, m, array_size, th, ph, reY_s_l_m, imY_s_l_m);
+        reY_s_l.push_back(reY_s_l_m);
+        imY_s_l.push_back(imY_s_l_m);
       }
+      reY_s.push_back(reY_s_l);
+      imY_s.push_back(imY_s_l);
     }
+    reY.push_back(reY_s);
+    imY.push_back(imY_s);
   }
 }
 
@@ -212,9 +214,9 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
   static CCTK_REAL *xs, *ys, *zs;
   static CCTK_REAL *xhat, *yhat, *zhat;
   static CCTK_REAL *th, *ph;
-  static CCTK_REAL *real = 0, *imag = 0;
-  static CCTK_REAL *reY[max_spin_weights][max_l_modes][max_m_modes];
-  static CCTK_REAL *imY[max_spin_weights][max_l_modes][max_m_modes];
+  // static CCTK_REAL *real = 0, *imag = 0;
+  //  static CCTK_REAL *reY[max_spin_weights][max_l_modes][max_m_modes];
+  //  static CCTK_REAL *imY[max_spin_weights][max_l_modes][max_m_modes];
   static VariableParse vars[max_vars];
   static int n_variables = 0;
   static int spin_weights[max_spin_weights];
@@ -232,8 +234,11 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
   assert(lmax + 1 <= max_l_modes);
 
   if (!initialized) {
-    real = new CCTK_REAL[array_size];
-    imag = new CCTK_REAL[array_size];
+    real.resize(array_size);
+    imag.resize(array_size);
+
+    // real = new CCTK_REAL[array_size];
+    // imag = new CCTK_REAL[array_size];
     th = new CCTK_REAL[array_size];
     ph = new CCTK_REAL[array_size];
     xs = new CCTK_REAL[array_size];
@@ -265,8 +270,8 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
       ScaleCartesian(ntheta, nphi, radius[i], xhat, yhat, zhat, xs, ys, zs);
 
       // Interpolate Psi4r and Psi4i
-      Interp(CCTK_PASS_CTOC, xs, ys, zs, vars[v].index, vars[v].imagIndex,
-             real, imag);
+      Interp(CCTK_PASS_CTOC, xs, ys, zs, vars[v].index, vars[v].imagIndex, real,
+             imag);
 
       for (int l = 0; l <= lmax; l++) {
         for (int m = -l; m <= l; m++) {
@@ -277,8 +282,8 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
 
         } // loop over m
       } // loop over l
-      output_1d(CCTK_PASS_CTOC, &vars[v], radius[i], th, ph, real, imag,
-                array_size);
+      output_1d(CCTK_PASS_CTOC, &vars[v], radius[i], th, ph, real.data(),
+                imag.data(), array_size);
     } // loop over radii
   } // loop over variables
 
