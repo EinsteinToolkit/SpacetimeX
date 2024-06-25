@@ -132,10 +132,10 @@ static void output_modes(CCTK_ARGUMENTS, const variable_desc vars[],
 
   if (output_tsv) {
     if (CCTK_MyProc(cctkGH) == 0) {
-      for (int v = 0; v < modes.get_nvars(); v++) {
-        for (int i = 0; i < modes.get_nradii(); i++) {
+      for (int v = 0; v < modes.getNumVars(); v++) {
+        for (int i = 0; i < modes.getNumRadii(); i++) {
           const CCTK_REAL rad = radii[i];
-          for (int l = 0; l <= modes.get_lmax(); l++) {
+          for (int l = 0; l <= modes.getMaxL(); l++) {
             for (int m = -l; m <= l; m++) {
               ostringstream name;
               name << "mp_" << vars[v].name << "_l" << l << "_m" << m << "_r"

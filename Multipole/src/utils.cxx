@@ -147,7 +147,7 @@ void OutputComplexToH5File(CCTK_ARGUMENTS, const variable_desc vars[],
   // false
   static map<string, bool> checked;
 
-  for (int v = 0; v < modes.get_nvars(); v++) {
+  for (int v = 0; v < modes.getNumVars(); v++) {
     string basename = "mp_" + vars[v].name + ".h5";
     string output_name = my_out_dir + string("/") + basename;
 
@@ -163,9 +163,9 @@ void OutputComplexToH5File(CCTK_ARGUMENTS, const variable_desc vars[],
 
     checked[output_name] = true;
 
-    for (int i = 0; i < modes.get_nradii(); i++) {
+    for (int i = 0; i < modes.getNumRadii(); i++) {
       const CCTK_REAL rad = radii[i];
-      for (int l = 0; l <= modes.get_lmax(); l++) {
+      for (int l = 0; l <= modes.getMaxL(); l++) {
         for (int m = -l; m <= l; m++) {
           ostringstream datasetname;
           datasetname << "l" << l << "_m" << m << "_r"
