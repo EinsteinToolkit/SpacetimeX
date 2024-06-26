@@ -18,47 +18,8 @@ using namespace std;
 static Sphere *g_sphere = nullptr;
 
 // Parsed variables
-static vector<VariableParse> vars;
-static vector<int> spin_weights;
-
-static void fillVariable(int idx, const char *optString, void *callbackArg) {
-  assert(idx >= 0);
-  assert(callbackArg != nullptr);
-
-  vector<VariableParse> *vs = static_cast<vector<VariableParse> *>(callbackArg);
-  //
-  VariableParse v;
-  v.realIndex = idx;
-
-  // Initialize default values
-  v.imagIndex = -1;
-  v.spinWeight = 0;
-  v.name = string(CCTK_VarName(v.realIndex));
-
-  if (optString != nullptr) {
-    int table = Util_TableCreateFromString(optString);
-
-    if (table >= 0) {
-      const int bufferLength = 256;
-      char buffer[bufferLength];
-
-      Util_TableGetInt(table, &v.spinWeight, "sw");
-      if (Util_TableGetString(table, bufferLength, buffer, "cmplx") >= 0) {
-        v.imagIndex = CCTK_VarIndex(buffer);
-      }
-      if (Util_TableGetString(table, bufferLength, buffer, "name") >= 0) {
-        v.name = string(buffer);
-      }
-
-      const int ierr = Util_TableDestroy(table);
-      if (ierr) {
-        CCTK_VError(__LINE__, __FILE__, CCTK_THORNSTRING,
-                    "Could not destroy table: %d", ierr);
-      }
-    }
-  }
-  vs->push_back(v);
-}
+static vector<VariableParse> g_vars;
+static vector<int> g_spin_weights;
 
 static void output_modes(CCTK_ARGUMENTS, const VariableParse vars[],
                          const CCTK_REAL radii[], const ModeArray &modes) {
@@ -120,18 +81,59 @@ static void output_1d(CCTK_ARGUMENTS, const VariableParse *v, CCTK_REAL rad,
   }
 }
 
+static void fillVariable(int idx, const char *optString, void *callbackArg) {
+  assert(idx >= 0);
+  assert(callbackArg != nullptr);
+
+  vector<VariableParse> *vars =
+      static_cast<vector<VariableParse> *>(callbackArg);
+
+  VariableParse var;
+  var.realIndex = idx;
+
+  // Initialize default values
+  var.imagIndex = -1;
+  var.spinWeight = 0;
+  var.name = string(CCTK_VarName(var.realIndex));
+
+  if (optString != nullptr) {
+    int table = Util_TableCreateFromString(optString);
+
+    if (table >= 0) {
+      const int bufferLength = 256;
+      char buffer[bufferLength];
+
+      Util_TableGetInt(table, &var.spinWeight, "sw");
+      if (Util_TableGetString(table, bufferLength, buffer, "cmplx") >= 0) {
+        var.imagIndex = CCTK_VarIndex(buffer);
+      }
+      if (Util_TableGetString(table, bufferLength, buffer, "name") >= 0) {
+        var.name = string(buffer);
+      }
+
+      const int ierr = Util_TableDestroy(table);
+      if (ierr) {
+        CCTK_VError(__LINE__, __FILE__, CCTK_THORNSTRING,
+                    "Could not destroy table: %d", ierr);
+      }
+    }
+  }
+
+  vars->push_back(var);
+}
+
 extern "C" void Multipole_Setup(CCTK_ARGUMENTS) {
   DECLARE_CCTK_PARAMETERS;
 
-  // Parse parameters and save them to vars
-  int ierr = CCTK_TraverseString(string(variables).c_str(), fillVariable, &vars,
-                                 CCTK_GROUP_OR_VAR);
+  // Parse parameters and save them to g_vars
+  int ierr = CCTK_TraverseString(string(variables).c_str(), fillVariable,
+                                 &g_vars, CCTK_GROUP_OR_VAR);
   assert(ierr >= 0);
 
   // Get all different kinds of spin weights
-  for (size_t i = 0; i < vars.size(); i++) {
-    if (!int_in_array(vars[i].spinWeight, spin_weights)) {
-      spin_weights.push_back(vars[i].spinWeight);
+  for (size_t i = 0; i < g_vars.size(); i++) {
+    if (!int_in_array(g_vars[i].spinWeight, g_spin_weights)) {
+      g_spin_weights.push_back(g_vars[i].spinWeight);
     }
   }
 
@@ -139,7 +141,7 @@ extern "C" void Multipole_Setup(CCTK_ARGUMENTS) {
   if (g_sphere == nullptr) {
     g_sphere =
         new Sphere(ntheta, nphi, CCTK_Equals(integration_method, "midpoint"),
-                   spin_weights, l_max);
+                   g_spin_weights, l_max);
   }
 
   CCTK_VINFO("initialized arrays");
@@ -162,7 +164,7 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_Multipole_Calc;
   DECLARE_CCTK_PARAMETERS;
 
-  const int n_variables = vars.size();
+  const int n_variables = g_vars.size();
 
   if (out_every == 0 || cctk_iteration % out_every != 0)
     return;
@@ -170,9 +172,8 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
   ModeArray modes(n_variables, nradii, l_max);
 
   for (int v = 0; v < n_variables; v++) {
-    // assert(vars[v].spinWeight == -2);
-    int si = find_int_in_array(vars[v].spinWeight, spin_weights.data(),
-                               spin_weights.size());
+    int si = find_int_in_array(g_vars[v].spinWeight, g_spin_weights.data(),
+                               g_spin_weights.size());
     assert(si != -1);
 
     for (int i = 0; i < nradii; i++) {
@@ -181,8 +182,8 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
       g_sphere->setRadius(radius[i]);
 
       // Interpolate to the sphere
-      g_sphere->interpolate(CCTK_PASS_CTOC, vars[v].realIndex,
-                            vars[v].imagIndex);
+      g_sphere->interpolate(CCTK_PASS_CTOC, g_vars[v].realIndex,
+                            g_vars[v].imagIndex);
 
       // Intergate of conj(sYlm)*F*sin(theta) over the sphere at radiusr[i]
       for (int l = 0; l <= l_max; l++) {
@@ -195,14 +196,14 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
         } // loop over m
       } // loop over l
 
-      output_1d(CCTK_PASS_CTOC, &vars[v], radius[i],
+      output_1d(CCTK_PASS_CTOC, &g_vars[v], radius[i],
                 g_sphere->getTheta().data(), g_sphere->getPhi().data(),
                 g_sphere->getRealF().data(), g_sphere->getImagF().data());
 
     } // loop over radii
   } // loop over variables
 
-  output_modes(CCTK_PASS_CTOC, vars.data(), radius, modes);
+  output_modes(CCTK_PASS_CTOC, g_vars.data(), radius, modes);
 }
 
 } // namespace Multipole
