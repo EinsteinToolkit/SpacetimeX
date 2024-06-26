@@ -21,34 +21,31 @@ static Sphere *g_sphere = nullptr;
 static vector<VariableParse> g_vars;
 static vector<int> g_spin_weights;
 
-static void output_modes(CCTK_ARGUMENTS, const VariableParse vars[],
-                         const CCTK_REAL radii[], const ModeArray &modes) {
+// Function to output modes
+static void outputModes(CCTK_ARGUMENTS, const VariableParse vars[],
+                        const CCTK_REAL radii[], const ModeArray &modes) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
-  if (output_tsv) {
-    if (CCTK_MyProc(cctkGH) == 0) {
-      for (int v = 0; v < modes.getNumVars(); v++) {
-        for (int i = 0; i < modes.getNumRadii(); i++) {
-          const CCTK_REAL rad = radii[i];
-          for (int l = 0; l <= modes.getMaxL(); l++) {
-            for (int m = -l; m <= l; m++) {
-              ostringstream name;
-              name << "mp_" << vars[v].name << "_l" << l << "_m" << m << "_r"
-                   << setiosflags(ios::fixed) << setprecision(2) << rad
-                   << ".tsv";
-              OutputComplexToFile(CCTK_PASS_CTOC, name.str(),
-                                  modes(v, i, l, m, 0), modes(v, i, l, m, 1));
-            }
+  if (output_tsv && CCTK_MyProc(cctkGH) == 0) {
+    for (int v = 0; v < modes.getNumVars(); ++v) {
+      for (int i = 0; i < modes.getNumRadii(); ++i) {
+        const CCTK_REAL rad = radii[i];
+        for (int l = 0; l <= modes.getMaxL(); ++l) {
+          for (int m = -l; m <= l; ++m) {
+            std::ostringstream filename;
+            filename << "mp_" << vars[v].name << "_l" << l << "_m" << m << "_r"
+                     << std::fixed << std::setprecision(2) << rad << ".tsv";
+
+            OutputComplexToFile(CCTK_PASS_CTOC, filename.str(),
+                                modes(v, i, l, m, 0), modes(v, i, l, m, 1));
           }
         }
       }
     }
   }
-  if (output_hdf5) {
-    if (CCTK_MyProc(cctkGH) == 0) {
-      OutputComplexToH5File(CCTK_PASS_CTOC, vars, radii, modes);
-    }
+  if (output_hdf5 && CCTK_MyProc(cctkGH) == 0) {
+    OutputComplexToH5File(CCTK_PASS_CTOC, vars, radii, modes);
   }
 }
 
@@ -203,7 +200,7 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
     } // loop over radii
   } // loop over variables
 
-  output_modes(CCTK_PASS_CTOC, g_vars.data(), radius, modes);
+  outputModes(CCTK_PASS_CTOC, g_vars.data(), radius, modes);
 }
 
 } // namespace Multipole
