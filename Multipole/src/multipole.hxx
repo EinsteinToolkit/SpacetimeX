@@ -18,11 +18,6 @@ struct VariableParse {
   std::string name;
 };
 
-struct VariableParseArray {
-  int numVars;
-  VariableParse *vars;
-};
-
 // a simple array class to hold complex modes abs(m) <= l, l <= lmax, for
 // nradii radii for nvars variables
 class ModeArray {
