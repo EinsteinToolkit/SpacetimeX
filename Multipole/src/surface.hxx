@@ -4,6 +4,7 @@
 #ifndef MULTIPOLE_SURFACE_HXX
 #define MULTIPOLE_SURFACE_HXX
 
+#include "integrate.hxx"
 #include "sphericalharmonic.hxx"
 
 #include <cctk.h>
@@ -29,14 +30,14 @@ public:
 
     // Add an offset for midpoint integration.
     const CCTK_REAL is_midpoint = static_cast<CCTK_REAL>(isMidPoint);
-    const CCTK_REAL dTheta = PI / (nTheta + is_midpoint);
-    const CCTK_REAL dPhi = 2 * PI / (nPhi + is_midpoint);
+    dTheta_ = PI / (nTheta + is_midpoint);
+    dPhi_ = 2 * PI / (nPhi + is_midpoint);
 
     for (int it = 0; it <= nTheta; ++it) {
       for (int ip = 0; ip <= nPhi; ++ip) {
         const int i = index2D(it, ip);
-        theta_[i] = it * dTheta + 0.5 * dTheta * is_midpoint;
-        phi_[i] = ip * dPhi + 0.5 * dPhi * is_midpoint;
+        theta_[i] = it * dTheta_ + 0.5 * dTheta_ * is_midpoint;
+        phi_[i] = ip * dPhi_ + 0.5 * dPhi_ * is_midpoint;
       }
     }
   }
@@ -46,12 +47,19 @@ public:
   const std::vector<CCTK_REAL> &getTheta() const { return theta_; }
   const std::vector<CCTK_REAL> &getPhi() const { return phi_; }
 
-  void interp(CCTK_ARGUMENTS, int real_idx, int imag_idx);
+  void interpolate(CCTK_ARGUMENTS, int real_idx, int imag_idx);
+
+  void integrate(const std::vector<CCTK_REAL> &array1r,
+                 const std::vector<CCTK_REAL> &array1i,
+                 const std::vector<CCTK_REAL> &array2r,
+                 const std::vector<CCTK_REAL> &array2i, CCTK_REAL *outre,
+                 CCTK_REAL *outim);
 
 protected:
   inline int index2D(int it, int ip) const { return it + (nTheta_ + 1) * ip; }
 
   const int nTheta_, nPhi_;
+  CCTK_REAL dTheta_, dPhi_;
 
   std::vector<CCTK_REAL> theta_, phi_;
   std::vector<CCTK_REAL> x_, y_, z_; // embedding map

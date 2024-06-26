@@ -9,15 +9,13 @@
 
 namespace Multipole {
 
-void Surface::interp(CCTK_ARGUMENTS, int realIdx, int imagIdx) {
+void Surface::interpolate(CCTK_ARGUMENTS, int realIdx, int imagIdx) {
   DECLARE_CCTK_PARAMETERS;
 
   const CCTK_INT nPoints =
       CCTK_MyProc(cctkGH) == 0 ? (nTheta_ + 1) * (nPhi_ + 1) : 0;
 
-  const void *interpCoords[Loop::dim] = {(const void *)x_.data(),
-                                         (const void *)y_.data(),
-                                         (const void *)z_.data()};
+  const void *interpCoords[Loop::dim] = {x_.data(), y_.data(), z_.data()};
 
   CCTK_INT nInputArrays = imagIdx == -1 ? 1 : 2;
   CCTK_INT nOutputArrays = imagIdx == -1 ? 1 : 2;
@@ -25,18 +23,16 @@ void Surface::interp(CCTK_ARGUMENTS, int realIdx, int imagIdx) {
   const CCTK_INT inputArrayIndices[2] = {realIdx, imagIdx};
 
   // Interpolation result
-  CCTK_POINTER outputArrays[2];
-  outputArrays[0] = real_.data();
-  outputArrays[1] = imag_.data();
+  CCTK_POINTER outputArrays[2] = {real_.data(), imag_.data()};
 
   /* DriverInterpolate arguments that aren't currently used */
   const int coordSystemHandle = 0;
-  CCTK_INT const interpCoords_type_code = 0;
-  CCTK_INT const outputArrayTypes[1] = {0};
+  const CCTK_INT interpCoordsTypeCode = 0;
+  const CCTK_INT outputArrayTypes[1] = {0};
 
   int interpHandle = CCTK_InterpHandle("CarpetX");
   if (interpHandle < 0) {
-    CCTK_VERROR("Could not obtain inteprolator handle for built-in 'CarpetX' "
+    CCTK_VERROR("Could not obtain interpolator handle for built-in 'CarpetX' "
                 "interpolator: %d",
                 interpHandle);
   }
@@ -47,7 +43,7 @@ void Surface::interp(CCTK_ARGUMENTS, int realIdx, int imagIdx) {
   int ierr = Util_TableSetFromString(paramTableHandle, interpolator_pars);
 
   ierr = DriverInterpolate(cctkGH, Loop::dim, interpHandle, paramTableHandle,
-                           coordSystemHandle, nPoints, interpCoords_type_code,
+                           coordSystemHandle, nPoints, interpCoordsTypeCode,
                            interpCoords, nInputArrays, inputArrayIndices,
                            nOutputArrays, outputArrayTypes, outputArrays);
 
@@ -57,12 +53,58 @@ void Surface::interp(CCTK_ARGUMENTS, int realIdx, int imagIdx) {
   }
 
   if (imagIdx == -1) {
-    for (int i = 0; i < (nTheta_ + 1) * (nPhi_ + 1); i++) {
-      imag_[i] = 0;
-    }
+    std::fill(imag_.begin(), imag_.end(), 0);
   }
 
   Util_TableDestroy(paramTableHandle);
+}
+
+// Take the integral of conj(array1)*array2*sin(th)
+void Surface::integrate(const std::vector<CCTK_REAL> &array1r,
+                        const std::vector<CCTK_REAL> &array1i,
+                        const std::vector<CCTK_REAL> &array2r,
+                        const std::vector<CCTK_REAL> &array2i, CCTK_REAL *outRe,
+                        CCTK_REAL *outIm) {
+  DECLARE_CCTK_PARAMETERS;
+
+  std::vector<CCTK_REAL> fReal(theta_.size());
+  std::vector<CCTK_REAL> fImag(theta_.size());
+
+  // integrand: conj(array1)*array2*sin(th)
+  for (size_t i = 0; i < theta_.size(); ++i) {
+    fReal[i] = (array1r[i] * array2r[i] + array1i[i] * array2i[i]) *
+               std::sin(theta_[i]);
+    fImag[i] = (array1r[i] * array2i[i] - array1i[i] * array2r[i]) *
+               std::sin(theta_[i]);
+  }
+
+  if (CCTK_Equals(integration_method, "midpoint")) {
+    *outRe = Midpoint2DIntegral(fReal.data(), nTheta_, nPhi_, dTheta_, dPhi_);
+    *outIm = Midpoint2DIntegral(fImag.data(), nTheta_, nPhi_, dTheta_, dPhi_);
+  } else if (CCTK_Equals(integration_method, "trapezoidal")) {
+    *outRe =
+        Trapezoidal2DIntegral(fReal.data(), nTheta_, nPhi_, dTheta_, dPhi_);
+    *outIm =
+        Trapezoidal2DIntegral(fImag.data(), nTheta_, nPhi_, dTheta_, dPhi_);
+  } else if (CCTK_Equals(integration_method, "Simpson")) {
+    if (nPhi_ % 2 != 0 || nTheta_ % 2 != 0) {
+      CCTK_WARN(CCTK_WARN_ABORT, "The Simpson integration method requires even "
+                                 "nTheta_ and even nPhi_");
+    }
+    *outRe = Simpson2DIntegral(fReal.data(), nTheta_, nPhi_, dTheta_, dPhi_);
+    *outIm = Simpson2DIntegral(fImag.data(), nTheta_, nPhi_, dTheta_, dPhi_);
+  } else if (CCTK_Equals(integration_method, "DriscollHealy")) {
+    if (nTheta_ % 2 != 0) {
+      CCTK_WARN(CCTK_WARN_ABORT,
+                "The Driscoll&Healy integration method requires even nTheta_");
+    }
+    *outRe =
+        DriscollHealy2DIntegral(fReal.data(), nTheta_, nPhi_, dTheta_, dPhi_);
+    *outIm =
+        DriscollHealy2DIntegral(fImag.data(), nTheta_, nPhi_, dTheta_, dPhi_);
+  } else {
+    CCTK_WARN(CCTK_WARN_ABORT, "internal error");
+  }
 }
 
 } // namespace Multipole
