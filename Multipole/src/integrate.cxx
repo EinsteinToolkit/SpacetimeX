@@ -171,63 +171,6 @@ CCTK_REAL DriscollHealy2DIntegral(CCTK_REAL const *const f, int const nx,
   return hx * hy * integrand_sum;
 }
 
-void Integrate(int array_size, int nthetap,
-               const std::vector<CCTK_REAL> array1r,
-               const std::vector<CCTK_REAL> array1i,
-               const std::vector<CCTK_REAL> array2r,
-               const std::vector<CCTK_REAL> array2i, CCTK_REAL const th[],
-               CCTK_REAL const ph[], CCTK_REAL *outre, CCTK_REAL *outim) {
-  DECLARE_CCTK_PARAMETERS;
-
-  int il = Index_2d(0, 0, ntheta);
-  int iu = Index_2d(1, 0, ntheta);
-  CCTK_REAL dth = th[iu] - th[il];
-  iu = Index_2d(0, 1, ntheta);
-  CCTK_REAL dph = ph[iu] - ph[il];
-
-  static CCTK_REAL *fr = 0;
-  static CCTK_REAL *fi = 0;
-  static bool allocated_memory = false;
-
-  // Construct an array for the real integrand
-  if (!allocated_memory) {
-    fr = new CCTK_REAL[array_size];
-    fi = new CCTK_REAL[array_size];
-    allocated_memory = true;
-  }
-
-  // the below calculations take the integral of conj(array1)*array2*sin(th)
-  for (int i = 0; i < array_size; i++) {
-    fr[i] = (array1r[i] * array2r[i] + array1i[i] * array2i[i]) * sin(th[i]);
-    fi[i] = (array1r[i] * array2i[i] - array1i[i] * array2r[i]) * sin(th[i]);
-  }
-
-  if (CCTK_Equals(integration_method, "midpoint")) {
-    *outre = Midpoint2DIntegral(fr, ntheta, nphi, dth, dph);
-    *outim = Midpoint2DIntegral(fi, ntheta, nphi, dth, dph);
-  } else if (CCTK_Equals(integration_method, "trapezoidal")) {
-    *outre = Trapezoidal2DIntegral(fr, ntheta, nphi, dth, dph);
-    *outim = Trapezoidal2DIntegral(fi, ntheta, nphi, dth, dph);
-  } else if (CCTK_Equals(integration_method, "Simpson")) {
-    if (nphi % 2 != 0 || ntheta % 2 != 0) {
-      CCTK_WARN(
-          CCTK_WARN_ABORT,
-          "The Simpson integration method requires even ntheta and even nphi");
-    }
-    *outre = Simpson2DIntegral(fr, ntheta, nphi, dth, dph);
-    *outim = Simpson2DIntegral(fi, ntheta, nphi, dth, dph);
-  } else if (CCTK_Equals(integration_method, "DriscollHealy")) {
-    if (ntheta % 2 != 0) {
-      CCTK_WARN(CCTK_WARN_ABORT,
-                "The Driscoll&Healy integration method requires even ntheta");
-    }
-    *outre = DriscollHealy2DIntegral(fr, ntheta, nphi, dth, dph);
-    *outim = DriscollHealy2DIntegral(fi, ntheta, nphi, dth, dph);
-  } else {
-    CCTK_WARN(CCTK_WARN_ABORT, "internal error");
-  }
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // 1D integrals
 ////////////////////////////////////////////////////////////////////////////////
