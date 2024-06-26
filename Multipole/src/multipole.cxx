@@ -26,8 +26,6 @@ static vector<vector<vector<vector<CCTK_REAL> > > > realY, imagY;
 static vector<VariableParse> vars;
 static vector<int> spin_weights;
 
-// static int n_spin_weights = 0;
-
 static const int max_vars = 10;
 
 // since each variable can have at most one spin weight, max_vars is a good
@@ -97,11 +95,11 @@ static void get_spin_weights(vector<VariableParse> vars,
 }
 
 static void
-setup_harmonics(const int spin_weights[max_spin_weights], int n_spin_weights,
-                int lmax, CCTK_REAL th[], CCTK_REAL ph[], int array_size,
+setup_harmonics(const vector<int> spin_weights, int lmax, CCTK_REAL th[],
+                CCTK_REAL ph[], int array_size,
                 vector<vector<vector<vector<CCTK_REAL> > > > &realY,
                 vector<vector<vector<vector<CCTK_REAL> > > > &imagY) {
-  for (int si = 0; si < n_spin_weights; si++) {
+  for (size_t si = 0; si < spin_weights.size(); si++) {
     int sw = spin_weights[si];
     vector<vector<vector<CCTK_REAL> > > realY_s, imagY_s;
     for (int l = 0; l <= lmax; l++) {
@@ -199,8 +197,8 @@ extern "C" void Multipole_Setup(CCTK_ARGUMENTS) {
   parse_variables_string(string(variables), vars);
   get_spin_weights(vars, spin_weights);
   CoordSetup(xhat.data(), yhat.data(), zhat.data(), th.data(), ph.data());
-  setup_harmonics(spin_weights.data(), spin_weights.size(), l_max, th.data(),
-                  ph.data(), array_size, realY, imagY);
+  setup_harmonics(spin_weights, l_max, th.data(), ph.data(), array_size, realY,
+                  imagY);
   CCTK_VINFO("initialized arrays");
 }
 
