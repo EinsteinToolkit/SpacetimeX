@@ -4,6 +4,8 @@
 #ifndef MULTIPOLE_SURFACE_HXX
 #define MULTIPOLE_SURFACE_HXX
 
+#include "sphericalharmonic.hxx"
+
 #include <cctk.h>
 
 #include <vector>
@@ -46,6 +48,7 @@ protected:
   inline int index2D(int it, int ip) { return it + (nTheta_ + 1) * ip; }
 
   const int nTheta_, nPhi_;
+
   std::vector<CCTK_REAL> theta_, phi_;
   std::vector<CCTK_REAL> x_, y_, z_; // embedding map
 };
@@ -53,8 +56,10 @@ protected:
 // 2D Sphere
 class Sphere : public Surface {
 public:
-  Sphere(int nTheta, int nPhi, bool isMidPoint)
-      : Surface(nTheta, nPhi, isMidPoint) {
+  Sphere(int nTheta, int nPhi, bool isMidPoint, std::vector<int> spinWeights,
+         int lmax)
+      : Surface(nTheta, nPhi, isMidPoint), spin_weights_(spinWeights),
+        lmax_(lmax) {
     xhat_.resize(theta_.size());
     yhat_.resize(theta_.size());
     zhat_.resize(theta_.size());
@@ -62,6 +67,29 @@ public:
       xhat_[i] = std::cos(phi_[i]) * std::sin(theta_[i]);
       yhat_[i] = std::sin(phi_[i]) * std::sin(theta_[i]);
       zhat_[i] = std::cos(theta_[i]);
+    }
+
+    realY_.resize(spinWeights.size());
+    imagY_.resize(spinWeights.size());
+
+    for (size_t si = 0; si < spinWeights.size(); ++si) {
+      int sw = spinWeights[si];
+      realY_[si].resize(lmax + 1);
+      imagY_[si].resize(lmax + 1);
+
+      for (int l = 0; l <= lmax; ++l) {
+        realY_[si][l].resize(2 * l + 1);
+        imagY_[si][l].resize(2 * l + 1);
+
+        for (int m = -l; m <= l; ++m) {
+          std::vector<CCTK_REAL> realY_s_l_m(theta_.size());
+          std::vector<CCTK_REAL> imagY_s_l_m(theta_.size());
+          HarmonicSetup(sw, l, m, theta_.size(), theta_, phi_, realY_s_l_m,
+                        imagY_s_l_m);
+          realY_[si][l][m + l] = realY_s_l_m;
+          imagY_[si][l][m + l] = imagY_s_l_m;
+        }
+      }
     }
   }
 
@@ -77,6 +105,11 @@ public:
 
 private:
   std::vector<CCTK_REAL> xhat_, yhat_, zhat_; // unit sphere
+  std::vector<int> spin_weights_;             // spin weights
+  // spin weighted spherical harmonics
+  int lmax_;
+  std::vector<std::vector<std::vector<std::vector<CCTK_REAL> > > > realY_;
+  std::vector<std::vector<std::vector<std::vector<CCTK_REAL> > > > imagY_;
 };
 
 } // namespace Multipole

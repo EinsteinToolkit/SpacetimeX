@@ -95,8 +95,8 @@ static void get_spin_weights(vector<VariableParse> vars,
 }
 
 static void
-setup_harmonics(const vector<int> spin_weights, int lmax, CCTK_REAL th[],
-                CCTK_REAL ph[], int array_size,
+setup_harmonics(const vector<int> spin_weights, int lmax, vector<CCTK_REAL> th,
+                vector<CCTK_REAL> ph, int array_size,
                 vector<vector<vector<vector<CCTK_REAL> > > > &realY,
                 vector<vector<vector<vector<CCTK_REAL> > > > &imagY) {
   for (size_t si = 0; si < spin_weights.size(); si++) {
@@ -197,8 +197,7 @@ extern "C" void Multipole_Setup(CCTK_ARGUMENTS) {
   parse_variables_string(string(variables), vars);
   get_spin_weights(vars, spin_weights);
   CoordSetup(xhat.data(), yhat.data(), zhat.data(), th.data(), ph.data());
-  setup_harmonics(spin_weights, l_max, th.data(), ph.data(), array_size, realY,
-                  imagY);
+  setup_harmonics(spin_weights, l_max, th, ph, array_size, realY, imagY);
   CCTK_VINFO("initialized arrays");
 }
 

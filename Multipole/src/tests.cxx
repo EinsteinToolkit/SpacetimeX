@@ -134,13 +134,14 @@ extern "C" void Multipole_TestOrthonormality(CCTK_ARGUMENTS) {
   /* Campute Cartesian coordinates of points on the sphere */
   int array_size = (ntheta + 1) * (nphi + 1);
 
-  CCTK_REAL *th = new CCTK_REAL[array_size];
-  CCTK_REAL *ph = new CCTK_REAL[array_size];
+  vector<CCTK_REAL> th, ph;
+  th.resize(array_size);
+  ph.resize(array_size);
   CCTK_REAL *xhat = new CCTK_REAL[array_size];
   CCTK_REAL *yhat = new CCTK_REAL[array_size];
   CCTK_REAL *zhat = new CCTK_REAL[array_size];
 
-  CoordSetup(xhat, yhat, zhat, th, ph);
+  CoordSetup(xhat, yhat, zhat, th.data(), ph.data());
 
   /* Populate spherical-harmonic array */
   vector<vector<vector<vector<CCTK_REAL> > > > reY, imY;
@@ -184,7 +185,8 @@ extern "C" void Multipole_TestOrthonormality(CCTK_ARGUMENTS) {
             CCTK_REAL real_lm = 0.0, imag_lm = 0.0;
             Integrate(array_size, ntheta, reY[sw][li][mi + li],
                       imY[sw][li][mi + li], reY[sw][l][m + l],
-                      imY[sw][l][m + l], th, ph, &real_lm, &imag_lm);
+                      imY[sw][l][m + l], th.data(), ph.data(), &real_lm,
+                      &imag_lm);
 
             assert(idx < 1 * N * (N + 1) / 2);
             test_orthonormality[idx++] =
@@ -199,8 +201,6 @@ extern "C" void Multipole_TestOrthonormality(CCTK_ARGUMENTS) {
   delete[] zhat;
   delete[] yhat;
   delete[] xhat;
-  delete[] ph;
-  delete[] th;
 
   return;
 }
