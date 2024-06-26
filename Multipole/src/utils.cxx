@@ -10,6 +10,8 @@
 #include <string.h>
 #include <sys/stat.h>
 
+#include <cctk_Parameters.h>
+
 // We currently support the HDF5 1.6 API (and when using 1.8 the
 // compatibility mode introduced by H5_USE_16_API).  Several machines
 // in SimFactory use HDF5 1.6, so we cannot drop support for it.  It
@@ -36,6 +38,10 @@
 
 namespace Multipole {
 using namespace std;
+
+static inline int Index_2d(int it, int ip, int ntheta) {
+  return it + (ntheta + 1) * ip;
+}
 
 static bool file_exists(const string &name) {
   struct stat sts;
@@ -94,9 +100,8 @@ void OutputComplex(CCTK_ARGUMENTS, FILE *fp, CCTK_REAL redata,
   fprintf(fp, "%f %.19g %.19g\n", cctk_time, redata, imdata);
 }
 
-void Output1D(CCTK_ARGUMENTS, const string &name,
-              CCTK_REAL const th[], CCTK_REAL const ph[], mp_coord coord,
-              CCTK_REAL const data[]) {
+void Output1D(CCTK_ARGUMENTS, const string &name, CCTK_REAL const th[],
+              CCTK_REAL const ph[], mp_coord coord, CCTK_REAL const data[]) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
@@ -231,63 +236,6 @@ void OutputComplexToH5File(CCTK_ARGUMENTS, const VariableParse vars[],
                "without HDF5 support");
 
 #endif
-}
-
-void CoordSetup(CCTK_REAL xhat[], CCTK_REAL yhat[], CCTK_REAL zhat[],
-                CCTK_REAL th[], CCTK_REAL ph[]) {
-  DECLARE_CCTK_PARAMETERS;
-
-  const CCTK_REAL PI = acos(-1.0);
-  // Add an offset for midpoint integration.
-  CCTK_REAL is_midpoint = 0.0;
-  if (CCTK_Equals(integration_method, "midpoint")) {
-    is_midpoint = 1.0;
-  }
-  const CCTK_REAL dth = PI / (ntheta + is_midpoint);
-  const CCTK_REAL dph = 2 * PI / (nphi + is_midpoint);
-  for (int it = 0; it <= ntheta; it++) {
-    for (int ip = 0; ip <= nphi; ip++) {
-      const int i = Index_2d(it, ip, ntheta);
-      // Check for when midpoint enabled:
-      //   dth = PI/(ntheta+1) -> ntheta = PI/dth - 1
-      //   th[i] = i * dth + 0.5*dth
-      //  Therefore:
-      //   th[0]      = 0.5*dth      <- GOOD.
-      //   th[ntheta] = ntheta*dth + 0.5*dth
-      //              = ((PI/dth)-1)*dth + 0.5*dth
-      //              = PI - dth + 0.5*dth
-      //              = PI - 0.5*dth <- GOOD.
-      //  Similarly for ph.
-
-      // Check for when midpoint disabled:
-      //   dth = PI/ntheta -> ntheta = PI/dth
-      //   th[i] = i * dth
-      //  Therefore:
-      //   th[0]      = 0      <- GOOD.
-      //   th[ntheta] = ntheta*dth
-      //              = PI/dth*dth
-      //              = PI     <- GOOD.
-      // Similarly for ph.
-      th[i] = it * dth + 0.5 * dth * is_midpoint;
-      ph[i] = ip * dph + 0.5 * dph * is_midpoint;
-      xhat[i] = cos(ph[i]) * sin(th[i]);
-      yhat[i] = sin(ph[i]) * sin(th[i]);
-      zhat[i] = cos(th[i]);
-    }
-  }
-}
-
-void ScaleCartesian(int ntheta, int nphi, CCTK_REAL r, CCTK_REAL const xhat[],
-                    CCTK_REAL const yhat[], CCTK_REAL const zhat[],
-                    CCTK_REAL x[], CCTK_REAL y[], CCTK_REAL z[]) {
-  for (int it = 0; it <= ntheta; it++) {
-    for (int ip = 0; ip <= nphi; ip++) {
-      const int i = Index_2d(it, ip, ntheta);
-      x[i] = r * xhat[i];
-      y[i] = r * yhat[i];
-      z[i] = r * zhat[i];
-    }
-  }
 }
 
 } // namespace Multipole

@@ -1,7 +1,4 @@
-#include "integrate.hxx"
-#include "interpolate.hxx"
 #include "multipole.hxx"
-#include "sphericalharmonic.hxx"
 #include "surface.hxx"
 #include "utils.hxx"
 
@@ -12,6 +9,8 @@
 #include <string>
 
 #include <loop_device.hxx>
+
+#include <util_Table.h>
 
 namespace Multipole {
 using namespace std;

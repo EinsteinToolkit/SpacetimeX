@@ -7,8 +7,6 @@
 #include <loop_device.hxx>
 
 namespace Multipole {
-using namespace Loop;
-using namespace std;
 
 static const CCTK_REAL PI = acos(-1.0);
 

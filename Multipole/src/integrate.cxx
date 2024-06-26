@@ -1,5 +1,4 @@
 #include "integrate.hxx"
-#include "utils.hxx"
 
 #include <assert.h>
 #include <math.h>
