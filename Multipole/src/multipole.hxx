@@ -9,7 +9,7 @@ namespace Multipole {
 
 // information about variable which we decompose
 struct VariableParse {
-  int index;
+  int realIndex;
   int imagIndex;
   CCTK_INT spinWeight;
   std::string name;

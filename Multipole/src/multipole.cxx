@@ -26,14 +26,14 @@ static void fillVariable(int idx, const char *optString, void *callbackArg) {
   assert(callbackArg != nullptr);
 
   vector<VariableParse> *vs = static_cast<vector<VariableParse> *>(callbackArg);
-                                 //
+  //
   VariableParse v;
-  v.index = idx;
+  v.realIndex = idx;
 
   // Initialize default values
   v.imagIndex = -1;
   v.spinWeight = 0;
-  v.name = string(CCTK_VarName(v.index));
+  v.name = string(CCTK_VarName(v.realIndex));
 
   if (optString != nullptr) {
     int table = Util_TableCreateFromString(optString);
@@ -116,21 +116,21 @@ static void output_1d(CCTK_ARGUMENTS, const VariableParse *v, CCTK_REAL rad,
   if (CCTK_MyProc(cctkGH) == 0 && output_tsv) {
     if (out_1d_every != 0 && cctk_iteration % out_1d_every == 0) {
       ostringstream real_base;
-      real_base << "mp_" << string(CCTK_VarName(v->index)) << "_r"
+      real_base << "mp_" << string(CCTK_VarName(v->realIndex)) << "_r"
                 << setiosflags(ios::fixed) << setprecision(2) << rad;
-      Output1D(CCTK_PASS_CTOC, real_base.str() + string(".th.tsv"),
-               th, ph, mp_theta, real);
-      Output1D(CCTK_PASS_CTOC, real_base.str() + string(".ph.tsv"),
-               th, ph, mp_phi, real);
+      Output1D(CCTK_PASS_CTOC, real_base.str() + string(".th.tsv"), th, ph,
+               mp_theta, real);
+      Output1D(CCTK_PASS_CTOC, real_base.str() + string(".ph.tsv"), th, ph,
+               mp_phi, real);
 
       if (v->imagIndex != -1) {
         ostringstream imag_base;
         imag_base << "mp_" << string(CCTK_VarName(v->imagIndex)) << "_r"
                   << setiosflags(ios::fixed) << setprecision(2) << rad;
-        Output1D(CCTK_PASS_CTOC, imag_base.str() + string(".th.tsv"),
-                 th, ph, mp_theta, imag);
-        Output1D(CCTK_PASS_CTOC, imag_base.str() + string(".ph.tsv"),
-                 th, ph, mp_phi, imag);
+        Output1D(CCTK_PASS_CTOC, imag_base.str() + string(".th.tsv"), th, ph,
+                 mp_theta, imag);
+        Output1D(CCTK_PASS_CTOC, imag_base.str() + string(".ph.tsv"), th, ph,
+                 mp_phi, imag);
       }
     }
   }
@@ -187,7 +187,8 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
       g_sphere->setRadius(radius[i]);
 
       // Interpolate to the sphere
-      g_sphere->interpolate(CCTK_PASS_CTOC, vars[v].index, vars[v].imagIndex);
+      g_sphere->interpolate(CCTK_PASS_CTOC, vars[v].realIndex,
+                            vars[v].imagIndex);
 
       // Intergate of conj(sYlm)*F*sin(theta) over the sphere at radiusr[i]
       for (int l = 0; l <= l_max; l++) {
