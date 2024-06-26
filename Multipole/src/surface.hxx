@@ -24,6 +24,8 @@ public:
     x_.resize(arraySize);
     y_.resize(arraySize);
     z_.resize(arraySize);
+    real_.resize(arraySize);
+    imag_.resize(arraySize);
 
     // Add an offset for midpoint integration.
     const CCTK_REAL is_midpoint = static_cast<CCTK_REAL>(isMidPoint);
@@ -45,19 +47,22 @@ public:
   const std::vector<CCTK_REAL> &getPhi() const { return phi_; }
 
 protected:
-  inline int index2D(int it, int ip) { return it + (nTheta_ + 1) * ip; }
+  inline int index2D(int it, int ip) const { return it + (nTheta_ + 1) * ip; }
 
   const int nTheta_, nPhi_;
 
   std::vector<CCTK_REAL> theta_, phi_;
   std::vector<CCTK_REAL> x_, y_, z_; // embedding map
+
+  // a complex field to be integrated on the surface
+  std::vector<CCTK_REAL> real_, imag_;
 };
 
 // 2D Sphere
 class Sphere : public Surface {
 public:
-  Sphere(int nTheta, int nPhi, bool isMidPoint, std::vector<int> spinWeights,
-         int lmax)
+  Sphere(int nTheta, int nPhi, bool isMidPoint,
+         const std::vector<int> &spinWeights, int lmax)
       : Surface(nTheta, nPhi, isMidPoint), spin_weights_(spinWeights),
         lmax_(lmax) {
     xhat_.resize(theta_.size());
