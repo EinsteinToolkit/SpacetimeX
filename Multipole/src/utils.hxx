@@ -16,7 +16,7 @@ static inline int Index_2d(int it, int ip, int ntheta) {
   return it + (ntheta + 1) * ip;
 }
 
-void Output1D(CCTK_ARGUMENTS, const string &name, int array_size,
+void Output1D(CCTK_ARGUMENTS, const string &name,
               CCTK_REAL const th[], CCTK_REAL const ph[], mp_coord coord,
               CCTK_REAL const data[]);
 

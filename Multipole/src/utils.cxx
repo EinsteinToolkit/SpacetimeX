@@ -94,7 +94,7 @@ void OutputComplex(CCTK_ARGUMENTS, FILE *fp, CCTK_REAL redata,
   fprintf(fp, "%f %.19g %.19g\n", cctk_time, redata, imdata);
 }
 
-void Output1D(CCTK_ARGUMENTS, const string &name, int array_size,
+void Output1D(CCTK_ARGUMENTS, const string &name,
               CCTK_REAL const th[], CCTK_REAL const ph[], mp_coord coord,
               CCTK_REAL const data[]) {
   DECLARE_CCTK_ARGUMENTS;
