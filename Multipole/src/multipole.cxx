@@ -151,7 +151,7 @@ static void output_modes(CCTK_ARGUMENTS, const VariableParse vars[],
 }
 
 static void output_1d(CCTK_ARGUMENTS, const VariableParse *v, CCTK_REAL rad,
-                      CCTK_REAL *th, CCTK_REAL *ph, CCTK_REAL *real,
+                      const CCTK_REAL *th, const CCTK_REAL *ph, CCTK_REAL *real,
                       CCTK_REAL *imag, int array_size) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
@@ -187,7 +187,8 @@ extern "C" void Multipole_Setup(CCTK_ARGUMENTS) {
 
   if (g_sphere == nullptr) {
     g_sphere =
-        new Sphere(ntheta, nphi, CCTK_Equals(integration_method, "midpoint"), spin_weights, l_max);
+        new Sphere(ntheta, nphi, CCTK_Equals(integration_method, "midpoint"),
+                   spin_weights, l_max);
   }
 
   const int array_size = (ntheta + 1) * (nphi + 1);
@@ -244,6 +245,26 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
     assert(si != -1);
 
     for (int i = 0; i < nradii; i++) {
+
+#if 1
+      g_sphere->setRadius(radius[i]);
+
+      g_sphere->interpolate(CCTK_PASS_CTOC, vars[v].index, vars[v].imagIndex);
+
+      for (int l = 0; l <= lmax; l++) {
+        for (int m = -l; m <= l; m++) {
+          // Integrate sYlm (realV + i imagV) over the sphere at radius r
+          g_sphere->integrate(g_sphere->getRealY()[si][l][m + l],
+                              g_sphere->getImagY()[si][l][m + l],
+                              g_sphere->getReal(), g_sphere->getImag(),
+                              &modes(v, i, l, m, 0), &modes(v, i, l, m, 1));
+
+        } // loop over m
+      } // loop over l
+      output_1d(CCTK_PASS_CTOC, &vars[v], radius[i],
+                g_sphere->getTheta().data(), g_sphere->getPhi().data(),
+                realV.data(), imagV.data(), array_size);
+#else
       // Compute x^i = r * \hat x^i
       ScaleCartesian(ntheta, nphi, radius[i], xhat.data(), yhat.data(),
                      zhat.data(), xs.data(), ys.data(), zs.data());
@@ -263,6 +284,8 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
       } // loop over l
       output_1d(CCTK_PASS_CTOC, &vars[v], radius[i], th.data(), ph.data(),
                 realV.data(), imagV.data(), array_size);
+#endif
+
     } // loop over radii
   } // loop over variables
 

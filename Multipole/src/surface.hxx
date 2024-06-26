@@ -47,6 +47,9 @@ public:
   const std::vector<CCTK_REAL> &getTheta() const { return theta_; }
   const std::vector<CCTK_REAL> &getPhi() const { return phi_; }
 
+  const std::vector<CCTK_REAL> &getReal() const { return real_; }
+  const std::vector<CCTK_REAL> &getImag() const { return imag_; }
+
   void interpolate(CCTK_ARGUMENTS, int real_idx, int imag_idx);
 
   void integrate(const std::vector<CCTK_REAL> &array1r,
@@ -117,6 +120,15 @@ public:
       z_[i] = radius * zhat_[i];
     }
   }
+
+  const std::vector<std::vector<std::vector<std::vector<CCTK_REAL> > > > &
+  getRealY() const {
+    return realY_;
+  };
+  const std::vector<std::vector<std::vector<std::vector<CCTK_REAL> > > > &
+  getImagY() const {
+    return imagY_;
+  };
 
 private:
   std::vector<CCTK_REAL> xhat_, yhat_, zhat_; // unit sphere
