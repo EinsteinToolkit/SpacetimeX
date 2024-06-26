@@ -11,3 +11,10 @@ SCHEDULE Multipole_Calc AT analysis AFTER WeylScal4_psi4_calc_4th
   LANG: C
   OPTIONS: GLOBAL
 } "Calculate Multipoles"
+
+SCHEDULE Multipole_Finalize AT terminate BEFORE driver_terminate
+{
+  LANG: C
+  OPTIONS: GLOBAL
+} "Free Sphere instance and stuff"
+

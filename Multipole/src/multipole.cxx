@@ -2,6 +2,7 @@
 #include "interpolate.hxx"
 #include "multipole.hxx"
 #include "sphericalharmonic.hxx"
+#include "surface.hxx"
 #include "utils.hxx"
 
 #include <assert.h>
@@ -15,11 +16,11 @@
 namespace Multipole {
 using namespace std;
 
+static Sphere *g_sphere = nullptr;
+
 static vector<CCTK_REAL> xs, ys, zs, xhat, yhat, zhat;
 static vector<CCTK_REAL> th, ph;
 static vector<CCTK_REAL> realV, imagV;
-
-// Y[sw][l][m][i]
 static vector<vector<vector<vector<CCTK_REAL> > > > realY, imagY;
 
 // Parsed variables
@@ -181,6 +182,14 @@ static void output_1d(CCTK_ARGUMENTS, const VariableParse *v, CCTK_REAL rad,
 extern "C" void Multipole_Setup(CCTK_ARGUMENTS) {
   DECLARE_CCTK_PARAMETERS;
 
+  parse_variables_string(string(variables), vars);
+  get_spin_weights(vars, spin_weights);
+
+  if (g_sphere == nullptr) {
+    g_sphere =
+        new Sphere(ntheta, nphi, CCTK_Equals(integration_method, "midpoint"), spin_weights, l_max);
+  }
+
   const int array_size = (ntheta + 1) * (nphi + 1);
 
   realV.resize(array_size);
@@ -194,11 +203,14 @@ extern "C" void Multipole_Setup(CCTK_ARGUMENTS) {
   yhat.resize(array_size);
   zhat.resize(array_size);
 
-  parse_variables_string(string(variables), vars);
-  get_spin_weights(vars, spin_weights);
   CoordSetup(xhat.data(), yhat.data(), zhat.data(), th.data(), ph.data());
   setup_harmonics(spin_weights, l_max, th, ph, array_size, realY, imagY);
   CCTK_VINFO("initialized arrays");
+}
+
+extern "C" void Multipole_Finalize(CCTK_ARGUMENTS) {
+  delete g_sphere;
+  g_sphere = nullptr;
 }
 
 // This is the main scheduling file.  Because we are completely local here
