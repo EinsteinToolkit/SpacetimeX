@@ -68,8 +68,8 @@ private:
   std::vector<CCTK_REAL> modes_; // 1D array to store the modes
 };
 
-inline bool int_in_array(int a, const int array[], int len) {
-  for (int i = 0; i < len; i++) {
+inline bool int_in_array(int a, const std::vector<int> array) {
+  for (size_t i = 0; i < array.size(); i++) {
     if (array[i] == a)
       return true;
   }

@@ -22,17 +22,17 @@ static vector<CCTK_REAL> realV, imagV;
 // Y[sw][l][m][i]
 static vector<vector<vector<vector<CCTK_REAL> > > > realY, imagY;
 
-// Parsed  variables
+// Parsed variables
 static vector<VariableParse> vars;
+static vector<int> spin_weights;
+
+// static int n_spin_weights = 0;
 
 static const int max_vars = 10;
 
 // since each variable can have at most one spin weight, max_vars is a good
 // upper limit for the number of spin weights to expect
 static const int max_spin_weights = max_vars;
-
-static int spin_weights[max_spin_weights];
-static int n_spin_weights = 0;
 
 // modes are 0...max_l_modes-1
 static const int max_l_modes = 10;
@@ -87,18 +87,13 @@ static void parse_variables_string(const string &var_string,
 }
 
 static void get_spin_weights(vector<VariableParse> vars,
-                             int spin_weights[max_spin_weights],
-                             int *n_weights) {
-  int n_spin_weights = 0;
-
+                             vector<int> &spin_weights) {
   for (size_t i = 0; i < vars.size(); i++) {
-    if (!int_in_array(vars[i].spinWeight, spin_weights, n_spin_weights)) {
-      assert(n_spin_weights < max_spin_weights);
-      spin_weights[n_spin_weights] = vars[i].spinWeight;
-      n_spin_weights++;
+    if (!int_in_array(vars[i].spinWeight, spin_weights)) {
+      assert(spin_weights.size() < max_spin_weights);
+      spin_weights.push_back(vars[i].spinWeight);
     }
   }
-  *n_weights = n_spin_weights;
 }
 
 static void
@@ -202,10 +197,10 @@ extern "C" void Multipole_Setup(CCTK_ARGUMENTS) {
   zhat.resize(array_size);
 
   parse_variables_string(string(variables), vars);
-  get_spin_weights(vars, spin_weights, &n_spin_weights);
+  get_spin_weights(vars, spin_weights);
   CoordSetup(xhat.data(), yhat.data(), zhat.data(), th.data(), ph.data());
-  setup_harmonics(spin_weights, n_spin_weights, l_max, th.data(), ph.data(),
-                  array_size, realY, imagY);
+  setup_harmonics(spin_weights.data(), spin_weights.size(), l_max, th.data(),
+                  ph.data(), array_size, realY, imagY);
   CCTK_VINFO("initialized arrays");
 }
 
@@ -248,8 +243,8 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
 
   for (int v = 0; v < n_variables; v++) {
     // assert(vars[v].spinWeight == -2);
-    int si =
-        find_int_in_array(vars[v].spinWeight, spin_weights, n_spin_weights);
+    int si = find_int_in_array(vars[v].spinWeight, spin_weights.data(),
+                               spin_weights.size());
     assert(si != -1);
 
     for (int i = 0; i < nradii; i++) {
