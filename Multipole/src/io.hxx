@@ -1,5 +1,5 @@
-#ifndef MULTIPOLE_UTILS_HXX
-#define MULTIPOLE_UTILS_HXX
+#ifndef MULTIPOLE_IO_HXX
+#define MULTIPOLE_IO_HXX
 
 #include "multipole.hxx"
 
@@ -22,4 +22,4 @@ void OutputComplexToH5File(CCTK_ARGUMENTS, const VariableParse vars[],
 
 } // namespace Multipole
 
-#endif // #ifndef MULTIPOLE_UTILS_HXX
+#endif // #ifndef MULTIPOLE_IO_HXX
