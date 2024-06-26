@@ -60,22 +60,6 @@ static void fillVariable(int idx, const char *optString, void *callbackArg) {
   vs->push_back(v);
 }
 
-static void parse_variables_string(const string &var_string,
-                                   vector<VariableParse> &vs) {
-  int ierr = CCTK_TraverseString(var_string.c_str(), fillVariable, &vs,
-                                 CCTK_GROUP_OR_VAR);
-  assert(ierr >= 0);
-}
-
-static void get_spin_weights(vector<VariableParse> vars,
-                             vector<int> &spin_weights) {
-  for (size_t i = 0; i < vars.size(); i++) {
-    if (!int_in_array(vars[i].spinWeight, spin_weights)) {
-      spin_weights.push_back(vars[i].spinWeight);
-    }
-  }
-}
-
 static void output_modes(CCTK_ARGUMENTS, const VariableParse vars[],
                          const CCTK_REAL radii[], const ModeArray &modes) {
   DECLARE_CCTK_ARGUMENTS;
@@ -139,9 +123,19 @@ static void output_1d(CCTK_ARGUMENTS, const VariableParse *v, CCTK_REAL rad,
 extern "C" void Multipole_Setup(CCTK_ARGUMENTS) {
   DECLARE_CCTK_PARAMETERS;
 
-  parse_variables_string(string(variables), vars);
-  get_spin_weights(vars, spin_weights);
+  // Parse parameters and save them to vars
+  int ierr = CCTK_TraverseString(string(variables).c_str(), fillVariable, &vars,
+                                 CCTK_GROUP_OR_VAR);
+  assert(ierr >= 0);
 
+  // Get all different kinds of spin weights
+  for (size_t i = 0; i < vars.size(); i++) {
+    if (!int_in_array(vars[i].spinWeight, spin_weights)) {
+      spin_weights.push_back(vars[i].spinWeight);
+    }
+  }
+
+  // Initialize a sphere (whose radius can be changed later)
   if (g_sphere == nullptr) {
     g_sphere =
         new Sphere(ntheta, nphi, CCTK_Equals(integration_method, "midpoint"),
