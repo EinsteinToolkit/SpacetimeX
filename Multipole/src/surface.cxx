@@ -9,60 +9,60 @@
 
 namespace Multipole {
 
-void Surface::interp(CCTK_ARGUMENTS, int real_idx, int imag_idx) {
+void Surface::interp(CCTK_ARGUMENTS, int realIdx, int imagIdx) {
   DECLARE_CCTK_PARAMETERS;
 
-  const CCTK_INT npoints =
+  const CCTK_INT nPoints =
       CCTK_MyProc(cctkGH) == 0 ? (nTheta_ + 1) * (nPhi_ + 1) : 0;
 
-  const void *interp_coords[Loop::dim] = {(const void *)x_.data(),
-                                          (const void *)y_.data(),
-                                          (const void *)z_.data()};
+  const void *interpCoords[Loop::dim] = {(const void *)x_.data(),
+                                         (const void *)y_.data(),
+                                         (const void *)z_.data()};
 
-  CCTK_INT N_input_arrays = imag_idx == -1 ? 1 : 2;
-  CCTK_INT N_output_arrays = imag_idx == -1 ? 1 : 2;
+  CCTK_INT nInputArrays = imagIdx == -1 ? 1 : 2;
+  CCTK_INT nOutputArrays = imagIdx == -1 ? 1 : 2;
 
-  const CCTK_INT input_array_indices[2] = {real_idx, imag_idx};
+  const CCTK_INT inputArrayIndices[2] = {realIdx, imagIdx};
 
   // Interpolation result
-  CCTK_POINTER output_arrays[2];
-  output_arrays[0] = real_.data();
-  output_arrays[1] = imag_.data();
+  CCTK_POINTER outputArrays[2];
+  outputArrays[0] = real_.data();
+  outputArrays[1] = imag_.data();
 
   /* DriverInterpolate arguments that aren't currently used */
-  const int coord_system_handle = 0;
-  CCTK_INT const interp_coords_type_code = 0;
-  CCTK_INT const output_array_types[1] = {0};
+  const int coordSystemHandle = 0;
+  CCTK_INT const interpCoords_type_code = 0;
+  CCTK_INT const outputArrayTypes[1] = {0};
 
-  int interp_handle = CCTK_InterpHandle("CarpetX");
-  if (interp_handle < 0) {
+  int interpHandle = CCTK_InterpHandle("CarpetX");
+  if (interpHandle < 0) {
     CCTK_VERROR("Could not obtain inteprolator handle for built-in 'CarpetX' "
                 "interpolator: %d",
-                interp_handle);
+                interpHandle);
   }
 
   // Interpolation parameter table
-  int param_table_handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
+  int paramTableHandle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
 
-  int ierr = Util_TableSetFromString(param_table_handle, interpolator_pars);
+  int ierr = Util_TableSetFromString(paramTableHandle, interpolator_pars);
 
-  ierr = DriverInterpolate(
-      cctkGH, Loop::dim, interp_handle, param_table_handle, coord_system_handle,
-      npoints, interp_coords_type_code, interp_coords, N_input_arrays,
-      input_array_indices, N_output_arrays, output_array_types, output_arrays);
+  ierr = DriverInterpolate(cctkGH, Loop::dim, interpHandle, paramTableHandle,
+                           coordSystemHandle, nPoints, interpCoords_type_code,
+                           interpCoords, nInputArrays, inputArrayIndices,
+                           nOutputArrays, outputArrayTypes, outputArrays);
 
   if (ierr < 0) {
     CCTK_VWarn(1, __LINE__, __FILE__, CCTK_THORNSTRING,
                "CCTK_InterpGridArrays returned error code %d", ierr);
   }
 
-  if (imag_idx == -1) {
+  if (imagIdx == -1) {
     for (int i = 0; i < (nTheta_ + 1) * (nPhi_ + 1); i++) {
       imag_[i] = 0;
     }
   }
 
-  Util_TableDestroy(param_table_handle);
+  Util_TableDestroy(paramTableHandle);
 }
 
 } // namespace Multipole
