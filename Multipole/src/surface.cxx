@@ -9,7 +9,8 @@
 
 namespace Multipole {
 
-void Surface::interpolate(CCTK_ARGUMENTS, int realIdx, int imagIdx) {
+void Surface::interpolate(CCTK_ARGUMENTS, int realFieldIndex,
+                          int imagFieldIndex) {
   DECLARE_CCTK_PARAMETERS;
 
   const CCTK_INT nPoints =
@@ -17,13 +18,13 @@ void Surface::interpolate(CCTK_ARGUMENTS, int realIdx, int imagIdx) {
 
   const void *interpCoords[Loop::dim] = {x_.data(), y_.data(), z_.data()};
 
-  CCTK_INT nInputArrays = imagIdx == -1 ? 1 : 2;
-  CCTK_INT nOutputArrays = imagIdx == -1 ? 1 : 2;
+  CCTK_INT nInputArrays = imagFieldIndex == -1 ? 1 : 2;
+  CCTK_INT nOutputArrays = imagFieldIndex == -1 ? 1 : 2;
 
-  const CCTK_INT inputArrayIndices[2] = {realIdx, imagIdx};
+  const CCTK_INT inputArrayIndices[2] = {realFieldIndex, imagFieldIndex};
 
   // Interpolation result
-  CCTK_POINTER outputArrays[2] = {real_.data(), imag_.data()};
+  CCTK_POINTER outputArrays[2] = {realF_.data(), imagF_.data()};
 
   /* DriverInterpolate arguments that aren't currently used */
   const int coordSystemHandle = 0;
@@ -52,8 +53,8 @@ void Surface::interpolate(CCTK_ARGUMENTS, int realIdx, int imagIdx) {
                "CCTK_InterpGridArrays returned error code %d", ierr);
   }
 
-  if (imagIdx == -1) {
-    std::fill(imag_.begin(), imag_.end(), 0);
+  if (imagFieldIndex == -1) {
+    std::fill(imagF_.begin(), imagF_.end(), 0);
   }
 
   Util_TableDestroy(paramTableHandle);

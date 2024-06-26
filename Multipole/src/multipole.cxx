@@ -253,10 +253,10 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
 
       for (int l = 0; l <= lmax; l++) {
         for (int m = -l; m <= l; m++) {
-          // Integrate sYlm (realV + i imagV) over the sphere at radius r
+          // Intergate of conj(sYlm)*F*sin(theta) over the sphere at radiusr[i]
           g_sphere->integrate(g_sphere->getRealY()[si][l][m + l],
                               g_sphere->getImagY()[si][l][m + l],
-                              g_sphere->getReal(), g_sphere->getImag(),
+                              g_sphere->getRealF(), g_sphere->getImagF(),
                               &modes(v, i, l, m, 0), &modes(v, i, l, m, 1));
 
         } // loop over m

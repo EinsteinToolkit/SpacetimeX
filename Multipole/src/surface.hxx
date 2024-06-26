@@ -25,8 +25,8 @@ public:
     x_.resize(arraySize);
     y_.resize(arraySize);
     z_.resize(arraySize);
-    real_.resize(arraySize);
-    imag_.resize(arraySize);
+    realF_.resize(arraySize);
+    imagF_.resize(arraySize);
 
     // Add an offset for midpoint integration.
     const CCTK_REAL is_midpoint = static_cast<CCTK_REAL>(isMidPoint);
@@ -47,10 +47,10 @@ public:
   const std::vector<CCTK_REAL> &getTheta() const { return theta_; }
   const std::vector<CCTK_REAL> &getPhi() const { return phi_; }
 
-  const std::vector<CCTK_REAL> &getReal() const { return real_; }
-  const std::vector<CCTK_REAL> &getImag() const { return imag_; }
+  const std::vector<CCTK_REAL> &getRealF() const { return realF_; }
+  const std::vector<CCTK_REAL> &getImagF() const { return imagF_; }
 
-  void interpolate(CCTK_ARGUMENTS, int real_idx, int imag_idx);
+  void interpolate(CCTK_ARGUMENTS, int realFieldIndex, int imagFieldIndex);
 
   void integrate(const std::vector<CCTK_REAL> &array1r,
                  const std::vector<CCTK_REAL> &array1i,
@@ -68,7 +68,7 @@ protected:
   std::vector<CCTK_REAL> x_, y_, z_; // embedding map
 
   // a complex field to be integrated on the surface
-  std::vector<CCTK_REAL> real_, imag_;
+  std::vector<CCTK_REAL> realF_, imagF_;
 };
 
 // 2D Sphere
