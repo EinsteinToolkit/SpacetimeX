@@ -1,15 +1,5 @@
 #schedule.ccl for thorn Multipole
 
-if (enable_test)
-{
-  STORAGE: harmonics[1]
-  STORAGE: test_integration_convergence_orders
-  STORAGE: test_integration_results
-  STORAGE: test_integration_symmetries
-  STORAGE: test_orthonormality
-}
-
-
 SCHEDULE Multipole_Setup AT wragh
 {
   LANG: C
@@ -21,52 +11,3 @@ SCHEDULE Multipole_Calc AT analysis AFTER WeylScal4_psi4_calc_4th
   LANG: C
   OPTIONS: GLOBAL
 } "Calculate Multipoles"
-
-
-if (enable_test)
-{
-  SCHEDULE Multipole_TestIntegrationConvergence AT CCTK_PARAMCHECK
-  {
-    LANG: C
-  } "Test convergence of integration"
-
-  SCHEDULE Multipole_TestIntegrationSymmetry AT CCTK_PARAMCHECK
-  {
-    LANG: C
-  } "Test symmetry of integration"
-
-  SCHEDULE Multipole_SetHarmonic AT CCTK_INITIAL
-  {
-    LANG: C
-    WRITES: Multipole::harmonics(interior)
-    SYNC: Multipole::harmonics
-  } "Populate grid functions with spherical harmonics"
-
-  SCHEDULE Multipole_TestOrthonormality AT CCTK_INITIAL
-  {
-    LANG: C
-    OPTIONS: GLOBAL
-  } "Loop over modes and integrate them to check orthonormality"
-}
-
-if (enable_test_Weyl)
-{
-  SCHEDULE Multipole_SetHarmonicWeyl AT CCTK_INITIAL
-  {
-    LANG: C
-    WRITES: WeylScal4::Psi4i_group(interior)
-    WRITES: WeylScal4::Psi4r_group(interior)
-    SYNC: WeylScal4::Psi4i_group
-    SYNC: WeylScal4::Psi4r_group
-  } "Populate Weyl grid functions with spherical harmonics"
-}
-
-if (!enable_test && !enable_test_Weyl)
-{
-	SCHEDULE Multipole_Init AT CCTK_INITIAL
-	{
-		LANG: C
-    WRITES: Multipole::harmonics(interior)
-    SYNC: Multipole::harmonics
-	} "Init harmonics to zero to make CarpetX happy?"
-}

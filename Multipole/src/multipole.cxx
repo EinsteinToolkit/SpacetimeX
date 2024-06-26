@@ -201,19 +201,6 @@ extern "C" void Multipole_Setup(CCTK_ARGUMENTS) {
   CCTK_VINFO("initialized arrays");
 }
 
-// Sets harmonic coefficients to zero at init.
-extern "C" void Multipole_Init(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTSX_Multipole_Init;
-  DECLARE_CCTK_PARAMETERS;
-
-  grid.loop_int<0, 0, 0>(grid.nghostzones,
-                         [=] CCTK_DEVICE(const Loop::PointDesc &p)
-                             CCTK_ATTRIBUTE_ALWAYS_INLINE {
-                               harmonic_re(p.I) = 0;
-                               harmonic_im(p.I) = 0;
-                             });
-}
-
 // This is the main scheduling file.  Because we are completely local here
 // and do not use cactus arrays etc, we schedule only one function and then
 // like program like one would in C, C++ with this function taking the
