@@ -46,6 +46,8 @@ public:
   const std::vector<CCTK_REAL> &getTheta() const { return theta_; }
   const std::vector<CCTK_REAL> &getPhi() const { return phi_; }
 
+  void interp(CCTK_ARGUMENTS, int real_idx, int imag_idx);
+
 protected:
   inline int index2D(int it, int ip) const { return it + (nTheta_ + 1) * ip; }
 
