@@ -108,14 +108,15 @@ void Surface::integrate(const std::vector<CCTK_REAL> &array1r,
   }
 }
 
-void Surface::output1DSingle(CCTK_ARGUMENTS, const std::string &name,
-                             MpCoord coord, std::vector<CCTK_REAL> &data) {
+void Surface::output1DSingle(CCTK_ARGUMENTS, const std::string &fileName,
+                             MpCoord coord,
+                             const std::vector<CCTK_REAL> &data) const {
   DECLARE_CCTK_ARGUMENTS;
 
   const int n = (coord == MpTheta) ? nTheta_ : nPhi_;
   std::vector<CCTK_REAL> &x = (coord == MpTheta) ? theta_ : phi_;
 
-  if (FILE *f = OpenOutputFile(CCTK_PASS_CTOC, name)) {
+  if (FILE *f = OpenOutputFile(CCTK_PASS_CTOC, fileName)) {
     fprintf(f, "\"Time = %.19g\n", cctk_time);
 
     for (int i = 0; i <= n; ++i) {
@@ -128,7 +129,8 @@ void Surface::output1DSingle(CCTK_ARGUMENTS, const std::string &name,
   }
 }
 
-void Surface::output1D(CCTK_ARGUMENTS, const VariableParse &var, CCTK_REAL rad) {
+void Surface::output1D(CCTK_ARGUMENTS, const VariableParse &var,
+                       CCTK_REAL rad) const {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
