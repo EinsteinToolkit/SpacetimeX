@@ -95,30 +95,6 @@ FILE *OpenOutputFile(CCTK_ARGUMENTS, const std::string &name) {
   return filePtr;
 }
 
-void Output1D(CCTK_ARGUMENTS, const string &name, CCTK_REAL const th[],
-              CCTK_REAL const ph[], MpCoord coord, CCTK_REAL const data[]) {
-  DECLARE_CCTK_ARGUMENTS;
-  DECLARE_CCTK_PARAMETERS;
-
-  if (FILE *f = OpenOutputFile(CCTK_PASS_CTOC, name)) {
-    fprintf(f, "\"Time = %.19g\n", cctk_time);
-
-    if (coord == MpTheta) {
-      for (int i = 0; i <= ntheta; i++) {
-        int idx = Index_2d(i, 0, ntheta);
-        fprintf(f, "%f %.19g\n", th[idx], data[idx]);
-      }
-    } else if (coord == MpPhi) {
-      for (int i = 0; i <= nphi; i++) {
-        int idx = Index_2d(ntheta / 4, i, ntheta);
-        fprintf(f, "%f %.19g\n", ph[idx], data[idx]);
-      }
-    }
-    fprintf(f, "\n\n");
-    fclose(f);
-  }
-}
-
 void OutputComplexToFile(CCTK_ARGUMENTS, const string &name, CCTK_REAL redata,
                          CCTK_REAL imdata) {
   DECLARE_CCTK_ARGUMENTS;

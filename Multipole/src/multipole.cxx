@@ -49,38 +49,6 @@ static void outputModes(CCTK_ARGUMENTS, const VariableParse vars[],
   }
 }
 
-static void output1D(CCTK_ARGUMENTS, const VariableParse *var, CCTK_REAL rad,
-                     const CCTK_REAL *theta, const CCTK_REAL *phi,
-                     const CCTK_REAL *real, const CCTK_REAL *imag) {
-  DECLARE_CCTK_ARGUMENTS;
-  DECLARE_CCTK_PARAMETERS;
-
-  if (CCTK_MyProc(cctkGH) == 0 && output_tsv) {
-    if (out_1d_every != 0 && cctk_iteration % out_1d_every == 0) {
-      std::ostringstream realBase;
-      realBase << "mp_" << std::string(CCTK_VarName(var->realIndex)) << "_r"
-               << std::fixed << std::setprecision(2) << rad;
-
-      // Output real part data
-      Output1D(CCTK_PASS_CTOC, realBase.str() + ".th.tsv", theta, phi, MpTheta,
-               real);
-      Output1D(CCTK_PASS_CTOC, realBase.str() + ".ph.tsv", theta, phi, MpPhi,
-               real);
-
-      // Output imaginary part data if available
-      if (var->imagIndex != -1) {
-        std::ostringstream imagBase;
-        imagBase << "mp_" << std::string(CCTK_VarName(var->imagIndex)) << "_r"
-                 << std::fixed << std::setprecision(2) << rad;
-        Output1D(CCTK_PASS_CTOC, imagBase.str() + ".th.tsv", theta, phi,
-                 MpTheta, imag);
-        Output1D(CCTK_PASS_CTOC, imagBase.str() + ".ph.tsv", theta, phi, MpPhi,
-                 imag);
-      }
-    }
-  }
-}
-
 static void fillVariable(int idx, const char *optString, void *callbackArg) {
   assert(idx >= 0);
   assert(callbackArg != nullptr);
@@ -196,9 +164,7 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
         } // loop over m
       } // loop over l
 
-      output1D(CCTK_PASS_CTOC, &g_vars[v], radius[i],
-               g_sphere->getTheta().data(), g_sphere->getPhi().data(),
-               g_sphere->getRealF().data(), g_sphere->getImagF().data());
+      g_sphere->output1D(CCTK_PASS_CTOC, g_vars[v], radius[i]);
 
     } // loop over radii
   } // loop over variables

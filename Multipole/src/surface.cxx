@@ -108,4 +108,53 @@ void Surface::integrate(const std::vector<CCTK_REAL> &array1r,
   }
 }
 
+void Surface::output1DSingle(CCTK_ARGUMENTS, const std::string &name,
+                             MpCoord coord, std::vector<CCTK_REAL> &data) {
+  DECLARE_CCTK_ARGUMENTS;
+
+  const int n = (coord == MpTheta) ? nTheta_ : nPhi_;
+  std::vector<CCTK_REAL> &x = (coord == MpTheta) ? theta_ : phi_;
+
+  if (FILE *f = OpenOutputFile(CCTK_PASS_CTOC, name)) {
+    fprintf(f, "\"Time = %.19g\n", cctk_time);
+
+    for (int i = 0; i <= n; ++i) {
+      int idx = (coord == MpTheta) ? index2D(i, 0) : index2D(nTheta_ / 4, i);
+      fprintf(f, "%f %.19g\n", x[idx], data[idx]);
+    }
+
+    fprintf(f, "\n\n");
+    fclose(f);
+  }
+}
+
+void Surface::output1D(CCTK_ARGUMENTS, const VariableParse &var, CCTK_REAL rad) {
+  DECLARE_CCTK_ARGUMENTS;
+  DECLARE_CCTK_PARAMETERS;
+
+  if (CCTK_MyProc(cctkGH) == 0 && output_tsv) {
+    if (out_1d_every != 0 && cctk_iteration % out_1d_every == 0) {
+      std::ostringstream realBase;
+      realBase << "mp_" << std::string(CCTK_VarName(var.realIndex)) << "_r"
+               << std::fixed << std::setprecision(2) << rad;
+
+      // Output real part data
+      output1DSingle(CCTK_PASS_CTOC, realBase.str() + ".th.tsv", MpTheta,
+                     realF_);
+      output1DSingle(CCTK_PASS_CTOC, realBase.str() + ".ph.tsv", MpPhi, realF_);
+
+      // Output imaginary part data if available
+      if (var.imagIndex != -1) {
+        std::ostringstream imagBase;
+        imagBase << "mp_" << std::string(CCTK_VarName(var.imagIndex)) << "_r"
+                 << std::fixed << std::setprecision(2) << rad;
+        output1DSingle(CCTK_PASS_CTOC, imagBase.str() + ".th.tsv", MpTheta,
+                       imagF_);
+        output1DSingle(CCTK_PASS_CTOC, imagBase.str() + ".ph.tsv", MpPhi,
+                       imagF_);
+      }
+    }
+  }
+}
+
 } // namespace Multipole

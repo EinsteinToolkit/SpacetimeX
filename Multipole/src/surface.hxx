@@ -5,6 +5,8 @@
 #define MULTIPOLE_SURFACE_HXX
 
 #include "integrate.hxx"
+#include "io.hxx"
+#include "multipole.hxx"
 #include "sphericalharmonic.hxx"
 
 #include <cctk.h>
@@ -12,6 +14,8 @@
 #include <vector>
 
 namespace Multipole {
+
+enum MpCoord { MpTheta, MpPhi };
 
 // 2D Surface Embedding in 3D Space
 class Surface {
@@ -59,6 +63,11 @@ public:
                  const std::vector<CCTK_REAL> &array2r,
                  const std::vector<CCTK_REAL> &array2i, CCTK_REAL *outre,
                  CCTK_REAL *outim);
+
+  void output1DSingle(CCTK_ARGUMENTS, const std::string &name, MpCoord coord,
+                      std::vector<CCTK_REAL> &data);
+
+  void output1D(CCTK_ARGUMENTS, const VariableParse &var, CCTK_REAL rad);
 
 protected:
   const int nTheta_, nPhi_;
