@@ -100,83 +100,59 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
   }
 
   // Interpolate
-
-  // Dimensions
-  const int dim = 3;
-
-  // Interpolation operator
-  const int operator_handle =
-      CCTK_InterpHandle("CarpetX");
-  if (operator_handle < 0) {
-    CCTK_WARN(CCTK_WARN_ALERT, "Can't get interpolation handle");
-    return;
-  } // TODO: Not used by CarpetX Interpolator
-
-  // Interpolation parameter table
-  int ierr;
-  int param_table_handle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
-  if (param_table_handle < 0)
-    CCTK_VERROR("Can't create parameter table: %d", param_table_handle);
-  if ((ierr = Util_TableSetInt(param_table_handle, interp_order, "order")) < 0)
-    CCTK_VERROR("Can't set order in parameter table: %d", ierr);
-
   {
-    // Interpolation coordinate system: Not used in CarpetX_DriverInterpolate
-    const int coordsys_handle = 0;
-    // const int coordsys_handle = CCTK_CoordSystemHandle("cart3d");
-    // if (coordsys_handle < 0) {
-    //   CCTK_WARN(CCTK_WARN_ALERT, "Can't get coordinate system handle");
-    //   goto label_free_param_table;
-    // }
-
     // Only processor 0 interpolates
-    const int num_points = CCTK_MyProc(cctkGH) == 0 ? max_num_tracked : 0;
+    const CCTK_INT nPoints = CCTK_MyProc(cctkGH) == 0 ? max_num_tracked : 0;
 
     // Interpolation coordinates
-    assert(dim == 3);
-    CCTK_POINTER_TO_CONST interp_coords[dim];
-    interp_coords[0] = pt_loc_x;
-    interp_coords[1] = pt_loc_y;
-    interp_coords[2] = pt_loc_z;
-
-    // Number of interpolation variables
-    int const num_vars = 3;
+    const void *interpCoords[Loop::dim] = {pt_loc_x, pt_loc_y, pt_loc_z};
 
     // Interpolated variables
-    assert(num_vars == 3);
-    int input_array_indices[3];
-    input_array_indices[0] = CCTK_VarIndex("ADMBaseX::betax");
-    input_array_indices[1] = CCTK_VarIndex("ADMBaseX::betay");
-    input_array_indices[2] = CCTK_VarIndex("ADMBaseX::betaz");
-
-    // Interpolation result types: Not used by CarpetX DriverInterp
-    assert(num_vars == 3);
-    CCTK_INT output_array_type_codes[3];
-    output_array_type_codes[0] = CCTK_VARIABLE_REAL;
-    output_array_type_codes[1] = CCTK_VARIABLE_REAL;
-    output_array_type_codes[2] = CCTK_VARIABLE_REAL;
+    const CCTK_INT nInputArrays = 3;
+    const CCTK_INT inputArrayIndices[3] = {CCTK_VarIndex("ADMBaseX::betax"),
+                                           CCTK_VarIndex("ADMBaseX::betay"),
+                                           CCTK_VarIndex("ADMBaseX::betaz")};
 
     // Interpolation result
     CCTK_REAL pt_betax[max_num_tracked];
     CCTK_REAL pt_betay[max_num_tracked];
     CCTK_REAL pt_betaz[max_num_tracked];
+    CCTK_POINTER outputArrays[3] = {pt_betax, pt_betay, pt_betaz};
 
-    assert(num_vars == 3);
-    CCTK_POINTER output_arrays[3];
-    output_arrays[0] = pt_betax;
-    output_arrays[1] = pt_betay;
-    output_arrays[2] = pt_betaz;
+    /* DriverInterpolate arguments that aren't currently used */
+    const int coordSystemHandle = 0;
+    const CCTK_INT interpCoordsTypeCode = 0;
+    const CCTK_INT outputArrayTypes[1] = {0};
+
+    const int interpHandle = CCTK_InterpHandle("CarpetX");
+    if (interpHandle < 0) {
+      CCTK_WARN(CCTK_WARN_ALERT, "Can't get interpolation handle");
+      return;
+    }
+
+    int ierr;
+
+    int paramTableHandle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
+    if (paramTableHandle < 0) {
+      CCTK_VERROR("Can't create parameter table: %d", paramTableHandle);
+    }
+
+    if ((ierr = Util_TableSetInt(paramTableHandle, interp_order, "order")) <
+        0) {
+      CCTK_VERROR("Can't set order in parameter table: %d", ierr);
+    }
 
     // Interpolate
-    int ierr;
-    ierr = DriverInterpolate(
-        cctkGH, dim, operator_handle, param_table_handle, coordsys_handle,
-        num_points, CCTK_VARIABLE_REAL, interp_coords, num_vars,
-        input_array_indices, num_vars, output_array_type_codes, output_arrays);
+    ierr = DriverInterpolate(cctkGH, Loop::dim, interpHandle, paramTableHandle,
+                             coordSystemHandle, nPoints, interpCoordsTypeCode,
+                             interpCoords, nInputArrays, inputArrayIndices,
+                             nInputArrays, outputArrayTypes, outputArrays);
+
     if (ierr < 0) {
       CCTK_WARN(CCTK_WARN_ALERT, "Interpolation error");
-      goto label_free_param_table;
     }
+
+    Util_TableDestroy(paramTableHandle);
 
     if (CCTK_MyProc(cctkGH) == 0) {
 
@@ -208,7 +184,6 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
       }
 
       // Time evolution
-
       for (int n = 0; n < max_num_tracked; ++n) {
         if (track[n]) {
           const CCTK_REAL dt = pt_loc_t[n] - pt_t_prev[n];
@@ -225,10 +200,8 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
       }
     }
 
-    // Broadcast result
-
-    CCTK_REAL loc_global[6 * max_num_tracked]; /* 3 components for location, 3
-                                                 components for velocity */
+    // Broadcast result: 3 components for location, 3 components for velocity
+    CCTK_REAL loc_global[6 * max_num_tracked];
     if (CCTK_MyProc(cctkGH) == 0) {
       for (int n = 0; n < max_num_tracked; ++n) {
         loc_global[n] = pt_loc_x[n];
@@ -261,11 +234,6 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
       position_z[i] = pt_loc_z[i];
     }
   }
-// Done
-
-// Poor man's exception handling
-label_free_param_table:
-  Util_TableDestroy(param_table_handle);
 }
 
 using namespace Arith;
