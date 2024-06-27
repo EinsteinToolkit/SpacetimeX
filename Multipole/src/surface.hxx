@@ -56,17 +56,22 @@ public:
 
   inline int index2D(int it, int ip) const { return it + (nTheta_ + 1) * ip; }
 
+  // Interpolate both the real and imag part of a complext field to the surface
   void interpolate(CCTK_ARGUMENTS, int realFieldIndex, int imagFieldIndex);
 
+  // Take the integral of conj(array1)*array2*sin(th)
   void integrate(const std::vector<CCTK_REAL> &array1r,
                  const std::vector<CCTK_REAL> &array1i,
                  const std::vector<CCTK_REAL> &array2r,
                  const std::vector<CCTK_REAL> &array2i, CCTK_REAL *outre,
                  CCTK_REAL *outim);
 
+  // 1D output of the real/imag part of the complex field on the surface along
+  // theta/phi
   void output1DSingle(CCTK_ARGUMENTS, const std::string &fileName,
                       MpCoord coord, const std::vector<CCTK_REAL> &data) const;
 
+  // 1D output of the complex field on the surface along theta and phi
   void output1D(CCTK_ARGUMENTS, const VariableParse &var, CCTK_REAL rad) const;
 
 protected:

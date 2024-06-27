@@ -9,6 +9,7 @@
 
 namespace Multipole {
 
+// Interpolate both the real and imag part of a complext field to the surface
 void Surface::interpolate(CCTK_ARGUMENTS, int realFieldIndex,
                           int imagFieldIndex) {
   DECLARE_CCTK_PARAMETERS;
@@ -108,6 +109,8 @@ void Surface::integrate(const std::vector<CCTK_REAL> &array1r,
   }
 }
 
+// 1D output of the real/imag part of the complex field on the surface along
+// theta/phi
 void Surface::output1DSingle(CCTK_ARGUMENTS, const std::string &fileName,
                              MpCoord coord,
                              const std::vector<CCTK_REAL> &data) const {
@@ -129,6 +132,7 @@ void Surface::output1DSingle(CCTK_ARGUMENTS, const std::string &fileName,
   }
 }
 
+// 1D output of the complex field on the surface along theta and phi
 void Surface::output1D(CCTK_ARGUMENTS, const VariableParse &var,
                        CCTK_REAL rad) const {
   DECLARE_CCTK_ARGUMENTS;
