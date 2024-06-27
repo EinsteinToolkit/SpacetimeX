@@ -32,7 +32,7 @@ public:
     return modes_.at(modeIndex(v, ri, l, m, isImaginary));
   }
 
-  // For reading to modes_
+  // For reading from modes_
   const CCTK_REAL &operator()(int v, int ri, int l, int m,
                               bool isImaginary) const {
     return modes_.at(modeIndex(v, ri, l, m, isImaginary));
