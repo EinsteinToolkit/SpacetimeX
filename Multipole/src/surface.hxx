@@ -50,6 +50,8 @@ public:
   const std::vector<CCTK_REAL> &getRealF() const { return realF_; }
   const std::vector<CCTK_REAL> &getImagF() const { return imagF_; }
 
+  inline int index2D(int it, int ip) const { return it + (nTheta_ + 1) * ip; }
+
   void interpolate(CCTK_ARGUMENTS, int realFieldIndex, int imagFieldIndex);
 
   void integrate(const std::vector<CCTK_REAL> &array1r,
@@ -59,8 +61,6 @@ public:
                  CCTK_REAL *outim);
 
 protected:
-  inline int index2D(int it, int ip) const { return it + (nTheta_ + 1) * ip; }
-
   const int nTheta_, nPhi_;
   CCTK_REAL dTheta_, dPhi_;
 
