@@ -234,8 +234,6 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
   }
 }
 
-using namespace Arith;
-
 extern "C" void PunctureTracker_CheckShift(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTSX_PunctureTracker_CheckShift;
   DECLARE_CCTK_PARAMETERS;
@@ -246,9 +244,8 @@ extern "C" void PunctureTracker_CheckShift(CCTK_ARGUMENTS) {
   if (level == finest_lvl) {
     for (int n = 0; n < max_num_tracked; ++n) {
       if (track[n]) {
-
-        const vect<CCTK_REAL, Loop::dim> loc_vec = {pt_loc_x[n], pt_loc_y[n],
-                                                    pt_loc_z[n]};
+        const Arith::vect<CCTK_REAL, Loop::dim> loc_vec = {
+            pt_loc_x[n], pt_loc_y[n], pt_loc_z[n]};
 
         grid.loop_all_device<0, 0, 0>(
             grid.nghostzones,
