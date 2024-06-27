@@ -12,8 +12,6 @@
 #include <ctype.h>
 
 namespace PunctureTracker {
-using namespace std;
-using namespace Loop;
 
 const int max_num_tracked = 10;
 
@@ -239,19 +237,8 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
 using namespace Arith;
 
 extern "C" void PunctureTracker_CheckShift(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTS_PunctureTracker_CheckShift;
+  DECLARE_CCTK_ARGUMENTSX_PunctureTracker_CheckShift;
   DECLARE_CCTK_PARAMETERS;
-
-  const int dim = 3;
-
-  const array<int, dim> indextype = {0, 0, 0};
-  const GF3D2layout layout(cctkGH, indextype);
-
-  const GF3D2<const CCTK_REAL> betax_(layout, betax);
-  const GF3D2<const CCTK_REAL> betay_(layout, betay);
-  const GF3D2<const CCTK_REAL> betaz_(layout, betaz);
-
-  const GridDescBaseDevice grid(cctkGH);
 
   const int level = ilogb(CCTK_REAL(cctk_levfac[0]));
   const int finest_lvl = num_levels[0] - 1;
@@ -260,17 +247,18 @@ extern "C" void PunctureTracker_CheckShift(CCTK_ARGUMENTS) {
     for (int n = 0; n < max_num_tracked; ++n) {
       if (track[n]) {
 
-        const vect<CCTK_REAL, dim> loc_vec = {pt_loc_x[n], pt_loc_y[n],
-                                              pt_loc_z[n]};
+        const vect<CCTK_REAL, Loop::dim> loc_vec = {pt_loc_x[n], pt_loc_y[n],
+                                                    pt_loc_z[n]};
 
         grid.loop_all_device<0, 0, 0>(
             grid.nghostzones,
-            [=] CCTK_DEVICE(const PointDesc &p) CCTK_ATTRIBUTE_ALWAYS_INLINE {
+            [=] CCTK_DEVICE(
+                const Loop::PointDesc &p) CCTK_ATTRIBUTE_ALWAYS_INLINE {
               if (maximum(abs(p.X - loc_vec)) <= (1 / pow(2, level))) {
                 printf("Shift at level %d near puncture #%d is {%g, %g, %g} at "
                        "coords {%g, %g, %g}.",
-                       level, n, betax_(p.I), betay_(p.I), betaz_(p.I), p.x,
-                       p.y, p.z);
+                       level, n, betax(p.I), betay(p.I), betaz(p.I), p.x, p.y,
+                       p.z);
               }
             });
       }
