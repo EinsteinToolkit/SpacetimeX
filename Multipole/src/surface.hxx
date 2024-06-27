@@ -64,10 +64,10 @@ public:
                  const std::vector<CCTK_REAL> &array2i, CCTK_REAL *outre,
                  CCTK_REAL *outim);
 
-  void output1DSingle(CCTK_ARGUMENTS, const std::string &name, MpCoord coord,
-                      std::vector<CCTK_REAL> &data);
+  void output1DSingle(CCTK_ARGUMENTS, const std::string &fileName,
+                      MpCoord coord, const std::vector<CCTK_REAL> &data) const;
 
-  void output1D(CCTK_ARGUMENTS, const VariableParse &var, CCTK_REAL rad);
+  void output1D(CCTK_ARGUMENTS, const VariableParse &var, CCTK_REAL rad) const;
 
 protected:
   const int nTheta_, nPhi_;

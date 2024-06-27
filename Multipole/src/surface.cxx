@@ -114,7 +114,7 @@ void Surface::output1DSingle(CCTK_ARGUMENTS, const std::string &fileName,
   DECLARE_CCTK_ARGUMENTS;
 
   const int n = (coord == MpTheta) ? nTheta_ : nPhi_;
-  std::vector<CCTK_REAL> &x = (coord == MpTheta) ? theta_ : phi_;
+  const std::vector<CCTK_REAL> &x = (coord == MpTheta) ? theta_ : phi_;
 
   if (FILE *f = OpenOutputFile(CCTK_PASS_CTOC, fileName)) {
     fprintf(f, "\"Time = %.19g\n", cctk_time);

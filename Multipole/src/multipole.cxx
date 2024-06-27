@@ -33,11 +33,11 @@ static void outputModes(CCTK_ARGUMENTS, const VariableParse vars[],
         const CCTK_REAL rad = radii[i];
         for (int l = 0; l <= modes.getMaxL(); ++l) {
           for (int m = -l; m <= l; ++m) {
-            std::ostringstream filename;
-            filename << "mp_" << vars[v].name << "_l" << l << "_m" << m << "_r"
+            std::ostringstream fileName;
+            fileName << "mp_" << vars[v].name << "_l" << l << "_m" << m << "_r"
                      << std::fixed << std::setprecision(2) << rad << ".tsv";
 
-            OutputComplexToFile(CCTK_PASS_CTOC, filename.str(),
+            OutputComplexToFile(CCTK_PASS_CTOC, fileName.str(),
                                 modes(v, i, l, m, 0), modes(v, i, l, m, 1));
           }
         }
