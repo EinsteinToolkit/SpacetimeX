@@ -3,6 +3,7 @@
 
 #include <cctk.h>
 
+#include <algorithm> // std::find
 #include <vector>
 
 namespace Multipole {
@@ -60,20 +61,13 @@ private:
   std::vector<CCTK_REAL> modes_; // 1D array to store the modes
 };
 
-inline bool int_in_array(int a, const std::vector<int> array) {
-  for (size_t i = 0; i < array.size(); i++) {
-    if (array[i] == a)
-      return true;
-  }
-  return false;
+inline bool isIntInArray(int a, const std::vector<int> &array) {
+  return std::find(array.begin(), array.end(), a) != array.end();
 }
 
-inline int find_int_in_array(int a, const int array[], int len) {
-  for (int i = 0; i < len; i++) {
-    if (array[i] == a)
-      return i;
-  }
-  return -1;
+inline int findIntInArray(int a, const std::vector<int> &array) {
+  auto it = std::find(array.begin(), array.end(), a);
+  return (it != array.end()) ? std::distance(array.begin(), it) : -1;
 }
 
 } // namespace Multipole

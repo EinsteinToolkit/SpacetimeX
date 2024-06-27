@@ -100,7 +100,7 @@ extern "C" void Multipole_Setup(CCTK_ARGUMENTS) {
 
   // Get all different kinds of spin weights
   for (size_t i = 0; i < g_vars.size(); i++) {
-    if (!int_in_array(g_vars[i].spinWeight, g_spin_weights)) {
+    if (!isIntInArray(g_vars[i].spinWeight, g_spin_weights)) {
       g_spin_weights.push_back(g_vars[i].spinWeight);
     }
   }
@@ -140,8 +140,7 @@ extern "C" void Multipole_Calc(CCTK_ARGUMENTS) {
   ModeArray modes(n_variables, nradii, l_max);
 
   for (int v = 0; v < n_variables; v++) {
-    int si = find_int_in_array(g_vars[v].spinWeight, g_spin_weights.data(),
-                               g_spin_weights.size());
+    int si = findIntInArray(g_vars[v].spinWeight, g_spin_weights);
     assert(si != -1);
 
     for (int i = 0; i < nradii; i++) {
