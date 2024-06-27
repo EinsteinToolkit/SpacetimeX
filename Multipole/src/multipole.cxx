@@ -61,18 +61,18 @@ static void output_1d(CCTK_ARGUMENTS, const VariableParse *v, CCTK_REAL rad,
       real_base << "mp_" << string(CCTK_VarName(v->realIndex)) << "_r"
                 << setiosflags(ios::fixed) << setprecision(2) << rad;
       Output1D(CCTK_PASS_CTOC, real_base.str() + string(".th.tsv"), th, ph,
-               mp_theta, real);
+               MpTheta, real);
       Output1D(CCTK_PASS_CTOC, real_base.str() + string(".ph.tsv"), th, ph,
-               mp_phi, real);
+               MpPhi, real);
 
       if (v->imagIndex != -1) {
         ostringstream imag_base;
         imag_base << "mp_" << string(CCTK_VarName(v->imagIndex)) << "_r"
                   << setiosflags(ios::fixed) << setprecision(2) << rad;
         Output1D(CCTK_PASS_CTOC, imag_base.str() + string(".th.tsv"), th, ph,
-                 mp_theta, imag);
+                 MpTheta, imag);
         Output1D(CCTK_PASS_CTOC, imag_base.str() + string(".ph.tsv"), th, ph,
-                 mp_phi, imag);
+                 MpPhi, imag);
       }
     }
   }

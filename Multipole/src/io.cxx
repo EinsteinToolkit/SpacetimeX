@@ -101,19 +101,19 @@ void OutputComplex(CCTK_ARGUMENTS, FILE *fp, CCTK_REAL redata,
 }
 
 void Output1D(CCTK_ARGUMENTS, const string &name, CCTK_REAL const th[],
-              CCTK_REAL const ph[], mp_coord coord, CCTK_REAL const data[]) {
+              CCTK_REAL const ph[], MpCoord coord, CCTK_REAL const data[]) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
   if (FILE *f = OpenOutputFile(CCTK_PASS_CTOC, name)) {
     fprintf(f, "\"Time = %.19g\n", cctk_time);
 
-    if (coord == mp_theta) {
+    if (coord == MpTheta) {
       for (int i = 0; i <= ntheta; i++) {
         int idx = Index_2d(i, 0, ntheta);
         fprintf(f, "%f %.19g\n", th[idx], data[idx]);
       }
-    } else if (coord == mp_phi) {
+    } else if (coord == MpPhi) {
       for (int i = 0; i <= nphi; i++) {
         int idx = Index_2d(ntheta / 4, i, ntheta);
         fprintf(f, "%f %.19g\n", ph[idx], data[idx]);

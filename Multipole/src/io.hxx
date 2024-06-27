@@ -9,10 +9,10 @@
 namespace Multipole {
 using namespace std;
 
-enum mp_coord { mp_theta, mp_phi };
+enum MpCoord { MpTheta, MpPhi };
 
 void Output1D(CCTK_ARGUMENTS, const string &name, CCTK_REAL const th[],
-              CCTK_REAL const ph[], mp_coord coord, CCTK_REAL const data[]);
+              CCTK_REAL const ph[], MpCoord coord, CCTK_REAL const data[]);
 
 void OutputComplexToFile(CCTK_ARGUMENTS, const string &name, CCTK_REAL redata,
                          CCTK_REAL imdata);
