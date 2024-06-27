@@ -1,0 +1,119 @@
+# q1
+$itlast = 4
+$final_time = 1000
+$xmin = -20.0
+$xmax = +20.0
+$nlevels = 1
+$error_threshold = 0.9
+$dtfac = 0.25
+$out_every = 128
+
+ActiveThorns = "
+    ADMBaseX
+    CarpetX
+    CoordinatesX
+    IOUtil
+    Multipole
+    ODESolvers
+    TmunuBaseX
+    TwoPuncturesX
+    WeylScal4
+    Z4c
+"
+
+Cactus::cctk_show_schedule = no
+
+Cactus::presync_mode = "mixed-error"
+
+Cactus::terminate = "any"
+Cactus::cctk_itlast = $itlast
+Cactus::cctk_final_time = $final_time
+# Cactus::max_runtime = 30   # minutes
+Cactus::max_runtime = 23*60+30   # minutes
+
+#CarpetX::use_subcycling_wip = yes
+#CarpetX::restrict_during_sync = no
+
+CarpetX::verbose = no
+CarpetX::poison_undefined_values = no
+
+CarpetX::xmin = $xmin
+CarpetX::ymin = $xmin
+CarpetX::zmin = $xmin
+
+CarpetX::xmax = $xmax
+CarpetX::ymax = $xmax
+CarpetX::zmax = $xmax
+
+CarpetX::ncells_x = 48
+CarpetX::ncells_y = 48
+CarpetX::ncells_z = 24
+
+CarpetX::max_tile_size_x = 1024000
+CarpetX::max_tile_size_y = 4
+CarpetX::max_tile_size_z = 4
+
+#CarpetX::blocking_factor_x = 8
+#CarpetX::blocking_factor_y = 8
+#CarpetX::blocking_factor_z = 8
+
+#CarpetX::max_grid_size_x = 64
+#CarpetX::max_grid_size_y = 64
+#CarpetX::max_grid_size_z = 32
+
+CarpetX::boundary_x = "dirichlet"
+CarpetX::boundary_y = "dirichlet"
+CarpetX::boundary_z = "dirichlet"
+CarpetX::boundary_upper_x = "dirichlet"
+CarpetX::boundary_upper_y = "dirichlet"
+CarpetX::boundary_upper_z = "dirichlet"
+
+CarpetX::ghost_size = 3
+CarpetX::interpolation_order = 3
+
+CarpetX::max_num_levels = $nlevels
+CarpetX::regrid_every = 128
+CarpetX::regrid_error_threshold = $error_threshold
+
+CarpetX::prolongation_type = "ddf"
+CarpetX::prolongation_order = 5
+
+ODESolvers::verbose = no
+ODESolvers::method = "RK4"
+CarpetX::dtfac = $dtfac
+
+ADMBaseX::initial_data = "TwoPunctures"
+ADMBaseX::initial_lapse = "TwoPunctures-averaged"
+
+# Q1-setup
+TwoPuncturesX::par_b = 4
+TwoPuncturesX::par_m_plus =  0.4824
+TwoPuncturesX::par_m_minus =  0.4824
+TwoPuncturesX::par_P_plus [1] = +0.114
+TwoPuncturesX::par_P_minus[1] = -0.114
+TwoPuncturesX::grid_setup_method = "evaluation"
+TwoPuncturesX::TP_epsilon = 1.0e-2
+TwoPuncturesX::TP_Tiny    = 1.0e-2
+TwoPuncturesX::verbose = yes
+TwoPuncturesX::npoints_A = 16
+TwoPuncturesX::npoints_B = 16
+TwoPuncturesX::npoints_phi = 8
+
+Z4c::calc_ADM_vars = yes                  # for Weyl
+Z4c::calc_ADMRHS_vars = no                # for Weyl
+Z4c::calc_constraints = no
+
+Z4c::chi_floor = 1.0e-6
+Z4c::alphaG_floor = 1.0e-8
+Z4c::epsdiss = 0.32
+Z4c::boundary_conditions = "NewRadX"
+
+Multipole::radius[0] = 5.0
+Multipole::variables = "WeylScal4::Psi4r{sw=-2 cmplx='WeylScal4::Psi4i' name='Psi4'}"
+Multipole::l_max = 4
+Multipole::verbose = "yes"
+Multipole::interpolator_pars = "order=3"
+
+IO::out_dir = $parfile
+IO::out_every = 1
+IO::parfile_write = no

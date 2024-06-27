@@ -1,4 +1,4 @@
-#include "utils.hxx"
+#include "io.hxx"
 
 #include <errno.h>
 #include <iomanip>
@@ -8,7 +8,9 @@
 #include <sstream>
 #include <stdio.h>
 #include <string.h>
-#include <sys/stat.h>
+#include <sys/stat.h> // for mkdir
+
+#include <cctk_Parameters.h>
 
 // We currently support the HDF5 1.6 API (and when using 1.8 the
 // compatibility mode introduced by H5_USE_16_API).  Several machines
@@ -37,6 +39,10 @@
 namespace Multipole {
 using namespace std;
 
+static inline int Index_2d(int it, int ip, int ntheta) {
+  return it + (ntheta + 1) * ip;
+}
+
 static bool file_exists(const string &name) {
   struct stat sts;
   return !(stat(name.c_str(), &sts) == -1 && errno == ENOENT);
@@ -61,62 +67,32 @@ static bool dataset_exists(hid_t file, const string &dataset_name) {
 #endif
 }
 
-FILE *OpenOutputFile(CCTK_ARGUMENTS, const string &name) {
+FILE *OpenOutputFile(CCTK_ARGUMENTS, const std::string &name) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
-  bool first_time = cctk_iteration == 0;
-  const char *mode = first_time ? "w" : "a";
-  const char *my_out_dir = strcmp(out_dir, "") ? out_dir : io_out_dir;
-  const int err = CCTK_CreateDirectory(0755, my_out_dir);
-  if (err < 0)
+  bool isFirstTime = (cctk_iteration == 0);
+  const char *mode = isFirstTime ? "w" : "a";
+  const char *outputDir = strcmp(out_dir, "") ? out_dir : io_out_dir;
+  const int err = CCTK_CreateDirectory(0755, outputDir);
+
+  if (err < 0) {
     CCTK_VWarn(
         CCTK_WARN_ABORT, __LINE__, __FILE__, CCTK_THORNSTRING,
         "Multipole output directory %s could not be created (error code %d)",
-        my_out_dir, err);
+        outputDir, err);
+  }
 
-  string output_name(string(my_out_dir) + "/" + name);
+  std::string outputName(std::string(outputDir) + "/" + name);
 
-  FILE *fp = fopen(output_name.c_str(), mode);
+  FILE *filePtr = std::fopen(outputName.c_str(), mode);
 
-  if (fp == 0) {
+  if (filePtr == nullptr) {
     CCTK_VWarn(1, __LINE__, __FILE__, CCTK_THORNSTRING, "%s",
-               (string("Could not open output file ") + output_name).c_str());
+               ("Could not open output file " + outputName).c_str());
   }
 
-  return fp;
-}
-
-void OutputComplex(CCTK_ARGUMENTS, FILE *fp, CCTK_REAL redata,
-                   CCTK_REAL imdata) {
-  DECLARE_CCTK_PARAMETERS;
-  DECLARE_CCTK_ARGUMENTS;
-  fprintf(fp, "%f %.19g %.19g\n", cctk_time, redata, imdata);
-}
-
-void Output1D(CCTK_ARGUMENTS, const string &name, int array_size,
-              CCTK_REAL const th[], CCTK_REAL const ph[], mp_coord coord,
-              CCTK_REAL const data[]) {
-  DECLARE_CCTK_ARGUMENTS;
-  DECLARE_CCTK_PARAMETERS;
-
-  if (FILE *f = OpenOutputFile(CCTK_PASS_CTOC, name)) {
-    fprintf(f, "\"Time = %.19g\n", cctk_time);
-
-    if (coord == mp_theta) {
-      for (int i = 0; i <= ntheta; i++) {
-        int idx = Index_2d(i, 0, ntheta);
-        fprintf(f, "%f %.19g\n", th[idx], data[idx]);
-      }
-    } else if (coord == mp_phi) {
-      for (int i = 0; i <= nphi; i++) {
-        int idx = Index_2d(ntheta / 4, i, ntheta);
-        fprintf(f, "%f %.19g\n", ph[idx], data[idx]);
-      }
-    }
-    fprintf(f, "\n\n");
-    fclose(f);
-  }
+  return filePtr;
 }
 
 void OutputComplexToFile(CCTK_ARGUMENTS, const string &name, CCTK_REAL redata,
@@ -124,13 +100,13 @@ void OutputComplexToFile(CCTK_ARGUMENTS, const string &name, CCTK_REAL redata,
   DECLARE_CCTK_ARGUMENTS;
 
   if (FILE *fp = OpenOutputFile(CCTK_PASS_CTOC, name)) {
-    OutputComplex(CCTK_PASS_CTOC, fp, redata, imdata);
+    fprintf(fp, "%f %.19g %.19g\n", cctk_time, redata, imdata);
     fclose(fp);
   }
 }
 
-void OutputComplexToH5File(CCTK_ARGUMENTS, const variable_desc vars[],
-                           const CCTK_REAL radii[], const mode_array &modes) {
+void OutputComplexToH5File(CCTK_ARGUMENTS, const VariableParse vars[],
+                           const CCTK_REAL radii[], const ModeArray &modes) {
 
 #ifdef HAVE_CAPABILITY_HDF5
 
@@ -147,7 +123,7 @@ void OutputComplexToH5File(CCTK_ARGUMENTS, const variable_desc vars[],
   // false
   static map<string, bool> checked;
 
-  for (int v = 0; v < modes.get_nvars(); v++) {
+  for (int v = 0; v < modes.getNumVars(); v++) {
     string basename = "mp_" + vars[v].name + ".h5";
     string output_name = my_out_dir + string("/") + basename;
 
@@ -163,9 +139,9 @@ void OutputComplexToH5File(CCTK_ARGUMENTS, const variable_desc vars[],
 
     checked[output_name] = true;
 
-    for (int i = 0; i < modes.get_nradii(); i++) {
+    for (int i = 0; i < modes.getNumRadii(); i++) {
       const CCTK_REAL rad = radii[i];
-      for (int l = 0; l <= modes.get_lmax(); l++) {
+      for (int l = 0; l <= modes.getMaxL(); l++) {
         for (int m = -l; m <= l; m++) {
           ostringstream datasetname;
           datasetname << "l" << l << "_m" << m << "_r"
@@ -231,63 +207,6 @@ void OutputComplexToH5File(CCTK_ARGUMENTS, const variable_desc vars[],
                "without HDF5 support");
 
 #endif
-}
-
-void CoordSetup(CCTK_REAL xhat[], CCTK_REAL yhat[], CCTK_REAL zhat[],
-                CCTK_REAL th[], CCTK_REAL ph[]) {
-  DECLARE_CCTK_PARAMETERS;
-
-  const CCTK_REAL PI = acos(-1.0);
-  // Add an offset for midpoint integration.
-  CCTK_REAL is_midpoint = 0.0;
-  if (CCTK_Equals(integration_method, "midpoint")) {
-    is_midpoint = 1.0;
-  }
-  const CCTK_REAL dth = PI / (ntheta + is_midpoint);
-  const CCTK_REAL dph = 2 * PI / (nphi + is_midpoint);
-  for (int it = 0; it <= ntheta; it++) {
-    for (int ip = 0; ip <= nphi; ip++) {
-      const int i = Index_2d(it, ip, ntheta);
-      // Check for when midpoint enabled:
-      //   dth = PI/(ntheta+1) -> ntheta = PI/dth - 1
-      //   th[i] = i * dth + 0.5*dth
-      //  Therefore:
-      //   th[0]      = 0.5*dth      <- GOOD.
-      //   th[ntheta] = ntheta*dth + 0.5*dth
-      //              = ((PI/dth)-1)*dth + 0.5*dth
-      //              = PI - dth + 0.5*dth
-      //              = PI - 0.5*dth <- GOOD.
-      //  Similarly for ph.
-
-      // Check for when midpoint disabled:
-      //   dth = PI/ntheta -> ntheta = PI/dth
-      //   th[i] = i * dth
-      //  Therefore:
-      //   th[0]      = 0      <- GOOD.
-      //   th[ntheta] = ntheta*dth
-      //              = PI/dth*dth
-      //              = PI     <- GOOD.
-      // Similarly for ph.
-      th[i] = it * dth + 0.5 * dth * is_midpoint;
-      ph[i] = ip * dph + 0.5 * dph * is_midpoint;
-      xhat[i] = cos(ph[i]) * sin(th[i]);
-      yhat[i] = sin(ph[i]) * sin(th[i]);
-      zhat[i] = cos(th[i]);
-    }
-  }
-}
-
-void ScaleCartesian(int ntheta, int nphi, CCTK_REAL r, CCTK_REAL const xhat[],
-                    CCTK_REAL const yhat[], CCTK_REAL const zhat[],
-                    CCTK_REAL x[], CCTK_REAL y[], CCTK_REAL z[]) {
-  for (int it = 0; it <= ntheta; it++) {
-    for (int ip = 0; ip <= nphi; ip++) {
-      const int i = Index_2d(it, ip, ntheta);
-      x[i] = r * xhat[i];
-      y[i] = r * yhat[i];
-      z[i] = r * zhat[i];
-    }
-  }
 }
 
 } // namespace Multipole

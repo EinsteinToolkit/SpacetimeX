@@ -2,80 +2,72 @@
 #define MULTIPOLE_MULTIPOLE_HXX
 
 #include <cctk.h>
-#include <cctk_Arguments.h>
-#include <cctk_Parameters.h>
-#include <cctk_Functions.h>
 
+#include <algorithm> // std::find
 #include <vector>
 
 namespace Multipole {
 
 // information about variable which we decompose
-struct variable_desc {
-  int index;
-  int imag_index;
-  CCTK_INT spin_weight;
+struct VariableParse {
+  int realIndex;
+  int imagIndex;
+  CCTK_INT spinWeight;
   std::string name;
-};
-
-struct variables_desc {
-  int n_vars;
-  variable_desc *vars;
 };
 
 // a simple array class to hold complex modes abs(m) <= l, l <= lmax, for
 // nradii radii for nvars variables
-class mode_array {
+class ModeArray {
 public:
-  mode_array(int nvars_, int nradii_, int lmax_)
-      : nvars(nvars_), nradii(nradii_), lmax(lmax_),
-        modes(size_t(nvars * nradii * (lmax + 1) * (lmax + 1) * 2)) {}
-  virtual ~mode_array() {}
-  // default copy and assignment is ok
+  ModeArray(int numVars, int numRadii, int maxL)
+      : numVars_(numVars), numRadii_(numRadii), maxL_(maxL),
+        modes_(static_cast<std::size_t>(numVars * numRadii * (maxL + 1) *
+                                        (maxL + 1) * 2)) {}
+  // Ready for potential inheritance
+  virtual ~ModeArray() {}
 
-  CCTK_REAL &operator()(int v, int ri, int l, int m, bool is_im) {
-    return modes.at(mode_idx(v, ri, l, m, is_im));
+  // For writing to modes_
+  CCTK_REAL &operator()(int v, int ri, int l, int m, bool isImaginary) {
+    return modes_.at(modeIndex(v, ri, l, m, isImaginary));
   }
 
-  const CCTK_REAL &operator()(int v, int ri, int l, int m, bool is_im) const {
-    return modes.at(mode_idx(v, ri, l, m, is_im));
+  // For reading from modes_
+  const CCTK_REAL &operator()(int v, int ri, int l, int m,
+                              bool isImaginary) const {
+    return modes_.at(modeIndex(v, ri, l, m, isImaginary));
   }
 
-  int get_nvars() const { return nvars; }
-  int get_nradii() const { return nradii; }
-  int get_lmax() const { return lmax; }
+  int getNumVars() const { return numVars_; }
+  int getNumRadii() const { return numRadii_; }
+  int getMaxL() const { return maxL_; }
 
 private:
-  size_t mode_idx(int v, int ri, int l, int m, int is_im) const {
-    assert(v >= 0 && v < nvars);
-    assert(ri >= 0 && ri < nradii);
-    assert(l >= 0 && l <= lmax);
+  inline std::size_t modeIndex(int v, int ri, int l, int m,
+                               int isImaginary) const {
+    assert(v >= 0 && v < numVars_);
+    assert(ri >= 0 && ri < numRadii_);
+    assert(l >= 0 && l <= maxL_);
     assert(m <= l && -m <= l);
-    return size_t(v * nradii * (lmax + 1) * (lmax + 1) * 2 +
-                  ri * (lmax + 1) * (lmax + 1) * 2 + (l * l + (m + l)) * 2 +
-                  is_im);
+    return static_cast<std::size_t>(v * numRadii_ * (maxL_ + 1) * (maxL_ + 1) *
+                                        2 +
+                                    ri * (maxL_ + 1) * (maxL_ + 1) * 2 +
+                                    (l * l + (m + l)) * 2 + isImaginary);
   }
 
-  const int nvars;
-  const int nradii;
-  const int lmax;
-  std::vector<CCTK_REAL> modes;
+  const int numVars_;
+  const int numRadii_;
+  const int maxL_;
+  std::vector<CCTK_REAL> modes_; // 1D array to store the modes
 };
 
-inline bool int_in_array(int a, const int array[], int len) {
-  for (int i = 0; i < len; i++) {
-    if (array[i] == a)
-      return true;
-  }
-  return false;
+inline bool isIntInArray(int a, const std::vector<int> &array) {
+  return std::find(array.begin(), array.end(), a) != array.end();
 }
 
-inline int find_int_in_array(int a, const int array[], int len) {
-  for (int i = 0; i < len; i++) {
-    if (array[i] == a)
-      return i;
-  }
-  return -1;
+inline int findIntInArray(int a, const std::vector<int> &array) {
+  auto it = std::find(array.begin(), array.end(), a);
+  return (it != array.end()) ? std::distance(array.begin(), it) : -1;
 }
 
 } // namespace Multipole

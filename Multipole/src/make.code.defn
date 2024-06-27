@@ -3,8 +3,7 @@
 # Source files in this directory
 SRCS = \
   integrate.cxx \
-  interpolate.cxx \
+  io.cxx \
   multipole.cxx \
   sphericalharmonic.cxx \
-  tests.cxx \
-  utils.cxx
+  surface.cxx

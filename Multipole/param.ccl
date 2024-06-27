@@ -94,34 +94,7 @@ CCTK_INT l_max "The maximum l mode to extract" STEERABLE=always
   0:9 :: "l >= 0"
 } 2
 
-CCTK_BOOLEAN enable_test "whether to set a spherical harmonic in the 'harmonic' grid functions"
-{
-} "no"
-
-CCTK_BOOLEAN enable_test_Weyl "whether to set a spherical harmonic in the 'Weyl::Psi4r and i' grid functions"
-{
-} "no"
-
-CCTK_INT test_l "which mode to put into the test variables"
-{
-  * :: "Any integer"
-} 2
-
-CCTK_INT test_m "which mode to put into the test variables"
-{
-  * :: "Any integer"
-} 2
-
-CCTK_INT test_sw "which spin weight to put into the test variables"
-{
-  * :: "Any integer"
-} -2
-
-CCTK_BOOLEAN test_mode_proportional_to_r "whether the test spherical harmonic coefficient is proportional to the radial coordinate"
-{
-} "no"
-
-CCTK_BOOLEAN output_ascii "Output a simple ASCII file for each mode at each radius"
+CCTK_BOOLEAN output_tsv "Output a simple ASCII file for each mode at each radius"
 {
 } "yes"
 
