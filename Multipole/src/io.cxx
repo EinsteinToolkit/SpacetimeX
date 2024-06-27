@@ -8,7 +8,7 @@
 #include <sstream>
 #include <stdio.h>
 #include <string.h>
-#include <sys/stat.h>
+#include <sys/stat.h> // for mkdir
 
 #include <cctk_Parameters.h>
 
@@ -67,30 +67,32 @@ static bool dataset_exists(hid_t file, const string &dataset_name) {
 #endif
 }
 
-FILE *OpenOutputFile(CCTK_ARGUMENTS, const string &name) {
+FILE *OpenOutputFile(CCTK_ARGUMENTS, const std::string &name) {
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
-  bool first_time = cctk_iteration == 0;
-  const char *mode = first_time ? "w" : "a";
-  const char *my_out_dir = strcmp(out_dir, "") ? out_dir : io_out_dir;
-  const int err = CCTK_CreateDirectory(0755, my_out_dir);
-  if (err < 0)
+  bool isFirstTime = (cctk_iteration == 0);
+  const char *mode = isFirstTime ? "w" : "a";
+  const char *outputDir = std::strcmp(out_dir, "") ? out_dir : io_out_dir;
+  const int err = CCTK_CreateDirectory(0755, outputDir);
+
+  if (err < 0) {
     CCTK_VWarn(
         CCTK_WARN_ABORT, __LINE__, __FILE__, CCTK_THORNSTRING,
         "Multipole output directory %s could not be created (error code %d)",
-        my_out_dir, err);
-
-  string output_name(string(my_out_dir) + "/" + name);
-
-  FILE *fp = fopen(output_name.c_str(), mode);
-
-  if (fp == 0) {
-    CCTK_VWarn(1, __LINE__, __FILE__, CCTK_THORNSTRING, "%s",
-               (string("Could not open output file ") + output_name).c_str());
+        outputDir, err);
   }
 
-  return fp;
+  std::string outputName(std::string(outputDir) + "/" + name);
+
+  FILE *filePtr = std::fopen(outputName.c_str(), mode);
+
+  if (filePtr == nullptr) {
+    CCTK_VWarn(1, __LINE__, __FILE__, CCTK_THORNSTRING, "%s",
+               ("Could not open output file " + outputName).c_str());
+  }
+
+  return filePtr;
 }
 
 void Output1D(CCTK_ARGUMENTS, const string &name, CCTK_REAL const th[],
