@@ -73,7 +73,7 @@ FILE *OpenOutputFile(CCTK_ARGUMENTS, const std::string &name) {
 
   bool isFirstTime = (cctk_iteration == 0);
   const char *mode = isFirstTime ? "w" : "a";
-  const char *outputDir = std::strcmp(out_dir, "") ? out_dir : io_out_dir;
+  const char *outputDir = strcmp(out_dir, "") ? out_dir : io_out_dir;
   const int err = CCTK_CreateDirectory(0755, outputDir);
 
   if (err < 0) {
