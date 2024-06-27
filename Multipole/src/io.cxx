@@ -93,13 +93,6 @@ FILE *OpenOutputFile(CCTK_ARGUMENTS, const string &name) {
   return fp;
 }
 
-void OutputComplex(CCTK_ARGUMENTS, FILE *fp, CCTK_REAL redata,
-                   CCTK_REAL imdata) {
-  DECLARE_CCTK_PARAMETERS;
-  DECLARE_CCTK_ARGUMENTS;
-  fprintf(fp, "%f %.19g %.19g\n", cctk_time, redata, imdata);
-}
-
 void Output1D(CCTK_ARGUMENTS, const string &name, CCTK_REAL const th[],
               CCTK_REAL const ph[], MpCoord coord, CCTK_REAL const data[]) {
   DECLARE_CCTK_ARGUMENTS;
@@ -129,7 +122,7 @@ void OutputComplexToFile(CCTK_ARGUMENTS, const string &name, CCTK_REAL redata,
   DECLARE_CCTK_ARGUMENTS;
 
   if (FILE *fp = OpenOutputFile(CCTK_PASS_CTOC, name)) {
-    OutputComplex(CCTK_PASS_CTOC, fp, redata, imdata);
+    fprintf(fp, "%f %.19g %.19g\n", cctk_time, redata, imdata);
     fclose(fp);
   }
 }
