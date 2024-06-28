@@ -176,33 +176,4 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
   }
 }
 
-extern "C" void PunctureTracker_CheckShift(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTSX_PunctureTracker_CheckShift;
-  DECLARE_CCTK_PARAMETERS;
-
-  const int level = ilogb(CCTK_REAL(cctk_levfac[0]));
-  const int finest_lvl = num_levels[0] - 1;
-
-  if (level == finest_lvl) {
-    for (int n = 0; n < max_num_tracked; ++n) {
-      if (track[n]) {
-        const Arith::vect<CCTK_REAL, Loop::dim> loc_vec = {
-            pt_loc_x[n], pt_loc_y[n], pt_loc_z[n]};
-
-        grid.loop_all_device<0, 0, 0>(
-            grid.nghostzones,
-            [=] CCTK_DEVICE(
-                const Loop::PointDesc &p) CCTK_ATTRIBUTE_ALWAYS_INLINE {
-              if (maximum(abs(p.X - loc_vec)) <= (1 / pow(2, level))) {
-                printf("Shift at level %d near puncture #%d is {%g, %g, %g} at "
-                       "coords {%g, %g, %g}.",
-                       level, n, betax(p.I), betay(p.I), betaz(p.I), p.x, p.y,
-                       p.z);
-              }
-            });
-      }
-    }
-  }
-}
-
 } // namespace PunctureTracker

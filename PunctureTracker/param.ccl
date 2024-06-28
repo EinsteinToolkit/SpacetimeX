@@ -4,10 +4,6 @@ BOOLEAN verbose "speak up?" STEERABLE=always
 {
 } "no"
 
-BOOLEAN read_shifts "Enable to write nearby shifts to stdout" STEERABLE=always
-{
-} "no"
-
 BOOLEAN track[10] "Track this puncture"
 {
 } "no"
