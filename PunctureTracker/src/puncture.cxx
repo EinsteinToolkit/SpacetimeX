@@ -6,7 +6,7 @@ namespace PunctureTracker {
 
 void PunctureContainer::updatePreviousTime(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS;
-  for (size_t n = 0; n < time_.size(); ++n) {
+  for (int n = 0; n < numPunctures_; ++n) {
     previousTime_[n] = time_[n];
     time_[n] = cctk_time;
   }
@@ -16,7 +16,7 @@ void PunctureContainer::interpolate(CCTK_ARGUMENTS) {
   DECLARE_CCTK_PARAMETERS;
 
   // Only processor 0 interpolates
-  const CCTK_INT nPoints = CCTK_MyProc(cctkGH) == 0 ? numPunctures_ : 0;
+  const CCTK_INT nPoints = (CCTK_MyProc(cctkGH) == 0) ? numPunctures_ : 0;
 
   // Interpolation coordinates
   const void *interpCoords[Loop::dim] = {
@@ -24,14 +24,14 @@ void PunctureContainer::interpolate(CCTK_ARGUMENTS) {
 
   // Interpolated variables
   const CCTK_INT nInputArrays = 3;
-  const CCTK_INT inputArrayIndices[3] = {CCTK_VarIndex("ADMBaseX::betax"),
-                                         CCTK_VarIndex("ADMBaseX::betay"),
-                                         CCTK_VarIndex("ADMBaseX::betaz")};
+  const CCTK_INT inputArrayIndices[nInputArrays] = {
+      CCTK_VarIndex("ADMBaseX::betax"), CCTK_VarIndex("ADMBaseX::betay"),
+      CCTK_VarIndex("ADMBaseX::betaz")};
 
-  CCTK_POINTER outputArrays[3] = {beta_[0].data(), beta_[1].data(),
-                                  beta_[2].data()};
+  CCTK_POINTER outputArrays[nInputArrays] = {beta_[0].data(), beta_[1].data(),
+                                             beta_[2].data()};
 
-  /* DriverInterpolate arguments that aren't currently used */
+  // DriverInterpolate arguments that aren't currently used
   const int coordSystemHandle = 0;
   const CCTK_INT interpCoordsTypeCode = 0;
   const CCTK_INT outputArrayTypes[1] = {0};
@@ -42,18 +42,19 @@ void PunctureContainer::interpolate(CCTK_ARGUMENTS) {
     return;
   }
 
-  int ierr;
-
-  int paramTableHandle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
+  // Create parameter table for interpolation
+  const int paramTableHandle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
   if (paramTableHandle < 0) {
     CCTK_VERROR("Can't create parameter table: %d", paramTableHandle);
   }
 
-  if ((ierr = Util_TableSetInt(paramTableHandle, interp_order, "order")) < 0) {
+  // Set interpolation order in the parameter table
+  int ierr = Util_TableSetInt(paramTableHandle, interp_order, "order");
+  if (ierr < 0) {
     CCTK_VERROR("Can't set order in parameter table: %d", ierr);
   }
 
-  // Interpolate
+  // Perform the interpolation
   ierr = DriverInterpolate(cctkGH, Loop::dim, interpHandle, paramTableHandle,
                            coordSystemHandle, nPoints, interpCoordsTypeCode,
                            interpCoords, nInputArrays, inputArrayIndices,
@@ -63,6 +64,7 @@ void PunctureContainer::interpolate(CCTK_ARGUMENTS) {
     CCTK_WARN(CCTK_WARN_ALERT, "Interpolation error");
   }
 
+  // Destroy the parameter table
   Util_TableDestroy(paramTableHandle);
 }
 
