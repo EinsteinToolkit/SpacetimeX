@@ -60,7 +60,7 @@ public:
   void interpolate(CCTK_ARGUMENTS, int realFieldIndex, int imagFieldIndex);
 
   // Take the integral of conj(array1)*array2*sin(th)
-  void integrate(const std::vector<CCTK_REAL> &array1r,
+  void integrate(CCTK_ARGUMENTS, const std::vector<CCTK_REAL> &array1r,
                  const std::vector<CCTK_REAL> &array1i,
                  const std::vector<CCTK_REAL> &array2r,
                  const std::vector<CCTK_REAL> &array2i, CCTK_REAL *outre,
