@@ -71,7 +71,7 @@ void PunctureContainer::evolve(CCTK_ARGUMENTS) {
     // First order time integrator
     // Michael Koppitz says this works...
     // if it doesn't, we can make it second order accurate
-    for (size_t n = 0; n < time_.size(); ++n) {
+    for (int n = 0; n < numPunctures_; ++n) {
       const CCTK_REAL dt = time_[n] - previousTime_[n];
       for (int i = 0; i < Loop::dim; ++i) {
         location_[i][n] += dt * (-beta_[i][n]);
@@ -83,10 +83,8 @@ void PunctureContainer::evolve(CCTK_ARGUMENTS) {
 
 void PunctureContainer::broadcast(CCTK_ARGUMENTS) {
   const CCTK_INT numComponents = 6;
-  const CCTK_INT bufferSize = numComponents * numPunctures_;
-
   // 3 components for location, 3 components for velocity
-  std::vector<CCTK_REAL> buffer(bufferSize);
+  std::vector<CCTK_REAL> buffer(numComponents * numPunctures_);
 
   if (CCTK_MyProc(cctkGH) == 0) {
     for (int i = 0; i < Loop::dim; ++i) {
@@ -98,7 +96,7 @@ void PunctureContainer::broadcast(CCTK_ARGUMENTS) {
   }
 
   int mpiError =
-      MPI_Bcast(buffer.data(), bufferSize, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+      MPI_Bcast(buffer.data(), buffer.size(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
   if (mpiError != MPI_SUCCESS) {
     CCTK_VINFO("MPI_Bcast failed with error code %d", mpiError);
     MPI_Abort(MPI_COMM_WORLD, mpiError);
