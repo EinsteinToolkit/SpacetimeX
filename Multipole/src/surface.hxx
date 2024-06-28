@@ -22,7 +22,7 @@ class Surface {
 public:
   Surface(int nTheta, int nPhi, bool isMidPoint)
       : nTheta_(nTheta), nPhi_(nPhi) {
-    constexpr CCTK_REAL PI = std::acos(-1.0);
+    const CCTK_REAL PI = std::acos(-1.0);
     const int arraySize = (nTheta + 1) * (nPhi + 1);
     theta_.resize(arraySize);
     phi_.resize(arraySize);
