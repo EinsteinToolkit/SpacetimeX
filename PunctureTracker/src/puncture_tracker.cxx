@@ -65,7 +65,7 @@ extern "C" void PunctureTracker_Setup(CCTK_ARGUMENTS) {
       g_punctures->getVelocity()[2].push_back(0.0);
     }
   }
-  const int nPunctures = g_punctures->getLocation()[0].size();
+  const int nPunctures = g_punctures->getTime().size();
   g_punctures->getPreviousTime().resize(nPunctures);
   g_punctures->getBeta()[0].resize(nPunctures);
   g_punctures->getBeta()[1].resize(nPunctures);
@@ -77,8 +77,8 @@ extern "C" void PunctureTracker_Setup(CCTK_ARGUMENTS) {
   if (track_boxes) {
     const std::array<std::vector<CCTK_REAL>, Loop::dim> &location =
         g_punctures->getLocation();
-    for (size_t i = 0; i < location[0].size(); ++i) {
-      CCTK_VINFO("Writing punc coords to box %zu.", i);
+    for (int i = 0; i < nPunctures; ++i) {
+      CCTK_VINFO("Writing punc coords to box %d.", i);
       position_x[i] = location[0][i];
       position_y[i] = location[1][i];
       position_z[i] = location[2][i];
@@ -105,15 +105,16 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
     CCTK_INFO("Tracking punctures...");
   }
 
+  const int nPunctures = g_punctures->getNumPunctures();
   const std::array<std::vector<CCTK_REAL>, Loop::dim> &location =
       g_punctures->getLocation();
+  const std::array<std::vector<CCTK_REAL>, Loop::dim> &velocity =
+      g_punctures->getVelocity();
 
   if (verbose) {
-    for (size_t n = 0; n < location[0].size(); ++n) {
-      if (track[n]) {
-        CCTK_VINFO("Puncture #%zu is at (%g,%g,%g)", n, double(location[0][n]),
-                   double(location[1][n]), double(location[2][n]));
-      }
+    for (int n = 0; n < nPunctures; ++n) {
+      CCTK_VINFO("Puncture #%d is at (%g,%g,%g)", n, double(location[0][n]),
+                 double(location[1][n]), double(location[2][n]));
     }
   }
 
@@ -129,19 +130,19 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
 
     // More output
     if (verbose) {
-      for (size_t n = 0; n < beta[0].size(); ++n) {
-        CCTK_VINFO("Shift at puncture #%zu is at (%g,%g,%g)", n,
+      for (int n = 0; n < nPunctures; ++n) {
+        CCTK_VINFO("Shift at puncture #%d is at (%g,%g,%g)", n,
                    double(beta[0][n]), double(beta[1][n]), double(beta[2][n]));
       }
     }
 
     // Check for NaNs and large shift components
-    for (size_t n = 0; n < beta[0].size(); ++n) {
+    for (int n = 0; n < nPunctures; ++n) {
       CCTK_REAL norm =
           sqrt(pow(beta[0][n], 2) + pow(beta[1][n], 2) + pow(beta[2][n], 2));
 
       if (!CCTK_isfinite(norm) || norm > shift_limit) {
-        CCTK_VERROR("Shift at puncture #%zu is (%g,%g,%g).  This likely "
+        CCTK_VERROR("Shift at puncture #%d is (%g,%g,%g).  This likely "
                     "indicates an error in the simulation.",
                     n, double(beta[0][n]), double(beta[1][n]),
                     double(beta[2][n]));
@@ -155,24 +156,22 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
   // Broadcast result: 3 components for location, 3 components for velocity
   g_punctures->broadcast(CCTK_PASS_CTOC);
 
-  if (track_boxes) {
-    for (size_t i = 0; i < location[0].size(); ++i) {
-      position_x[i] = location[0][i];
-      position_y[i] = location[1][i];
-      position_z[i] = location[2][i];
-    }
-  }
-
   // Write to pt_loc_foo and pt_vel_foo
-  const std::array<std::vector<CCTK_REAL>, Loop::dim> &velocity =
-      g_punctures->getVelocity();
-  for (size_t i = 0; i < location[0].size(); ++i) {
+  for (int i = 0; i < nPunctures; ++i) {
     pt_loc_x[i] = location[0][i];
     pt_loc_y[i] = location[1][i];
     pt_loc_z[i] = location[2][i];
     pt_vel_x[i] = velocity[0][i];
     pt_vel_y[i] = velocity[1][i];
     pt_vel_z[i] = velocity[2][i];
+  }
+
+  if (track_boxes) {
+    for (int i = 0; i < nPunctures; ++i) {
+      position_x[i] = location[0][i];
+      position_y[i] = location[1][i];
+      position_z[i] = location[2][i];
+    }
   }
 }
 
