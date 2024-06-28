@@ -1,8 +1,10 @@
+#include "puncture.hxx"
+
 #include <cctk.h>
 #include <cctk_Arguments.h>
 #include <cctk_Parameters.h>
 #include <util_Table.h>
-#include <loop_device.hxx>
+
 #include <mpi.h>
 
 #include <cassert>
@@ -13,10 +15,12 @@
 
 namespace PunctureTracker {
 
+static PunctureContainer *g_punctures = nullptr;
+
 const int max_num_tracked = 10;
 
-extern "C" void PunctureTracker_Init(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTS_PunctureTracker_Init;
+extern "C" void PunctureTracker_Setup(CCTK_ARGUMENTS) {
+  DECLARE_CCTK_ARGUMENTS_PunctureTracker_Setup;
   DECLARE_CCTK_PARAMETERS;
 
   if (verbose) {
@@ -34,7 +38,6 @@ extern "C" void PunctureTracker_Init(CCTK_ARGUMENTS) {
       pt_vel_y[n] = 0.0;
       pt_vel_z[n] = 0.0;
     } else {
-      // Initialise to some sensible but unimportant values
       pt_loc_t[n] = 0.0;
       pt_loc_x[n] = 0.0;
       pt_loc_y[n] = 0.0;
@@ -46,191 +49,130 @@ extern "C" void PunctureTracker_Init(CCTK_ARGUMENTS) {
     }
   }
 
-  // enabled if refinement regions should follow the punctures
-  if (track_boxes) {
-    const int max_num_regions = 2;
-    for (int i = 0; i < max_num_regions; i++) {
-      CCTK_VINFO("Writing punc coords to box %d.", i);
-      position_x[i] = pt_loc_x[i];
-      position_y[i] = pt_loc_y[i];
-      position_z[i] = pt_loc_z[i];
+  // Initialize PunctureContainer
+  if (g_punctures == nullptr) {
+    g_punctures = new PunctureContainer();
+  }
+
+  for (int n = 0; n < max_num_tracked; ++n) {
+    if (track[n]) {
+      g_punctures->getTime().push_back(cctk_time);
+      g_punctures->getLocation()[0].push_back(initial_x[n]);
+      g_punctures->getLocation()[1].push_back(initial_y[n]);
+      g_punctures->getLocation()[2].push_back(initial_z[n]);
+      g_punctures->getVelocity()[0].push_back(0.0);
+      g_punctures->getVelocity()[1].push_back(0.0);
+      g_punctures->getVelocity()[2].push_back(0.0);
     }
   }
+  const int nPunctures = g_punctures->getLocation()[0].size();
+  g_punctures->getPreviousTime().resize(nPunctures);
+  g_punctures->getBeta()[0].resize(nPunctures);
+  g_punctures->getBeta()[1].resize(nPunctures);
+  g_punctures->getBeta()[2].resize(nPunctures);
+  g_punctures->setNumPunctures();
+  assert(g_punctures->getNumPunctures() == nPunctures);
+
+  // enabled if refinement regions should follow the punctures
+  if (track_boxes) {
+    const std::array<std::vector<CCTK_REAL>, Loop::dim> &location =
+        g_punctures->getLocation();
+    for (size_t i = 0; i < location[0].size(); ++i) {
+      CCTK_VINFO("Writing punc coords to box %zu.", i);
+      position_x[i] = location[0][i];
+      position_y[i] = location[1][i];
+      position_z[i] = location[2][i];
+    }
+  }
+}
+
+extern "C" void PunctureTracker_Finalize(CCTK_ARGUMENTS) {
+  delete g_punctures;
+  g_punctures = nullptr;
 }
 
 extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_PunctureTracker_Track;
   DECLARE_CCTK_PARAMETERS;
 
-  // Do not track while setting up initial data;
-  // time interpolation may fail
-
+  // Do not track while setting up initial data; time interpolation may fail
   if (cctk_iteration == 0) {
     return;
   }
 
   // Some output
-
   if (verbose) {
     CCTK_INFO("Tracking punctures...");
   }
 
+  const std::array<std::vector<CCTK_REAL>, Loop::dim> &location =
+      g_punctures->getLocation();
+
   if (verbose) {
-    for (int n = 0; n < max_num_tracked; ++n) {
+    for (size_t n = 0; n < location[0].size(); ++n) {
       if (track[n]) {
-        CCTK_VINFO("Puncture #%d is at (%g,%g,%g)", n, double(pt_loc_x[n]),
-                   double(pt_loc_y[n]), double(pt_loc_z[n]));
+        CCTK_VINFO("Puncture #%zu is at (%g,%g,%g)", n, double(location[0][n]),
+                   double(location[1][n]), double(location[2][n]));
       }
     }
   }
 
   // Manual time level cycling
-  CCTK_REAL pt_t_prev[max_num_tracked];
-
-  for (int n = 0; n < max_num_tracked; ++n) {
-    if (track[n]) {
-      pt_t_prev[n] = pt_loc_t[n];
-      pt_loc_t[n] = cctk_time;
-      pt_vel_t[n] = cctk_time;
-    } else {
-      pt_t_prev[n] = 0.0;
-    }
-  }
+  g_punctures->updatePreviousTime(CCTK_PASS_CTOC);
 
   // Interpolate
-  {
-    // Only processor 0 interpolates
-    const CCTK_INT nPoints = CCTK_MyProc(cctkGH) == 0 ? max_num_tracked : 0;
+  g_punctures->interpolate(CCTK_PASS_CTOC);
 
-    // Interpolation coordinates
-    const void *interpCoords[Loop::dim] = {pt_loc_x, pt_loc_y, pt_loc_z};
+  if (CCTK_MyProc(cctkGH) == 0) {
+    const std::array<std::vector<CCTK_REAL>, Loop::dim> &beta =
+        g_punctures->getBeta();
 
-    // Interpolated variables
-    const CCTK_INT nInputArrays = 3;
-    const CCTK_INT inputArrayIndices[3] = {CCTK_VarIndex("ADMBaseX::betax"),
-                                           CCTK_VarIndex("ADMBaseX::betay"),
-                                           CCTK_VarIndex("ADMBaseX::betaz")};
-
-    // Interpolation result
-    CCTK_REAL pt_betax[max_num_tracked];
-    CCTK_REAL pt_betay[max_num_tracked];
-    CCTK_REAL pt_betaz[max_num_tracked];
-    CCTK_POINTER outputArrays[3] = {pt_betax, pt_betay, pt_betaz};
-
-    /* DriverInterpolate arguments that aren't currently used */
-    const int coordSystemHandle = 0;
-    const CCTK_INT interpCoordsTypeCode = 0;
-    const CCTK_INT outputArrayTypes[1] = {0};
-
-    const int interpHandle = CCTK_InterpHandle("CarpetX");
-    if (interpHandle < 0) {
-      CCTK_WARN(CCTK_WARN_ALERT, "Can't get interpolation handle");
-      return;
-    }
-
-    int ierr;
-
-    int paramTableHandle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
-    if (paramTableHandle < 0) {
-      CCTK_VERROR("Can't create parameter table: %d", paramTableHandle);
-    }
-
-    if ((ierr = Util_TableSetInt(paramTableHandle, interp_order, "order")) <
-        0) {
-      CCTK_VERROR("Can't set order in parameter table: %d", ierr);
-    }
-
-    // Interpolate
-    ierr = DriverInterpolate(cctkGH, Loop::dim, interpHandle, paramTableHandle,
-                             coordSystemHandle, nPoints, interpCoordsTypeCode,
-                             interpCoords, nInputArrays, inputArrayIndices,
-                             nInputArrays, outputArrayTypes, outputArrays);
-
-    if (ierr < 0) {
-      CCTK_WARN(CCTK_WARN_ALERT, "Interpolation error");
-    }
-
-    Util_TableDestroy(paramTableHandle);
-
-    if (CCTK_MyProc(cctkGH) == 0) {
-
-      // Some more output
-
-      if (verbose) {
-        for (int n = 0; n < max_num_tracked; ++n) {
-          if (track[n]) {
-            CCTK_VINFO("Shift at puncture #%d is at (%g,%g,%g)", n,
-                       double(pt_betax[n]), double(pt_betay[n]),
-                       double(pt_betaz[n]));
-          }
-        }
-      }
-
-      // Check for NaNs and large shift components
-      for (int n = 0; n < max_num_tracked; ++n) {
-        if (track[n]) {
-          CCTK_REAL norm = sqrt(pow(pt_betax[n], 2) + pow(pt_betay[n], 2) +
-                                pow(pt_betaz[n], 2));
-
-          if (!CCTK_isfinite(norm) || norm > shift_limit) {
-            CCTK_VERROR("Shift at puncture #%d is (%g,%g,%g).  This likely "
-                        "indicates an error in the simulation.",
-                        n, double(pt_betax[n]), double(pt_betay[n]),
-                        double(pt_betaz[n]));
-          }
-        }
-      }
-
-      // Time evolution
-      for (int n = 0; n < max_num_tracked; ++n) {
-        if (track[n]) {
-          const CCTK_REAL dt = pt_loc_t[n] - pt_t_prev[n];
-          // First order time integrator
-          // Michael Koppitz says this works...
-          // if it doesn't, we can make it second order accurate
-          pt_loc_x[n] += dt * (-pt_betax[n]);
-          pt_loc_y[n] += dt * (-pt_betay[n]);
-          pt_loc_z[n] += dt * (-pt_betaz[n]);
-          pt_vel_x[n] = -pt_betax[n];
-          pt_vel_y[n] = -pt_betay[n];
-          pt_vel_z[n] = -pt_betaz[n];
-        }
+    // More output
+    if (verbose) {
+      for (size_t n = 0; n < beta[0].size(); ++n) {
+        CCTK_VINFO("Shift at puncture #%zu is at (%g,%g,%g)", n,
+                   double(beta[0][n]), double(beta[1][n]), double(beta[2][n]));
       }
     }
 
-    // Broadcast result: 3 components for location, 3 components for velocity
-    CCTK_REAL loc_global[6 * max_num_tracked];
-    if (CCTK_MyProc(cctkGH) == 0) {
-      for (int n = 0; n < max_num_tracked; ++n) {
-        loc_global[n] = pt_loc_x[n];
-        loc_global[max_num_tracked + n] = pt_loc_y[n];
-        loc_global[2 * max_num_tracked + n] = pt_loc_z[n];
-        loc_global[3 * max_num_tracked + n] = pt_vel_x[n];
-        loc_global[4 * max_num_tracked + n] = pt_vel_y[n];
-        loc_global[5 * max_num_tracked + n] = pt_vel_z[n];
+    // Check for NaNs and large shift components
+    for (size_t n = 0; n < beta[0].size(); ++n) {
+      CCTK_REAL norm =
+          sqrt(pow(beta[0][n], 2) + pow(beta[1][n], 2) + pow(beta[2][n], 2));
+
+      if (!CCTK_isfinite(norm) || norm > shift_limit) {
+        CCTK_VERROR("Shift at puncture #%zu is (%g,%g,%g).  This likely "
+                    "indicates an error in the simulation.",
+                    n, double(beta[0][n]), double(beta[1][n]),
+                    double(beta[2][n]));
       }
-    }
-
-    // CarpetX doesn't register reduction handle, here's a quick fix.
-    MPI_Bcast(loc_global, 6 * max_num_tracked, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-
-    for (int n = 0; n < max_num_tracked; ++n) {
-      pt_loc_x[n] = loc_global[n];
-      pt_loc_y[n] = loc_global[max_num_tracked + n];
-      pt_loc_z[n] = loc_global[2 * max_num_tracked + n];
-      pt_vel_x[n] = loc_global[3 * max_num_tracked + n];
-      pt_vel_y[n] = loc_global[4 * max_num_tracked + n];
-      pt_vel_z[n] = loc_global[5 * max_num_tracked + n];
     }
   }
 
+  // Time evolution
+  g_punctures->evolve(CCTK_PASS_CTOC);
+
+  // Broadcast result: 3 components for location, 3 components for velocity
+  g_punctures->broadcast(CCTK_PASS_CTOC);
+
   if (track_boxes) {
-    const int max_num_regions = 2;
-    for (int i = 0; i < max_num_regions; i++) {
-      position_x[i] = pt_loc_x[i];
-      position_y[i] = pt_loc_y[i];
-      position_z[i] = pt_loc_z[i];
+    for (size_t i = 0; i < location[0].size(); ++i) {
+      position_x[i] = location[0][i];
+      position_y[i] = location[1][i];
+      position_z[i] = location[2][i];
     }
+  }
+
+  // Write to pt_loc_foo and pt_vel_foo
+  const std::array<std::vector<CCTK_REAL>, Loop::dim> &velocity =
+      g_punctures->getVelocity();
+  for (size_t i = 0; i < location[0].size(); ++i) {
+    pt_loc_x[i] = location[0][i];
+    pt_loc_y[i] = location[1][i];
+    pt_loc_z[i] = location[2][i];
+    pt_vel_x[i] = velocity[0][i];
+    pt_vel_y[i] = velocity[1][i];
+    pt_vel_z[i] = velocity[2][i];
   }
 }
 
