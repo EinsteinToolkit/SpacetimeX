@@ -1,6 +1,6 @@
 # Schedule definitions for thorn PunctureTracker
 
-SCHEDULE PunctureTracker_Setup AT initial
+SCHEDULE PunctureTracker_Setup AT wragh
 {
   LANG: C
   OPTIONS: GLOBAL
