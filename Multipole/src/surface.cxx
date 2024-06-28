@@ -66,50 +66,55 @@ void Surface::interpolate(CCTK_ARGUMENTS, int realFieldIndex,
 }
 
 // Take the integral of conj(array1)*array2*sin(th)
-void Surface::integrate(const std::vector<CCTK_REAL> &array1r,
+void Surface::integrate(CCTK_ARGUMENTS, const std::vector<CCTK_REAL> &array1r,
                         const std::vector<CCTK_REAL> &array1i,
                         const std::vector<CCTK_REAL> &array2r,
                         const std::vector<CCTK_REAL> &array2i, CCTK_REAL *outRe,
                         CCTK_REAL *outIm) {
   DECLARE_CCTK_PARAMETERS;
 
-  std::vector<CCTK_REAL> fReal(theta_.size());
-  std::vector<CCTK_REAL> fImag(theta_.size());
+  if (CCTK_MyProc(cctkGH) == 0) {
 
-  // integrand: conj(array1)*array2*sin(th)
-  for (size_t i = 0; i < theta_.size(); ++i) {
-    fReal[i] = (array1r[i] * array2r[i] + array1i[i] * array2i[i]) *
-               std::sin(theta_[i]);
-    fImag[i] = (array1r[i] * array2i[i] - array1i[i] * array2r[i]) *
-               std::sin(theta_[i]);
-  }
+    std::vector<CCTK_REAL> fReal(theta_.size());
+    std::vector<CCTK_REAL> fImag(theta_.size());
 
-  if (CCTK_Equals(integration_method, "midpoint")) {
-    *outRe = Midpoint2DIntegral(fReal.data(), nTheta_, nPhi_, dTheta_, dPhi_);
-    *outIm = Midpoint2DIntegral(fImag.data(), nTheta_, nPhi_, dTheta_, dPhi_);
-  } else if (CCTK_Equals(integration_method, "trapezoidal")) {
-    *outRe =
-        Trapezoidal2DIntegral(fReal.data(), nTheta_, nPhi_, dTheta_, dPhi_);
-    *outIm =
-        Trapezoidal2DIntegral(fImag.data(), nTheta_, nPhi_, dTheta_, dPhi_);
-  } else if (CCTK_Equals(integration_method, "Simpson")) {
-    if (nPhi_ % 2 != 0 || nTheta_ % 2 != 0) {
-      CCTK_WARN(CCTK_WARN_ABORT, "The Simpson integration method requires even "
-                                 "nTheta_ and even nPhi_");
+    // integrand: conj(array1)*array2*sin(th)
+    for (size_t i = 0; i < theta_.size(); ++i) {
+      fReal[i] = (array1r[i] * array2r[i] + array1i[i] * array2i[i]) *
+                 std::sin(theta_[i]);
+      fImag[i] = (array1r[i] * array2i[i] - array1i[i] * array2r[i]) *
+                 std::sin(theta_[i]);
     }
-    *outRe = Simpson2DIntegral(fReal.data(), nTheta_, nPhi_, dTheta_, dPhi_);
-    *outIm = Simpson2DIntegral(fImag.data(), nTheta_, nPhi_, dTheta_, dPhi_);
-  } else if (CCTK_Equals(integration_method, "DriscollHealy")) {
-    if (nTheta_ % 2 != 0) {
-      CCTK_WARN(CCTK_WARN_ABORT,
-                "The Driscoll&Healy integration method requires even nTheta_");
+
+    if (CCTK_Equals(integration_method, "midpoint")) {
+      *outRe = Midpoint2DIntegral(fReal.data(), nTheta_, nPhi_, dTheta_, dPhi_);
+      *outIm = Midpoint2DIntegral(fImag.data(), nTheta_, nPhi_, dTheta_, dPhi_);
+    } else if (CCTK_Equals(integration_method, "trapezoidal")) {
+      *outRe =
+          Trapezoidal2DIntegral(fReal.data(), nTheta_, nPhi_, dTheta_, dPhi_);
+      *outIm =
+          Trapezoidal2DIntegral(fImag.data(), nTheta_, nPhi_, dTheta_, dPhi_);
+    } else if (CCTK_Equals(integration_method, "Simpson")) {
+      if (nPhi_ % 2 != 0 || nTheta_ % 2 != 0) {
+        CCTK_WARN(CCTK_WARN_ABORT,
+                  "The Simpson integration method requires even "
+                  "nTheta_ and even nPhi_");
+      }
+      *outRe = Simpson2DIntegral(fReal.data(), nTheta_, nPhi_, dTheta_, dPhi_);
+      *outIm = Simpson2DIntegral(fImag.data(), nTheta_, nPhi_, dTheta_, dPhi_);
+    } else if (CCTK_Equals(integration_method, "DriscollHealy")) {
+      if (nTheta_ % 2 != 0) {
+        CCTK_WARN(
+            CCTK_WARN_ABORT,
+            "The Driscoll&Healy integration method requires even nTheta_");
+      }
+      *outRe =
+          DriscollHealy2DIntegral(fReal.data(), nTheta_, nPhi_, dTheta_, dPhi_);
+      *outIm =
+          DriscollHealy2DIntegral(fImag.data(), nTheta_, nPhi_, dTheta_, dPhi_);
+    } else {
+      CCTK_WARN(CCTK_WARN_ABORT, "internal error");
     }
-    *outRe =
-        DriscollHealy2DIntegral(fReal.data(), nTheta_, nPhi_, dTheta_, dPhi_);
-    *outIm =
-        DriscollHealy2DIntegral(fImag.data(), nTheta_, nPhi_, dTheta_, dPhi_);
-  } else {
-    CCTK_WARN(CCTK_WARN_ABORT, "internal error");
   }
 }
 
