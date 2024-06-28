@@ -1,3 +1,6 @@
+/* puncture.cxx */
+/* (c) Liwei Ji 06/2024 */
+
 #include "puncture.hxx"
 
 #include <util_Table.h>
