@@ -20,7 +20,6 @@ void Surface::interpolate(CCTK_ARGUMENTS, int realFieldIndex,
   const void *interpCoords[Loop::dim] = {x_.data(), y_.data(), z_.data()};
 
   CCTK_INT nInputArrays = imagFieldIndex == -1 ? 1 : 2;
-  CCTK_INT nOutputArrays = imagFieldIndex == -1 ? 1 : 2;
 
   const CCTK_INT inputArrayIndices[2] = {realFieldIndex, imagFieldIndex};
 
@@ -32,22 +31,27 @@ void Surface::interpolate(CCTK_ARGUMENTS, int realFieldIndex,
   const CCTK_INT interpCoordsTypeCode = 0;
   const CCTK_INT outputArrayTypes[1] = {0};
 
-  int interpHandle = CCTK_InterpHandle("CarpetX");
+  const int interpHandle = CCTK_InterpHandle("CarpetX");
   if (interpHandle < 0) {
     CCTK_VERROR("Could not obtain interpolator handle for built-in 'CarpetX' "
                 "interpolator: %d",
                 interpHandle);
   }
 
+  int ierr;
+
   // Interpolation parameter table
   int paramTableHandle = Util_TableCreate(UTIL_TABLE_FLAGS_DEFAULT);
 
-  int ierr = Util_TableSetFromString(paramTableHandle, interpolator_pars);
+  if ((ierr = Util_TableSetFromString(paramTableHandle, interpolator_pars)) <
+      0) {
+    CCTK_VERROR("Can't set pars in parameter table: %d", ierr);
+  }
 
   ierr = DriverInterpolate(cctkGH, Loop::dim, interpHandle, paramTableHandle,
                            coordSystemHandle, nPoints, interpCoordsTypeCode,
                            interpCoords, nInputArrays, inputArrayIndices,
-                           nOutputArrays, outputArrayTypes, outputArrays);
+                           nInputArrays, outputArrayTypes, outputArrays);
 
   if (ierr < 0) {
     CCTK_VWarn(1, __LINE__, __FILE__, CCTK_THORNSTRING,

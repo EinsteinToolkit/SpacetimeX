@@ -1,33 +1,26 @@
 # Schedule definitions for thorn PunctureTracker
 
-SCHEDULE PunctureTracker_Init AT initial
+SCHEDULE PunctureTracker_Setup AT initial
 {
   LANG: C
+  OPTIONS: GLOBAL
 	WRITES: pt_loc
 	WRITES: pt_vel
 	WRITES: BoxInBox::positions
-  OPTIONS: GLOBAL
 } "Calculate initial location of punctures"
 
 SCHEDULE PunctureTracker_Track AT evol AFTER ODESolvers_Solve
 {
   LANG: C
+  OPTIONS: GLOBAL
   READS: ADMBaseX::shift(everywhere)
 	WRITES: pt_loc
 	WRITES: pt_vel
 	WRITES: BoxInBox::positions
-  OPTIONS: GLOBAL
 } "Calculate new location of punctures"
 
-if (read_shifts)
+SCHEDULE PunctureTracker_Finalize AT terminate BEFORE driver_terminate
 {
-	SCHEDULE PunctureTracker_CheckShift AT evol BEFORE PunctureTracker_Track
-	{
-		LANG: C
-		READS: ADMBaseX::shift(interior)
-		READS: BoxInBox::num_levels
-		READS: pt_loc
-		READS: CoordinatesX::vertex_coords(interior)
-		OPTIONS: LOCAL
-	} "Outputs nearby shift quantities to stdout"
-}
+  LANG: C
+  OPTIONS: GLOBAL
+} "Free PunctureContainer instance and stuff"
