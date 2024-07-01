@@ -1,0 +1,103 @@
+# Parameter definitions for thorn Z4co
+
+BOOLEAN calc_ADM_vars "Calculate ADM variables" STEERABLE=recover
+{
+} yes
+
+BOOLEAN calc_ADMRHS_vars "Calculate RHS of ADM variables" STEERABLE=recover
+{
+} yes
+
+BOOLEAN calc_constraints "Calculate constraints" STEERABLE=recover
+{
+} yes
+
+
+BOOLEAN set_Theta_zero "set Theta to zero, which converts Z4c to BSSN"
+{
+} no
+
+CCTK_REAL kappa1 "kappa1" STEERABLE=always
+{
+  *:* :: ""
+} 0.02
+
+CCTK_REAL kappa2 "kappa2" STEERABLE=always
+{
+  *:* :: ""
+} 0.0
+
+CCTK_REAL f_mu_L "mu_L = f_mu_L / alpha" STEERABLE=always
+{
+  *:* :: ""
+} 2.0
+
+CCTK_REAL f_mu_S "mu_S = f_mu_S / alpha^2" STEERABLE=always
+{
+  *:* :: ""
+} 1.0
+
+CCTK_REAL eta "eta" STEERABLE=always
+{
+  *:* :: ""
+} 2.0
+
+CCTK_REAL chi_floor "Floor for chi" STEERABLE=always
+{
+  (0:* :: ""
+} 1.0e-10
+
+CCTK_REAL alphaG_floor "Floor for alphaG" STEERABLE=always
+{
+  (0:* :: ""
+} 1.0e-10
+
+CCTK_REAL epsdiss "Dissipation coefficient <arXiv:gr-qc/0610128>" STEERABLE=always
+{
+  0.0:* :: ""
+} 0.32
+
+KEYWORD boundary_conditions "boundary conditions"{
+  "NewRadX" :: "radiative boundary conditions using NewRadX"
+  "CarpetX" :: "use CarpetX default boundary conditions"
+} "CarpetX"
+
+CCTK_INT n_chi "n power of outgoing boundary r^n fall off rate for chi"
+{
+  0:2           :: "1 is reasonable"
+} 1
+
+CCTK_INT n_gammat "n power of outgoing boundary r^n fall off rate for gammat_ij"
+{
+  0:2           :: "1 is reasonable"
+} 1
+
+CCTK_INT n_Kh "n power of outgoing boundary r^n fall off rate for Kh"
+{
+  0:2           :: "Maybe 1?"
+} 1
+
+CCTK_INT n_At "n power of outgoing boundary r^n fall off rate for At_ij"
+{
+  0:2           :: "Maybe 1?"
+} 1
+
+CCTK_INT n_Gamt "n power of outgoing boundary r^n fall off rate for Gamt^i"
+{
+  0:2           :: "Maybe 1?"
+} 1
+
+CCTK_INT n_Theta "n power of outgoing boundary r^n fall off rate for Theta"
+{
+  0:2           :: "Maybe 1?"
+} 1
+
+CCTK_INT n_alphaG "n power of outgoing boundary r^n fall off rate for alpha"
+{
+  0:2           :: "1 is my guess"
+} 1
+
+CCTK_INT n_betaG "n power of outgoing boundary r^n fall off rate for beta"
+{
+  0:2           :: "1 is my guess"
+} 1
