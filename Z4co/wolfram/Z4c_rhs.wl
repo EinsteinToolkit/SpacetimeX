@@ -4,6 +4,8 @@
 
 (* (c) Liwei Ji, 07/2024 *)
 
+(* See arXiv:1212.2901 [gr-qc] *)
+
 (****************)
 
 (* Intermediate *)
