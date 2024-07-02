@@ -1255,29 +1255,29 @@ vreal dexAtUU333
 ;
 
 
-vreal ZtC1
+ZtC1
 =
 trGt1 - trGtd1
 ;
 
-vreal ZtC2
+ZtC2
 =
 trGt2 - trGtd2
 ;
 
-vreal ZtC3
+ZtC3
 =
 trGt3 - trGtd3
 ;
 
-vreal HC
+HC
 =
 exAt11*exAtUU11 + 2*exAt12*exAtUU12 + 2*exAt13*exAtUU13 + exAt22*exAtUU22 + 
   2*exAt23*exAtUU23 + exAt33*exAtUU33 - (2*Power(exKh,2))/3. - 16*cpi*rho - 
   (8*exKh*Theta)/3. - (8*Power(Theta,2))/3. + trR
 ;
 
-vreal MtC1
+MtC1
 =
 (-2*(dchi1*exAtUU11 + dchi2*exAtUU12 + dchi3*exAtUU13) + 
     chi*(3*dexAtUU111 + 3*dexAtUU212 + 3*dexAtUU313 + 3*exAtUU11*Gt111 + 
@@ -1288,7 +1288,7 @@ vreal MtC1
        24*cpi*invgamt12*Sm2 - 24*cpi*invgamt13*Sm3))/(3.*chi)
 ;
 
-vreal MtC2
+MtC2
 =
 (-2*(dchi1*exAtUU12 + dchi2*exAtUU22 + dchi3*exAtUU23) + 
     chi*(3*dexAtUU112 + 3*dexAtUU222 + 3*dexAtUU323 + 3*exAtUU11*Gt211 + 
@@ -1299,7 +1299,7 @@ vreal MtC2
        24*cpi*invgamt22*Sm2 - 24*cpi*invgamt23*Sm3))/(3.*chi)
 ;
 
-vreal MtC3
+MtC3
 =
 (-2*(dchi1*exAtUU13 + dchi2*exAtUU23 + dchi3*exAtUU33) + 
     chi*(3*dexAtUU113 + 3*dexAtUU223 + 3*dexAtUU333 + 3*exAtUU11*Gt311 + 
