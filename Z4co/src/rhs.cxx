@@ -50,6 +50,7 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
   const GF3D2layout layout2(cctkGH, indextype);
   const GF3D5layout layout5(imin, imax);
 
+  // Input grid functions
   const GF3D2<const CCTK_REAL> gf_chi(layout2, chi);
 
   const smat<GF3D2<const CCTK_REAL>, 3> gf_gamt{
@@ -84,14 +85,7 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
       GF3D2<const CCTK_REAL>(layout2, betaGy),
       GF3D2<const CCTK_REAL>(layout2, betaGz)};
 
-  //
-
-  // Ideas:
-  //
-  // - Outline certain functions, e.g. `det` or `raise_index`. Ensure
-  //   they are called with floating-point arguments, not tensor
-  //   indices.
-
+  // Tile variables for derivatives and so on
   const int ntmps = 154;
   GF3D5vector<CCTK_REAL> tmps(layout5, ntmps);
   int itmp = 0;
@@ -118,8 +112,7 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
   const smat<GF3D5<CCTK_REAL>, 3> tl_gamt(make_mat_gf());
   const smat<vec<GF3D5<CCTK_REAL>, 3>, 3> tl_dgamt(make_mat_vec_gf());
   const smat<smat<GF3D5<CCTK_REAL>, 3>, 3> tl_ddgamt(make_mat_mat_gf());
-  calc_derivs2(cctkGH, gf_gamt, tl_gamt, tl_dgamt, tl_ddgamt,
-               layout5);
+  calc_derivs2(cctkGH, gf_gamt, tl_gamt, tl_dgamt, tl_ddgamt, layout5);
 
   const GF3D5<CCTK_REAL> tl_exKh(make_gf());
   const vec<GF3D5<CCTK_REAL>, 3> tl_dexKh(make_vec_gf());
@@ -140,8 +133,7 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
   const GF3D5<CCTK_REAL> tl_alpha(make_gf());
   const vec<GF3D5<CCTK_REAL>, 3> tl_dalpha(make_vec_gf());
   const smat<GF3D5<CCTK_REAL>, 3> tl_ddalpha(make_mat_gf());
-  calc_derivs2(cctkGH, gf_alpha, tl_alpha, tl_dalpha, tl_ddalpha,
-               layout5);
+  calc_derivs2(cctkGH, gf_alpha, tl_alpha, tl_dalpha, tl_ddalpha, layout5);
 
   const vec<GF3D5<CCTK_REAL>, 3> tl_beta(make_vec_gf());
   const vec<vec<GF3D5<CCTK_REAL>, 3>, 3> tl_dbeta(make_vec_vec_gf());
@@ -153,8 +145,7 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
                 itmp);
   itmp = -1;
 
-  //
-
+  // More input grid functions
   const GF3D2<const CCTK_REAL> gf_eTtt(layout2, eTtt);
 
   const vec<GF3D2<const CCTK_REAL>, 3> gf_eTt{
@@ -170,8 +161,7 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
       GF3D2<const CCTK_REAL>(layout2, eTyz),
       GF3D2<const CCTK_REAL>(layout2, eTzz)};
 
-  //
-
+  // Output grid functions
   const GF3D2<CCTK_REAL> gf_dtchi(layout2, chi_rhs);
 
   const smat<GF3D2<CCTK_REAL>, 3> gf_gammat_rhs1{
@@ -203,8 +193,7 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
       GF3D2<CCTK_REAL>(layout2, betaGy_rhs),
       GF3D2<CCTK_REAL>(layout2, betaGz_rhs)};
 
-  //
-
+  // Loop
   typedef simd<CCTK_REAL> vreal;
   typedef simdl<CCTK_REAL> vbool;
   constexpr size_t vsize = tuple_size_v<vreal>;
@@ -236,8 +225,7 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
 
   for (int a = 0; a < 3; ++a)
     for (int b = a; b < 3; ++b)
-      apply_upwind_diss(cctkGH, gf_gamt(a, b), gf_beta,
-                        gf_gammat_rhs1(a, b));
+      apply_upwind_diss(cctkGH, gf_gamt(a, b), gf_beta, gf_gammat_rhs1(a, b));
 
   apply_upwind_diss(cctkGH, gf_exKh, gf_beta, gf_dtexKh);
 
