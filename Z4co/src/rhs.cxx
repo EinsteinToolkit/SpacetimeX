@@ -192,6 +192,18 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
       GF3D2<CCTK_REAL>(layout2, betaGy_rhs),
       GF3D2<CCTK_REAL>(layout2, betaGz_rhs)};
 
+  // More output grid functions
+  const vec<GF3D2<CCTK_REAL>, 3> gf_ZtC{GF3D2<CCTK_REAL>(layout1, ZtCx),
+                                        GF3D2<CCTK_REAL>(layout1, ZtCy),
+                                        GF3D2<CCTK_REAL>(layout1, ZtCz)};
+
+  const GF3D2<CCTK_REAL> gf_HC(layout1, HC);
+
+  const vec<GF3D2<CCTK_REAL>, 3> gf_MtC{GF3D2<CCTK_REAL>(layout1, MtCx),
+                                        GF3D2<CCTK_REAL>(layout1, MtCy),
+                                        GF3D2<CCTK_REAL>(layout1, MtCz)};
+
+  // simd types
   typedef simd<CCTK_REAL> vreal;
   typedef simdl<CCTK_REAL> vbool;
   constexpr size_t vsize = tuple_size_v<vreal>;
