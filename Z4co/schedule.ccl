@@ -24,10 +24,12 @@ STORAGE: alphaG_rhs
 STORAGE: betaG_rhs
 
 
-
 ################################################################################
-
-
+# We have 4 schedule groups:
+# 1. initial: set up core Z4c variables from ADM variables
+# 2. poststep: post-process core Z4c variables and calculate other variables
+# 3. analysis: calculate constraints etc.
+# 4. rhs: calculate RHS of Z4c variables
 
 SCHEDULE GROUP Z4co_InitialGroup AT initial AFTER ADMBaseX_PostInitial
 {
@@ -41,8 +43,6 @@ SCHEDULE GROUP Z4co_PostStepGroup2 AT initial AFTER (TmunuBaseX_SetTmunuVars, Z4
 {
 } "Post-process Z4c variables, part 2"
 
-
-
 SCHEDULE GROUP Z4co_PostStepGroup AT postregrid BEFORE ADMBaseX_SetADMVars
 {
 } "Post-process Z4c variables"
@@ -50,14 +50,6 @@ SCHEDULE GROUP Z4co_PostStepGroup AT postregrid BEFORE ADMBaseX_SetADMVars
 SCHEDULE GROUP Z4co_PostStepGroup2 AT postregrid AFTER (TmunuBaseX_SetTmunuVars, Z4co_PostStepGroup) BEFORE ADMBaseX_SetADMRHS
 {
 } "Post-process Z4c variables, part 2"
-
-
-
-SCHEDULE GROUP Z4co_AnalysisGroup AT analysis
-{
-} "Analyse Z4c variables"
-
-
 
 SCHEDULE GROUP Z4co_PostStepGroup IN ODESolvers_PostStep BEFORE ADMBaseX_SetADMVars
 {
@@ -67,30 +59,15 @@ SCHEDULE GROUP Z4co_PostStepGroup2 IN ODESolvers_PostStep AFTER (TmunuBaseX_SetT
 {
 } "Post-process Z4c variables, part 2"
 
+SCHEDULE GROUP Z4co_AnalysisGroup AT analysis
+{
+} "Analyse Z4c variables"
+
 SCHEDULE GROUP Z4co_RHSGroup IN ODESolvers_RHS
 {
 } "Calculate Z4c RHS"
 
-
-
 ################################################################################
-
-
-
-SCHEDULE Z4co_Test AT wragh
-{
-  LANG: C
-  OPTIONS: meta
-} "Self-test"
-
-
-
-# We have 4 schedule groups:
-# 1. initial: set up core Z4c variables from ADM variables
-# 2. poststep: post-process core Z4c variables and calculate other variables
-# 3. analysis: calculate constraints etc.
-# 4. rhs: calculate RHS of Z4c variables
-
 
 
 SCHEDULE Z4co_Initial1 IN Z4co_InitialGroup
@@ -107,13 +84,7 @@ SCHEDULE Z4co_Initial1 IN Z4co_InitialGroup
   WRITES: Theta(interior)
   WRITES: alphaG(interior)
   WRITES: betaG(interior)
-  # SYNC: chi
   SYNC: gamma_tilde
-  # SYNC: K_hat
-  # SYNC: A_tilde
-  # SYNC: Theta
-  # SYNC: alphaG
-  # SYNC: betaG
 } "Convert ADM to Z4c variables, part 1"
 
 SCHEDULE Z4co_Initial2 IN Z4co_InitialGroup AFTER Z4co_Initial1
@@ -121,10 +92,7 @@ SCHEDULE Z4co_Initial2 IN Z4co_InitialGroup AFTER Z4co_Initial1
   LANG: C
   READS: gamma_tilde(everywhere)
   WRITES: Gam_tilde(interior)
-  # SYNC: Gam_tilde
 } "Convert ADM to Z4c variables, part 2"
-
-
 
 SCHEDULE Z4co_Enforce IN Z4co_PostStepGroup
 {
@@ -159,9 +127,6 @@ if (calc_ADM_vars) {
     READS: Theta(everywhere)
     READS: alphaG(everywhere)
     READS: betaG(everywhere)
-    # READS: TmunuBaseX::eTtt(interior)
-    # READS: TmunuBaseX::eTti(interior)
-    # READS: TmunuBaseX::eTij(interior)
     WRITES: ADMBaseX::metric(everywhere)
     WRITES: ADMBaseX::curv(everywhere)
     WRITES: ADMBaseX::lapse(everywhere)
@@ -170,60 +135,6 @@ if (calc_ADM_vars) {
     WRITES: ADMBaseX::dtshift(everywhere)
   } "Convert Z4c to ADM variables"
 }
-
-if (calc_ADMRHS_vars) {
-  SCHEDULE Z4co_ADM2 IN Z4co_PostStepGroup2
-  {
-    LANG: C
-    READS: chi(everywhere)
-    READS: gamma_tilde(everywhere)
-    READS: K_hat(everywhere)
-    READS: A_tilde(everywhere)
-    READS: Gam_tilde(everywhere)
-    READS: Theta(everywhere)
-    READS: alphaG(everywhere)
-    READS: betaG(everywhere)
-    READS: TmunuBaseX::eTtt(interior)
-    READS: TmunuBaseX::eTti(interior)
-    READS: TmunuBaseX::eTij(interior)
-    WRITES: ADMBaseX::dtcurv(interior)
-    WRITES: ADMBaseX::dt2lapse(interior)
-    WRITES: ADMBaseX::dt2shift(interior)
-    SYNC: ADMBaseX::dtcurv
-    SYNC: ADMBaseX::dt2lapse
-    SYNC: ADMBaseX::dt2shift
-  } "Calculate second time derivatives of ADM variables"
-}
-
-
-
-if (calc_constraints) {
-  SCHEDULE Z4co_Constraints IN Z4co_AnalysisGroup
-  {
-    LANG: C
-    READS: chi(everywhere)
-    READS: gamma_tilde(everywhere)
-    READS: K_hat(everywhere)
-    READS: A_tilde(everywhere)
-    READS: Gam_tilde(everywhere)
-    READS: Theta(everywhere)
-    READS: alphaG(everywhere)
-    READS: betaG(everywhere)
-    READS: TmunuBaseX::eTtt(interior)
-    READS: TmunuBaseX::eTti(interior)
-    READS: TmunuBaseX::eTij(interior)
-    WRITES: ZtC(interior)
-    WRITES: HC(interior)
-    WRITES: MtC(interior)
-    WRITES: allC(interior)
-    # SYNC: ZtC
-    # SYNC: HC
-    # SYNC: MtC
-    # SYNC: allC
-  } "Calculate Z4c constraints"
-}
-
-
 
 SCHEDULE Z4co_RHS IN Z4co_RHSGroup
 {
@@ -256,34 +167,3 @@ SCHEDULE Z4co_RHS IN Z4co_RHSGroup
   SYNC: alphaG_rhs
   SYNC: betaG_rhs
 } "Calculate Z4c RHS"
-
-if (CCTK_Equals(boundary_conditions, "NewRadX")) {
-  SCHEDULE Z4co_apply_newradx_boundary_conditions IN Z4co_RHSGroup AFTER Z4co_RHS
-  {
-    LANG: C
-    READS: chi(everywhere)
-    READS: gamma_tilde(everywhere)
-    READS: K_hat(everywhere)
-    READS: A_tilde(everywhere)
-    READS: Gam_tilde(everywhere)
-    READS: Theta(everywhere)
-    READS: alphaG(everywhere)
-    READS: betaG(everywhere)
-    READS: chi_rhs(everywhere)
-    READS: gamma_tilde_rhs(everywhere)
-    READS: K_hat_rhs(everywhere)
-    READS: A_tilde_rhs(everywhere)
-    READS: Gam_tilde_rhs(everywhere)
-    READS: Theta_rhs(everywhere)
-    READS: alphaG_rhs(everywhere)
-    READS: betaG_rhs(everywhere)
-    WRITES: chi_rhs(interior)
-    WRITES: gamma_tilde_rhs(interior)
-    WRITES: K_hat_rhs(interior)
-    WRITES: A_tilde_rhs(interior)
-    WRITES: Gam_tilde_rhs(interior)
-    WRITES: Theta_rhs(interior)
-    WRITES: alphaG_rhs(interior)
-    WRITES: betaG_rhs(interior)
-  } "Apply radiative boundary conditions to Z4c RHS variables using NewRadX"
-}
