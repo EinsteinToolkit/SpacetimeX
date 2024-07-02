@@ -52,7 +52,6 @@ $MainPrint[] :=
     pr[];
     PrintEquations[{Mode -> "Temp"}, ConstraintVarlist];
     PrintEquations[{Mode -> "Main"}, dtEvolVarlist];
-    pr[];
   ];
 
 Import[FileNameJoin[{Environment["GENERATO"], "codes/CarpetX.wl"}]];
