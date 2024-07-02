@@ -39,13 +39,12 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
     if (cctk_nghostzones[d] < deriv_order / 2 + 1)
       CCTK_VERROR("Need at least %d ghost zones", deriv_order / 2 + 1);
 
-  //
-
   const array<int, dim> indextype = {0, 0, 0};
   const array<int, dim> nghostzones = {cctk_nghostzones[0], cctk_nghostzones[1],
                                        cctk_nghostzones[2]};
   vect<int, dim> imin, imax;
   GridDescBase(cctkGH).box_int<0, 0, 0>(nghostzones, imin, imax);
+
   // Suffix 1: with ghost zones, suffix 0: without ghost zones
   const GF3D2layout layout2(cctkGH, indextype);
   const GF3D5layout layout5(imin, imax);
@@ -193,11 +192,19 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
       GF3D2<CCTK_REAL>(layout2, betaGy_rhs),
       GF3D2<CCTK_REAL>(layout2, betaGz_rhs)};
 
-  // Loop
   typedef simd<CCTK_REAL> vreal;
   typedef simdl<CCTK_REAL> vbool;
   constexpr size_t vsize = tuple_size_v<vreal>;
 
+  // parameters
+  const vreal cpi = Arith::acos(-1.0);
+  const vreal ckappa1 = kappa1;
+  const vreal ckappa2 = kappa2;
+  const vreal cmuL = f_mu_L;
+  const vreal cmuS = f_mu_S;
+  const vreal ceta = eta;
+
+  // Loop
   const Loop::GridDescBaseDevice grid(cctkGH);
 
 #ifdef __CUDACC__
