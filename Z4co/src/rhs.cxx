@@ -163,7 +163,7 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
   // Output grid functions
   const GF3D2<CCTK_REAL> gf_dtchi(layout2, chi_rhs);
 
-  const smat<GF3D2<CCTK_REAL>, 3> gf_gammat_rhs1{
+  const smat<GF3D2<CCTK_REAL>, 3> gf_dtgamt{
       GF3D2<CCTK_REAL>(layout2, gammatxx_rhs),
       GF3D2<CCTK_REAL>(layout2, gammatxy_rhs),
       GF3D2<CCTK_REAL>(layout2, gammatxz_rhs),
@@ -197,7 +197,7 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
   constexpr size_t vsize = tuple_size_v<vreal>;
 
   // parameters
-  const vreal cpi = Arith::acos(-1.0);
+  const vreal cpi = acos(-1.0);
   const vreal ckappa1 = kappa1;
   const vreal ckappa2 = kappa2;
   const vreal cmuL = f_mu_L;
@@ -232,7 +232,7 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
 
   for (int a = 0; a < 3; ++a)
     for (int b = a; b < 3; ++b)
-      apply_upwind_diss(cctkGH, gf_gamt(a, b), gf_beta, gf_gammat_rhs1(a, b));
+      apply_upwind_diss(cctkGH, gf_gamt(a, b), gf_beta, gf_dtgamt(a, b));
 
   apply_upwind_diss(cctkGH, gf_exKh, gf_beta, gf_dtexKh);
 
