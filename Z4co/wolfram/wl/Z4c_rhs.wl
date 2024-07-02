@@ -19,7 +19,7 @@ SetEQN[gam[i_, j_], chi[] ^ -1 gamt[i, j]];
 SetEQN[GtDDD[k_, i_, j_], 1/2 (dgamt[i, j, k] + dgamt[j, k, i] - dgamt[
   k, i, j])];
 
-SetEQN[GtDDU[i_, j_, k_], gamt[k, l] GtDDD[i, j, -l]];
+SetEQN[GtDDU[i_, j_, k_], invgamt[k, l] GtDDD[i, j, -l]];
 
 SetEQN[Gt[k_, i_, j_], invgamt[k, l] GtDDD[-l, i, j]];
 

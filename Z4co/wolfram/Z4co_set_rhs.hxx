@@ -386,191 +386,137 @@ dgamt333/2.
 
 vreal GtDDU111
 =
-GtDDD111*gamt(List(1,cart),List(1,cart)) + 
-  GtDDD112*gamt(List(1,cart),List(2,cart)) + 
-  GtDDD113*gamt(List(1,cart),List(3,cart))
+GtDDD111*invgamt11 + GtDDD112*invgamt12 + GtDDD113*invgamt13
 ;
 
 vreal GtDDU112
 =
-GtDDD111*gamt(List(2,cart),List(1,cart)) + 
-  GtDDD112*gamt(List(2,cart),List(2,cart)) + 
-  GtDDD113*gamt(List(2,cart),List(3,cart))
+GtDDD111*invgamt12 + GtDDD112*invgamt22 + GtDDD113*invgamt23
 ;
 
 vreal GtDDU113
 =
-GtDDD111*gamt(List(3,cart),List(1,cart)) + 
-  GtDDD112*gamt(List(3,cart),List(2,cart)) + 
-  GtDDD113*gamt(List(3,cart),List(3,cart))
+GtDDD111*invgamt13 + GtDDD112*invgamt23 + GtDDD113*invgamt33
 ;
 
 vreal GtDDU121
 =
-GtDDD112*gamt(List(1,cart),List(1,cart)) + 
-  GtDDD122*gamt(List(1,cart),List(2,cart)) + 
-  GtDDD123*gamt(List(1,cart),List(3,cart))
+GtDDD112*invgamt11 + GtDDD122*invgamt12 + GtDDD123*invgamt13
 ;
 
 vreal GtDDU122
 =
-GtDDD112*gamt(List(2,cart),List(1,cart)) + 
-  GtDDD122*gamt(List(2,cart),List(2,cart)) + 
-  GtDDD123*gamt(List(2,cart),List(3,cart))
+GtDDD112*invgamt12 + GtDDD122*invgamt22 + GtDDD123*invgamt23
 ;
 
 vreal GtDDU123
 =
-GtDDD112*gamt(List(3,cart),List(1,cart)) + 
-  GtDDD122*gamt(List(3,cart),List(2,cart)) + 
-  GtDDD123*gamt(List(3,cart),List(3,cart))
+GtDDD112*invgamt13 + GtDDD122*invgamt23 + GtDDD123*invgamt33
 ;
 
 vreal GtDDU131
 =
-GtDDD113*gamt(List(1,cart),List(1,cart)) + 
-  GtDDD123*gamt(List(1,cart),List(2,cart)) + 
-  GtDDD133*gamt(List(1,cart),List(3,cart))
+GtDDD113*invgamt11 + GtDDD123*invgamt12 + GtDDD133*invgamt13
 ;
 
 vreal GtDDU132
 =
-GtDDD113*gamt(List(2,cart),List(1,cart)) + 
-  GtDDD123*gamt(List(2,cart),List(2,cart)) + 
-  GtDDD133*gamt(List(2,cart),List(3,cart))
+GtDDD113*invgamt12 + GtDDD123*invgamt22 + GtDDD133*invgamt23
 ;
 
 vreal GtDDU133
 =
-GtDDD113*gamt(List(3,cart),List(1,cart)) + 
-  GtDDD123*gamt(List(3,cart),List(2,cart)) + 
-  GtDDD133*gamt(List(3,cart),List(3,cart))
+GtDDD113*invgamt13 + GtDDD123*invgamt23 + GtDDD133*invgamt33
 ;
 
 vreal GtDDU211
 =
-GtDDD211*gamt(List(1,cart),List(1,cart)) + 
-  GtDDD212*gamt(List(1,cart),List(2,cart)) + 
-  GtDDD213*gamt(List(1,cart),List(3,cart))
+GtDDD211*invgamt11 + GtDDD212*invgamt12 + GtDDD213*invgamt13
 ;
 
 vreal GtDDU212
 =
-GtDDD211*gamt(List(2,cart),List(1,cart)) + 
-  GtDDD212*gamt(List(2,cart),List(2,cart)) + 
-  GtDDD213*gamt(List(2,cart),List(3,cart))
+GtDDD211*invgamt12 + GtDDD212*invgamt22 + GtDDD213*invgamt23
 ;
 
 vreal GtDDU213
 =
-GtDDD211*gamt(List(3,cart),List(1,cart)) + 
-  GtDDD212*gamt(List(3,cart),List(2,cart)) + 
-  GtDDD213*gamt(List(3,cart),List(3,cart))
+GtDDD211*invgamt13 + GtDDD212*invgamt23 + GtDDD213*invgamt33
 ;
 
 vreal GtDDU221
 =
-GtDDD212*gamt(List(1,cart),List(1,cart)) + 
-  GtDDD222*gamt(List(1,cart),List(2,cart)) + 
-  GtDDD223*gamt(List(1,cart),List(3,cart))
+GtDDD212*invgamt11 + GtDDD222*invgamt12 + GtDDD223*invgamt13
 ;
 
 vreal GtDDU222
 =
-GtDDD212*gamt(List(2,cart),List(1,cart)) + 
-  GtDDD222*gamt(List(2,cart),List(2,cart)) + 
-  GtDDD223*gamt(List(2,cart),List(3,cart))
+GtDDD212*invgamt12 + GtDDD222*invgamt22 + GtDDD223*invgamt23
 ;
 
 vreal GtDDU223
 =
-GtDDD212*gamt(List(3,cart),List(1,cart)) + 
-  GtDDD222*gamt(List(3,cart),List(2,cart)) + 
-  GtDDD223*gamt(List(3,cart),List(3,cart))
+GtDDD212*invgamt13 + GtDDD222*invgamt23 + GtDDD223*invgamt33
 ;
 
 vreal GtDDU231
 =
-GtDDD213*gamt(List(1,cart),List(1,cart)) + 
-  GtDDD223*gamt(List(1,cart),List(2,cart)) + 
-  GtDDD233*gamt(List(1,cart),List(3,cart))
+GtDDD213*invgamt11 + GtDDD223*invgamt12 + GtDDD233*invgamt13
 ;
 
 vreal GtDDU232
 =
-GtDDD213*gamt(List(2,cart),List(1,cart)) + 
-  GtDDD223*gamt(List(2,cart),List(2,cart)) + 
-  GtDDD233*gamt(List(2,cart),List(3,cart))
+GtDDD213*invgamt12 + GtDDD223*invgamt22 + GtDDD233*invgamt23
 ;
 
 vreal GtDDU233
 =
-GtDDD213*gamt(List(3,cart),List(1,cart)) + 
-  GtDDD223*gamt(List(3,cart),List(2,cart)) + 
-  GtDDD233*gamt(List(3,cart),List(3,cart))
+GtDDD213*invgamt13 + GtDDD223*invgamt23 + GtDDD233*invgamt33
 ;
 
 vreal GtDDU311
 =
-GtDDD311*gamt(List(1,cart),List(1,cart)) + 
-  GtDDD312*gamt(List(1,cart),List(2,cart)) + 
-  GtDDD313*gamt(List(1,cart),List(3,cart))
+GtDDD311*invgamt11 + GtDDD312*invgamt12 + GtDDD313*invgamt13
 ;
 
 vreal GtDDU312
 =
-GtDDD311*gamt(List(2,cart),List(1,cart)) + 
-  GtDDD312*gamt(List(2,cart),List(2,cart)) + 
-  GtDDD313*gamt(List(2,cart),List(3,cart))
+GtDDD311*invgamt12 + GtDDD312*invgamt22 + GtDDD313*invgamt23
 ;
 
 vreal GtDDU313
 =
-GtDDD311*gamt(List(3,cart),List(1,cart)) + 
-  GtDDD312*gamt(List(3,cart),List(2,cart)) + 
-  GtDDD313*gamt(List(3,cart),List(3,cart))
+GtDDD311*invgamt13 + GtDDD312*invgamt23 + GtDDD313*invgamt33
 ;
 
 vreal GtDDU321
 =
-GtDDD312*gamt(List(1,cart),List(1,cart)) + 
-  GtDDD322*gamt(List(1,cart),List(2,cart)) + 
-  GtDDD323*gamt(List(1,cart),List(3,cart))
+GtDDD312*invgamt11 + GtDDD322*invgamt12 + GtDDD323*invgamt13
 ;
 
 vreal GtDDU322
 =
-GtDDD312*gamt(List(2,cart),List(1,cart)) + 
-  GtDDD322*gamt(List(2,cart),List(2,cart)) + 
-  GtDDD323*gamt(List(2,cart),List(3,cart))
+GtDDD312*invgamt12 + GtDDD322*invgamt22 + GtDDD323*invgamt23
 ;
 
 vreal GtDDU323
 =
-GtDDD312*gamt(List(3,cart),List(1,cart)) + 
-  GtDDD322*gamt(List(3,cart),List(2,cart)) + 
-  GtDDD323*gamt(List(3,cart),List(3,cart))
+GtDDD312*invgamt13 + GtDDD322*invgamt23 + GtDDD323*invgamt33
 ;
 
 vreal GtDDU331
 =
-GtDDD313*gamt(List(1,cart),List(1,cart)) + 
-  GtDDD323*gamt(List(1,cart),List(2,cart)) + 
-  GtDDD333*gamt(List(1,cart),List(3,cart))
+GtDDD313*invgamt11 + GtDDD323*invgamt12 + GtDDD333*invgamt13
 ;
 
 vreal GtDDU332
 =
-GtDDD313*gamt(List(2,cart),List(1,cart)) + 
-  GtDDD323*gamt(List(2,cart),List(2,cart)) + 
-  GtDDD333*gamt(List(2,cart),List(3,cart))
+GtDDD313*invgamt12 + GtDDD323*invgamt22 + GtDDD333*invgamt23
 ;
 
 vreal GtDDU333
 =
-GtDDD313*gamt(List(3,cart),List(1,cart)) + 
-  GtDDD323*gamt(List(3,cart),List(2,cart)) + 
-  GtDDD333*gamt(List(3,cart),List(3,cart))
+GtDDD313*invgamt13 + GtDDD323*invgamt23 + GtDDD333*invgamt33
 ;
 
 vreal Gt111
@@ -1630,7 +1576,6 @@ dtbeta3
 =
 -(beta3*ceta) + Power(alpha,2)*cmuS*trGt3
 ;
-
 
 
 /* Z4co_set_rhs.hxx */
