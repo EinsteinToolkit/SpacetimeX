@@ -110,43 +110,43 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
   const auto make_mat_vec_gf = [&]() { return make_mat(make_vec_gf); };
   const auto make_mat_mat_gf = [&]() { return make_mat(make_mat_gf); };
 
-  const GF3D5<CCTK_REAL> gf_chi(make_gf());
-  const vec<GF3D5<CCTK_REAL>, 3> gf_dchi(make_vec_gf());
-  const smat<GF3D5<CCTK_REAL>, 3> gf_ddchi(make_mat_gf());
-  calc_derivs2(cctkGH, gf_chi1, gf_chi, gf_dchi, gf_ddchi, layout5);
+  const GF3D5<CCTK_REAL> tl_chi(make_gf());
+  const vec<GF3D5<CCTK_REAL>, 3> tl_dchi(make_vec_gf());
+  const smat<GF3D5<CCTK_REAL>, 3> tl_ddchi(make_mat_gf());
+  calc_derivs2(cctkGH, gf_chi1, tl_chi, tl_dchi, tl_ddchi, layout5);
 
-  const smat<GF3D5<CCTK_REAL>, 3> gf_gamt(make_mat_gf());
-  const smat<vec<GF3D5<CCTK_REAL>, 3>, 3> gf_dgamt(make_mat_vec_gf());
-  const smat<smat<GF3D5<CCTK_REAL>, 3>, 3> gf_ddgamt(make_mat_mat_gf());
-  calc_derivs2(cctkGH, gf_gammat1, gf_gamt, gf_dgamt, gf_ddgamt,
+  const smat<GF3D5<CCTK_REAL>, 3> tl_gamt(make_mat_gf());
+  const smat<vec<GF3D5<CCTK_REAL>, 3>, 3> tl_dgamt(make_mat_vec_gf());
+  const smat<smat<GF3D5<CCTK_REAL>, 3>, 3> tl_ddgamt(make_mat_mat_gf());
+  calc_derivs2(cctkGH, gf_gammat1, tl_gamt, tl_dgamt, tl_ddgamt,
                layout5);
 
-  const GF3D5<CCTK_REAL> gf_exKh(make_gf());
-  const vec<GF3D5<CCTK_REAL>, 3> gf_dexKh(make_vec_gf());
-  calc_derivs(cctkGH, gf_Kh1, gf_exKh, gf_dexKh, layout5);
+  const GF3D5<CCTK_REAL> tl_exKh(make_gf());
+  const vec<GF3D5<CCTK_REAL>, 3> tl_dexKh(make_vec_gf());
+  calc_derivs(cctkGH, gf_Kh1, tl_exKh, tl_dexKh, layout5);
 
-  const smat<GF3D5<CCTK_REAL>, 3> gf_exAt(make_mat_gf());
-  const smat<vec<GF3D5<CCTK_REAL>, 3>, 3> gf_dexAt(make_mat_vec_gf());
-  calc_derivs(cctkGH, gf_At1, gf_exAt, gf_dexAt, layout5);
+  const smat<GF3D5<CCTK_REAL>, 3> tl_exAt(make_mat_gf());
+  const smat<vec<GF3D5<CCTK_REAL>, 3>, 3> tl_dexAt(make_mat_vec_gf());
+  calc_derivs(cctkGH, gf_At1, tl_exAt, tl_dexAt, layout5);
 
-  const vec<GF3D5<CCTK_REAL>, 3> gf_trGt(make_vec_gf());
-  const vec<vec<GF3D5<CCTK_REAL>, 3>, 3> gf_dtrGt(make_vec_vec_gf());
-  calc_derivs(cctkGH, gf_Gamt1, gf_trGt, gf_dtrGt, layout5);
+  const vec<GF3D5<CCTK_REAL>, 3> tl_trGt(make_vec_gf());
+  const vec<vec<GF3D5<CCTK_REAL>, 3>, 3> tl_dtrGt(make_vec_vec_gf());
+  calc_derivs(cctkGH, gf_Gamt1, tl_trGt, tl_dtrGt, layout5);
 
-  const GF3D5<CCTK_REAL> gf_Theta(make_gf());
-  const vec<GF3D5<CCTK_REAL>, 3> gf_dTheta0(make_vec_gf());
-  calc_derivs(cctkGH, gf_Theta1, gf_Theta, gf_dTheta0, layout5);
+  const GF3D5<CCTK_REAL> tl_Theta(make_gf());
+  const vec<GF3D5<CCTK_REAL>, 3> tl_dTheta(make_vec_gf());
+  calc_derivs(cctkGH, gf_Theta1, tl_Theta, tl_dTheta, layout5);
 
-  const GF3D5<CCTK_REAL> gf_alpha(make_gf());
-  const vec<GF3D5<CCTK_REAL>, 3> gf_dalpha(make_vec_gf());
-  const smat<GF3D5<CCTK_REAL>, 3> gf_ddalpha(make_mat_gf());
-  calc_derivs2(cctkGH, gf_alphaG1, gf_alpha, gf_dalpha, gf_ddalpha,
+  const GF3D5<CCTK_REAL> tl_alpha(make_gf());
+  const vec<GF3D5<CCTK_REAL>, 3> tl_dalpha(make_vec_gf());
+  const smat<GF3D5<CCTK_REAL>, 3> tl_ddalpha(make_mat_gf());
+  calc_derivs2(cctkGH, gf_alphaG1, tl_alpha, tl_dalpha, tl_ddalpha,
                layout5);
 
-  const vec<GF3D5<CCTK_REAL>, 3> gf_beta(make_vec_gf());
-  const vec<vec<GF3D5<CCTK_REAL>, 3>, 3> gf_dbeta(make_vec_vec_gf());
-  const vec<smat<GF3D5<CCTK_REAL>, 3>, 3> gf_ddbeta(make_vec_mat_gf());
-  calc_derivs2(cctkGH, gf_betaG1, gf_beta, gf_dbeta, gf_ddbeta, layout5);
+  const vec<GF3D5<CCTK_REAL>, 3> tl_beta(make_vec_gf());
+  const vec<vec<GF3D5<CCTK_REAL>, 3>, 3> tl_dbeta(make_vec_vec_gf());
+  const vec<smat<GF3D5<CCTK_REAL>, 3>, 3> tl_ddbeta(make_vec_mat_gf());
+  calc_derivs2(cctkGH, gf_betaG1, tl_beta, tl_dbeta, tl_ddbeta, layout5);
 
   if (itmp != ntmps)
     CCTK_VERROR("Wrong number of temporary variables: ntmps=%d itmp=%d", ntmps,
