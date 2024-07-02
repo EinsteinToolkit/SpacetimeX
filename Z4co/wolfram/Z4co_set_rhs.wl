@@ -27,9 +27,9 @@ SetOutputFile[FileNameJoin[{Directory[], "Z4c_set_rhs.hxx"}]];
 
 $MainPrint[] :=
   Module[{},
-    PrintInitializations[{Mode -> "MainIn"}, EvolVarlist];
-    PrintInitializations[{Mode -> "MainIn"}, dEvolVarlist];
-    PrintInitializations[{Mode -> "MainIn"}, ddEvolVarlist];
+    PrintInitializations[{Mode -> "GF3D2"}, EvolVarlist];
+    PrintInitializations[{Mode -> "VecGF3D2"}, dEvolVarlist];
+    PrintInitializations[{Mode -> "SmatGF3D2"}, ddEvolVarlist];
   ];
 
 Import[FileNameJoin[{Environment["GENERATO"], "codes/CarpetX.wl"}]];
