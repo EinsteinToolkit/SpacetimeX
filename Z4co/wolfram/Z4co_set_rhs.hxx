@@ -1,6 +1,48 @@
 /* Z4co_set_rhs.hxx */
 /* Produced with Mathematica */
 
+vreal &dtchi = gf_dtchi(mask, index5);
+vreal &dtgamt11 = gf_dtgamt(mask, index5)(0,0);
+vreal &dtgamt12 = gf_dtgamt(mask, index5)(0,1);
+vreal &dtgamt13 = gf_dtgamt(mask, index5)(0,2);
+vreal &dtgamt22 = gf_dtgamt(mask, index5)(1,1);
+vreal &dtgamt23 = gf_dtgamt(mask, index5)(1,2);
+vreal &dtgamt33 = gf_dtgamt(mask, index5)(2,2);
+vreal &dtexKh = gf_dtexKh(mask, index5);
+vreal &dtexAt11 = gf_dtexAt(mask, index5)(0,0);
+vreal &dtexAt12 = gf_dtexAt(mask, index5)(0,1);
+vreal &dtexAt13 = gf_dtexAt(mask, index5)(0,2);
+vreal &dtexAt22 = gf_dtexAt(mask, index5)(1,1);
+vreal &dtexAt23 = gf_dtexAt(mask, index5)(1,2);
+vreal &dtexAt33 = gf_dtexAt(mask, index5)(2,2);
+vreal &dttrGt1 = gf_dttrGt(mask, index5)(0);
+vreal &dttrGt2 = gf_dttrGt(mask, index5)(1);
+vreal &dttrGt3 = gf_dttrGt(mask, index5)(2);
+vreal &dtTheta = gf_dtTheta(mask, index5);
+vreal &dtalpha = gf_dtalpha(mask, index5);
+vreal &dtbeta1 = gf_dtbeta(mask, index5)(0);
+vreal &dtbeta2 = gf_dtbeta(mask, index5)(1);
+vreal &dtbeta3 = gf_dtbeta(mask, index5)(2);
+vreal &ZtC1 = gf_ZtC(mask, index5)(0);
+vreal &ZtC2 = gf_ZtC(mask, index5)(1);
+vreal &ZtC3 = gf_ZtC(mask, index5)(2);
+vreal &HC = gf_HC(mask, index5);
+vreal &MtC1 = gf_MtC(mask, index5)(0);
+vreal &MtC2 = gf_MtC(mask, index5)(1);
+vreal &MtC3 = gf_MtC(mask, index5)(2);
+vreal &eTtt = gf_eTtt(mask, index5);
+vreal &eTt1 = gf_eTt(mask, index5)(0);
+vreal &eTt2 = gf_eTt(mask, index5)(1);
+vreal &eTt3 = gf_eTt(mask, index5)(2);
+vreal &eT11 = gf_eT(mask, index5)(0,0);
+vreal &eT12 = gf_eT(mask, index5)(0,1);
+vreal &eT13 = gf_eT(mask, index5)(0,2);
+vreal &eT21 = gf_eT(mask, index5)(1,0);
+vreal &eT22 = gf_eT(mask, index5)(1,1);
+vreal &eT23 = gf_eT(mask, index5)(1,2);
+vreal &eT31 = gf_eT(mask, index5)(2,0);
+vreal &eT32 = gf_eT(mask, index5)(2,1);
+vreal &eT33 = gf_eT(mask, index5)(2,2);
 vreal &chi = gf_chi(mask, index2);
 vreal &gamt11 = gf_gamt(mask, index2)(0,0);
 vreal &gamt12 = gf_gamt(mask, index2)(0,1);
@@ -1266,6 +1308,7 @@ vreal dexAtUU333
   2*dexAt323*invgamt23*invgamt33 + dexAt333*Power(invgamt33,2)
 ;
 
+
 vreal ZtC1
 =
 trGt1 - trGtd1
@@ -1320,6 +1363,274 @@ vreal MtC3
        2*dexKh3*invgamt33 - 4*dTheta3*invgamt33 - 24*cpi*invgamt13*Sm1 - 
        24*cpi*invgamt23*Sm2 - 24*cpi*invgamt33*Sm3))/(3.*chi)
 ;
+
+dtchi
+=
+(-2*chi*(dbeta11 + dbeta22 + dbeta33 - alpha*exKh - 2*alpha*Theta))/3.
+;
+
+dtgamt11
+=
+-2*alpha*exAt11 + 2*dbeta11*gamt11 - 
+  (2*(dbeta11 + dbeta22 + dbeta33)*gamt11)/3. + 2*dbeta12*gamt12 + 
+  2*dbeta13*gamt13
+;
+
+dtgamt12
+=
+-2*alpha*exAt12 + dbeta21*gamt11 + dbeta11*gamt12 + dbeta22*gamt12 - 
+  (2*(dbeta11 + dbeta22 + dbeta33)*gamt12)/3. + dbeta23*gamt13 + 
+  dbeta12*gamt22 + dbeta13*gamt23
+;
+
+dtgamt13
+=
+-2*alpha*exAt13 + dbeta31*gamt11 + dbeta32*gamt12 + dbeta11*gamt13 + 
+  dbeta33*gamt13 - (2*(dbeta11 + dbeta22 + dbeta33)*gamt13)/3. + 
+  dbeta12*gamt23 + dbeta13*gamt33
+;
+
+dtgamt22
+=
+-2*alpha*exAt22 + 2*dbeta21*gamt12 + 2*dbeta22*gamt22 - 
+  (2*(dbeta11 + dbeta22 + dbeta33)*gamt22)/3. + 2*dbeta23*gamt23
+;
+
+dtgamt23
+=
+-2*alpha*exAt23 + dbeta31*gamt12 + dbeta21*gamt13 + dbeta32*gamt22 + 
+  dbeta22*gamt23 + dbeta33*gamt23 - 
+  (2*(dbeta11 + dbeta22 + dbeta33)*gamt23)/3. + dbeta23*gamt33
+;
+
+dtgamt33
+=
+-2*alpha*exAt33 + 2*dbeta31*gamt13 + 2*dbeta32*gamt23 + 2*dbeta33*gamt33 - 
+  (2*(dbeta11 + dbeta22 + dbeta33)*gamt33)/3.
+;
+
+dtexKh
+=
+-(DDalpha11*invgam11) - 2*DDalpha12*invgam12 - 2*DDalpha13*invgam13 - 
+  DDalpha22*invgam22 - 2*DDalpha23*invgam23 - DDalpha33*invgam33 + 
+  alpha*(exAt11*exAtUU11 + 2*exAt12*exAtUU12 + 2*exAt13*exAtUU13 + 
+     exAt22*exAtUU22 + 2*exAt23*exAtUU23 + exAt33*exAtUU33 + 
+     Power(exKh,2)/3. + 4*cpi*rho + ckappa1*Theta - ckappa1*ckappa2*Theta + 
+     (4*exKh*Theta)/3. + (4*Power(Theta,2))/3. + 4*cpi*trSs)
+;
+
+dtexAt11
+=
+(4*dbeta11*exAt11 - 2*dbeta22*exAt11 - 2*dbeta33*exAt11 + 
+    6*dbeta12*exAt12 + 6*dbeta13*exAt13 + 3*alpha*exAt11*exKh - 
+    6*alpha*Power(exAt11,2)*invgamt11 - 12*alpha*exAt11*exAt12*invgamt12 - 
+    12*alpha*exAt11*exAt13*invgamt13 - 6*alpha*Power(exAt12,2)*invgamt22 - 
+    12*alpha*exAt12*exAt13*invgamt23 - 6*alpha*Power(exAt13,2)*invgamt33 + 
+    chi*(DDalpha11*(-3 + gam11*invgam11) + 2*DDalpha12*gam11*invgam12 + 
+       2*DDalpha13*gam11*invgam13 + DDalpha22*gam11*invgam22 + 
+       2*DDalpha23*gam11*invgam23 + DDalpha33*gam11*invgam33 + 
+       3*alpha*R11 - alpha*gam11*invgam11*R11 - 
+       2*alpha*gam11*invgam12*R12 - 2*alpha*gam11*invgam13*R13 - 
+       alpha*gam11*invgam22*R22 - 2*alpha*gam11*invgam23*R23 - 
+       alpha*gam11*invgam33*R33 - 24*alpha*cpi*Ss11 + 
+       8*alpha*cpi*gam11*invgam11*Ss11 + 
+       16*alpha*cpi*gam11*invgam12*Ss12 + 
+       16*alpha*cpi*gam11*invgam13*Ss13 + 
+       8*alpha*cpi*gam11*invgam22*Ss22 + 
+       16*alpha*cpi*gam11*invgam23*Ss23 + 8*alpha*cpi*gam11*invgam33*Ss33) \
++ 6*alpha*exAt11*Theta)/3.
+;
+
+dtexAt12
+=
+(3*dbeta21*exAt11 + dbeta11*exAt12 + dbeta22*exAt12 - 2*dbeta33*exAt12 + 
+    3*dbeta23*exAt13 + 3*dbeta12*exAt22 + 3*dbeta13*exAt23 + 
+    3*alpha*exAt12*exKh - 6*alpha*exAt11*exAt12*invgamt11 - 
+    6*alpha*Power(exAt12,2)*invgamt12 - 6*alpha*exAt11*exAt22*invgamt12 - 
+    6*alpha*exAt12*exAt13*invgamt13 - 6*alpha*exAt11*exAt23*invgamt13 - 
+    6*alpha*exAt12*exAt22*invgamt22 - 6*alpha*exAt13*exAt22*invgamt23 - 
+    6*alpha*exAt12*exAt23*invgamt23 - 6*alpha*exAt13*exAt23*invgamt33 + 
+    chi*(DDalpha11*gam12*invgam11 + DDalpha12*(-3 + 2*gam12*invgam12) + 
+       2*DDalpha13*gam12*invgam13 + DDalpha22*gam12*invgam22 + 
+       2*DDalpha23*gam12*invgam23 + DDalpha33*gam12*invgam33 - 
+       alpha*gam12*invgam11*R11 + 3*alpha*R12 - 
+       2*alpha*gam12*invgam12*R12 - 2*alpha*gam12*invgam13*R13 - 
+       alpha*gam12*invgam22*R22 - 2*alpha*gam12*invgam23*R23 - 
+       alpha*gam12*invgam33*R33 + 8*alpha*cpi*gam12*invgam11*Ss11 - 
+       24*alpha*cpi*Ss12 + 16*alpha*cpi*gam12*invgam12*Ss12 + 
+       16*alpha*cpi*gam12*invgam13*Ss13 + 
+       8*alpha*cpi*gam12*invgam22*Ss22 + 
+       16*alpha*cpi*gam12*invgam23*Ss23 + 8*alpha*cpi*gam12*invgam33*Ss33) \
++ 6*alpha*exAt12*Theta)/3.
+;
+
+dtexAt13
+=
+(3*dbeta31*exAt11 + 3*dbeta32*exAt12 + dbeta11*exAt13 - 2*dbeta22*exAt13 + 
+    dbeta33*exAt13 + 3*dbeta12*exAt23 + 3*dbeta13*exAt33 + 
+    3*alpha*exAt13*exKh - 6*alpha*exAt11*exAt13*invgamt11 - 
+    6*alpha*exAt12*exAt13*invgamt12 - 6*alpha*exAt11*exAt23*invgamt12 - 
+    6*alpha*Power(exAt13,2)*invgamt13 - 6*alpha*exAt11*exAt33*invgamt13 - 
+    6*alpha*exAt12*exAt23*invgamt22 - 6*alpha*exAt13*exAt23*invgamt23 - 
+    6*alpha*exAt12*exAt33*invgamt23 - 6*alpha*exAt13*exAt33*invgamt33 + 
+    chi*(DDalpha11*gam13*invgam11 + 2*DDalpha12*gam13*invgam12 + 
+       DDalpha13*(-3 + 2*gam13*invgam13) + DDalpha22*gam13*invgam22 + 
+       2*DDalpha23*gam13*invgam23 + DDalpha33*gam13*invgam33 - 
+       alpha*gam13*invgam11*R11 - 2*alpha*gam13*invgam12*R12 + 
+       3*alpha*R13 - 2*alpha*gam13*invgam13*R13 - 
+       alpha*gam13*invgam22*R22 - 2*alpha*gam13*invgam23*R23 - 
+       alpha*gam13*invgam33*R33 + 8*alpha*cpi*gam13*invgam11*Ss11 + 
+       16*alpha*cpi*gam13*invgam12*Ss12 - 24*alpha*cpi*Ss13 + 
+       16*alpha*cpi*gam13*invgam13*Ss13 + 
+       8*alpha*cpi*gam13*invgam22*Ss22 + 
+       16*alpha*cpi*gam13*invgam23*Ss23 + 8*alpha*cpi*gam13*invgam33*Ss33) \
++ 6*alpha*exAt13*Theta)/3.
+;
+
+dtexAt22
+=
+(6*dbeta21*exAt12 - 2*dbeta11*exAt22 + 4*dbeta22*exAt22 - 
+    2*dbeta33*exAt22 + 6*dbeta23*exAt23 + 3*alpha*exAt22*exKh - 
+    6*alpha*Power(exAt12,2)*invgamt11 - 12*alpha*exAt12*exAt22*invgamt12 - 
+    12*alpha*exAt12*exAt23*invgamt13 - 6*alpha*Power(exAt22,2)*invgamt22 - 
+    12*alpha*exAt22*exAt23*invgamt23 - 6*alpha*Power(exAt23,2)*invgamt33 + 
+    chi*(DDalpha11*gam22*invgam11 + 2*DDalpha12*gam22*invgam12 + 
+       2*DDalpha13*gam22*invgam13 + DDalpha22*(-3 + gam22*invgam22) + 
+       2*DDalpha23*gam22*invgam23 + DDalpha33*gam22*invgam33 - 
+       alpha*gam22*invgam11*R11 - 2*alpha*gam22*invgam12*R12 - 
+       2*alpha*gam22*invgam13*R13 + 3*alpha*R22 - 
+       alpha*gam22*invgam22*R22 - 2*alpha*gam22*invgam23*R23 - 
+       alpha*gam22*invgam33*R33 + 8*alpha*cpi*gam22*invgam11*Ss11 + 
+       16*alpha*cpi*gam22*invgam12*Ss12 + 
+       16*alpha*cpi*gam22*invgam13*Ss13 - 24*alpha*cpi*Ss22 + 
+       8*alpha*cpi*gam22*invgam22*Ss22 + 
+       16*alpha*cpi*gam22*invgam23*Ss23 + 8*alpha*cpi*gam22*invgam33*Ss33) \
++ 6*alpha*exAt22*Theta)/3.
+;
+
+dtexAt23
+=
+(3*dbeta31*exAt12 + 3*dbeta21*exAt13 + 3*dbeta32*exAt22 - 
+    2*dbeta11*exAt23 + dbeta22*exAt23 + dbeta33*exAt23 + 3*dbeta23*exAt33 + 
+    3*alpha*exAt23*exKh - 6*alpha*exAt12*exAt13*invgamt11 - 
+    6*alpha*exAt13*exAt22*invgamt12 - 6*alpha*exAt12*exAt23*invgamt12 - 
+    6*alpha*exAt13*exAt23*invgamt13 - 6*alpha*exAt12*exAt33*invgamt13 - 
+    6*alpha*exAt22*exAt23*invgamt22 - 6*alpha*Power(exAt23,2)*invgamt23 - 
+    6*alpha*exAt22*exAt33*invgamt23 - 6*alpha*exAt23*exAt33*invgamt33 + 
+    chi*(DDalpha11*gam23*invgam11 + 2*DDalpha12*gam23*invgam12 + 
+       2*DDalpha13*gam23*invgam13 + DDalpha22*gam23*invgam22 + 
+       DDalpha23*(-3 + 2*gam23*invgam23) + DDalpha33*gam23*invgam33 - 
+       alpha*gam23*invgam11*R11 - 2*alpha*gam23*invgam12*R12 - 
+       2*alpha*gam23*invgam13*R13 - alpha*gam23*invgam22*R22 + 
+       3*alpha*R23 - 2*alpha*gam23*invgam23*R23 - 
+       alpha*gam23*invgam33*R33 + 8*alpha*cpi*gam23*invgam11*Ss11 + 
+       16*alpha*cpi*gam23*invgam12*Ss12 + 
+       16*alpha*cpi*gam23*invgam13*Ss13 + 
+       8*alpha*cpi*gam23*invgam22*Ss22 - 24*alpha*cpi*Ss23 + 
+       16*alpha*cpi*gam23*invgam23*Ss23 + 8*alpha*cpi*gam23*invgam33*Ss33) \
++ 6*alpha*exAt23*Theta)/3.
+;
+
+dtexAt33
+=
+(6*dbeta31*exAt13 + 6*dbeta32*exAt23 - 2*dbeta11*exAt33 - 
+    2*dbeta22*exAt33 + 4*dbeta33*exAt33 + 3*alpha*exAt33*exKh - 
+    6*alpha*Power(exAt13,2)*invgamt11 - 12*alpha*exAt13*exAt23*invgamt12 - 
+    12*alpha*exAt13*exAt33*invgamt13 - 6*alpha*Power(exAt23,2)*invgamt22 - 
+    12*alpha*exAt23*exAt33*invgamt23 - 6*alpha*Power(exAt33,2)*invgamt33 + 
+    chi*(DDalpha11*gam33*invgam11 + 2*DDalpha12*gam33*invgam12 + 
+       2*DDalpha13*gam33*invgam13 + DDalpha22*gam33*invgam22 + 
+       2*DDalpha23*gam33*invgam23 + DDalpha33*(-3 + gam33*invgam33) - 
+       alpha*gam33*invgam11*R11 - 2*alpha*gam33*invgam12*R12 - 
+       2*alpha*gam33*invgam13*R13 - alpha*gam33*invgam22*R22 - 
+       2*alpha*gam33*invgam23*R23 + 3*alpha*R33 - 
+       alpha*gam33*invgam33*R33 + 8*alpha*cpi*gam33*invgam11*Ss11 + 
+       16*alpha*cpi*gam33*invgam12*Ss12 + 
+       16*alpha*cpi*gam33*invgam13*Ss13 + 
+       8*alpha*cpi*gam33*invgam22*Ss22 + 
+       16*alpha*cpi*gam33*invgam23*Ss23 - 24*alpha*cpi*Ss33 + 
+       8*alpha*cpi*gam33*invgam33*Ss33) + 6*alpha*exAt33*Theta)/3.
+;
+
+dttrGt1
+=
+(-6*dalpha1*exAtUU11 - 6*dalpha2*exAtUU12 - 6*dalpha3*exAtUU13 - 
+    (9*alpha*(dchi1*exAtUU11 + dchi2*exAtUU12 + dchi3*exAtUU13))/chi + 
+    4*ddbeta111*invgamt11 + ddbeta122*invgamt11 + ddbeta133*invgamt11 + 
+    7*ddbeta121*invgamt12 + ddbeta222*invgamt12 + ddbeta233*invgamt12 + 
+    7*ddbeta131*invgamt13 + ddbeta232*invgamt13 + ddbeta333*invgamt13 + 
+    3*ddbeta221*invgamt22 + 6*ddbeta231*invgamt23 + 3*ddbeta331*invgamt33 - 
+    2*dbeta11*trGtd1 - 2*dbeta22*trGtd1 - 2*dbeta33*trGtd1 + 
+    2*alpha*(3*exAtUU11*Gt111 + 6*exAtUU12*Gt112 + 6*exAtUU13*Gt113 + 
+       3*exAtUU22*Gt122 + 6*exAtUU23*Gt123 + 3*exAtUU33*Gt133 - 
+       2*dexKh1*invgamt11 - dTheta1*invgamt11 - 2*dexKh2*invgamt12 - 
+       dTheta2*invgamt12 - 2*dexKh3*invgamt13 - dTheta3*invgamt13 - 
+       24*cpi*invgam11*Sm1 - 24*cpi*invgam12*Sm2 - 24*cpi*invgam13*Sm3 - 
+       3*ckappa1*trGt1 + 3*ckappa1*trGtd1))/3.
+;
+
+dttrGt2
+=
+(-6*dalpha1*exAtUU12 - 6*dalpha2*exAtUU22 - 6*dalpha3*exAtUU23 - 
+    (9*alpha*(dchi1*exAtUU12 + dchi2*exAtUU22 + dchi3*exAtUU23))/chi + 
+    3*ddbeta112*invgamt11 + ddbeta111*invgamt12 + 7*ddbeta122*invgamt12 + 
+    ddbeta133*invgamt12 + 6*ddbeta132*invgamt13 + ddbeta121*invgamt22 + 
+    4*ddbeta222*invgamt22 + ddbeta233*invgamt22 + ddbeta131*invgamt23 + 
+    7*ddbeta232*invgamt23 + ddbeta333*invgamt23 + 3*ddbeta332*invgamt33 - 
+    2*dbeta11*trGtd2 - 2*dbeta22*trGtd2 - 2*dbeta33*trGtd2 + 
+    2*alpha*(3*exAtUU11*Gt211 + 6*exAtUU12*Gt212 + 6*exAtUU13*Gt213 + 
+       3*exAtUU22*Gt222 + 6*exAtUU23*Gt223 + 3*exAtUU33*Gt233 - 
+       2*dexKh1*invgamt12 - dTheta1*invgamt12 - 2*dexKh2*invgamt22 - 
+       dTheta2*invgamt22 - 2*dexKh3*invgamt23 - dTheta3*invgamt23 - 
+       24*cpi*invgam12*Sm1 - 24*cpi*invgam22*Sm2 - 24*cpi*invgam23*Sm3 - 
+       3*ckappa1*trGt2 + 3*ckappa1*trGtd2))/3.
+;
+
+dttrGt3
+=
+(-6*dalpha1*exAtUU13 - 6*dalpha2*exAtUU23 - 6*dalpha3*exAtUU33 - 
+    (9*alpha*(dchi1*exAtUU13 + dchi2*exAtUU23 + dchi3*exAtUU33))/chi + 
+    3*ddbeta113*invgamt11 + 6*ddbeta123*invgamt12 + ddbeta111*invgamt13 + 
+    ddbeta122*invgamt13 + 7*ddbeta133*invgamt13 + 3*ddbeta223*invgamt22 + 
+    ddbeta121*invgamt23 + ddbeta222*invgamt23 + 7*ddbeta233*invgamt23 + 
+    ddbeta131*invgamt33 + ddbeta232*invgamt33 + 4*ddbeta333*invgamt33 - 
+    2*dbeta11*trGtd3 - 2*dbeta22*trGtd3 - 2*dbeta33*trGtd3 + 
+    2*alpha*(3*exAtUU11*Gt311 + 6*exAtUU12*Gt312 + 6*exAtUU13*Gt313 + 
+       3*exAtUU22*Gt322 + 6*exAtUU23*Gt323 + 3*exAtUU33*Gt333 - 
+       2*dexKh1*invgamt13 - dTheta1*invgamt13 - 2*dexKh2*invgamt23 - 
+       dTheta2*invgamt23 - 2*dexKh3*invgamt33 - dTheta3*invgamt33 - 
+       24*cpi*invgam13*Sm1 - 24*cpi*invgam23*Sm2 - 24*cpi*invgam33*Sm3 - 
+       3*ckappa1*trGt3 + 3*ckappa1*trGtd3))/3.
+;
+
+dtTheta
+=
+-0.16666666666666666*(alpha*(3*exAt11*exAtUU11 + 6*exAt12*exAtUU12 + 
+      6*exAt13*exAtUU13 + 3*exAt22*exAtUU22 + 6*exAt23*exAtUU23 + 
+      3*exAt33*exAtUU33 - 2*Power(exKh,2) + 48*cpi*rho + 12*ckappa1*Theta + 
+      6*ckappa1*ckappa2*Theta - 8*exKh*Theta - 8*Power(Theta,2) - 3*trR))
+;
+
+dtalpha
+=
+-(Power(alpha,2)*cmuL*exKh)
+;
+
+dtbeta1
+=
+-(beta1*ceta) + Power(alpha,2)*cmuS*trGt1
+;
+
+dtbeta2
+=
+-(beta2*ceta) + Power(alpha,2)*cmuS*trGt2
+;
+
+dtbeta3
+=
+-(beta3*ceta) + Power(alpha,2)*cmuS*trGt3
+;
+
 
 
 /* Z4co_set_rhs.hxx */
