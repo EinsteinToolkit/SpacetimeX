@@ -88,8 +88,8 @@ MatterVarlist = TempTensors[{rho[], PrintAs -> "\[Rho]"}, {Sm[-i], PrintAs
 
 (* Constraints *)
 
-dAtUUVarlist = TempTensors[{dexAtUU[-k, i, j], Symmetric[{i, j}], PrintAs
-   -> "\[PartialD]\!\(\*OverscriptBox[\(A\), \(~\)]\)"}];
+dAtUUVarlist = TempTensors[{trdexAtUU[i], PrintAs -> "\[PartialD]\!\(\*OverscriptBox[\(A\), \(~\)]\)"
+  }];
 
 ConstraintVarlist = GridTensors[{ZtC[i], PrintAs -> "\!\(\*OverscriptBox[\(Z\), \(~\)]\)"
   }, {HC[], PrintAs -> "H"}, {MtC[i], PrintAs -> "\!\(\*OverscriptBox[\(M\), \(~\)]\)"
