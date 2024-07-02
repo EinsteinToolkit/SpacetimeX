@@ -182,23 +182,23 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
       GF3D2<CCTK_REAL>(layout2, gammatyz_rhs),
       GF3D2<CCTK_REAL>(layout2, gammatzz_rhs)};
 
-  const GF3D2<CCTK_REAL> gf_Kh_rhs1(layout2, Kh_rhs);
+  const GF3D2<CCTK_REAL> gf_dtexKh(layout2, Kh_rhs);
 
-  const smat<GF3D2<CCTK_REAL>, 3> gf_At_rhs1{
+  const smat<GF3D2<CCTK_REAL>, 3> gf_dtexAt{
       GF3D2<CCTK_REAL>(layout2, Atxx_rhs), GF3D2<CCTK_REAL>(layout2, Atxy_rhs),
       GF3D2<CCTK_REAL>(layout2, Atxz_rhs), GF3D2<CCTK_REAL>(layout2, Atyy_rhs),
       GF3D2<CCTK_REAL>(layout2, Atyz_rhs), GF3D2<CCTK_REAL>(layout2, Atzz_rhs)};
 
-  const vec<GF3D2<CCTK_REAL>, 3> gf_Gamt_rhs1{
+  const vec<GF3D2<CCTK_REAL>, 3> gf_dttrGt{
       GF3D2<CCTK_REAL>(layout2, Gamtx_rhs),
       GF3D2<CCTK_REAL>(layout2, Gamty_rhs),
       GF3D2<CCTK_REAL>(layout2, Gamtz_rhs)};
 
-  const GF3D2<CCTK_REAL> gf_Theta_rhs1(layout2, Theta_rhs);
+  const GF3D2<CCTK_REAL> gf_dtTheta(layout2, Theta_rhs);
 
-  const GF3D2<CCTK_REAL> gf_alphaG_rhs1(layout2, alphaG_rhs);
+  const GF3D2<CCTK_REAL> gf_dtalpha(layout2, alphaG_rhs);
 
-  const vec<GF3D2<CCTK_REAL>, 3> gf_betaG_rhs1{
+  const vec<GF3D2<CCTK_REAL>, 3> gf_dtbeta{
       GF3D2<CCTK_REAL>(layout2, betaGx_rhs),
       GF3D2<CCTK_REAL>(layout2, betaGy_rhs),
       GF3D2<CCTK_REAL>(layout2, betaGz_rhs)};
@@ -239,22 +239,22 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
       apply_upwind_diss(cctkGH, gf_gamt(a, b), gf_beta,
                         gf_gammat_rhs1(a, b));
 
-  apply_upwind_diss(cctkGH, gf_exKh, gf_beta, gf_Kh_rhs1);
+  apply_upwind_diss(cctkGH, gf_exKh, gf_beta, gf_dtexKh);
 
   for (int a = 0; a < 3; ++a)
     for (int b = a; b < 3; ++b)
-      apply_upwind_diss(cctkGH, gf_exAt(a, b), gf_beta, gf_At_rhs1(a, b));
+      apply_upwind_diss(cctkGH, gf_exAt(a, b), gf_beta, gf_dtexAt(a, b));
 
   for (int a = 0; a < 3; ++a)
-    apply_upwind_diss(cctkGH, gf_trGt(a), gf_beta, gf_Gamt_rhs1(a));
+    apply_upwind_diss(cctkGH, gf_trGt(a), gf_beta, gf_dttrGt(a));
 
   if (!set_Theta_zero)
-    apply_upwind_diss(cctkGH, gf_Theta, gf_beta, gf_Theta_rhs1);
+    apply_upwind_diss(cctkGH, gf_Theta, gf_beta, gf_dtTheta);
 
-  apply_upwind_diss(cctkGH, gf_alpha, gf_beta, gf_alphaG_rhs1);
+  apply_upwind_diss(cctkGH, gf_alpha, gf_beta, gf_dtalpha);
 
   for (int a = 0; a < 3; ++a)
-    apply_upwind_diss(cctkGH, gf_beta(a), gf_beta, gf_betaG_rhs1(a));
+    apply_upwind_diss(cctkGH, gf_beta(a), gf_beta, gf_dtbeta(a));
 }
 
 } // namespace Z4co
