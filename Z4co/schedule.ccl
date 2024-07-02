@@ -115,27 +115,6 @@ SCHEDULE Z4co_Enforce IN Z4co_PostStepGroup
   SYNC: betaG
 } "Enforce algebraic Z4c constraints"
 
-if (calc_ADM_vars) {
-  SCHEDULE Z4co_ADM IN Z4co_PostStepGroup AFTER Z4co_Enforce
-  {
-    LANG: C
-    READS: chi(everywhere)
-    READS: gamma_tilde(everywhere)
-    READS: K_hat(everywhere)
-    READS: A_tilde(everywhere)
-    READS: Gam_tilde(everywhere)
-    READS: Theta(everywhere)
-    READS: alphaG(everywhere)
-    READS: betaG(everywhere)
-    WRITES: ADMBaseX::metric(everywhere)
-    WRITES: ADMBaseX::curv(everywhere)
-    WRITES: ADMBaseX::lapse(everywhere)
-    WRITES: ADMBaseX::dtlapse(everywhere)
-    WRITES: ADMBaseX::shift(everywhere)
-    WRITES: ADMBaseX::dtshift(everywhere)
-  } "Convert Z4c to ADM variables"
-}
-
 SCHEDULE Z4co_RHS IN Z4co_RHSGroup
 {
   LANG: C
