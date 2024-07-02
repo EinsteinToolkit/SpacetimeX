@@ -37,12 +37,12 @@ SetOutputFile[FileNameJoin[{Directory[], "Z4co_set_rhs.hxx"}]];
 
 $MainPrint[] :=
   Module[{},
-    PrintInitializations[{Mode -> "GF3D5"}, dtEvolVarlist];
-    PrintInitializations[{Mode -> "GF3D5"}, ConstraintVarlist];
-    PrintInitializations[{Mode -> "GF3D5"}, TmunuVarlist];
-    PrintInitializations[{Mode -> "GF3D2"}, EvolVarlist];
-    PrintInitializations[{Mode -> "VecGF3D2"}, dEvolVarlist];
-    PrintInitializations[{Mode -> "SmatGF3D2"}, ddEvolVarlist];
+    PrintInitializations[{Mode -> "GF3D2"}, dtEvolVarlist];
+    PrintInitializations[{Mode -> "GF3D2"}, ConstraintVarlist];
+    PrintInitializations[{Mode -> "GF3D2"}, TmunuVarlist];
+    PrintInitializations[{Mode -> "GF3D5"}, EvolVarlist];
+    PrintInitializations[{Mode -> "VecGF3D5"}, dEvolVarlist];
+    PrintInitializations[{Mode -> "SmatGF3D5"}, ddEvolVarlist];
     pr[];
     PrintEquations[{Mode -> "Temp"}, IntermediateVarlist];
     PrintEquations[{Mode -> "Temp"}, DDVarlist];
