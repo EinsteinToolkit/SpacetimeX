@@ -21,7 +21,7 @@ DefChart[cart, M3, {1, 2, 3}, {X[], Y[], Z[]}, ChartColor -> Blue];
 
 (* Define Variables *)
 
-<<Z4c_vars.wl
+<<wl/Z4c_vars.wl
 
 SetOutputFile[FileNameJoin[{Directory[], "Z4c_set_rhs.hxx"}]];
 
@@ -29,6 +29,7 @@ $MainPrint[] :=
   Module[{},
     PrintInitializations[{Mode -> "MainIn"}, EvolVarlist];
     PrintInitializations[{Mode -> "MainIn"}, dEvolVarlist];
+    PrintInitializations[{Mode -> "MainIn"}, ddEvolVarlist];
   ];
 
 Import[FileNameJoin[{Environment["GENERATO"], "codes/CarpetX.wl"}]];
