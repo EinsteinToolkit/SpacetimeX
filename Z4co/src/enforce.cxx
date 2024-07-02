@@ -44,7 +44,7 @@ extern "C" void Z4co_Enforce(CCTK_ARGUMENTS) {
   typedef simdl<CCTK_REAL> vbool;
   constexpr size_t vsize = tuple_size_v<vreal>;
 
-  const auto delta3 = one<smat<vreal, 3> >()();
+  const auto delta3 = one<smat<vreal, 3>>()();
 
 #ifdef __CUDACC__
   const nvtxRangeId_t range = nvtxRangeStartA("Z4co_Enforce::enforce");

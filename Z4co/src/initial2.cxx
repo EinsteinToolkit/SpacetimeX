@@ -44,7 +44,7 @@ extern "C" void Z4co_Initial2(CCTK_ARGUMENTS) {
   typedef simdl<CCTK_REAL> vbool;
   constexpr size_t vsize = tuple_size_v<vreal>;
 
-  const auto delta3 = one<smat<vreal, 3> >()();
+  const auto delta3 = one<smat<vreal, 3>>()();
 
   const Loop::GridDescBaseDevice grid(cctkGH);
 #ifdef __CUDACC__
