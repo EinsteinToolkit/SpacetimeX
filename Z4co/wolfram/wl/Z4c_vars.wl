@@ -10,6 +10,16 @@
 
 (***********************)
 
+dtEvolVarlist = GridTensors[{dtchi[], PrintAs -> "\!\(\*SubscriptBox[\(\[PartialD]\), \(t\)]\)\[Chi]"
+  }, {dtgamt[-i, -j], Symmetric[{-i, -j}], PrintAs -> "\!\(\*SubscriptBox[\(\[PartialD]\), \(t\)]\)\!\(\*OverscriptBox[\(\[Gamma]\), \(~\)]\)"
+  }, {dtexKh[], PrintAs -> "\!\(\*SubscriptBox[\(\[PartialD]\), \(t\)]\)\!\(\*OverscriptBox[\(K\), \(^\)]\)"
+  }, {dtexAt[-i, -j], Symmetric[{-i, -j}], PrintAs -> "\!\(\*SubscriptBox[\(\[PartialD]\), \(t\)]\)\!\(\*OverscriptBox[\(A\), \(~\)]\)"
+  }, {dttrGt[i], PrintAs -> "\!\(\*SubscriptBox[\(\[PartialD]\), \(t\)]\)\!\(\*OverscriptBox[\(\[CapitalGamma]\), \(~\)]\)"
+  }, {dtTheta[], PrintAs -> "\!\(\*SubscriptBox[\(\[PartialD]\), \(t\)]\)\[CapitalTheta]"
+  }, {dtalpha[], PrintAs -> "\!\(\*SubscriptBox[\(\[PartialD]\), \(t\)]\)\[Alpha]"
+  }, {dtbeta[i], PrintAs -> "\!\(\*SubscriptBox[\(\[PartialD]\), \(t\)]\)\[Beta]"
+  }];
+
 EvolVarlist = GridTensors[{chi[], PrintAs -> "\[Chi]"}, {gamt[-i, -j], 
   Symmetric[{-i, -j}], PrintAs -> "\!\(\*OverscriptBox[\(\[Gamma]\), \(~\)]\)"
   }, {exKh[], PrintAs -> "\!\(\*OverscriptBox[\(K\), \(^\)]\)"}, {exAt[-i,
