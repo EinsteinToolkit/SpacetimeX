@@ -50,7 +50,7 @@ $MainPrint[] :=
     PrintEquations[{Mode -> "Temp"}, MatterVarlist];
     PrintEquations[{Mode -> "Temp"}, dAtUUVarlist];
     pr[];
-    PrintEquations[{Mode -> "Temp"}, ConstraintVarlist];
+    PrintEquations[{Mode -> "Main"}, ConstraintVarlist];
     PrintEquations[{Mode -> "Main"}, dtEvolVarlist];
   ];
 
