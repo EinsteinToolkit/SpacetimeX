@@ -50,10 +50,11 @@ TmunuVarlist = GridTensors[{eTtt[], PrintAs -> "\!\(\*SubscriptBox[\(T\), \(tt\)
 
 (**************************)
 
-IntermediateVarlist = TempTensors[{invgamt[i, j], Symmetric[{i, j}], PrintAs
-   -> "\!\(\*OverscriptBox[\(\[Gamma]\), \(~\)]\)"}, {invgam[i, j], Symmetric[
-  {i, j}], PrintAs -> "\[Gamma]"}, {gam[-i, -j], Symmetric[{-i, -j}], PrintAs
-   -> "\[Gamma]"}, {GtDDD[-k, -i, -j], Symmetric[{-i, -j}], PrintAs -> "\!\(\*OverscriptBox[\(\[CapitalGamma]\), \(~\)]\)"
+IntermediateVarlist = TempTensors[{detinvgamt[], PrintAs -> "1/\!\(\*OverscriptBox[\(\[Gamma]\), \(~\)]\)"
+  }, {invgamt[i, j], Symmetric[{i, j}], PrintAs -> "\!\(\*OverscriptBox[\(\[Gamma]\), \(~\)]\)"
+  }, {invgam[i, j], Symmetric[{i, j}], PrintAs -> "\[Gamma]"}, {gam[-i, -
+  j], Symmetric[{-i, -j}], PrintAs -> "\[Gamma]"}, {GtDDD[-k, -i, -j], Symmetric[
+  {-i, -j}], PrintAs -> "\!\(\*OverscriptBox[\(\[CapitalGamma]\), \(~\)]\)"
   }, {GtDDU[-k, -i, j], PrintAs -> "\!\(\*OverscriptBox[\(\[CapitalGamma]\), \(~\)]\)"
   }, {Gt[k, -i, -j], Symmetric[{-i, -j}], PrintAs -> "\!\(\*OverscriptBox[\(\[CapitalGamma]\), \(~\)]\)"
   }, {trGtd[i], PrintAs -> "(\!\(\*SubscriptBox[OverscriptBox[\(\[CapitalGamma]\), \(~\)], \(d\)]\))"
