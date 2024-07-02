@@ -87,22 +87,22 @@ SetEQN[MtC[i_], dexAtUU[-j, i, j] + Gt[i, -j, -k] exAtUU[j, k] - 2/3 invgamt[
 
 (* (1) *)
 
-SetEQN[chi[], 2/3 chi[] (alpha[] (exKh[] + 2 Theta[]) - dbeta[-i, i])];
+SetEQN[dtchi[], 2/3 chi[] (alpha[] (exKh[] + 2 Theta[]) - dbeta[-i, i])];
 
 (* (2) *)
 
-SetEQN[gamt[i_, j_], -2 alpha[] exAt[i, j] + (gamt[-k, i] dbeta[j, k] +
+SetEQN[dtgamt[i_, j_], -2 alpha[] exAt[i, j] + (gamt[-k, i] dbeta[j, k] +
    gamt[-k, j] dbeta[i, k]) - 2/3 gamt[i, j] dbeta[-k, k]];
 
 (* (3) *)
 
-SetEQN[exKh[], -invgam[k, l] DDalpha[-k, -l] + alpha[] (exAt[-k, -l] exAtUU[
+SetEQN[dtexKh[], -invgam[k, l] DDalpha[-k, -l] + alpha[] (exAt[-k, -l] exAtUU[
   k, l] + 1/3 (exKh[] + 2 Theta[]) ^ 2) + 4 cpi alpha[] (trSs[] + rho[]) 
   + alpha[] ckappa1 (1 - ckappa2) Theta[]];
 
 (* (4) *)
 
-SetEQN[exAt[i_, j_], chi[] ((-DDalpha[i, j] + alpha[] (R[i, j] - 8 cpi 
+SetEQN[dtexAt[i_, j_], chi[] ((-DDalpha[i, j] + alpha[] (R[i, j] - 8 cpi 
   Ss[i, j])) - 1/3 gam[i, j] invgam[k, l] (-DDalpha[-k, -l] + alpha[] (R[
   -k, -l] - 8 cpi Ss[-k, -l]))) + alpha[] ((exKh[] + 2 Theta[]) exAt[i, j
   ] - 2 invgamt[k, l] exAt[-k, i] exAt[-l, j]) + (exAt[-k, i] dbeta[j, k]
@@ -110,7 +110,7 @@ SetEQN[exAt[i_, j_], chi[] ((-DDalpha[i, j] + alpha[] (R[i, j] - 8 cpi
 
 (* (5) *)
 
-SetEQN[Gt[i_], -2 exAtUU[i, j] dalpha[-j] + 2 alpha[] (Gt[i, -j, -k] exAtUU[
+SetEQN[dttrGt[i_], -2 exAtUU[i, j] dalpha[-j] + 2 alpha[] (Gt[i, -j, -k] exAtUU[
   j, k] - 3/2 exAtUU[i, j] dchi[-j] / chi[] - 1/3 invgamt[i, j] (2 dexKh[
   -j] + dTheta[-j]) - 8 cpi invgam[i, j] Sm[-j]) + invgamt[j, k] ddbeta[-
   j, -k, i] + 1/3 invgamt[i, j] ddbeta[-j, -k, k] - 2/3 trGtd[i] dbeta[-j,
@@ -118,14 +118,14 @@ SetEQN[Gt[i_], -2 exAtUU[i, j] dalpha[-j] + 2 alpha[] (Gt[i, -j, -k] exAtUU[
 
 (* (6) *)
 
-SetEQN[Theta[], 1/2 alpha[] (trR[] - exAt[-k, -l] exAtUU[k, l] + 2/3 (exKh[
+SetEQN[dtTheta[], 1/2 alpha[] (trR[] - exAt[-k, -l] exAtUU[k, l] + 2/3 (exKh[
   ] + 2 Theta[]) ^ 2) - alpha[] (8 cpi rho[] + ckappa1 (2 + ckappa2) Theta[
   ])];
 
 (* (11) *)
 
-SetEQN[alpha[], -alpha[] ^ 2 cmuL exKh[]];
+SetEQN[dtalpha[], -alpha[] ^ 2 cmuL exKh[]];
 
 (* (12) *)
 
-SetEQN[beta[i_], alpha[] ^ 2 cmuS trGt[i] - ceta beta[i]];
+SetEQN[dtbeta[i_], alpha[] ^ 2 cmuS trGt[i] - ceta beta[i]];
