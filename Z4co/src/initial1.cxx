@@ -74,7 +74,7 @@ extern "C" void Z4co_Initial1(CCTK_ARGUMENTS) {
   typedef simdl<CCTK_REAL> vbool;
   constexpr size_t vsize = tuple_size_v<vreal>;
 
-  const auto delta3 = one<smat<vreal, 3> >()();
+  const auto delta3 = one<smat<vreal, 3>>()();
 
   const Loop::GridDescBaseDevice grid(cctkGH);
 #ifdef __CUDACC__
@@ -86,7 +86,7 @@ extern "C" void Z4co_Initial1(CCTK_ARGUMENTS) {
         const GF3D2index index1(layout1, p.I);
 
         // Load
-        const smat<vreal, 3> g = gf_g1(mask, index1, one<smat<int, 3> >()());
+        const smat<vreal, 3> g = gf_g1(mask, index1, one<smat<int, 3>>()());
         const smat<vreal, 3> K = gf_K1(mask, index1);
         const vreal alp = gf_alp1(mask, index1, 1);
         const vec<vreal, 3> beta = gf_beta1(mask, index1);

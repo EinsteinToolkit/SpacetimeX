@@ -152,7 +152,7 @@ template <typename T>
 inline ARITH_INLINE ARITH_DEVICE ARITH_HOST simd<T>
 deriv2_2d(const int vavail, const simdl<T> &mask, const T *restrict const var,
           const ptrdiff_t di, const ptrdiff_t dj, const T dx, const T dy) {
-  constexpr size_t vsize = tuple_size_v<simd<T> >;
+  constexpr size_t vsize = tuple_size_v<simd<T>>;
   if (di == 1) {
     assert(vavail > 0);
     constexpr int maxnpoints = deriv_order + 1 + vsize - 1;
@@ -160,7 +160,7 @@ deriv2_2d(const int vavail, const simdl<T> &mask, const T *restrict const var,
     array<simd<T>, div_ceil(maxnpoints, int(vsize))> arrx;
     for (int i = 0; i < maxnpoints; i += vsize) {
       if (i < npoints) {
-        const simdl<T> mask1 = mask_for_loop_tail<simdl<T> >(i, npoints);
+        const simdl<T> mask1 = mask_for_loop_tail<simdl<T>>(i, npoints);
         arrx[div_floor(i, int(vsize))] =
             deriv1d(mask1, &var[i - deriv_order / 2], dj, dy);
       }
@@ -177,7 +177,7 @@ deriv2_2d(const int vavail, const simdl<T> &mask, const T *restrict const var,
     for (int j = -deriv_order / 2; j <= deriv_order / 2; ++j)
       if (j == 0) {
 #ifdef CCTK_DEBUG
-        arrx[deriv_order / 2 + j] = Arith::nan<simd<T> >()(); // unused
+        arrx[deriv_order / 2 + j] = Arith::nan<simd<T>>()(); // unused
 #endif
       } else {
         arrx[deriv_order / 2 + j] = deriv1d(mask, &var[j * dj], di, dx);
@@ -233,10 +233,9 @@ deriv_upwind(const simdl<T> &mask, const GF3D2<const T> &gf_,
 }
 
 template <int dir1, int dir2, typename T, int D>
-inline ARITH_INLINE
-    ARITH_DEVICE ARITH_HOST enable_if_t<(dir1 == dir2), simd<T> >
-    deriv2(const int vavail, const simdl<T> &mask, const GF3D2<const T> &gf_,
-           const vect<int, dim> &I, const vec<T, D> &dx) {
+inline ARITH_INLINE ARITH_DEVICE ARITH_HOST enable_if_t<(dir1 == dir2), simd<T>>
+deriv2(const int vavail, const simdl<T> &mask, const GF3D2<const T> &gf_,
+       const vect<int, dim> &I, const vec<T, D> &dx) {
   static_assert(dir1 >= 0 && dir1 < D, "");
   static_assert(dir2 >= 0 && dir2 < D, "");
   const auto &DI = vect<int, dim>::unit;
@@ -245,10 +244,9 @@ inline ARITH_INLINE
 }
 
 template <int dir1, int dir2, typename T, int D>
-inline ARITH_INLINE
-    ARITH_DEVICE ARITH_HOST enable_if_t<(dir1 != dir2), simd<T> >
-    deriv2(const int vavail, const simdl<T> &mask, const GF3D2<const T> &gf_,
-           const vect<int, dim> &I, const vec<T, D> &dx) {
+inline ARITH_INLINE ARITH_DEVICE ARITH_HOST enable_if_t<(dir1 != dir2), simd<T>>
+deriv2(const int vavail, const simdl<T> &mask, const GF3D2<const T> &gf_,
+       const vect<int, dim> &I, const vec<T, D> &dx) {
   static_assert(dir1 >= 0 && dir1 < D, "");
   static_assert(dir2 >= 0 && dir2 < D, "");
   const auto &DI = vect<int, dim>::unit;
