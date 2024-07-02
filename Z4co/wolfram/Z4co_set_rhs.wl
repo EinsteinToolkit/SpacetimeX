@@ -37,6 +37,9 @@ SetOutputFile[FileNameJoin[{Directory[], "Z4co_set_rhs.hxx"}]];
 
 $MainPrint[] :=
   Module[{},
+    PrintInitializations[{Mode -> "GF3D5"}, dtEvolVarlist];
+    PrintInitializations[{Mode -> "GF3D5"}, ConstraintVarlist];
+    PrintInitializations[{Mode -> "GF3D5"}, TmunuVarlist];
     PrintInitializations[{Mode -> "GF3D2"}, EvolVarlist];
     PrintInitializations[{Mode -> "VecGF3D2"}, dEvolVarlist];
     PrintInitializations[{Mode -> "SmatGF3D2"}, ddEvolVarlist];
@@ -46,7 +49,10 @@ $MainPrint[] :=
     PrintEquations[{Mode -> "Temp"}, RVarlist];
     PrintEquations[{Mode -> "Temp"}, MatterVarlist];
     PrintEquations[{Mode -> "Temp"}, dAtUUVarlist];
+    pr[];
     PrintEquations[{Mode -> "Temp"}, ConstraintVarlist];
+    PrintEquations[{Mode -> "Main"}, dtEvolVarlist];
+    pr[];
   ];
 
 Import[FileNameJoin[{Environment["GENERATO"], "codes/CarpetX.wl"}]];
