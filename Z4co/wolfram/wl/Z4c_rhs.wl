@@ -66,7 +66,7 @@ SetEQN[trdexAtUU[i_], -2 invgamt[i, l] exAtUU[j, m] dgamt[-j, -l, -m] +
 
 (* (13) *)
 
-SetEQN[ZtC[i_], trGt[i] - trGtd[i]];
+SetEQN[ZtC[i_], (trGt[i] - trGtd[i]) / 2];
 
 (* (14) *)
 
@@ -113,11 +113,10 @@ SetEQN[dtexAt[i_, j_], chi[] ((-DDalpha[i, j] + alpha[] (R[i, j] - 8 cpi
 
 SetEQN[dttrGt[i_], -2 exAtUU[i, j] dalpha[-j] + 2 alpha[] (Gt[i, -j, -k
   ] exAtUU[j, k] - 3/2 exAtUU[i, j] dchi[-j] / chi[] - 1/3 invgamt[i, j] 
-  (2 dexKh[-j] + dTheta[-j]) - 8 cpi invgamt[i, j] Sm[-j]) + invgamt[j, k]
-   ddbeta[-j, -k, i] + 1/3 invgamt[i, j] ddbeta[-j, -k, k]
-   - trGtd[j] dbeta[-j, i]
-   + 2/3 trGtd[i] dbeta[-j, j]
-   - 2 alpha[] ckappa1 (trGt[i] - trGtd[i])];
+  (2 dexKh[-j] + dTheta[-j]) - 8 cpi invgamt[i, j] Sm[-j]) + invgamt[j, k
+  ] ddbeta[-j, -k, i] + 1/3 invgamt[i, j] ddbeta[-j, -k, k] - trGtd[j] dbeta[
+  -j, i] + 2/3 trGtd[i] dbeta[-j, j] - 2 alpha[] ckappa1 (trGt[i] - trGtd[
+  i])];
 
 (* (6) *)
 
