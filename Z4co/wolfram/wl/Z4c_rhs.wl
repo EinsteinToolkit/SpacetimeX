@@ -61,7 +61,10 @@ SetEQN[Ss[i_, j_], eT[i, j]];
 
 SetEQN[trSs[], invgam[k, l] Ss[-k, -l]];
 
-SetEQN[trdexAtUU[i_], -2 invgamt[i, l] exAtUU[j, m] dgamt[-j, -l, -m] +
+SetEQN[trdexAtUU[i_],
+  - invgamt[i, l] exAtUU[j, m] dgamt[-j, -l, -m]
+  - invgamt[j, l] exAtUU[i, m] dgamt[-j, -l, -m]
+  +
    invgamt[i, l] invgamt[j, m] dexAt[-j, -l, -m]];
 
 (* (13) *)
