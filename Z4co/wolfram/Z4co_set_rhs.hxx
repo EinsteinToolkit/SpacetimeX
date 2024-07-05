@@ -1,28 +1,6 @@
 /* Z4co_set_rhs.hxx */
 /* Produced with Mathematica */
 
-const GF3D2<CCTK_REAL> &dtchi = gf_dtchi;
-const GF3D2<CCTK_REAL> &dtgamt11 = gf_dtgamt(0,0);
-const GF3D2<CCTK_REAL> &dtgamt12 = gf_dtgamt(0,1);
-const GF3D2<CCTK_REAL> &dtgamt13 = gf_dtgamt(0,2);
-const GF3D2<CCTK_REAL> &dtgamt22 = gf_dtgamt(1,1);
-const GF3D2<CCTK_REAL> &dtgamt23 = gf_dtgamt(1,2);
-const GF3D2<CCTK_REAL> &dtgamt33 = gf_dtgamt(2,2);
-const GF3D2<CCTK_REAL> &dtexKh = gf_dtexKh;
-const GF3D2<CCTK_REAL> &dtexAt11 = gf_dtexAt(0,0);
-const GF3D2<CCTK_REAL> &dtexAt12 = gf_dtexAt(0,1);
-const GF3D2<CCTK_REAL> &dtexAt13 = gf_dtexAt(0,2);
-const GF3D2<CCTK_REAL> &dtexAt22 = gf_dtexAt(1,1);
-const GF3D2<CCTK_REAL> &dtexAt23 = gf_dtexAt(1,2);
-const GF3D2<CCTK_REAL> &dtexAt33 = gf_dtexAt(2,2);
-const GF3D2<CCTK_REAL> &dttrGt1 = gf_dttrGt(0);
-const GF3D2<CCTK_REAL> &dttrGt2 = gf_dttrGt(1);
-const GF3D2<CCTK_REAL> &dttrGt3 = gf_dttrGt(2);
-const GF3D2<CCTK_REAL> &dtTheta = gf_dtTheta;
-const GF3D2<CCTK_REAL> &dtalpha = gf_dtalpha;
-const GF3D2<CCTK_REAL> &dtbeta1 = gf_dtbeta(0);
-const GF3D2<CCTK_REAL> &dtbeta2 = gf_dtbeta(1);
-const GF3D2<CCTK_REAL> &dtbeta3 = gf_dtbeta(2);
 const vreal &eTtt = gf_eTtt(mask, index2);
 const vreal &eTt1 = gf_eTt(mask, index2)(0);
 const vreal &eTt2 = gf_eTt(mask, index2)(1);

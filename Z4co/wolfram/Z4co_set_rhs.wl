@@ -36,7 +36,7 @@ SetOutputFile[FileNameJoin[{Directory[], "Z4co_set_rhs.hxx"}]];
 
 $MainPrint[] :=
   Module[{},
-    PrintInitializations[{Mode -> "GF3D2Out"}, dtEvolVarlist];
+    (*PrintInitializations[{Mode -> "GF3D2Out"}, dtEvolVarlist];*)
     PrintInitializations[{Mode -> "GF3D2In"}, TmunuVarlist];
     PrintInitializations[{Mode -> "GF3D5"}, EvolVarlist];
     PrintInitializations[{Mode -> "VecGF3D5"}, dEvolVarlist];
