@@ -200,12 +200,12 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
   constexpr size_t vsize = tuple_size_v<vreal>;
 
   // parameters
-  const vreal cpi = acos(-1.0);
-  const vreal ckappa1 = kappa1;
-  const vreal ckappa2 = kappa2;
-  const vreal cmuL = f_mu_L;
-  const vreal cmuS = f_mu_S;
-  const vreal ceta = eta;
+  const CCTK_REAL cpi = acos(-1.0);
+  const CCTK_REAL ckappa1 = kappa1;
+  const CCTK_REAL ckappa2 = kappa2;
+  const CCTK_REAL cmuL = f_mu_L;
+  const CCTK_REAL cmuS = f_mu_S;
+  const CCTK_REAL ceta = eta;
 
   // Loop
   const Loop::GridDescBaseDevice grid(cctkGH);
