@@ -137,11 +137,6 @@ SCHEDULE Z4co_RHS IN Z4co_RHSGroup
   WRITES: Theta_rhs(interior)
   WRITES: alphaG_rhs(interior)
   WRITES: betaG_rhs(interior)
-  #
-  WRITES: ZtC(interior)
-  WRITES: HC(interior)
-  WRITES: MtC(interior)
-  #
   SYNC: chi_rhs
   SYNC: gamma_tilde_rhs
   SYNC: K_hat_rhs

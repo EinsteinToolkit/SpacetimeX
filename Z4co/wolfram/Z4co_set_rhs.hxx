@@ -23,13 +23,6 @@ const GF3D2<CCTK_REAL> &dtalpha = gf_dtalpha;
 const GF3D2<CCTK_REAL> &dtbeta1 = gf_dtbeta(0);
 const GF3D2<CCTK_REAL> &dtbeta2 = gf_dtbeta(1);
 const GF3D2<CCTK_REAL> &dtbeta3 = gf_dtbeta(2);
-const GF3D2<CCTK_REAL> &ZtC1 = gf_ZtC(0);
-const GF3D2<CCTK_REAL> &ZtC2 = gf_ZtC(1);
-const GF3D2<CCTK_REAL> &ZtC3 = gf_ZtC(2);
-const GF3D2<CCTK_REAL> &HC = gf_HC;
-const GF3D2<CCTK_REAL> &MtC1 = gf_MtC(0);
-const GF3D2<CCTK_REAL> &MtC2 = gf_MtC(1);
-const GF3D2<CCTK_REAL> &MtC3 = gf_MtC(2);
 const vreal &eTtt = gf_eTtt(mask, index2);
 const vreal &eTt1 = gf_eTt(mask, index2)(0);
 const vreal &eTt2 = gf_eTt(mask, index2)(1);
@@ -89,24 +82,6 @@ const vreal dgamt333 = tl_dgamt(mask, index5)(2,2)(2);
 const vreal dexKh1 = tl_dexKh(mask, index5)(0);
 const vreal dexKh2 = tl_dexKh(mask, index5)(1);
 const vreal dexKh3 = tl_dexKh(mask, index5)(2);
-const vreal dexAt111 = tl_dexAt(mask, index5)(0,0)(0);
-const vreal dexAt112 = tl_dexAt(mask, index5)(0,1)(0);
-const vreal dexAt113 = tl_dexAt(mask, index5)(0,2)(0);
-const vreal dexAt122 = tl_dexAt(mask, index5)(1,1)(0);
-const vreal dexAt123 = tl_dexAt(mask, index5)(1,2)(0);
-const vreal dexAt133 = tl_dexAt(mask, index5)(2,2)(0);
-const vreal dexAt211 = tl_dexAt(mask, index5)(0,0)(1);
-const vreal dexAt212 = tl_dexAt(mask, index5)(0,1)(1);
-const vreal dexAt213 = tl_dexAt(mask, index5)(0,2)(1);
-const vreal dexAt222 = tl_dexAt(mask, index5)(1,1)(1);
-const vreal dexAt223 = tl_dexAt(mask, index5)(1,2)(1);
-const vreal dexAt233 = tl_dexAt(mask, index5)(2,2)(1);
-const vreal dexAt311 = tl_dexAt(mask, index5)(0,0)(2);
-const vreal dexAt312 = tl_dexAt(mask, index5)(0,1)(2);
-const vreal dexAt313 = tl_dexAt(mask, index5)(0,2)(2);
-const vreal dexAt322 = tl_dexAt(mask, index5)(1,1)(2);
-const vreal dexAt323 = tl_dexAt(mask, index5)(1,2)(2);
-const vreal dexAt333 = tl_dexAt(mask, index5)(2,2)(2);
 const vreal dtrGt11 = tl_dtrGt(mask, index5)(0)(0);
 const vreal dtrGt12 = tl_dtrGt(mask, index5)(1)(0);
 const vreal dtrGt13 = tl_dtrGt(mask, index5)(2)(0);
@@ -1029,168 +1004,6 @@ invgam11*Ss11 + 2*invgam12*Ss12 + 2*invgam13*Ss13 + invgam22*Ss22 +
   2*invgam23*Ss23 + invgam33*Ss33
 ;
 
-vreal trdexAtUU1
-=
--2*dgamt111*exAtUU11*invgamt11 - dgamt211*exAtUU12*invgamt11 - 
-  2*dgamt113*exAtUU13*invgamt11 - dgamt311*exAtUU13*invgamt11 - 
-  dgamt212*exAtUU22*invgamt11 - dgamt213*exAtUU23*invgamt11 - 
-  dgamt312*exAtUU23*invgamt11 - dgamt313*exAtUU33*invgamt11 + 
-  dexAt111*Power(invgamt11,2) - dgamt211*exAtUU11*invgamt12 - 
-  2*dgamt122*exAtUU12*invgamt12 - 2*dgamt212*exAtUU12*invgamt12 - 
-  2*dgamt123*exAtUU13*invgamt12 - dgamt213*exAtUU13*invgamt12 - 
-  dgamt312*exAtUU13*invgamt12 - dgamt222*exAtUU22*invgamt12 - 
-  dgamt223*exAtUU23*invgamt12 - dgamt322*exAtUU23*invgamt12 - 
-  dgamt323*exAtUU33*invgamt12 + 2*dexAt112*invgamt11*invgamt12 + 
-  dexAt211*invgamt11*invgamt12 + dexAt122*Power(invgamt12,2) + 
-  dexAt212*Power(invgamt12,2) - 
-  2*dgamt112*(exAtUU12*invgamt11 + exAtUU11*invgamt12) - 
-  2*dgamt113*exAtUU11*invgamt13 - dgamt311*exAtUU11*invgamt13 - 
-  2*dgamt123*exAtUU12*invgamt13 - dgamt213*exAtUU12*invgamt13 - 
-  dgamt312*exAtUU12*invgamt13 - 2*dgamt133*exAtUU13*invgamt13 - 
-  2*dgamt313*exAtUU13*invgamt13 - dgamt223*exAtUU22*invgamt13 - 
-  dgamt233*exAtUU23*invgamt13 - dgamt323*exAtUU23*invgamt13 - 
-  dgamt333*exAtUU33*invgamt13 + 2*dexAt113*invgamt11*invgamt13 + 
-  dexAt311*invgamt11*invgamt13 + 2*dexAt123*invgamt12*invgamt13 + 
-  dexAt213*invgamt12*invgamt13 + dexAt312*invgamt12*invgamt13 + 
-  dexAt133*Power(invgamt13,2) + dexAt313*Power(invgamt13,2) - 
-  dgamt212*exAtUU11*invgamt22 - dgamt222*exAtUU12*invgamt22 - 
-  dgamt223*exAtUU13*invgamt22 + dexAt212*invgamt11*invgamt22 + 
-  dexAt222*invgamt12*invgamt22 + dexAt223*invgamt13*invgamt22 - 
-  dgamt213*exAtUU11*invgamt23 - dgamt312*exAtUU11*invgamt23 - 
-  dgamt223*exAtUU12*invgamt23 - dgamt322*exAtUU12*invgamt23 - 
-  dgamt233*exAtUU13*invgamt23 - dgamt323*exAtUU13*invgamt23 + 
-  dexAt213*invgamt11*invgamt23 + dexAt312*invgamt11*invgamt23 + 
-  dexAt223*invgamt12*invgamt23 + dexAt322*invgamt12*invgamt23 + 
-  dexAt233*invgamt13*invgamt23 + dexAt323*invgamt13*invgamt23 - 
-  dgamt313*exAtUU11*invgamt33 - dgamt323*exAtUU12*invgamt33 - 
-  dgamt333*exAtUU13*invgamt33 + dexAt313*invgamt11*invgamt33 + 
-  dexAt323*invgamt12*invgamt33 + dexAt333*invgamt13*invgamt33
-;
-
-vreal trdexAtUU2
-=
--(dgamt113*exAtUU23*invgamt11) - 2*dgamt211*exAtUU12*invgamt12 - 
-  dgamt113*exAtUU13*invgamt12 - dgamt311*exAtUU13*invgamt12 - 
-  dgamt122*exAtUU22*invgamt12 - 2*dgamt212*exAtUU22*invgamt12 - 
-  dgamt123*exAtUU23*invgamt12 - 2*dgamt213*exAtUU23*invgamt12 - 
-  dgamt312*exAtUU23*invgamt12 - dgamt313*exAtUU33*invgamt12 + 
-  dexAt111*invgamt11*invgamt12 + dexAt112*Power(invgamt12,2) + 
-  dexAt211*Power(invgamt12,2) - 
-  dgamt111*(exAtUU12*invgamt11 + exAtUU11*invgamt12) - 
-  dgamt113*exAtUU12*invgamt13 - dgamt311*exAtUU12*invgamt13 - 
-  dgamt123*exAtUU22*invgamt13 - dgamt312*exAtUU22*invgamt13 - 
-  dgamt133*exAtUU23*invgamt13 - dgamt313*exAtUU23*invgamt13 + 
-  dexAt113*invgamt12*invgamt13 + dexAt311*invgamt12*invgamt13 - 
-  dgamt122*exAtUU12*invgamt22 - 2*dgamt212*exAtUU12*invgamt22 - 
-  dgamt123*exAtUU13*invgamt22 - dgamt312*exAtUU13*invgamt22 - 
-  2*dgamt222*exAtUU22*invgamt22 - 2*dgamt223*exAtUU23*invgamt22 - 
-  dgamt322*exAtUU23*invgamt22 - dgamt323*exAtUU33*invgamt22 + 
-  dexAt112*invgamt11*invgamt22 + dexAt122*invgamt12*invgamt22 + 
-  2*dexAt212*invgamt12*invgamt22 + dexAt123*invgamt13*invgamt22 + 
-  dexAt312*invgamt13*invgamt22 + dexAt222*Power(invgamt22,2) - 
-  dgamt112*(exAtUU22*invgamt11 + 2*exAtUU12*invgamt12 + 
-     exAtUU11*invgamt22) - dgamt113*exAtUU11*invgamt23 - 
-  dgamt123*exAtUU12*invgamt23 - 2*dgamt213*exAtUU12*invgamt23 - 
-  dgamt312*exAtUU12*invgamt23 - dgamt133*exAtUU13*invgamt23 - 
-  dgamt313*exAtUU13*invgamt23 - 2*dgamt223*exAtUU22*invgamt23 - 
-  dgamt322*exAtUU22*invgamt23 - 2*dgamt233*exAtUU23*invgamt23 - 
-  2*dgamt323*exAtUU23*invgamt23 - dgamt333*exAtUU33*invgamt23 + 
-  dexAt113*invgamt11*invgamt23 + dexAt123*invgamt12*invgamt23 + 
-  2*dexAt213*invgamt12*invgamt23 + dexAt312*invgamt12*invgamt23 + 
-  dexAt133*invgamt13*invgamt23 + dexAt313*invgamt13*invgamt23 + 
-  2*dexAt223*invgamt22*invgamt23 + dexAt322*invgamt22*invgamt23 + 
-  dexAt233*Power(invgamt23,2) + dexAt323*Power(invgamt23,2) - 
-  dgamt313*exAtUU12*invgamt33 - dgamt323*exAtUU22*invgamt33 - 
-  dgamt333*exAtUU23*invgamt33 + dexAt313*invgamt12*invgamt33 + 
-  dexAt323*invgamt22*invgamt33 + dexAt333*invgamt23*invgamt33
-;
-
-vreal trdexAtUU3
-=
--(dgamt113*exAtUU33*invgamt11) - dgamt211*exAtUU13*invgamt12 - 
-  dgamt122*exAtUU23*invgamt12 - dgamt212*exAtUU23*invgamt12 - 
-  dgamt123*exAtUU33*invgamt12 - dgamt213*exAtUU33*invgamt12 - 
-  dgamt211*exAtUU12*invgamt13 - 2*dgamt113*exAtUU13*invgamt13 - 
-  2*dgamt311*exAtUU13*invgamt13 - dgamt212*exAtUU22*invgamt13 - 
-  dgamt123*exAtUU23*invgamt13 - dgamt213*exAtUU23*invgamt13 - 
-  2*dgamt312*exAtUU23*invgamt13 - dgamt133*exAtUU33*invgamt13 - 
-  2*dgamt313*exAtUU33*invgamt13 + dexAt111*invgamt11*invgamt13 + 
-  dexAt112*invgamt12*invgamt13 + dexAt211*invgamt12*invgamt13 + 
-  dexAt113*Power(invgamt13,2) + dexAt311*Power(invgamt13,2) - 
-  dgamt111*(exAtUU13*invgamt11 + exAtUU11*invgamt13) - 
-  dgamt212*exAtUU13*invgamt22 - dgamt222*exAtUU23*invgamt22 - 
-  dgamt223*exAtUU33*invgamt22 + dexAt212*invgamt13*invgamt22 - 
-  dgamt122*exAtUU12*invgamt23 - dgamt212*exAtUU12*invgamt23 - 
-  dgamt123*exAtUU13*invgamt23 - dgamt213*exAtUU13*invgamt23 - 
-  2*dgamt312*exAtUU13*invgamt23 - dgamt222*exAtUU22*invgamt23 - 
-  2*dgamt223*exAtUU23*invgamt23 - 2*dgamt322*exAtUU23*invgamt23 - 
-  dgamt233*exAtUU33*invgamt23 - 2*dgamt323*exAtUU33*invgamt23 + 
-  dexAt112*invgamt11*invgamt23 + dexAt122*invgamt12*invgamt23 + 
-  dexAt212*invgamt12*invgamt23 + dexAt123*invgamt13*invgamt23 + 
-  dexAt213*invgamt13*invgamt23 + 2*dexAt312*invgamt13*invgamt23 + 
-  dexAt222*invgamt22*invgamt23 + dexAt223*Power(invgamt23,2) + 
-  dexAt322*Power(invgamt23,2) - 
-  dgamt112*(exAtUU23*invgamt11 + exAtUU13*invgamt12 + exAtUU12*invgamt13 + 
-     exAtUU11*invgamt23) - dgamt113*exAtUU11*invgamt33 - 
-  dgamt123*exAtUU12*invgamt33 - dgamt213*exAtUU12*invgamt33 - 
-  dgamt133*exAtUU13*invgamt33 - 2*dgamt313*exAtUU13*invgamt33 - 
-  dgamt223*exAtUU22*invgamt33 - dgamt233*exAtUU23*invgamt33 - 
-  2*dgamt323*exAtUU23*invgamt33 - 2*dgamt333*exAtUU33*invgamt33 + 
-  dexAt113*invgamt11*invgamt33 + dexAt123*invgamt12*invgamt33 + 
-  dexAt213*invgamt12*invgamt33 + dexAt133*invgamt13*invgamt33 + 
-  2*dexAt313*invgamt13*invgamt33 + dexAt223*invgamt22*invgamt33 + 
-  dexAt233*invgamt23*invgamt33 + 2*dexAt323*invgamt23*invgamt33 + 
-  dexAt333*Power(invgamt33,2)
-;
-
-
-ZtC1.store(mask, index2, 
-(trGt1 - trGtd1)/2.
-);
-
-ZtC2.store(mask, index2, 
-(trGt2 - trGtd2)/2.
-);
-
-ZtC3.store(mask, index2, 
-(trGt3 - trGtd3)/2.
-);
-
-HC.store(mask, index2, 
-exAt11*exAtUU11 + 2*exAt12*exAtUU12 + 2*exAt13*exAtUU13 + exAt22*exAtUU22 + 
-  2*exAt23*exAtUU23 + exAt33*exAtUU33 - (2*Power(exKh,2))/3. - 16*cpi*rho - 
-  (8*exKh*Theta)/3. - (8*Power(Theta,2))/3. + trR
-);
-
-MtC1.store(mask, index2, 
-((-2*(dchi1*exAtUU11 + dchi2*exAtUU12 + dchi3*exAtUU13))/chi + 
-    3*exAtUU11*Gt111 + 6*exAtUU12*Gt112 + 6*exAtUU13*Gt113 + 
-    3*exAtUU22*Gt122 + 6*exAtUU23*Gt123 + 3*exAtUU33*Gt133 - 
-    2*dexKh1*invgamt11 - 4*dTheta1*invgamt11 - 2*dexKh2*invgamt12 - 
-    4*dTheta2*invgamt12 - 2*dexKh3*invgamt13 - 4*dTheta3*invgamt13 - 
-    24*cpi*invgamt11*Sm1 - 24*cpi*invgamt12*Sm2 - 24*cpi*invgamt13*Sm3 + 
-    3*trdexAtUU1)/3.
-);
-
-MtC2.store(mask, index2, 
-((-2*(dchi1*exAtUU12 + dchi2*exAtUU22 + dchi3*exAtUU23))/chi + 
-    3*exAtUU11*Gt211 + 6*exAtUU12*Gt212 + 6*exAtUU13*Gt213 + 
-    3*exAtUU22*Gt222 + 6*exAtUU23*Gt223 + 3*exAtUU33*Gt233 - 
-    2*dexKh1*invgamt12 - 4*dTheta1*invgamt12 - 2*dexKh2*invgamt22 - 
-    4*dTheta2*invgamt22 - 2*dexKh3*invgamt23 - 4*dTheta3*invgamt23 - 
-    24*cpi*invgamt12*Sm1 - 24*cpi*invgamt22*Sm2 - 24*cpi*invgamt23*Sm3 + 
-    3*trdexAtUU2)/3.
-);
-
-MtC3.store(mask, index2, 
-((-2*(dchi1*exAtUU13 + dchi2*exAtUU23 + dchi3*exAtUU33))/chi + 
-    3*exAtUU11*Gt311 + 6*exAtUU12*Gt312 + 6*exAtUU13*Gt313 + 
-    3*exAtUU22*Gt322 + 6*exAtUU23*Gt323 + 3*exAtUU33*Gt333 - 
-    2*dexKh1*invgamt13 - 4*dTheta1*invgamt13 - 2*dexKh2*invgamt23 - 
-    4*dTheta2*invgamt23 - 2*dexKh3*invgamt33 - 4*dTheta3*invgamt33 - 
-    24*cpi*invgamt13*Sm1 - 24*cpi*invgamt23*Sm2 - 24*cpi*invgamt33*Sm3 + 
-    3*trdexAtUU3)/3.
-);
 
 dtchi.store(mask, index2, 
 (-2*chi*(dbeta11 + dbeta22 + dbeta33 - alpha*exKh - 2*alpha*Theta))/3.
