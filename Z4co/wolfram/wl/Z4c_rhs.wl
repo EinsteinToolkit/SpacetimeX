@@ -24,11 +24,19 @@ SetEQN[Gt[k_, i_, j_], invgamt[k, l] GtDDD[-l, i, j]];
 
 SetEQN[trGtd[i_], invgamt[k, l] Gt[i, -k, -l]];
 
+SetEQN[dgam[k_, i_, j_], -chi[] ^ -2 dchi[k] gamt[i, j] + chi[] ^ -1 dgamt[k, i, j]];
+
+SetEQN[GamDDD[k_, i_, j_], 1/2 (dgam[i, j, k] + dgam[j, k, i] - dgam[k, i, j])];
+
+SetEQN[Gam[k_, i_, j_], invgam[k, l] GamDDD[-l, i, j]];
+
 SetEQN[exAtUU[i_, j_], invgamt[i, k] invgamt[j, l] exAt[-k, -l]];
 
 SetEQN[tDtDchi[i_, j_], ddchi[i, j] - Gt[k, i, j] dchi[-k]];
 
-SetEQN[DDalpha[i_, j_], ddalpha[i, j] - Gt[k, i, j] dalpha[-k] + 1/2 chi[] ^ -1 (dchi[i] dalpha[j] + dchi[j] dalpha[i]) - 1/2 gamt[i, j] invgamt[k, l] chi[] ^ -1 dchi[-l] dalpha[-k]];
+(*SetEQN[DDalpha[i_, j_], ddalpha[i, j] - Gt[k, i, j] dalpha[-k] + 1/2 chi[] ^ -1 (dchi[i] dalpha[j] + dchi[j] dalpha[i]) - 1/2 gamt[i, j] invgamt[k, l] chi[] ^ -1 dchi[-l] dalpha[-k]];*)
+
+SetEQN[DDalpha[i_, j_], ddalpha[i, j] - Gam[k, i, j] dalpha[-k]];
 
 (* (8) *)
 
