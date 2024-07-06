@@ -108,8 +108,8 @@ SetEQN[dtTheta[], 1/2 alpha[] (trR[] - exAt[-k, -l] exAtUU[k, l] + 2/3 (exKh[] +
 
 (* (11) *)
 
-SetEQN[dtalpha[], -alpha[] ^ 2 cmuL exKh[]];
+SetEQN[dtalpha[], -alpha[] cmuL exKh[]];
 
 (* (12) *)
 
-SetEQN[dtbeta[i_], alpha[] ^ 2 cmuS trGt[i] - ceta beta[i]];
+SetEQN[dtbeta[i_], cmuS trGt[i] - ceta beta[i]];
