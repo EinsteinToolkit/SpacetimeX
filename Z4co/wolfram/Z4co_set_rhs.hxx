@@ -580,6 +580,276 @@ Gt311*invgamt11 + 2*Gt312*invgamt12 + 2*Gt313*invgamt13 + Gt322*invgamt22 +
   2*Gt323*invgamt23 + Gt333*invgamt33
 ;
 
+vreal dgam111
+=
+(chi*dgamt111 - dchi1*gamt11)/Power(chi,2)
+;
+
+vreal dgam112
+=
+(chi*dgamt112 - dchi1*gamt12)/Power(chi,2)
+;
+
+vreal dgam113
+=
+(chi*dgamt113 - dchi1*gamt13)/Power(chi,2)
+;
+
+vreal dgam122
+=
+(chi*dgamt122 - dchi1*gamt22)/Power(chi,2)
+;
+
+vreal dgam123
+=
+(chi*dgamt123 - dchi1*gamt23)/Power(chi,2)
+;
+
+vreal dgam133
+=
+(chi*dgamt133 - dchi1*gamt33)/Power(chi,2)
+;
+
+vreal dgam211
+=
+(chi*dgamt211 - dchi2*gamt11)/Power(chi,2)
+;
+
+vreal dgam212
+=
+(chi*dgamt212 - dchi2*gamt12)/Power(chi,2)
+;
+
+vreal dgam213
+=
+(chi*dgamt213 - dchi2*gamt13)/Power(chi,2)
+;
+
+vreal dgam222
+=
+(chi*dgamt222 - dchi2*gamt22)/Power(chi,2)
+;
+
+vreal dgam223
+=
+(chi*dgamt223 - dchi2*gamt23)/Power(chi,2)
+;
+
+vreal dgam233
+=
+(chi*dgamt233 - dchi2*gamt33)/Power(chi,2)
+;
+
+vreal dgam311
+=
+(chi*dgamt311 - dchi3*gamt11)/Power(chi,2)
+;
+
+vreal dgam312
+=
+(chi*dgamt312 - dchi3*gamt12)/Power(chi,2)
+;
+
+vreal dgam313
+=
+(chi*dgamt313 - dchi3*gamt13)/Power(chi,2)
+;
+
+vreal dgam322
+=
+(chi*dgamt322 - dchi3*gamt22)/Power(chi,2)
+;
+
+vreal dgam323
+=
+(chi*dgamt323 - dchi3*gamt23)/Power(chi,2)
+;
+
+vreal dgam333
+=
+(chi*dgamt333 - dchi3*gamt33)/Power(chi,2)
+;
+
+vreal GamDDD111
+=
+dgam111/2.
+;
+
+vreal GamDDD112
+=
+dgam211/2.
+;
+
+vreal GamDDD113
+=
+dgam311/2.
+;
+
+vreal GamDDD122
+=
+-0.5*dgam122 + dgam212
+;
+
+vreal GamDDD123
+=
+(-dgam123 + dgam213 + dgam312)/2.
+;
+
+vreal GamDDD133
+=
+-0.5*dgam133 + dgam313
+;
+
+vreal GamDDD211
+=
+dgam112 - dgam211/2.
+;
+
+vreal GamDDD212
+=
+dgam122/2.
+;
+
+vreal GamDDD213
+=
+(dgam123 - dgam213 + dgam312)/2.
+;
+
+vreal GamDDD222
+=
+dgam222/2.
+;
+
+vreal GamDDD223
+=
+dgam322/2.
+;
+
+vreal GamDDD233
+=
+-0.5*dgam233 + dgam323
+;
+
+vreal GamDDD311
+=
+dgam113 - dgam311/2.
+;
+
+vreal GamDDD312
+=
+(dgam123 + dgam213 - dgam312)/2.
+;
+
+vreal GamDDD313
+=
+dgam133/2.
+;
+
+vreal GamDDD322
+=
+dgam223 - dgam322/2.
+;
+
+vreal GamDDD323
+=
+dgam233/2.
+;
+
+vreal GamDDD333
+=
+dgam333/2.
+;
+
+vreal Gam111
+=
+GamDDD111*invgam11 + GamDDD211*invgam12 + GamDDD311*invgam13
+;
+
+vreal Gam112
+=
+GamDDD112*invgam11 + GamDDD212*invgam12 + GamDDD312*invgam13
+;
+
+vreal Gam113
+=
+GamDDD113*invgam11 + GamDDD213*invgam12 + GamDDD313*invgam13
+;
+
+vreal Gam122
+=
+GamDDD122*invgam11 + GamDDD222*invgam12 + GamDDD322*invgam13
+;
+
+vreal Gam123
+=
+GamDDD123*invgam11 + GamDDD223*invgam12 + GamDDD323*invgam13
+;
+
+vreal Gam133
+=
+GamDDD133*invgam11 + GamDDD233*invgam12 + GamDDD333*invgam13
+;
+
+vreal Gam211
+=
+GamDDD111*invgam12 + GamDDD211*invgam22 + GamDDD311*invgam23
+;
+
+vreal Gam212
+=
+GamDDD112*invgam12 + GamDDD212*invgam22 + GamDDD312*invgam23
+;
+
+vreal Gam213
+=
+GamDDD113*invgam12 + GamDDD213*invgam22 + GamDDD313*invgam23
+;
+
+vreal Gam222
+=
+GamDDD122*invgam12 + GamDDD222*invgam22 + GamDDD322*invgam23
+;
+
+vreal Gam223
+=
+GamDDD123*invgam12 + GamDDD223*invgam22 + GamDDD323*invgam23
+;
+
+vreal Gam233
+=
+GamDDD133*invgam12 + GamDDD233*invgam22 + GamDDD333*invgam23
+;
+
+vreal Gam311
+=
+GamDDD111*invgam13 + GamDDD211*invgam23 + GamDDD311*invgam33
+;
+
+vreal Gam312
+=
+GamDDD112*invgam13 + GamDDD212*invgam23 + GamDDD312*invgam33
+;
+
+vreal Gam313
+=
+GamDDD113*invgam13 + GamDDD213*invgam23 + GamDDD313*invgam33
+;
+
+vreal Gam322
+=
+GamDDD122*invgam13 + GamDDD222*invgam23 + GamDDD322*invgam33
+;
+
+vreal Gam323
+=
+GamDDD123*invgam13 + GamDDD223*invgam23 + GamDDD323*invgam33
+;
+
+vreal Gam333
+=
+GamDDD133*invgam13 + GamDDD233*invgam23 + GamDDD333*invgam33
+;
+
 vreal exAtUU11
 =
 exAt11*Power(invgamt11,2) + 2*exAt12*invgamt11*invgamt12 + 
@@ -660,66 +930,32 @@ ddchi33 - dchi1*Gt133 - dchi2*Gt233 - dchi3*Gt333
 
 vreal DDalpha11
 =
--0.5*(2*chi*(-ddalpha11 + dalpha2*Gt211 + dalpha3*Gt311) + 
-     dalpha1*(2*chi*Gt111 + dchi1*(-2 + gamt11*invgamt11) + 
-        dchi2*gamt11*invgamt12 + dchi3*gamt11*invgamt13) + 
-     gamt11*(dalpha2*dchi1*invgamt12 + dalpha3*dchi1*invgamt13 + 
-        dalpha2*dchi2*invgamt22 + dalpha3*dchi2*invgamt23 + 
-        dalpha2*dchi3*invgamt23 + dalpha3*dchi3*invgamt33))/chi
+ddalpha11 - dalpha1*Gam111 - dalpha2*Gam211 - dalpha3*Gam311
 ;
 
 vreal DDalpha12
 =
--0.5*(-2*chi*ddalpha12 + 2*chi*dalpha3*Gt312 + 
-     dalpha3*dchi1*gamt12*invgamt13 + 
-     dalpha1*(-dchi2 + 2*chi*Gt112 + dchi1*gamt12*invgamt11 + 
-        dchi2*gamt12*invgamt12 + dchi3*gamt12*invgamt13) + 
-     dalpha3*dchi2*gamt12*invgamt23 + 
-     dalpha2*(2*chi*Gt212 + dchi1*(-1 + gamt12*invgamt12) + 
-        dchi2*gamt12*invgamt22 + dchi3*gamt12*invgamt23) + 
-     dalpha3*dchi3*gamt12*invgamt33)/chi
+ddalpha12 - dalpha1*Gam112 - dalpha2*Gam212 - dalpha3*Gam312
 ;
 
 vreal DDalpha13
 =
--0.5*(-2*chi*ddalpha13 + 2*chi*dalpha2*Gt213 + 
-     dalpha2*dchi1*gamt13*invgamt12 + 
-     dalpha1*(-dchi3 + 2*chi*Gt113 + dchi1*gamt13*invgamt11 + 
-        dchi2*gamt13*invgamt12 + dchi3*gamt13*invgamt13) + 
-     dalpha2*dchi2*gamt13*invgamt22 + dalpha2*dchi3*gamt13*invgamt23 + 
-     dalpha3*(2*chi*Gt313 + dchi1*(-1 + gamt13*invgamt13) + 
-        dchi2*gamt13*invgamt23 + dchi3*gamt13*invgamt33))/chi
+ddalpha13 - dalpha1*Gam113 - dalpha2*Gam213 - dalpha3*Gam313
 ;
 
 vreal DDalpha22
 =
--0.5*(2*chi*(-ddalpha22 + dalpha1*Gt122 + dalpha3*Gt322) + 
-     dalpha2*(2*chi*Gt222 + dchi1*gamt22*invgamt12 + 
-        dchi2*(-2 + gamt22*invgamt22) + dchi3*gamt22*invgamt23) + 
-     gamt22*(dalpha1*dchi1*invgamt11 + dalpha1*dchi2*invgamt12 + 
-        dalpha3*dchi1*invgamt13 + dalpha1*dchi3*invgamt13 + 
-        dalpha3*dchi2*invgamt23 + dalpha3*dchi3*invgamt33))/chi
+ddalpha22 - dalpha1*Gam122 - dalpha2*Gam222 - dalpha3*Gam322
 ;
 
 vreal DDalpha23
 =
--0.5*(-2*chi*ddalpha23 + 2*chi*dalpha1*Gt123 + 
-     dalpha1*dchi1*gamt23*invgamt11 + dalpha1*dchi2*gamt23*invgamt12 + 
-     dalpha1*dchi3*gamt23*invgamt13 + 
-     dalpha2*(-dchi3 + 2*chi*Gt223 + dchi1*gamt23*invgamt12 + 
-        dchi2*gamt23*invgamt22 + dchi3*gamt23*invgamt23) + 
-     dalpha3*(2*chi*Gt323 + dchi1*gamt23*invgamt13 + 
-        dchi2*(-1 + gamt23*invgamt23) + dchi3*gamt23*invgamt33))/chi
+ddalpha23 - dalpha1*Gam123 - dalpha2*Gam223 - dalpha3*Gam323
 ;
 
 vreal DDalpha33
 =
--0.5*(2*chi*(-ddalpha33 + dalpha1*Gt133 + dalpha2*Gt233) + 
-     gamt33*(dalpha1*dchi1*invgamt11 + dalpha2*dchi1*invgamt12 + 
-        dalpha1*dchi2*invgamt12 + dalpha1*dchi3*invgamt13 + 
-        dalpha2*dchi2*invgamt22 + dalpha2*dchi3*invgamt23) + 
-     dalpha3*(2*chi*Gt333 + dchi1*gamt33*invgamt13 + 
-        dchi2*gamt33*invgamt23 + dchi3*(-2 + gamt33*invgamt33)))/chi
+ddalpha33 - dalpha1*Gam133 - dalpha2*Gam233 - dalpha3*Gam333
 ;
 
 vreal Rtchi11
