@@ -8,7 +8,7 @@
 #endif
 #endif
 
-#define Power(x, y) (Arith::pown((x), (y)))
+//#define Power(x, y) (Arith::pown((x), (y)))
 
 #include "derivs.hxx"
 #include "physics.hxx"
@@ -32,6 +32,11 @@ namespace Z4co {
 using namespace Arith;
 using namespace Loop;
 using namespace std;
+
+template <typename T>
+inline T Power(T x, int y) {
+  return (y == 2) ? Arith::pow2(x) : Arith::pown(x, y);
+}
 
 extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_Z4co_RHS;
