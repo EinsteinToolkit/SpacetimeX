@@ -38,12 +38,19 @@ $MainPrint[] :=
   Module[{},
     PrintInitializations[{Mode -> "MainOut"}, dtEvolVarlist];
     pr[];
+
     pr["noinline([&]() __attribute__((__flatten__, __hot__)) {"];
     pr["  grid.loop_int_device<0, 0, 0, vsize>("];
     pr["    grid.nghostzones, [=] ARITH_DEVICE(const PointDesc &p) ARITH_INLINE {"];
     pr["    const vbool mask = mask_for_loop_tail<vbool>(p.i, p.imax);"];
     pr["    const GF3D2index index2(layout2, p.I);"];
     pr["    const GF3D5index index5(layout5, p.I);"];
+    pr[];
+
+    PrintListInitializations[TmunuVarlist, "gf_", "index2"];
+    PrintListInitializations[EvolVarlist, "tl_", "index5"];
+    PrintListInitializations[dEvolVarlist, "tl_", "index5"];
+    PrintListInitializations[ddEvolVarlist, "tl_", "index5"];
     pr[];
 
     PrintInitializations[{Mode -> "MainIn"}, TmunuVarlist];
