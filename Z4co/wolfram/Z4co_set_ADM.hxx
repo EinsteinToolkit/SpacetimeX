@@ -1,25 +1,55 @@
 /* Z4co_set_ADM.hxx */
 /* Produced with Mathematica */
 
-const vreal &chi = gf_chi(mask, index2, 1);
-const vreal &gamt11 = gf_gamt(mask, index2, 1)(0,0);
-const vreal &gamt12 = gf_gamt(mask, index2, 0)(0,1);
-const vreal &gamt13 = gf_gamt(mask, index2, 0)(0,2);
-const vreal &gamt22 = gf_gamt(mask, index2, 1)(1,1);
-const vreal &gamt23 = gf_gamt(mask, index2, 0)(1,2);
-const vreal &gamt33 = gf_gamt(mask, index2, 1)(2,2);
-const vreal &exKh = gf_exKh(mask, index2);
-const vreal &exAt11 = gf_exAt(mask, index2)(0,0);
-const vreal &exAt12 = gf_exAt(mask, index2)(0,1);
-const vreal &exAt13 = gf_exAt(mask, index2)(0,2);
-const vreal &exAt22 = gf_exAt(mask, index2)(1,1);
-const vreal &exAt23 = gf_exAt(mask, index2)(1,2);
-const vreal &exAt33 = gf_exAt(mask, index2)(2,2);
-const vreal &Theta = gf_Theta(mask, index2);
-const vreal &alpha = gf_alpha(mask, index2, 1);
-const vreal &beta1 = gf_beta(mask, index2)(0);
-const vreal &beta2 = gf_beta(mask, index2)(1);
-const vreal &beta3 = gf_beta(mask, index2)(2);
+const GF3D2<CCTK_REAL> &ADMgam11 = gf_ADMgam(0,0);
+const GF3D2<CCTK_REAL> &ADMgam12 = gf_ADMgam(0,1);
+const GF3D2<CCTK_REAL> &ADMgam13 = gf_ADMgam(0,2);
+const GF3D2<CCTK_REAL> &ADMgam22 = gf_ADMgam(1,1);
+const GF3D2<CCTK_REAL> &ADMgam23 = gf_ADMgam(1,2);
+const GF3D2<CCTK_REAL> &ADMgam33 = gf_ADMgam(2,2);
+const GF3D2<CCTK_REAL> &ADMK11 = gf_ADMK(0,0);
+const GF3D2<CCTK_REAL> &ADMK12 = gf_ADMK(0,1);
+const GF3D2<CCTK_REAL> &ADMK13 = gf_ADMK(0,2);
+const GF3D2<CCTK_REAL> &ADMK22 = gf_ADMK(1,1);
+const GF3D2<CCTK_REAL> &ADMK23 = gf_ADMK(1,2);
+const GF3D2<CCTK_REAL> &ADMK33 = gf_ADMK(2,2);
+const GF3D2<CCTK_REAL> &ADMalpha = gf_ADMalpha;
+const GF3D2<CCTK_REAL> &ADMbeta1 = gf_ADMbeta(0);
+const GF3D2<CCTK_REAL> &ADMbeta2 = gf_ADMbeta(1);
+const GF3D2<CCTK_REAL> &ADMbeta3 = gf_ADMbeta(2);
+
+grid.loop_all_device<0, 0, 0, vsize>(
+  grid.nghostzones, [=] ARITH_DEVICE(const PointDesc &p) ARITH_INLINE {
+  const vbool mask = mask_for_loop_tail<vbool>(p.i, p.imax);
+  const GF3D2index index2(layout2, p.I);
+
+const auto &tmp_chi = gf_chi(mask, index2);
+const auto &tmp_gamt = gf_gamt(mask, index2);
+const auto &tmp_exKh = gf_exKh(mask, index2);
+const auto &tmp_exAt = gf_exAt(mask, index2);
+const auto &tmp_Theta = gf_Theta(mask, index2);
+const auto &tmp_alpha = gf_alpha(mask, index2);
+const auto &tmp_beta = gf_beta(mask, index2);
+
+const vreal chi = tmp_chi;
+const vreal gamt11 = tmp_gamt(0,0);
+const vreal gamt12 = tmp_gamt(0,1);
+const vreal gamt13 = tmp_gamt(0,2);
+const vreal gamt22 = tmp_gamt(1,1);
+const vreal gamt23 = tmp_gamt(1,2);
+const vreal gamt33 = tmp_gamt(2,2);
+const vreal exKh = tmp_exKh;
+const vreal exAt11 = tmp_exAt(0,0);
+const vreal exAt12 = tmp_exAt(0,1);
+const vreal exAt13 = tmp_exAt(0,2);
+const vreal exAt22 = tmp_exAt(1,1);
+const vreal exAt23 = tmp_exAt(1,2);
+const vreal exAt33 = tmp_exAt(2,2);
+const vreal Theta = tmp_Theta;
+const vreal alpha = tmp_alpha;
+const vreal beta1 = tmp_beta(0);
+const vreal beta2 = tmp_beta(1);
+const vreal beta3 = tmp_beta(2);
 
 ADMgam11.store(mask, index2, 
 gamt11/chi
@@ -85,5 +115,7 @@ ADMbeta3.store(mask, index2,
 beta3
 );
 
+
+});
 
 /* Z4co_set_ADM.hxx */

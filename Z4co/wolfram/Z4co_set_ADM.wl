@@ -31,10 +31,23 @@ SetOutputFile[FileNameJoin[{Directory[], "Z4co_set_ADM.hxx"}]];
 
 $MainPrint[] :=
   Module[{},
-    (*PrintInitializations[{Mode -> "MainOut"}, ADMVarlist];*)
+    PrintInitializations[{Mode -> "MainOut"}, ADMVarlist];
+    pr[];
+
+    pr["grid.loop_all_device<0, 0, 0, vsize>("];
+    pr["  grid.nghostzones, [=] ARITH_DEVICE(const PointDesc &p) ARITH_INLINE {"];
+    pr["  const vbool mask = mask_for_loop_tail<vbool>(p.i, p.imax);"];
+    pr["  const GF3D2index index2(layout2, p.I);"];
+    pr[];
+
+    PrintListInitializations[Drop[EvolVarlist, {5}], "gf_", "index2"];
+    pr[];
+
     PrintInitializations[{Mode -> "MainIn"}, Drop[EvolVarlist, {5}]];
     pr[];
     PrintEquations[{Mode -> "Main"}, ADMVarlist];
+    pr[];
+    pr["});"];
   ];
 
 Import[FileNameJoin[{Environment["GENERATO"], "codes/CarpetX.wl"}]];
