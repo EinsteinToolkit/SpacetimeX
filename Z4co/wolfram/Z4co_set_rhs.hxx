@@ -34,13 +34,13 @@ noinline([&]() __attribute__((__flatten__, __hot__)) {
 const auto &tmp_eTtt = gf_eTtt(mask, index2);
 const auto &tmp_eTt = gf_eTt(mask, index2);
 const auto &tmp_eT = gf_eT(mask, index2);
-const auto &tmp_chi = tl_chi(mask, index5, 1);
-const auto &tmp_gamt = tl_gamt(mask, index5, one<smat<int, 3>>()());
+const auto &tmp_chi = tl_chi(mask, index5);
+const auto &tmp_gamt = tl_gamt(mask, index5);
 const auto &tmp_exKh = tl_exKh(mask, index5);
 const auto &tmp_exAt = tl_exAt(mask, index5);
 const auto &tmp_trGt = tl_trGt(mask, index5);
 const auto &tmp_Theta = tl_Theta(mask, index5);
-const auto &tmp_alpha = tl_alpha(mask, index5, 1);
+const auto &tmp_alpha = tl_alpha(mask, index5);
 const auto &tmp_beta = tl_beta(mask, index5);
 const auto &tmp_dchi = tl_dchi(mask, index5);
 const auto &tmp_dgamt = tl_dgamt(mask, index5);
