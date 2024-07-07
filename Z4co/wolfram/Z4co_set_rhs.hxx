@@ -1,6 +1,36 @@
 /* Z4co_set_rhs.hxx */
 /* Produced with Mathematica */
 
+const GF3D2<CCTK_REAL> &dtchi = gf_dtchi;
+const GF3D2<CCTK_REAL> &dtgamt11 = gf_dtgamt(0,0);
+const GF3D2<CCTK_REAL> &dtgamt12 = gf_dtgamt(0,1);
+const GF3D2<CCTK_REAL> &dtgamt13 = gf_dtgamt(0,2);
+const GF3D2<CCTK_REAL> &dtgamt22 = gf_dtgamt(1,1);
+const GF3D2<CCTK_REAL> &dtgamt23 = gf_dtgamt(1,2);
+const GF3D2<CCTK_REAL> &dtgamt33 = gf_dtgamt(2,2);
+const GF3D2<CCTK_REAL> &dtexKh = gf_dtexKh;
+const GF3D2<CCTK_REAL> &dtexAt11 = gf_dtexAt(0,0);
+const GF3D2<CCTK_REAL> &dtexAt12 = gf_dtexAt(0,1);
+const GF3D2<CCTK_REAL> &dtexAt13 = gf_dtexAt(0,2);
+const GF3D2<CCTK_REAL> &dtexAt22 = gf_dtexAt(1,1);
+const GF3D2<CCTK_REAL> &dtexAt23 = gf_dtexAt(1,2);
+const GF3D2<CCTK_REAL> &dtexAt33 = gf_dtexAt(2,2);
+const GF3D2<CCTK_REAL> &dttrGt1 = gf_dttrGt(0);
+const GF3D2<CCTK_REAL> &dttrGt2 = gf_dttrGt(1);
+const GF3D2<CCTK_REAL> &dttrGt3 = gf_dttrGt(2);
+const GF3D2<CCTK_REAL> &dtTheta = gf_dtTheta;
+const GF3D2<CCTK_REAL> &dtalpha = gf_dtalpha;
+const GF3D2<CCTK_REAL> &dtbeta1 = gf_dtbeta(0);
+const GF3D2<CCTK_REAL> &dtbeta2 = gf_dtbeta(1);
+const GF3D2<CCTK_REAL> &dtbeta3 = gf_dtbeta(2);
+
+noinline([&]() __attribute__((__flatten__, __hot__)) {
+  grid.loop_int_device<0, 0, 0, vsize>(
+    grid.nghostzones, [=] ARITH_DEVICE(const PointDesc &p) ARITH_INLINE {
+    const vbool mask = mask_for_loop_tail<vbool>(p.i, p.imax);
+    const GF3D2index index2(layout2, p.I);
+    const GF3D5index index5(layout5, p.I);
+
 const vreal &eTtt = gf_eTtt(mask, index2);
 const vreal &eTt1 = gf_eTt(mask, index2)(0);
 const vreal &eTt2 = gf_eTt(mask, index2)(1);
@@ -1453,20 +1483,23 @@ dtTheta.store(mask, index2,
 );
 
 dtalpha.store(mask, index2, 
--(Power(alpha,2)*cmuL*exKh)
+-(alpha*cmuL*exKh)
 );
 
 dtbeta1.store(mask, index2, 
--(beta1*ceta) + Power(alpha,2)*cmuS*trGt1
+-(beta1*ceta) + cmuS*trGt1
 );
 
 dtbeta2.store(mask, index2, 
--(beta2*ceta) + Power(alpha,2)*cmuS*trGt2
+-(beta2*ceta) + cmuS*trGt2
 );
 
 dtbeta3.store(mask, index2, 
--(beta3*ceta) + Power(alpha,2)*cmuS*trGt3
+-(beta3*ceta) + cmuS*trGt3
 );
 
+
+  });
+});
 
 /* Z4co_set_rhs.hxx */

@@ -212,46 +212,15 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
   const CCTK_REAL cmuS = f_mu_S;
   const CCTK_REAL ceta = eta;
 
-  // output
-  const GF3D2<CCTK_REAL> &dtchi = gf_dtchi;
-  const GF3D2<CCTK_REAL> &dtgamt11 = gf_dtgamt(0, 0);
-  const GF3D2<CCTK_REAL> &dtgamt12 = gf_dtgamt(0, 1);
-  const GF3D2<CCTK_REAL> &dtgamt13 = gf_dtgamt(0, 2);
-  const GF3D2<CCTK_REAL> &dtgamt22 = gf_dtgamt(1, 1);
-  const GF3D2<CCTK_REAL> &dtgamt23 = gf_dtgamt(1, 2);
-  const GF3D2<CCTK_REAL> &dtgamt33 = gf_dtgamt(2, 2);
-  const GF3D2<CCTK_REAL> &dtexKh = gf_dtexKh;
-  const GF3D2<CCTK_REAL> &dtexAt11 = gf_dtexAt(0, 0);
-  const GF3D2<CCTK_REAL> &dtexAt12 = gf_dtexAt(0, 1);
-  const GF3D2<CCTK_REAL> &dtexAt13 = gf_dtexAt(0, 2);
-  const GF3D2<CCTK_REAL> &dtexAt22 = gf_dtexAt(1, 1);
-  const GF3D2<CCTK_REAL> &dtexAt23 = gf_dtexAt(1, 2);
-  const GF3D2<CCTK_REAL> &dtexAt33 = gf_dtexAt(2, 2);
-  const GF3D2<CCTK_REAL> &dttrGt1 = gf_dttrGt(0);
-  const GF3D2<CCTK_REAL> &dttrGt2 = gf_dttrGt(1);
-  const GF3D2<CCTK_REAL> &dttrGt3 = gf_dttrGt(2);
-  const GF3D2<CCTK_REAL> &dtTheta = gf_dtTheta;
-  const GF3D2<CCTK_REAL> &dtalpha = gf_dtalpha;
-  const GF3D2<CCTK_REAL> &dtbeta1 = gf_dtbeta(0);
-  const GF3D2<CCTK_REAL> &dtbeta2 = gf_dtbeta(1);
-  const GF3D2<CCTK_REAL> &dtbeta3 = gf_dtbeta(2);
-
   // Loop
   const Loop::GridDescBaseDevice grid(cctkGH);
 
 #ifdef __CUDACC__
   const nvtxRangeId_t range = nvtxRangeStartA("Z4co_RHS::rhs");
 #endif
-  noinline([&]() __attribute__((__flatten__, __hot__)) {
-    grid.loop_int_device<0, 0, 0, vsize>(
-        grid.nghostzones, [=] ARITH_DEVICE(const PointDesc &p) ARITH_INLINE {
-          const vbool mask = mask_for_loop_tail<vbool>(p.i, p.imax);
-          const GF3D2index index2(layout2, p.I);
-          const GF3D5index index5(layout5, p.I);
 
 #include "../wolfram/Z4co_set_rhs.hxx"
-        });
-  });
+
 #ifdef __CUDACC__
   nvtxRangeEnd(range);
 #endif
