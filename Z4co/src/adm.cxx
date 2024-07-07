@@ -74,35 +74,14 @@ extern "C" void Z4co_ADM(CCTK_ARGUMENTS) {
   typedef simdl<CCTK_REAL> vbool;
   constexpr size_t vsize = tuple_size_v<vreal>;
 
-  const GF3D2<CCTK_REAL> &ADMgam11 = gf_ADMgam(0, 0);
-  const GF3D2<CCTK_REAL> &ADMgam12 = gf_ADMgam(0, 1);
-  const GF3D2<CCTK_REAL> &ADMgam13 = gf_ADMgam(0, 2);
-  const GF3D2<CCTK_REAL> &ADMgam22 = gf_ADMgam(1, 1);
-  const GF3D2<CCTK_REAL> &ADMgam23 = gf_ADMgam(1, 2);
-  const GF3D2<CCTK_REAL> &ADMgam33 = gf_ADMgam(2, 2);
-  const GF3D2<CCTK_REAL> &ADMK11 = gf_ADMK(0, 0);
-  const GF3D2<CCTK_REAL> &ADMK12 = gf_ADMK(0, 1);
-  const GF3D2<CCTK_REAL> &ADMK13 = gf_ADMK(0, 2);
-  const GF3D2<CCTK_REAL> &ADMK22 = gf_ADMK(1, 1);
-  const GF3D2<CCTK_REAL> &ADMK23 = gf_ADMK(1, 2);
-  const GF3D2<CCTK_REAL> &ADMK33 = gf_ADMK(2, 2);
-  const GF3D2<CCTK_REAL> &ADMalpha = gf_ADMalpha;
-  const GF3D2<CCTK_REAL> &ADMbeta1 = gf_ADMbeta(0);
-  const GF3D2<CCTK_REAL> &ADMbeta2 = gf_ADMbeta(1);
-  const GF3D2<CCTK_REAL> &ADMbeta3 = gf_ADMbeta(2);
-
   const Loop::GridDescBaseDevice grid(cctkGH);
 
 #ifdef __CUDACC__
   const nvtxRangeId_t range = nvtxRangeStartA("Z4co_ADM::adm");
 #endif
-  grid.loop_all_device<0, 0, 0, vsize>(
-      grid.nghostzones, [=] ARITH_DEVICE(const PointDesc &p) ARITH_INLINE {
-        const vbool mask = mask_for_loop_tail<vbool>(p.i, p.imax);
-        const GF3D2index index2(layout2, p.I);
 
 #include "../wolfram/Z4co_set_ADM.hxx"
-      });
+
 #ifdef __CUDACC__
   nvtxRangeEnd(range);
 #endif
