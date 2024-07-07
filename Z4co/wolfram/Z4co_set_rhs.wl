@@ -36,18 +36,18 @@ SetOutputFile[FileNameJoin[{Directory[], "Z4co_set_rhs.hxx"}]];
 
 $MainPrint[] :=
   Module[{},
-    (*PrintInitializations[{Mode -> "GF3D2Out"}, dtEvolVarlist];*)
-    PrintInitializations[{Mode -> "GF3D2In"}, TmunuVarlist];
-    PrintInitializations[{Mode -> "GF3D5"}, EvolVarlist];
-    PrintInitializations[{Mode -> "VecGF3D5"}, dEvolVarlist];
-    PrintInitializations[{Mode -> "SmatGF3D5"}, ddEvolVarlist];
+    (*PrintInitializations[{Mode -> "MainOut"}, dtEvolVarlist];*)
+    PrintInitializations[{Mode -> "MainIn"}, TmunuVarlist];
+    PrintInitializations[{Mode -> "MainIn", StorageType -> "Tile"}, EvolVarlist];
+    PrintInitializations[{Mode -> "MainIn", StorageType -> "Tile", TensorType -> "Vect"}, dEvolVarlist];
+    PrintInitializations[{Mode -> "MainIn", StorageType -> "Tile", TensorType -> "Smat"}, ddEvolVarlist];
     pr[];
     PrintEquations[{Mode -> "Temp"}, IntermediateVarlist];
     PrintEquations[{Mode -> "Temp"}, DDVarlist];
     PrintEquations[{Mode -> "Temp"}, RVarlist];
     PrintEquations[{Mode -> "Temp"}, MatterVarlist];
     pr[];
-    PrintEquations[{Mode -> "MainCarpetX"}, dtEvolVarlist];
+    PrintEquations[{Mode -> "Main"}, dtEvolVarlist];
   ];
 
 Import[FileNameJoin[{Environment["GENERATO"], "codes/CarpetX.wl"}]];
