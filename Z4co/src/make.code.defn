@@ -6,6 +6,7 @@ SRCS = \
 	enforce.cxx	\
 	initial1.cxx \
 	initial2.cxx \
+	newradx.cxx \
 	rhs.cxx
 
 # Subdirectories containing source files
