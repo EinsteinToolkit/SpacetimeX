@@ -31,10 +31,10 @@ SetOutputFile[FileNameJoin[{Directory[], "Z4co_set_ADM.hxx"}]];
 
 $MainPrint[] :=
   Module[{},
-    (*PrintInitializations[{Mode -> "GF3D2Out"}, ADMVarlist];*)
-    PrintInitializations[{Mode -> "GF3D2In"}, Drop[EvolVarlist, {5}]];
+    (*PrintInitializations[{Mode -> "MainOut"}, ADMVarlist];*)
+    PrintInitializations[{Mode -> "MainIn"}, Drop[EvolVarlist, {5}]];
     pr[];
-    PrintEquations[{Mode -> "MainCarpetX"}, ADMVarlist];
+    PrintEquations[{Mode -> "Main"}, ADMVarlist];
   ];
 
 Import[FileNameJoin[{Environment["GENERATO"], "codes/CarpetX.wl"}]];
