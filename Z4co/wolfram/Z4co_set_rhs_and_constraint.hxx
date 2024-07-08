@@ -1,4 +1,4 @@
-/* Z4co_set_rhs_with_Cs.hxx */
+/* Z4co_set_rhs_and_constraint.hxx */
 /* Produced with Mathematica */
 
 const GF3D2<CCTK_REAL> &local_ZtC1 = gf_ZtC(0);
@@ -1713,4 +1713,4 @@ local_dtbeta3.store(mask, index2,
   });
 });
 
-/* Z4co_set_rhs_with_Cs.hxx */
+/* Z4co_set_rhs_and_constraint.hxx */

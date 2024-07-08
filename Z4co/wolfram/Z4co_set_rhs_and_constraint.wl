@@ -21,9 +21,9 @@ DefChart[cart, M3, {1, 2, 3}, {X[], Y[], Z[]}, ChartColor -> Blue];
 
 (* Define Variables *)
 
-<<wl/Z4c_vars_with_Cs.wl
+<<wl/Z4c_vars_and_constraint.wl
 
-<<wl/Z4c_rhs_with_Cs.wl
+<<wl/Z4c_rhs_and_constraint.wl
 
 Module[{Mat, invMat},
   Mat = Table[gamt[{ii, -cart}, {jj, -cart}] // ToValues, {ii, 1, 3}, {jj, 1, 3}];
@@ -32,7 +32,7 @@ Module[{Mat, invMat},
   SetEQNDelayed[invgamt[i_, j_], invMat[[i[[1]], j[[1]]]] // Simplify]
 ];
 
-SetOutputFile[FileNameJoin[{Directory[], "Z4co_set_rhs_with_Cs.hxx"}]];
+SetOutputFile[FileNameJoin[{Directory[], "Z4co_set_rhs_and_constraint.hxx"}]];
 
 $MainPrint[] :=
   Module[{},

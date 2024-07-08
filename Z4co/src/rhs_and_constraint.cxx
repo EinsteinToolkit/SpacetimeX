@@ -37,8 +37,8 @@ template <typename T> inline T Power(T x, int y) {
   return (y == 2) ? Arith::pow2(x) : Arith::pown(x, y);
 }
 
-extern "C" void Z4co_RHS_with_Cs(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTS_Z4co_RHS_with_Cs;
+extern "C" void Z4co_RHS_and_Constraint(CCTK_ARGUMENTS) {
+  DECLARE_CCTK_ARGUMENTS_Z4co_RHS_and_Constraint;
   DECLARE_CCTK_PARAMETERS;
 
   for (int d = 0; d < 3; ++d)
@@ -226,10 +226,10 @@ extern "C" void Z4co_RHS_with_Cs(CCTK_ARGUMENTS) {
   const Loop::GridDescBaseDevice grid(cctkGH);
 
 #ifdef __CUDACC__
-  const nvtxRangeId_t range = nvtxRangeStartA("Z4co_RHS_with_Cs::rhs");
+  const nvtxRangeId_t range = nvtxRangeStartA("Z4co_RHS_and_Constraint::rhs");
 #endif
 
-#include "../wolfram/Z4co_set_rhs_with_Cs.hxx"
+#include "../wolfram/Z4co_set_rhs_and_constraint.hxx"
 
 #ifdef __CUDACC__
   nvtxRangeEnd(range);
