@@ -169,7 +169,7 @@ SCHEDULE Z4co_RHS IN Z4co_RHSGroup
 } "Calculate Z4c RHS"
 
 if (CCTK_Equals(boundary_conditions, "NewRadX")) {
-  SCHEDULE Z4co_apply_newradx_boundary_conditions IN Z4co_RHSGroup AFTER Z4co_RHS
+  SCHEDULE Z4co_Apply_NewRadX_BC IN Z4co_RHSGroup AFTER Z4co_RHS
   {
     LANG: C
     READS: chi(everywhere)

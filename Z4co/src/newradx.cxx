@@ -5,8 +5,8 @@
 
 namespace Z4co {
 
-extern "C" void Z4co_apply_newradx_boundary_conditions(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTSX_Z4co_apply_newradx_boundary_conditions;
+extern "C" void Z4co_Apply_NewRadX_BC(CCTK_ARGUMENTS) {
+  DECLARE_CCTK_ARGUMENTSX_Z4co_Apply_NewRadX_BC;
   DECLARE_CCTK_PARAMETERS;
 
   NewRadX::NewRadX_Apply(cctkGH, chi, chi_rhs, 1, 1, n_chi);
