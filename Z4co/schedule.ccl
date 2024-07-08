@@ -137,7 +137,7 @@ if (calc_ADM_vars) {
 }
 
 if (calc_constraints) {
-  SCHEDULE Z4co_RHS_with_Cs IN Z4co_RHSGroup BEFORE Z4co_Apply_NewRadX_BC
+  SCHEDULE Z4co_RHS_and_Constraint IN Z4co_RHSGroup BEFORE Z4co_Apply_NewRadX_BC
   {
     LANG: C
     READS: chi(everywhere)
