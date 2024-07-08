@@ -7,7 +7,8 @@ SRCS = \
 	initial1.cxx \
 	initial2.cxx \
 	newradx.cxx \
-	rhs.cxx
+	rhs.cxx \
+	rhs_with_cs.cxx
 
 # Subdirectories containing source files
 SUBDIRS =
