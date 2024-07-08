@@ -11,7 +11,7 @@
 (***********************)
 
 dtEvolVarlist =
-  DefTensors[
+  GridTensors[
     {dtchi[], PrintAs -> "\!\(\*SubscriptBox[\(\[PartialD]\), \(t\)]\)\[Chi]"},
     {dtgamt[-i, -j], Symmetric[{-i, -j}], PrintAs -> "\!\(\*SubscriptBox[\(\[PartialD]\), \(t\)]\)\!\(\*OverscriptBox[\(\[Gamma]\), \(~\)]\)"},
     {dtexKh[], PrintAs -> "\!\(\*SubscriptBox[\(\[PartialD]\), \(t\)]\)\!\(\*OverscriptBox[\(K\), \(^\)]\)"},
@@ -23,7 +23,7 @@ dtEvolVarlist =
   ];
 
 EvolVarlist =
-  DefTensors[
+  GridTensors[
     {chi[], PrintAs -> "\[Chi]"},
     {gamt[-i, -j], Symmetric[{-i, -j}], PrintAs -> "\!\(\*OverscriptBox[\(\[Gamma]\), \(~\)]\)"},
     {exKh[], PrintAs -> "\!\(\*OverscriptBox[\(K\), \(^\)]\)"},
@@ -40,7 +40,7 @@ EvolVarlist =
 (*************************)
 
 dEvolVarlist =
-  DefTensors[
+  GridTensors[
     {dchi[-k], PrintAs -> "\[PartialD]\[Chi]"},
     {dgamt[-k, -i, -j], Symmetric[{-i, -j}], PrintAs -> "\[PartialD]\!\(\*OverscriptBox[\(\[Gamma]\), \(~\)]\)"},
     {dexKh[-k], PrintAs -> "\[PartialD]\!\(\*OverscriptBox[\(K\), \(^\)]\)"},
@@ -52,7 +52,7 @@ dEvolVarlist =
   ];
 
 ddEvolVarlist =
-  DefTensors[
+  GridTensors[
     {ddchi[-i, -j], Symmetric[{-i, -j}], PrintAs -> "\[PartialD]\[PartialD]\[Chi]"},
     {ddgamt[-l, -m, -i, -j], GenSet[Cycles[{1, 2}], Cycles[{3, 4}]], PrintAs -> "\[PartialD]\[PartialD]\!\(\*OverscriptBox[\(\[Gamma]\), \(~\)]\)"},
     {ddalpha[-i, -j], Symmetric[{-i, -j}], PrintAs -> "\[PartialD]\[PartialD]\[Alpha]"},
@@ -60,7 +60,7 @@ ddEvolVarlist =
   ];
 
 TmunuVarlist =
-  DefTensors[
+  GridTensors[
     {eTtt[], PrintAs -> "\!\(\*SubscriptBox[\(T\), \(tt\)]\)"},
     {eTt[-i], PrintAs -> "\!\(\*SubscriptBox[\(T\), \(t\)]\)"},
     {eT[-i, -j], PrintAs -> "T"}
@@ -73,7 +73,7 @@ TmunuVarlist =
 (**************************)
 
 IntermediateVarlist =
-  DefTensors[
+  TempTensors[
     {detinvgamt[], PrintAs -> "1/\!\(\*OverscriptBox[\(\[Gamma]\), \(~\)]\)"},
     {invgamt[i, j], Symmetric[{i, j}], PrintAs -> "\!\(\*OverscriptBox[\(\[Gamma]\), \(~\)]\)"},
     {invgam[i, j], Symmetric[{i, j}], PrintAs -> "\[Gamma]"},
@@ -89,13 +89,13 @@ IntermediateVarlist =
   ];
 
 DDVarlist =
-  DefTensors[
+  TempTensors[
     {tDtDchi[-i, -j], Symmetric[{-i, -j}], PrintAs -> "\!\(\*OverscriptBox[\(D\), \(~\)]\)\!\(\*OverscriptBox[\(D\), \(~\)]\)\[Chi]"},
     {DDalpha[-i, -j], Symmetric[{-i, -j}], PrintAs -> "DD\[Alpha]"}
   ];
 
 RVarlist =
-  DefTensors[
+  TempTensors[
     {Rtchi[-i, -j], Symmetric[{-i, -j}], PrintAs -> "\!\(\*SuperscriptBox[OverscriptBox[\(R\), \(~\)], \(\[Chi]\)]\)"},
     {Rt[-i, -j], Symmetric[{-i, -j}], PrintAs -> "\!\(\*OverscriptBox[\(R\), \(~\)]\)"},
     {R[-i, -j], Symmetric[{-i, -j}]}, {trR[], PrintAs -> "R"}
@@ -104,7 +104,7 @@ RVarlist =
 (* Matter *)
 
 MatterVarlist =
-  DefTensors[
+  TempTensors[
     {rho[], PrintAs -> "\[Rho]"},
     {Sm[-i], PrintAs -> "S"},
     {Ss[-i, -j], Symmetric[{-i, -j}], PrintAs -> "S"},
@@ -114,12 +114,12 @@ MatterVarlist =
 (* Constraints *)
 
 dAtUUVarlist =
-  DefTensors[
+  TempTensors[
     {trdexAtUU[i], PrintAs -> "\[PartialD]\!\(\*OverscriptBox[\(A\), \(~\)]\)"}
   ];
 
 ConstraintVarlist =
-  DefTensors[
+  GridTensors[
     {ZtC[i], PrintAs -> "\!\(\*OverscriptBox[\(Z\), \(~\)]\)"},
     {HC[], PrintAs -> "H"},
     {MtC[i], PrintAs -> "\!\(\*OverscriptBox[\(M\), \(~\)]\)"}
