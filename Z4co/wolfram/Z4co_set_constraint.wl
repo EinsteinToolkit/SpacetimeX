@@ -21,9 +21,9 @@ DefChart[cart, M3, {1, 2, 3}, {X[], Y[], Z[]}, ChartColor -> Blue];
 
 (* Define Variables *)
 
-<<wl/Z4c_vars_and_constraint.wl
+<<wl/Z4c_vars.wl
 
-<<wl/Z4c_rhs_and_constraint.wl
+<<wl/Z4c_rhs.wl
 
 Module[{Mat, invMat},
   Mat = Table[gamt[{ii, -cart}, {jj, -cart}] // ToValues, {ii, 1, 3}, {jj, 1, 3}];
@@ -32,12 +32,11 @@ Module[{Mat, invMat},
   SetEQNDelayed[invgamt[i_, j_], invMat[[i[[1]], j[[1]]]] // Simplify]
 ];
 
-SetOutputFile[FileNameJoin[{Directory[], "Z4co_set_rhs_and_constraint.hxx"}]];
+SetOutputFile[FileNameJoin[{Directory[], "Z4co_set_constraint.hxx"}]];
 
 $MainPrint[] :=
   Module[{},
     PrintInitializations[{Mode -> "MainOut"}, ConstraintVarlist];
-    PrintInitializations[{Mode -> "MainOut"}, dtEvolVarlist];
     pr[];
 
     pr["noinline([&]() __attribute__((__flatten__, __hot__)) {"];
@@ -50,26 +49,25 @@ $MainPrint[] :=
 
     PrintListInitializations[TmunuVarlist, "gf_", "index2"];
     PrintListInitializations[EvolVarlist, "tl_", "index5"];
-    PrintListInitializations[dEvolVarlist, "tl_", "index5"];
-    PrintListInitializations[ddEvolVarlist, "tl_", "index5"];
+    PrintListInitializations[Drop[dEvolVarlist, -2], "tl_", "index5"];
+    PrintListInitializations[Drop[ddEvolVarlist, -2], "tl_", "index5"];
     pr[];
 
     PrintInitializations[{Mode -> "MainIn"}, TmunuVarlist];
     PrintInitializations[{Mode -> "MainIn", StorageType -> "Tile"},
                          EvolVarlist];
     PrintInitializations[{Mode -> "MainIn", StorageType -> "Tile", TensorType -> "Vect"},
-                         dEvolVarlist];
+                         Drop[dEvolVarlist, -2]];
     PrintInitializations[{Mode -> "MainIn", StorageType -> "Tile", TensorType -> "Smat"},
-                         ddEvolVarlist];
+                         Drop[ddEvolVarlist, -2]];
     pr[];
-    PrintEquations[{Mode -> "Temp"}, IntermediateVarlist];
-    PrintEquations[{Mode -> "Temp"}, DDVarlist];
+    PrintEquations[{Mode -> "Temp"}, Drop[Drop[IntermediateVarlist, {4}], {-4,-2}]];
+    PrintEquations[{Mode -> "Temp"}, Drop[DDVarlist, -1]];
     PrintEquations[{Mode -> "Temp"}, RVarlist];
-    PrintEquations[{Mode -> "Temp"}, MatterVarlist];
+    PrintEquations[{Mode -> "Temp"}, Drop[MatterVarlist, -2]];
     PrintEquations[{Mode -> "Temp"}, dAtUUVarlist];
     pr[];
     PrintEquations[{Mode -> "Main"}, ConstraintVarlist];
-    PrintEquations[{Mode -> "Main"}, dtEvolVarlist];
     pr[];
     pr["  });"];
     pr["});"];
