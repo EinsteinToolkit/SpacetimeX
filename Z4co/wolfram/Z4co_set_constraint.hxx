@@ -168,40 +168,34 @@ const vreal ddgamt3322 = tmp_ddgamt(1,1)(2,2);
 const vreal ddgamt3323 = tmp_ddgamt(1,2)(2,2);
 const vreal ddgamt3333 = tmp_ddgamt(2,2)(2,2);
 
-vreal detinvgamt
-=
-1/(-(Power(gamt13,2)*gamt22) + 2*gamt12*gamt13*gamt23 - 
-    gamt11*Power(gamt23,2) - Power(gamt12,2)*gamt33 + gamt11*gamt22*gamt33)
-;
-
 vreal invgamt11
 =
-detinvgamt*(-Power(gamt23,2) + gamt22*gamt33)
+-Power(gamt23,2) + gamt22*gamt33
 ;
 
 vreal invgamt12
 =
-detinvgamt*(gamt13*gamt23 - gamt12*gamt33)
+gamt13*gamt23 - gamt12*gamt33
 ;
 
 vreal invgamt13
 =
-detinvgamt*(-(gamt13*gamt22) + gamt12*gamt23)
+-(gamt13*gamt22) + gamt12*gamt23
 ;
 
 vreal invgamt22
 =
-detinvgamt*(-Power(gamt13,2) + gamt11*gamt33)
+-Power(gamt13,2) + gamt11*gamt33
 ;
 
 vreal invgamt23
 =
-detinvgamt*(gamt12*gamt13 - gamt11*gamt23)
+gamt12*gamt13 - gamt11*gamt23
 ;
 
 vreal invgamt33
 =
-detinvgamt*(-Power(gamt12,2) + gamt11*gamt22)
+-Power(gamt12,2) + gamt11*gamt22
 ;
 
 vreal invgam11

@@ -27,8 +27,8 @@ DefChart[cart, M3, {1, 2, 3}, {X[], Y[], Z[]}, ChartColor -> Blue];
 
 Module[{Mat, invMat},
   Mat = Table[gamt[{ii, -cart}, {jj, -cart}] // ToValues, {ii, 1, 3}, {jj, 1, 3}];
-  invMat = Inverse[Mat] /. {1 / Det[Mat] -> (detinvgamt[] // ToValues)};
-  SetEQNDelayed[detinvgamt[], 1 / Det[Mat] // Simplify];
+  invMat = Inverse[Mat] /. {1 / Det[Mat] -> 1}; (* since we enforced that det(gamt) = 1 *)
+  (* SetEQNDelayed[detinvgamt[], 1 / Det[Mat] // Simplify]; *)
   SetEQNDelayed[invgamt[i_, j_], invMat[[i[[1]], j[[1]]]] // Simplify]
 ];
 

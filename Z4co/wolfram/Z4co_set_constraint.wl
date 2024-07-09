@@ -27,8 +27,8 @@ DefChart[cart, M3, {1, 2, 3}, {X[], Y[], Z[]}, ChartColor -> Blue];
 
 Module[{Mat, invMat},
   Mat = Table[gamt[{ii, -cart}, {jj, -cart}] // ToValues, {ii, 1, 3}, {jj, 1, 3}];
-  invMat = Inverse[Mat] /. {1 / Det[Mat] -> (detinvgamt[] // ToValues)};
-  SetEQNDelayed[detinvgamt[], 1 / Det[Mat] // Simplify];
+  invMat = Inverse[Mat] /. {1 / Det[Mat] -> 1}; (* since we enforced that det(gamt) = 1 *)
+  (* SetEQNDelayed[detinvgamt[], 1 / Det[Mat] // Simplify]; *)
   SetEQNDelayed[invgamt[i_, j_], invMat[[i[[1]], j[[1]]]] // Simplify]
 ];
 
@@ -61,7 +61,7 @@ $MainPrint[] :=
     PrintInitializations[{Mode -> "MainIn", StorageType -> "Tile", TensorType -> "Smat"},
                          Drop[ddEvolVarlist, -2]];
     pr[];
-    PrintEquations[{Mode -> "Temp"}, Drop[Drop[IntermediateVarlist, {4}], {-4,-2}]];
+    PrintEquations[{Mode -> "Temp"}, Drop[Drop[IntermediateVarlist, {3}], {-4,-2}]];
     PrintEquations[{Mode -> "Temp"}, Drop[DDVarlist, -1]];
     PrintEquations[{Mode -> "Temp"}, RVarlist];
     PrintEquations[{Mode -> "Temp"}, Drop[MatterVarlist, -2]];
