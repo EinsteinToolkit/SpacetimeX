@@ -8,7 +8,7 @@
 #endif
 #endif
 
-//#define Power(x, y) (Arith::pown((x), (y)))
+// #define Power(x, y) (Arith::pown((x), (y)))
 
 #include "derivs.hxx"
 #include "physics.hxx"
@@ -33,8 +33,7 @@ using namespace Arith;
 using namespace Loop;
 using namespace std;
 
-template <typename T>
-inline T Power(T x, int y) {
+template <typename T> inline T Power(T x, int y) {
   return (y == 2) ? Arith::pow2(x) : Arith::pown(x, y);
 }
 
@@ -92,7 +91,7 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
       GF3D2<const CCTK_REAL>(layout2, betaGz)};
 
   // Tile variables for derivatives and so on
-  const int ntmps = 154;
+  const int ntmps = 136;
   GF3D5vector<CCTK_REAL> tmps(layout5, ntmps);
   int itmp = 0;
 
@@ -125,8 +124,7 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
   calc_derivs(cctkGH, gf_exKh, tl_exKh, tl_dexKh, layout5);
 
   const smat<GF3D5<CCTK_REAL>, 3> tl_exAt(make_mat_gf());
-  const smat<vec<GF3D5<CCTK_REAL>, 3>, 3> tl_dexAt(make_mat_vec_gf());
-  calc_derivs(cctkGH, gf_exAt, tl_exAt, tl_dexAt, layout5);
+  calc_copy(cctkGH, gf_exAt, tl_exAt, layout5);
 
   const vec<GF3D5<CCTK_REAL>, 3> tl_trGt(make_vec_gf());
   const vec<vec<GF3D5<CCTK_REAL>, 3>, 3> tl_dtrGt(make_vec_vec_gf());

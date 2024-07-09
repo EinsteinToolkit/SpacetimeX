@@ -314,6 +314,26 @@ diss(const simdl<T> &mask, const GF3D2<const T> &gf_, const vect<int, dim> &I,
 
 template <typename T>
 CCTK_ATTRIBUTE_NOINLINE void
+calc_copy(const cGH *restrict const cctkGH, const GF3D2<const T> &gf1,
+          const GF3D5<T> &gf0, const GF3D5layout &layout0) {
+  DECLARE_CCTK_ARGUMENTS;
+
+  typedef simd<CCTK_REAL> vreal;
+  typedef simdl<CCTK_REAL> vbool;
+  constexpr size_t vsize = tuple_size_v<vreal>;
+
+  const Loop::GridDescBaseDevice grid(cctkGH);
+  grid.loop_int_device<0, 0, 0, vsize>(
+      grid.nghostzones, [=] ARITH_DEVICE(const PointDesc &p) ARITH_INLINE {
+        const vbool mask = mask_for_loop_tail<vbool>(p.i, p.imax);
+        const GF3D5index index0(layout0, p.I);
+        const auto val = gf1(mask, p.I);
+        gf0.store(mask, index0, val);
+      });
+}
+
+template <typename T>
+CCTK_ATTRIBUTE_NOINLINE void
 calc_derivs(const cGH *restrict const cctkGH, const GF3D2<const T> &gf1,
             const GF3D5<T> &gf0, const vec<GF3D5<T>, dim> &dgf0,
             const GF3D5layout &layout0) {
@@ -366,6 +386,15 @@ calc_derivs2(const cGH *restrict const cctkGH, const GF3D2<const T> &gf1,
 }
 
 template <typename T>
+CCTK_ATTRIBUTE_NOINLINE void calc_copy(const cGH *restrict const cctkGH,
+                                       const vec<GF3D2<const T>, dim> &gf0_,
+                                       const vec<GF3D5<T>, dim> &gf_,
+                                       const GF3D5layout &layout) {
+  for (int a = 0; a < 3; ++a)
+    calc_copy(cctkGH, gf0_(a), gf_(a), layout);
+}
+
+template <typename T>
 CCTK_ATTRIBUTE_NOINLINE void
 calc_derivs(const cGH *restrict const cctkGH,
             const vec<GF3D2<const T>, dim> &gf0_, const vec<GF3D5<T>, dim> &gf_,
@@ -382,6 +411,16 @@ CCTK_ATTRIBUTE_NOINLINE void calc_derivs2(
     const vec<smat<GF3D5<T>, dim>, dim> &ddgf_, const GF3D5layout &layout) {
   for (int a = 0; a < 3; ++a)
     calc_derivs2(cctkGH, gf0_(a), gf_(a), dgf_(a), ddgf_(a), layout);
+}
+
+template <typename T>
+CCTK_ATTRIBUTE_NOINLINE void calc_copy(const cGH *restrict const cctkGH,
+                                       const smat<GF3D2<const T>, dim> &gf0_,
+                                       const smat<GF3D5<T>, dim> &gf_,
+                                       const GF3D5layout &layout) {
+  for (int a = 0; a < 3; ++a)
+    for (int b = a; b < 3; ++b)
+      calc_copy(cctkGH, gf0_(a, b), gf_(a, b), layout);
 }
 
 template <typename T>
