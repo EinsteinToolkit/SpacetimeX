@@ -47,11 +47,11 @@ calc_dAu(const smat<T, D> &gu, const smat<vec<T, D>, D> &dgu,
       //          + gu(a, x) * gu(b, y) * dA(x, y)(c);
       // });
       return sum<D>([&](int x) ARITH_INLINE {
-        return gu(b, x) * sum<D>([&](int y) ARITH_INLINE {
-                 return dgu(a, y)(c) * A(x, y)   //
-                        + dgu(b, y)(c) * A(x, y) //
-                        + gu(b, y) * dA(x, y)(c);
-               });
+        return sum<D>([&](int y) ARITH_INLINE {
+          return dgu(a, x)(c) * gu(b, y) * A(x, y)   //
+                 + gu(a, x) * dgu(b, y)(c) * A(x, y) //
+                 + gu(a, x) * gu(b, y) * dA(x, y)(c);
+        });
       });
     });
   });
