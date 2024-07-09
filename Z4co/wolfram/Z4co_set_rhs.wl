@@ -49,7 +49,7 @@ $MainPrint[] :=
 
     PrintListInitializations[TmunuVarlist, "gf_", "index2"];
     PrintListInitializations[EvolVarlist, "tl_", "index5"];
-    PrintListInitializations[dEvolVarlist, "tl_", "index5"];
+    PrintListInitializations[Drop[dEvolVarlist, {4}], "tl_", "index5"];
     PrintListInitializations[ddEvolVarlist, "tl_", "index5"];
     pr[];
 
@@ -57,7 +57,7 @@ $MainPrint[] :=
     PrintInitializations[{Mode -> "MainIn", StorageType -> "Tile"},
                          EvolVarlist];
     PrintInitializations[{Mode -> "MainIn", StorageType -> "Tile", TensorType -> "Vect"},
-                         dEvolVarlist];
+                         Drop[dEvolVarlist, {4}]];
     PrintInitializations[{Mode -> "MainIn", StorageType -> "Tile", TensorType -> "Smat"},
                          ddEvolVarlist];
     pr[];
