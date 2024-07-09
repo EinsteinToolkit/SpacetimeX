@@ -1,28 +1,28 @@
 /* Z4co_set_rhs.hxx */
 /* Produced with Mathematica */
 
-const GF3D2<CCTK_REAL> &dtchi = gf_dtchi;
-const GF3D2<CCTK_REAL> &dtgamt11 = gf_dtgamt(0,0);
-const GF3D2<CCTK_REAL> &dtgamt12 = gf_dtgamt(0,1);
-const GF3D2<CCTK_REAL> &dtgamt13 = gf_dtgamt(0,2);
-const GF3D2<CCTK_REAL> &dtgamt22 = gf_dtgamt(1,1);
-const GF3D2<CCTK_REAL> &dtgamt23 = gf_dtgamt(1,2);
-const GF3D2<CCTK_REAL> &dtgamt33 = gf_dtgamt(2,2);
-const GF3D2<CCTK_REAL> &dtexKh = gf_dtexKh;
-const GF3D2<CCTK_REAL> &dtexAt11 = gf_dtexAt(0,0);
-const GF3D2<CCTK_REAL> &dtexAt12 = gf_dtexAt(0,1);
-const GF3D2<CCTK_REAL> &dtexAt13 = gf_dtexAt(0,2);
-const GF3D2<CCTK_REAL> &dtexAt22 = gf_dtexAt(1,1);
-const GF3D2<CCTK_REAL> &dtexAt23 = gf_dtexAt(1,2);
-const GF3D2<CCTK_REAL> &dtexAt33 = gf_dtexAt(2,2);
-const GF3D2<CCTK_REAL> &dttrGt1 = gf_dttrGt(0);
-const GF3D2<CCTK_REAL> &dttrGt2 = gf_dttrGt(1);
-const GF3D2<CCTK_REAL> &dttrGt3 = gf_dttrGt(2);
-const GF3D2<CCTK_REAL> &dtTheta = gf_dtTheta;
-const GF3D2<CCTK_REAL> &dtalpha = gf_dtalpha;
-const GF3D2<CCTK_REAL> &dtbeta1 = gf_dtbeta(0);
-const GF3D2<CCTK_REAL> &dtbeta2 = gf_dtbeta(1);
-const GF3D2<CCTK_REAL> &dtbeta3 = gf_dtbeta(2);
+const GF3D2<CCTK_REAL> &local_dtchi = gf_dtchi;
+const GF3D2<CCTK_REAL> &local_dtgamt11 = gf_dtgamt(0,0);
+const GF3D2<CCTK_REAL> &local_dtgamt12 = gf_dtgamt(0,1);
+const GF3D2<CCTK_REAL> &local_dtgamt13 = gf_dtgamt(0,2);
+const GF3D2<CCTK_REAL> &local_dtgamt22 = gf_dtgamt(1,1);
+const GF3D2<CCTK_REAL> &local_dtgamt23 = gf_dtgamt(1,2);
+const GF3D2<CCTK_REAL> &local_dtgamt33 = gf_dtgamt(2,2);
+const GF3D2<CCTK_REAL> &local_dtexKh = gf_dtexKh;
+const GF3D2<CCTK_REAL> &local_dtexAt11 = gf_dtexAt(0,0);
+const GF3D2<CCTK_REAL> &local_dtexAt12 = gf_dtexAt(0,1);
+const GF3D2<CCTK_REAL> &local_dtexAt13 = gf_dtexAt(0,2);
+const GF3D2<CCTK_REAL> &local_dtexAt22 = gf_dtexAt(1,1);
+const GF3D2<CCTK_REAL> &local_dtexAt23 = gf_dtexAt(1,2);
+const GF3D2<CCTK_REAL> &local_dtexAt33 = gf_dtexAt(2,2);
+const GF3D2<CCTK_REAL> &local_dttrGt1 = gf_dttrGt(0);
+const GF3D2<CCTK_REAL> &local_dttrGt2 = gf_dttrGt(1);
+const GF3D2<CCTK_REAL> &local_dttrGt3 = gf_dttrGt(2);
+const GF3D2<CCTK_REAL> &local_dtTheta = gf_dtTheta;
+const GF3D2<CCTK_REAL> &local_dtalpha = gf_dtalpha;
+const GF3D2<CCTK_REAL> &local_dtbeta1 = gf_dtbeta(0);
+const GF3D2<CCTK_REAL> &local_dtbeta2 = gf_dtbeta(1);
+const GF3D2<CCTK_REAL> &local_dtbeta3 = gf_dtbeta(2);
 
 noinline([&]() __attribute__((__flatten__, __hot__)) {
   grid.loop_int_device<0, 0, 0, vsize>(
@@ -1272,45 +1272,45 @@ invgam11*Ss11 + 2*invgam12*Ss12 + 2*invgam13*Ss13 + invgam22*Ss22 +
 ;
 
 
-dtchi.store(mask, index2, 
+local_dtchi.store(mask, index2, 
 (-2*chi*(dbeta11 + dbeta22 + dbeta33 - alpha*exKh - 2*alpha*Theta))/3.
 );
 
-dtgamt11.store(mask, index2, 
+local_dtgamt11.store(mask, index2, 
 -2*alpha*exAt11 + 2*dbeta11*gamt11 - 
   (2*(dbeta11 + dbeta22 + dbeta33)*gamt11)/3. + 2*dbeta12*gamt12 + 
   2*dbeta13*gamt13
 );
 
-dtgamt12.store(mask, index2, 
+local_dtgamt12.store(mask, index2, 
 -2*alpha*exAt12 + dbeta21*gamt11 + dbeta11*gamt12 + dbeta22*gamt12 - 
   (2*(dbeta11 + dbeta22 + dbeta33)*gamt12)/3. + dbeta23*gamt13 + 
   dbeta12*gamt22 + dbeta13*gamt23
 );
 
-dtgamt13.store(mask, index2, 
+local_dtgamt13.store(mask, index2, 
 -2*alpha*exAt13 + dbeta31*gamt11 + dbeta32*gamt12 + dbeta11*gamt13 + 
   dbeta33*gamt13 - (2*(dbeta11 + dbeta22 + dbeta33)*gamt13)/3. + 
   dbeta12*gamt23 + dbeta13*gamt33
 );
 
-dtgamt22.store(mask, index2, 
+local_dtgamt22.store(mask, index2, 
 -2*alpha*exAt22 + 2*dbeta21*gamt12 + 2*dbeta22*gamt22 - 
   (2*(dbeta11 + dbeta22 + dbeta33)*gamt22)/3. + 2*dbeta23*gamt23
 );
 
-dtgamt23.store(mask, index2, 
+local_dtgamt23.store(mask, index2, 
 -2*alpha*exAt23 + dbeta31*gamt12 + dbeta21*gamt13 + dbeta32*gamt22 + 
   dbeta22*gamt23 + dbeta33*gamt23 - 
   (2*(dbeta11 + dbeta22 + dbeta33)*gamt23)/3. + dbeta23*gamt33
 );
 
-dtgamt33.store(mask, index2, 
+local_dtgamt33.store(mask, index2, 
 -2*alpha*exAt33 + 2*dbeta31*gamt13 + 2*dbeta32*gamt23 + 2*dbeta33*gamt33 - 
   (2*(dbeta11 + dbeta22 + dbeta33)*gamt33)/3.
 );
 
-dtexKh.store(mask, index2, 
+local_dtexKh.store(mask, index2, 
 -(DDalpha11*invgam11) - 2*DDalpha12*invgam12 - 2*DDalpha13*invgam13 - 
   DDalpha22*invgam22 - 2*DDalpha23*invgam23 - DDalpha33*invgam33 + 
   alpha*(exAt11*exAtUU11 + 2*exAt12*exAtUU12 + 2*exAt13*exAtUU13 + 
@@ -1319,7 +1319,7 @@ dtexKh.store(mask, index2,
      (4*exKh*Theta)/3. + (4*Power(Theta,2))/3. + 4*cpi*trSs)
 );
 
-dtexAt11.store(mask, index2, 
+local_dtexAt11.store(mask, index2, 
 (4*dbeta11*exAt11 - 2*dbeta22*exAt11 - 2*dbeta33*exAt11 + 
     6*dbeta12*exAt12 + 6*dbeta13*exAt13 + 3*alpha*exAt11*exKh - 
     6*alpha*Power(exAt11,2)*invgamt11 - 12*alpha*exAt11*exAt12*invgamt12 - 
@@ -1340,7 +1340,7 @@ dtexAt11.store(mask, index2,
 + 6*alpha*exAt11*Theta)/3.
 );
 
-dtexAt12.store(mask, index2, 
+local_dtexAt12.store(mask, index2, 
 (3*dbeta21*exAt11 + dbeta11*exAt12 + dbeta22*exAt12 - 2*dbeta33*exAt12 + 
     3*dbeta23*exAt13 + 3*dbeta12*exAt22 + 3*dbeta13*exAt23 + 
     3*alpha*exAt12*exKh - 6*alpha*exAt11*exAt12*invgamt11 - 
@@ -1362,7 +1362,7 @@ dtexAt12.store(mask, index2,
 + 6*alpha*exAt12*Theta)/3.
 );
 
-dtexAt13.store(mask, index2, 
+local_dtexAt13.store(mask, index2, 
 (3*dbeta31*exAt11 + 3*dbeta32*exAt12 + dbeta11*exAt13 - 2*dbeta22*exAt13 + 
     dbeta33*exAt13 + 3*dbeta12*exAt23 + 3*dbeta13*exAt33 + 
     3*alpha*exAt13*exKh - 6*alpha*exAt11*exAt13*invgamt11 - 
@@ -1384,7 +1384,7 @@ dtexAt13.store(mask, index2,
 + 6*alpha*exAt13*Theta)/3.
 );
 
-dtexAt22.store(mask, index2, 
+local_dtexAt22.store(mask, index2, 
 (6*dbeta21*exAt12 - 2*dbeta11*exAt22 + 4*dbeta22*exAt22 - 
     2*dbeta33*exAt22 + 6*dbeta23*exAt23 + 3*alpha*exAt22*exKh - 
     6*alpha*Power(exAt12,2)*invgamt11 - 12*alpha*exAt12*exAt22*invgamt12 - 
@@ -1404,7 +1404,7 @@ dtexAt22.store(mask, index2,
 + 6*alpha*exAt22*Theta)/3.
 );
 
-dtexAt23.store(mask, index2, 
+local_dtexAt23.store(mask, index2, 
 (3*dbeta31*exAt12 + 3*dbeta21*exAt13 + 3*dbeta32*exAt22 - 
     2*dbeta11*exAt23 + dbeta22*exAt23 + dbeta33*exAt23 + 3*dbeta23*exAt33 + 
     3*alpha*exAt23*exKh - 6*alpha*exAt12*exAt13*invgamt11 - 
@@ -1426,7 +1426,7 @@ dtexAt23.store(mask, index2,
 + 6*alpha*exAt23*Theta)/3.
 );
 
-dtexAt33.store(mask, index2, 
+local_dtexAt33.store(mask, index2, 
 (6*dbeta31*exAt13 + 6*dbeta32*exAt23 - 2*dbeta11*exAt33 - 
     2*dbeta22*exAt33 + 4*dbeta33*exAt33 + 3*alpha*exAt33*exKh - 
     6*alpha*Power(exAt13,2)*invgamt11 - 12*alpha*exAt13*exAt23*invgamt12 - 
@@ -1446,7 +1446,7 @@ dtexAt33.store(mask, index2,
        8*alpha*cpi*gam33*invgam33*Ss33) + 6*alpha*exAt33*Theta)/3.
 );
 
-dttrGt1.store(mask, index2, 
+local_dttrGt1.store(mask, index2, 
 (-6*dalpha1*exAtUU11 - 6*dalpha2*exAtUU12 - 6*dalpha3*exAtUU13 - 
     (9*alpha*(dchi1*exAtUU11 + dchi2*exAtUU12 + dchi3*exAtUU13))/chi + 
     4*ddbeta111*invgamt11 + ddbeta122*invgamt11 + ddbeta133*invgamt11 + 
@@ -1463,7 +1463,7 @@ dttrGt1.store(mask, index2,
     3*dbeta21*trGtd2 - 3*dbeta31*trGtd3)/3.
 );
 
-dttrGt2.store(mask, index2, 
+local_dttrGt2.store(mask, index2, 
 (-6*dalpha1*exAtUU12 - 6*dalpha2*exAtUU22 - 6*dalpha3*exAtUU23 - 
     (9*alpha*(dchi1*exAtUU12 + dchi2*exAtUU22 + dchi3*exAtUU23))/chi + 
     3*ddbeta112*invgamt11 + ddbeta111*invgamt12 + 7*ddbeta122*invgamt12 + 
@@ -1481,7 +1481,7 @@ dttrGt2.store(mask, index2,
     3*dbeta32*trGtd3)/3.
 );
 
-dttrGt3.store(mask, index2, 
+local_dttrGt3.store(mask, index2, 
 (-6*dalpha1*exAtUU13 - 6*dalpha2*exAtUU23 - 6*dalpha3*exAtUU33 - 
     (9*alpha*(dchi1*exAtUU13 + dchi2*exAtUU23 + dchi3*exAtUU33))/chi + 
     3*ddbeta113*invgamt11 + 6*ddbeta123*invgamt12 + ddbeta111*invgamt13 + 
@@ -1498,26 +1498,26 @@ dttrGt3.store(mask, index2,
        3*ckappa1*trGt3 + 3*ckappa1*trGtd3))/3.
 );
 
-dtTheta.store(mask, index2, 
+local_dtTheta.store(mask, index2, 
 -0.16666666666666666*(alpha*(3*exAt11*exAtUU11 + 6*exAt12*exAtUU12 + 
       6*exAt13*exAtUU13 + 3*exAt22*exAtUU22 + 6*exAt23*exAtUU23 + 
       3*exAt33*exAtUU33 - 2*Power(exKh,2) + 48*cpi*rho + 12*ckappa1*Theta + 
       6*ckappa1*ckappa2*Theta - 8*exKh*Theta - 8*Power(Theta,2) - 3*trR))
 );
 
-dtalpha.store(mask, index2, 
+local_dtalpha.store(mask, index2, 
 -(alpha*cmuL*exKh)
 );
 
-dtbeta1.store(mask, index2, 
+local_dtbeta1.store(mask, index2, 
 -(beta1*ceta) + cmuS*trGt1
 );
 
-dtbeta2.store(mask, index2, 
+local_dtbeta2.store(mask, index2, 
 -(beta2*ceta) + cmuS*trGt2
 );
 
-dtbeta3.store(mask, index2, 
+local_dtbeta3.store(mask, index2, 
 -(beta3*ceta) + cmuS*trGt3
 );
 
