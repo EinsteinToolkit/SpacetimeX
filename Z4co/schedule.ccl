@@ -137,7 +137,7 @@ if (calc_ADM_vars) {
 }
 
 if (calc_constraints) {
-  SCHEDULE Z4co_RHS_and_Constraint IN Z4co_RHSGroup BEFORE Z4co_Apply_NewRadX_BC
+  SCHEDULE Z4co_Constraints IN Z4co_AnalysisGroup
   {
     LANG: C
     READS: chi(everywhere)
@@ -155,59 +155,43 @@ if (calc_constraints) {
     WRITES: HC(interior)
     WRITES: MtC(interior)
     #WRITES: allC(interior)
-    WRITES: chi_rhs(interior)
-    WRITES: gamma_tilde_rhs(interior)
-    WRITES: K_hat_rhs(interior)
-    WRITES: A_tilde_rhs(interior)
-    WRITES: Gam_tilde_rhs(interior)
-    WRITES: Theta_rhs(interior)
-    WRITES: alphaG_rhs(interior)
-    WRITES: betaG_rhs(interior)
-    SYNC: chi_rhs
-    SYNC: gamma_tilde_rhs
-    SYNC: K_hat_rhs
-    SYNC: A_tilde_rhs
-    SYNC: Gam_tilde_rhs
-    SYNC: Theta_rhs
-    SYNC: alphaG_rhs
-    SYNC: betaG_rhs
-  } "Calculate Z4c RHS and Constraints"
-} else {
-  SCHEDULE Z4co_RHS IN Z4co_RHSGroup BEFORE Z4co_Apply_NewRadX_BC
-  {
-    LANG: C
-    READS: chi(everywhere)
-    READS: gamma_tilde(everywhere)
-    READS: K_hat(everywhere)
-    READS: A_tilde(everywhere)
-    READS: Gam_tilde(everywhere)
-    READS: Theta(everywhere)
-    READS: alphaG(everywhere)
-    READS: betaG(everywhere)
-    READS: TmunuBaseX::eTtt(interior)
-    READS: TmunuBaseX::eTti(interior)
-    READS: TmunuBaseX::eTij(interior)
-    WRITES: chi_rhs(interior)
-    WRITES: gamma_tilde_rhs(interior)
-    WRITES: K_hat_rhs(interior)
-    WRITES: A_tilde_rhs(interior)
-    WRITES: Gam_tilde_rhs(interior)
-    WRITES: Theta_rhs(interior)
-    WRITES: alphaG_rhs(interior)
-    WRITES: betaG_rhs(interior)
-    SYNC: chi_rhs
-    SYNC: gamma_tilde_rhs
-    SYNC: K_hat_rhs
-    SYNC: A_tilde_rhs
-    SYNC: Gam_tilde_rhs
-    SYNC: Theta_rhs
-    SYNC: alphaG_rhs
-    SYNC: betaG_rhs
-  } "Calculate Z4c RHS"
+  } "Calculate Z4c Constraints"
 }
 
+SCHEDULE Z4co_RHS IN Z4co_RHSGroup
+{
+  LANG: C
+  READS: chi(everywhere)
+  READS: gamma_tilde(everywhere)
+  READS: K_hat(everywhere)
+  READS: A_tilde(everywhere)
+  READS: Gam_tilde(everywhere)
+  READS: Theta(everywhere)
+  READS: alphaG(everywhere)
+  READS: betaG(everywhere)
+  READS: TmunuBaseX::eTtt(interior)
+  READS: TmunuBaseX::eTti(interior)
+  READS: TmunuBaseX::eTij(interior)
+  WRITES: chi_rhs(interior)
+  WRITES: gamma_tilde_rhs(interior)
+  WRITES: K_hat_rhs(interior)
+  WRITES: A_tilde_rhs(interior)
+  WRITES: Gam_tilde_rhs(interior)
+  WRITES: Theta_rhs(interior)
+  WRITES: alphaG_rhs(interior)
+  WRITES: betaG_rhs(interior)
+  SYNC: chi_rhs
+  SYNC: gamma_tilde_rhs
+  SYNC: K_hat_rhs
+  SYNC: A_tilde_rhs
+  SYNC: Gam_tilde_rhs
+  SYNC: Theta_rhs
+  SYNC: alphaG_rhs
+  SYNC: betaG_rhs
+} "Calculate Z4c RHS"
+
 if (CCTK_Equals(boundary_conditions, "NewRadX")) {
-  SCHEDULE Z4co_Apply_NewRadX_BC IN Z4co_RHSGroup
+  SCHEDULE Z4co_Apply_NewRadX_BC IN Z4co_RHSGroup AFTER Z4c_RHS
   {
     LANG: C
     READS: chi(everywhere)
