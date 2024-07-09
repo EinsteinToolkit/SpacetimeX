@@ -29,8 +29,7 @@ using namespace Arith;
 using namespace Loop;
 using namespace std;
 
-template <typename T>
-inline T Power(T x, int y) {
+template <typename T> inline T Power(T x, int y) {
   return (y == 2) ? Arith::pow2(x) : Arith::pown(x, y);
 }
 
@@ -88,7 +87,7 @@ extern "C" void Z4co_Constraints(CCTK_ARGUMENTS) {
       GF3D2<const CCTK_REAL>(layout2, betaGz)};
 
   // Tile variables for derivatives and so on
-  const int ntmps = 154;
+  const int ntmps = 118;
   GF3D5vector<CCTK_REAL> tmps(layout5, ntmps);
   int itmp = 0;
 
@@ -102,7 +101,6 @@ extern "C" void Z4co_Constraints(CCTK_ARGUMENTS) {
   const auto make_vec_gf = [&]() { return make_vec(make_gf); };
   const auto make_mat_gf = [&]() { return make_mat(make_gf); };
   const auto make_vec_vec_gf = [&]() { return make_vec(make_vec_gf); };
-  const auto make_vec_mat_gf = [&]() { return make_vec(make_mat_gf); };
   const auto make_mat_vec_gf = [&]() { return make_mat(make_vec_gf); };
   const auto make_mat_mat_gf = [&]() { return make_mat(make_mat_gf); };
 
@@ -114,8 +112,7 @@ extern "C" void Z4co_Constraints(CCTK_ARGUMENTS) {
   const smat<GF3D5<CCTK_REAL>, 3> tl_gamt(make_mat_gf());
   const smat<vec<GF3D5<CCTK_REAL>, 3>, 3> tl_dgamt(make_mat_vec_gf());
   const smat<smat<GF3D5<CCTK_REAL>, 3>, 3> tl_ddgamt(make_mat_mat_gf());
-  calc_derivs2(cctkGH, gf_gamt, tl_gamt, tl_dgamt, tl_ddgamt,
-               layout5);
+  calc_derivs2(cctkGH, gf_gamt, tl_gamt, tl_dgamt, tl_ddgamt, layout5);
 
   const GF3D5<CCTK_REAL> tl_exKh(make_gf());
   const vec<GF3D5<CCTK_REAL>, 3> tl_dexKh(make_vec_gf());
@@ -134,15 +131,10 @@ extern "C" void Z4co_Constraints(CCTK_ARGUMENTS) {
   calc_derivs(cctkGH, gf_Theta, tl_Theta, tl_dTheta, layout5);
 
   const GF3D5<CCTK_REAL> tl_alpha(make_gf());
-  const vec<GF3D5<CCTK_REAL>, 3> tl_dalpha(make_vec_gf());
-  const smat<GF3D5<CCTK_REAL>, 3> tl_ddalpha(make_mat_gf());
-  calc_derivs2(cctkGH, gf_alpha, tl_alpha, tl_dalpha, tl_ddalpha,
-               layout5);
+  calc_copy(cctkGH, gf_alpha, tl_alpha, layout5);
 
   const vec<GF3D5<CCTK_REAL>, 3> tl_beta(make_vec_gf());
-  const vec<vec<GF3D5<CCTK_REAL>, 3>, 3> tl_dbeta(make_vec_vec_gf());
-  const vec<smat<GF3D5<CCTK_REAL>, 3>, 3> tl_ddbeta(make_vec_mat_gf());
-  calc_derivs2(cctkGH, gf_beta, tl_beta, tl_dbeta, tl_ddbeta, layout5);
+  calc_copy(cctkGH, gf_beta, tl_beta, layout5);
 
   if (itmp != ntmps)
     CCTK_VERROR("Wrong number of temporary variables: ntmps=%d itmp=%d", ntmps,
@@ -169,14 +161,14 @@ extern "C" void Z4co_Constraints(CCTK_ARGUMENTS) {
   //
 
   const vec<GF3D2<CCTK_REAL>, 3> gf_ZtC{GF3D2<CCTK_REAL>(layout2, ZtCx),
-                                         GF3D2<CCTK_REAL>(layout2, ZtCy),
-                                         GF3D2<CCTK_REAL>(layout2, ZtCz)};
+                                        GF3D2<CCTK_REAL>(layout2, ZtCy),
+                                        GF3D2<CCTK_REAL>(layout2, ZtCz)};
 
   const GF3D2<CCTK_REAL> gf_HC(layout2, HC);
 
   const vec<GF3D2<CCTK_REAL>, 3> gf_MtC{GF3D2<CCTK_REAL>(layout2, MtCx),
-                                         GF3D2<CCTK_REAL>(layout2, MtCy),
-                                         GF3D2<CCTK_REAL>(layout2, MtCz)};
+                                        GF3D2<CCTK_REAL>(layout2, MtCy),
+                                        GF3D2<CCTK_REAL>(layout2, MtCz)};
 
   //
 
