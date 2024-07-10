@@ -44,6 +44,8 @@ extern "C" void Z4coo_Enforce(CCTK_ARGUMENTS) {
   typedef simdl<CCTK_REAL> vbool;
   constexpr size_t vsize = tuple_size_v<vreal>;
 
+  const auto delta3 = one<smat<vreal, 3> >()();
+
 #ifdef __CUDACC__
   const nvtxRangeId_t range = nvtxRangeStartA("Z4coo_Enforce::enforce");
 #endif
@@ -61,20 +63,21 @@ extern "C" void Z4coo_Enforce(CCTK_ARGUMENTS) {
 
         // Enforce floors
 
-        const vreal chi = fmax(vreal(chi_floor), chi_old);
-        const vreal alphaG = fmax(vreal(alphaG_floor), alphaG_old);
+        const vreal chi = fmax(vreal(chi_floor - 1), chi_old);
+        const vreal alphaG = fmax(vreal(alphaG_floor - 1), alphaG_old);
 
         // Enforce algebraic constraints
         // See arXiv:1212.2901 [gr-qc].
 
-        const vreal detgammat_old = calc_det(gammat_old);
-        const vreal chi1_old = 1 / cbrt(detgammat_old);
+        const vreal detgammat_old = calc_det(delta3 + gammat_old);
+        const vreal chi1_old = 1 / cbrt(detgammat_old) - 1;
         const smat<vreal, 3> gammat([&](int a, int b) ARITH_INLINE {
-          return chi1_old * gammat_old(a, b);
+          return (1 + chi1_old) * (delta3(a, b) + gammat_old(a, b)) -
+                 delta3(a, b);
         });
 #ifdef CCTK_DEBUG
-        const vreal detgammat = calc_det(gammat);
-        const vreal gammat_norm = maxabs(gammat);
+        const vreal detgammat = calc_det(delta3 + gammat);
+        const vreal gammat_norm = maxabs(delta3 + gammat);
         const vreal gammat_scale = gammat_norm;
 #if !defined __CUDACC__ && !defined __HIPCC__
         if (!(all(fabs(detgammat - 1) <= 1.0e-12 * gammat_scale))) {
@@ -87,19 +90,20 @@ extern "C" void Z4coo_Enforce(CCTK_ARGUMENTS) {
         assert(all(fabs(detgammat - 1) <= 1.0e-12 * gammat_scale));
 #endif
 
-        const smat<vreal, 3> gammatu = calc_inv(gammat, vreal(1));
+        const smat<vreal, 3> gammatu =
+            calc_inv(delta3 + gammat, vreal(1)) - delta3;
 
         const vreal traceAt_old = sum_symm<3>([&](int x, int y) ARITH_INLINE {
-          return gammatu(x, y) * At_old(x, y);
+          return (delta3(x, y) + gammatu(x, y)) * At_old(x, y);
         });
         const smat<vreal, 3> At([&](int a, int b) ARITH_INLINE {
-          return At_old(a, b) - traceAt_old / 3 * gammat(a, b);
+          return At_old(a, b) - traceAt_old / 3 * (delta3(a, b) + gammat(a, b));
         });
 #ifdef CCTK_DEBUG
         const vreal traceAt = sum_symm<3>([&](int x, int y) ARITH_INLINE {
-          return gammatu(x, y) * At(x, y);
+          return (delta3(x, y) + gammatu(x, y)) * At(x, y);
         });
-        const vreal gammatu_norm = maxabs(gammatu);
+        const vreal gammatu_norm = maxabs(delta3 + gammatu);
         const vreal At_norm = maxabs(At);
         const vreal At_scale = fmax(fmax(gammat_norm, gammatu_norm), At_norm);
 #if !defined __CUDACC__ && !defined __HIPCC__
