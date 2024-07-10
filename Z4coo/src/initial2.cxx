@@ -44,6 +44,8 @@ extern "C" void Z4coo_Initial2(CCTK_ARGUMENTS) {
   typedef simdl<CCTK_REAL> vbool;
   constexpr size_t vsize = tuple_size_v<vreal>;
 
+  const auto delta3 = one<smat<vreal, 3> >()();
+
   const Loop::GridDescBaseDevice grid(cctkGH);
 #ifdef __CUDACC__
   const nvtxRangeId_t range = nvtxRangeStartA("Z4coo_Initial2::initial2");
@@ -57,17 +59,19 @@ extern "C" void Z4coo_Initial2(CCTK_ARGUMENTS) {
         const smat<vreal, 3> gammat = gf_gammat1(mask, index1);
 
         // Calculate Z4c variables (only Gamt)
-        const smat<vreal, 3> gammatu = calc_inv(gammat, vreal(1));
+        const smat<vreal, 3> gammatu =
+            calc_inv(delta3 + gammat, vreal(1)) - delta3;
 
         const smat<vec<vreal, 3>, 3> dgammat([&](int a, int b) {
           return deriv(mask, gf_gammat1(a, b), p.I, dx);
         });
 
         const vec<smat<vreal, 3>, 3> Gammatl = calc_gammal(dgammat);
-        const vec<smat<vreal, 3>, 3> Gammat = calc_gamma(gammatu, Gammatl);
+        const vec<smat<vreal, 3>, 3> Gammat =
+            calc_gamma(delta3 + gammatu, Gammatl);
         const vec<vreal, 3> Gamt([&](int a) ARITH_INLINE {
           return sum_symm<3>([&](int x, int y) ARITH_INLINE {
-            return gammatu(x, y) * Gammat(a)(x, y);
+            return (delta3(x, y) + gammatu(x, y)) * Gammat(a)(x, y);
           });
         });
 
