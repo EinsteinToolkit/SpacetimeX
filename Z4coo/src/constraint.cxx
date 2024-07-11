@@ -9,7 +9,6 @@
 #endif
 
 #include "derivs.hxx"
-#include "physics.hxx"
 
 #include <loop_device.hxx>
 #include <simd.hxx>

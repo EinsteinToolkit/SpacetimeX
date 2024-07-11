@@ -1,6 +1,9 @@
 /* Z4coo_set_constraint.hxx */
 /* Produced with Mathematica */
 
+#ifndef Z4COO_SET_CONSTRAINT_HXX
+#define Z4COO_SET_CONSTRAINT_HXX
+
 const GF3D2<CCTK_REAL> &local_ZtC1 = gf_ZtC(0);
 const GF3D2<CCTK_REAL> &local_ZtC2 = gf_ZtC(1);
 const GF3D2<CCTK_REAL> &local_ZtC3 = gf_ZtC(2);
@@ -43,11 +46,8 @@ const vreal eTt3 = tmp_eTt(2);
 const vreal eT11 = tmp_eT(0,0);
 const vreal eT12 = tmp_eT(0,1);
 const vreal eT13 = tmp_eT(0,2);
-const vreal eT21 = tmp_eT(1,0);
 const vreal eT22 = tmp_eT(1,1);
 const vreal eT23 = tmp_eT(1,2);
-const vreal eT31 = tmp_eT(2,0);
-const vreal eT32 = tmp_eT(2,1);
 const vreal eT33 = tmp_eT(2,2);
 const vreal chi = tmp_chi + 1;
 const vreal gamt11 = tmp_gamt(0,0) + 1;
@@ -842,20 +842,19 @@ invgam11*R11 + 2*invgam12*R12 + 2*invgam13*R13 + invgam22*R22 +
 
 vreal rho
 =
-(Power(beta1,2)*eT11 + beta1*beta2*(eT12 + eT21) + Power(beta2,2)*eT22 + 
-    beta1*beta3*(eT13 + eT31) + beta2*beta3*(eT23 + eT32) + 
-    Power(beta3,2)*eT33 - 2*beta1*eTt1 - 2*beta2*eTt2 - 2*beta3*eTt3 + eTtt)/
-  Power(alpha,2)
+(Power(beta1,2)*eT11 + Power(beta2,2)*eT22 + 2*beta2*beta3*eT23 + 
+    Power(beta3,2)*eT33 + 2*beta1*(beta2*eT12 + beta3*eT13 - eTt1) - 
+    2*beta2*eTt2 - 2*beta3*eTt3 + eTtt)/Power(alpha,2)
 ;
 
 vreal Sm1
 =
-(beta1*eT11 + beta2*eT21 + beta3*eT31 - eTt1)/alpha
+(beta1*eT11 + beta2*eT12 + beta3*eT13 - eTt1)/alpha
 ;
 
 vreal Sm2
 =
-(beta1*eT12 + beta2*eT22 + beta3*eT32 - eTt2)/alpha
+(beta1*eT12 + beta2*eT22 + beta3*eT23 - eTt2)/alpha
 ;
 
 vreal Sm3
@@ -1029,5 +1028,7 @@ local_MtC3.store(mask, index2,
 
   });
 });
+
+#endif // #ifndef Z4COO_SET_CONSTRAINT_HXX
 
 /* Z4coo_set_constraint.hxx */
