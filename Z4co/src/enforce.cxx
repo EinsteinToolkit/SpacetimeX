@@ -1,5 +1,3 @@
-#include "physics.hxx"
-
 #include <loop_device.hxx>
 #include <mat.hxx>
 #include <simd.hxx>

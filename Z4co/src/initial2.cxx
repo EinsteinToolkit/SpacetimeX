@@ -1,5 +1,4 @@
 #include "derivs.hxx"
-#include "physics.hxx"
 
 #include <loop_device.hxx>
 #include <simd.hxx>
@@ -15,6 +14,29 @@ namespace Z4co {
 using namespace Arith;
 using namespace Loop;
 using namespace std;
+
+template <typename T, int D>
+ARITH_INLINE ARITH_DEVICE ARITH_HOST constexpr vec<smat<T, D>, D>
+calc_gammal(const smat<vec<T, D>, D> &dg) {
+  // Gammal_abc
+  return vec<smat<T, D>, D>([&](int a) ARITH_INLINE {
+    return smat<T, D>([&](int b, int c) ARITH_INLINE {
+      return (dg(a, b)(c) + dg(a, c)(b) - dg(b, c)(a)) / 2;
+    });
+  });
+}
+
+template <typename T, int D>
+ARITH_INLINE ARITH_DEVICE ARITH_HOST constexpr vec<smat<T, D>, D>
+calc_gamma(const smat<T, D> &gu, const vec<smat<T, D>, D> &Gammal) {
+  // Gamma^a_bc
+  return vec<smat<T, D>, D>([&](int a) ARITH_INLINE {
+    return smat<T, D>([&](int b, int c) ARITH_INLINE {
+      return sum<D>([&](int x)
+                        ARITH_INLINE { return gu(a, x) * Gammal(x)(b, c); });
+    });
+  });
+}
 
 extern "C" void Z4co_Initial2(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_Z4co_Initial2;

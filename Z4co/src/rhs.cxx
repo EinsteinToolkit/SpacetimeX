@@ -11,7 +11,6 @@
 // #define Power(x, y) (Arith::pown((x), (y)))
 
 #include "derivs.hxx"
-#include "physics.hxx"
 
 #include <loop_device.hxx>
 #include <mat.hxx>
