@@ -1,6 +1,9 @@
 /* Z4co_set_ADM.hxx */
 /* Produced with Mathematica */
 
+#ifndef Z4CO_SET_ADM_HXX
+#define Z4CO_SET_ADM_HXX
+
 const GF3D2<CCTK_REAL> &local_ADMgam11 = gf_ADMgam(0,0);
 const GF3D2<CCTK_REAL> &local_ADMgam12 = gf_ADMgam(0,1);
 const GF3D2<CCTK_REAL> &local_ADMgam13 = gf_ADMgam(0,2);
@@ -117,5 +120,7 @@ beta3
 
 
 });
+
+#endif // #ifndef Z4CO_SET_ADM_HXX
 
 /* Z4co_set_ADM.hxx */

@@ -1,6 +1,9 @@
 /* Z4co_set_rhs.hxx */
 /* Produced with Mathematica */
 
+#ifndef Z4CO_SET_RHS_HXX
+#define Z4CO_SET_RHS_HXX
+
 const GF3D2<CCTK_REAL> &local_dtchi = gf_dtchi;
 const GF3D2<CCTK_REAL> &local_dtgamt11 = gf_dtgamt(0,0);
 const GF3D2<CCTK_REAL> &local_dtgamt12 = gf_dtgamt(0,1);
@@ -1514,5 +1517,7 @@ local_dtbeta3.store(mask, index2,
 
   });
 });
+
+#endif // #ifndef Z4CO_SET_RHS_HXX
 
 /* Z4co_set_rhs.hxx */
