@@ -103,7 +103,7 @@ template <typename T> struct z4c_vars_noderivs {
       : set_Theta_zero(set_Theta_zero), kappa1(kappa1), kappa2(kappa2),
         f_mu_L(f_mu_L), f_mu_S(f_mu_S), eta(eta),
         //
-        delta3(one<smat<T, 3> >()()),
+        delta3(one<smat<T, 3>>()()),
         //
         chi(chi), gammat(gammat), Kh(Kh), At(At), Gamt(Gamt), Theta(Theta),
         alphaG(alphaG), betaG(betaG),
@@ -515,7 +515,7 @@ template <typename T> struct z4c_vars : z4c_vars_noderivs<T> {
               //                      + Gammat(x)(a, y) * Gammatl(x)(b, z));
               //            });
               //   }) //
-              + sum_symm<3>([&](int x, int y) ARITH_INLINE {
+              + sum<3>([&](int x, int y) ARITH_INLINE {
                   return Gammat(x)(a, y) * Gammatlu(b)(x)(y)   //
                          + Gammat(x)(b, y) * Gammatlu(a)(x)(y) //
                          + Gammat(x)(a, y) * Gammatlu(x)(b)(y);
