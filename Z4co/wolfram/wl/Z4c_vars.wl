@@ -63,7 +63,7 @@ TmunuVarlist =
   GridTensors[
     {eTtt[], PrintAs -> "\!\(\*SubscriptBox[\(T\), \(tt\)]\)"},
     {eTt[-i], PrintAs -> "\!\(\*SubscriptBox[\(T\), \(t\)]\)"},
-    {eT[-i, -j], PrintAs -> "T"}
+    {eT[-i, -j], Symmetric[{-i, -j}], PrintAs -> "T"}
   ];
 
 (**************************)

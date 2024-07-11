@@ -63,7 +63,7 @@ TmunuVarlist =
   DefTensors[
     {eTtt[], PrintAs -> "\!\(\*SubscriptBox[\(T\), \(tt\)]\)"},
     {eTt[-i], PrintAs -> "\!\(\*SubscriptBox[\(T\), \(t\)]\)"},
-    {eT[-i, -j], PrintAs -> "T"}
+    {eT[-i, -j], Symmetric[{-i, -j}], PrintAs -> "T"}
   ];
 
 (**************************)
@@ -74,7 +74,7 @@ TmunuVarlist =
 
 IntermediateVarlist =
   DefTensors[
-    {detinvgamt[], PrintAs -> "1/\!\(\*OverscriptBox[\(\[Gamma]\), \(~\)]\)"},
+    (* {detinvgamt[], PrintAs -> "1/\!\(\*OverscriptBox[\(\[Gamma]\), \(~\)]\)"}, *)
     {invgamt[i, j], Symmetric[{i, j}], PrintAs -> "\!\(\*OverscriptBox[\(\[Gamma]\), \(~\)]\)"},
     {invgam[i, j], Symmetric[{i, j}], PrintAs -> "\[Gamma]"},
     {gam[-i, -j], Symmetric[{-i, -j}], PrintAs -> "\[Gamma]"},
