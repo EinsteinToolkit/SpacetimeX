@@ -1,6 +1,9 @@
 /* Z4co_set_constraint.hxx */
 /* Produced with Mathematica */
 
+#ifndef Z4CO_SET_CONSTRAINT_HXX
+#define Z4CO_SET_CONSTRAINT_HXX
+
 const GF3D2<CCTK_REAL> &local_ZtC1 = gf_ZtC(0);
 const GF3D2<CCTK_REAL> &local_ZtC2 = gf_ZtC(1);
 const GF3D2<CCTK_REAL> &local_ZtC3 = gf_ZtC(2);
@@ -1025,5 +1028,7 @@ local_MtC3.store(mask, index2,
 
   });
 });
+
+#endif // #ifndef Z4CO_SET_CONSTRAINT_HXX
 
 /* Z4co_set_constraint.hxx */

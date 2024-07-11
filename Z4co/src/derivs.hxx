@@ -1,5 +1,5 @@
-#ifndef DERIVS_HXX
-#define DERIVS_HXX
+#ifndef Z4CO_DERIVS_HXX
+#define Z4CO_DERIVS_HXX
 
 #include <div.hxx>
 #include <loop_device.hxx>
@@ -489,4 +489,4 @@ apply_upwind_diss(const cGH *restrict const cctkGH, const GF3D2<const T> &gf_,
 
 } // namespace Z4co
 
-#endif // #ifndef DERIVS_HXX
+#endif // #ifndef Z4CO_DERIVS_HXX
