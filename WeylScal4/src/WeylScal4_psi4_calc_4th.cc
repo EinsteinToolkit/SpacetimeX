@@ -1,5 +1,6 @@
 /*  File produced by Kranc */
 
+#define CCTK_LOOP_DISABLE_PRAGMA_OMP
 #define KRANC_C
 
 #include <algorithm>
