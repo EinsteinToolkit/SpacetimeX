@@ -1,5 +1,6 @@
 /*  File produced by Kranc */
 
+#define CCTK_LOOP_DISABLE_PRAGMA_OMP
 #define KRANC_C
 
 #include <algorithm>
@@ -101,12 +102,12 @@ static void WeylScal4_psi4_calc_4th_Body(const cGH* restrict const cctkGH, const
   /* Calculate temporaries and arrays functions */
   /* Copy local copies back to grid functions */
   /* Loop over the grid points */
-  const int imin0=imin[0];
-  const int imin1=imin[1];
-  const int imin2=imin[2];
-  const int imax0=imax[0];
-  const int imax1=imax[1];
-  const int imax2=imax[2];
+  const int imin0=std::max(imin[0], cctk_tile_min[0]);
+  const int imin1=std::max(imin[1], cctk_tile_min[1]);
+  const int imin2=std::max(imin[2], cctk_tile_min[2]);
+  const int imax0=std::min(imax[0], cctk_tile_max[0]);
+  const int imax1=std::min(imax[1], cctk_tile_max[1]);
+  const int imax2=std::min(imax[2], cctk_tile_max[2]);
   //#pragma omp parallel
   CCTK_LOOP3(WeylScal4_psi4_calc_4th,
     i,j,k, imin0,imin1,imin2, imax0,imax1,imax2,
