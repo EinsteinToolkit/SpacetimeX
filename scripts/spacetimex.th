@@ -168,6 +168,7 @@ SpacetimeX/AHFinderDirect
 SpacetimeX/AHFinderX
 SpacetimeX/BrillLindquist
 SpacetimeX/Cowling
+SpacetimeX/Multipole
 SpacetimeX/NewRadX
 SpacetimeX/TestNewRadX
 SpacetimeX/Punctures
@@ -177,4 +178,5 @@ SpacetimeX/SphericalSurface
 SpacetimeX/StaticTrumpet
 SpacetimeX/TwoPuncturesX
 SpacetimeX/Weyl
+SpacetimeX/WeylScal4
 SpacetimeX/Z4c
