@@ -169,6 +169,13 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
                                           grid.nghostzones[2] * p.NI[2]};
               vect<int, dim> intp = p.I - displacement;
 
+              assert(intp[0] >= grid.nghostzones[0]);
+              assert(intp[1] >= grid.nghostzones[1]);
+              assert(intp[2] >= grid.nghostzones[2]);
+              assert(intp[0] <= grid.lsh[0] - grid.nghostzones[0] - 1);
+              assert(intp[1] <= grid.lsh[1] - grid.nghostzones[1] - 1);
+              assert(intp[2] <= grid.lsh[2] - grid.nghostzones[2] - 1);
+
               // coordinates at p.I-displacement
               const CCTK_REAL xint = p.x - displacement[0] * p.DX[0];
               const CCTK_REAL yint = p.y - displacement[1] * p.DX[1];
