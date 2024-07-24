@@ -28,7 +28,8 @@ using namespace Arith;
 using namespace Loop;
 using namespace std;
 
-template <typename T> inline T Power(T x, int y) {
+template <typename T>
+CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline T Power(T x, int y) {
   return (y == 2) ? Arith::pow2(x) : Arith::pown(x, y);
 }
 
