@@ -101,3 +101,7 @@ CCTK_INT n_betaG "n power of outgoing boundary r^n fall off rate for beta"
 {
   0:2           :: "1 is my guess"
 } 1
+
+SHARES: CarpetX
+
+USES BOOLEAN use_subcycling_wip
