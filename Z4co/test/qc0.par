@@ -91,7 +91,7 @@ Z4co::epsdiss          = 0.32
 Z4co::boundary_conditions = "NewRadX"
 
 IO::out_dir = $parfile
-IO::out_every = 1
+IO::out_every = 2
 IO::parfile_write = no
 
 CarpetX::out_metadata = no
