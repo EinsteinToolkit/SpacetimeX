@@ -6,7 +6,7 @@ SCHEDULE Multipole_Setup AT wragh
   OPTIONS: GLOBAL
 } "Set up for Calculating Multipoles"
 
-SCHEDULE Multipole_Calc AT analysis AFTER WeylScal4_psi4_calc_4th
+SCHEDULE Multipole_Calc AT analysis
 {
   LANG: C
   OPTIONS: GLOBAL

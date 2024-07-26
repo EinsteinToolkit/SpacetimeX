@@ -3,7 +3,7 @@
 STORAGE: Psi4r_group
 STORAGE: Psi4i_group
 
-SCHEDULE WeylScal4_psi4_calc_4th AT analysis
+SCHEDULE WeylScal4_psi4_calc_4th AT evol AFTER ODESolvers_Solve
 {
   LANG: C
   READS: ADMBaseX::metric(everywhere)
