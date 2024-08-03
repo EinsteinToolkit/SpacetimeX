@@ -32,10 +32,6 @@ using namespace Arith;
 using namespace Loop;
 using namespace std;
 
-extern "C" void Z4c_SyncKsOld(CCTK_ARGUMENTS) {
-  // do nothing
-}
-
 extern "C" void Z4c_RHS(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_Z4c_RHS;
   DECLARE_CCTK_PARAMETERS;
