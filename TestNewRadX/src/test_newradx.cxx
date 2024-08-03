@@ -98,6 +98,10 @@ extern "C" void TestNewRadX_Init(CCTK_ARGUMENTS) {
       });
 }
 
+extern "C" void TestNewRadX_Sync(CCTK_ARGUMENTS) {
+  // do nothing
+}
+
 extern "C" void TestNewRadX_RHS(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTSX_TestNewRadX_RHS;
   DECLARE_CCTK_PARAMETERS;
