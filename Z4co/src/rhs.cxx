@@ -37,10 +37,6 @@ CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline T Power(T x, int y) {
   return (y == 2) ? Arith::pow2(x) : Arith::pown(x, y);
 }
 
-extern "C" void Z4co_SyncKsOld(CCTK_ARGUMENTS) {
-  // do nothing
-}
-
 extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_Z4co_RHS;
   DECLARE_CCTK_PARAMETERS;
