@@ -31,6 +31,13 @@ SCHEDULE TestNewRadX_RHS IN ODESolvers_RHS
   SYNC: rhs
 } "Calculate scalar wave RHS"
 
+SCHEDULE TestNewRadX_Sync IN ODESolvers_PostStep
+{
+  LANG: C
+  OPTIONS: global
+  SYNC: state
+} "Synchronize"
+
 SCHEDULE TestNewRadX_CompareSolution IN ODESolvers_PostStep
 {
   LANG: C
