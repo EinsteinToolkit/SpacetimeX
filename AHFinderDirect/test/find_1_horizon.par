@@ -3,15 +3,14 @@ ADMBaseX
 AEILocalInterp
 AHFinderDirect
 CarpetX
-Coordinates
+CoordinatesX
 Formaline
 IOUtil
 ODESolvers
-SystemTopology
 SphericalSurface
 TimerReport
 TmunuBaseX
-TwoPunctures
+TwoPuncturesX
 Weyl
 Z4c
 "
@@ -70,18 +69,18 @@ ADMBaseX::initial_data = "TwoPunctures"
 ADMBaseX::initial_lapse = "TwoPunctures-averaged"
 
 # QC-0 setup
-TwoPunctures::par_b = 4
-TwoPunctures::par_m_plus =  0.4824
-TwoPunctures::par_m_minus =  0.4824
-TwoPunctures::par_P_plus [1] = +0.114
-TwoPunctures::par_P_minus[1] = -0.114
+TwoPuncturesX::par_b = 4
+TwoPuncturesX::par_m_plus =  0.4824
+TwoPuncturesX::par_m_minus =  0.4824
+TwoPuncturesX::par_P_plus [1] = +0.114
+TwoPuncturesX::par_P_minus[1] = -0.114
 
-TwoPunctures::grid_setup_method = "evaluation"
+TwoPuncturesX::grid_setup_method = "evaluation"
 
-TwoPunctures::TP_epsilon = 1.0e-2
-TwoPunctures::TP_Tiny    = 1.0e-2
+TwoPuncturesX::TP_epsilon = 1.0e-2
+TwoPuncturesX::TP_Tiny    = 1.0e-2
 
-TwoPunctures::verbose = yes
+TwoPuncturesX::verbose = yes
 
 Z4c::calc_ADM_vars = yes                  # for Weyl
 Z4c::calc_ADMRHS_vars = yes               # for Weyl
@@ -102,7 +101,7 @@ AHFinderDirect::max_Newton_iterations__initial           = 50
 AHFinderDirect::max_Newton_iterations__subsequent        = 50
 AHFinderDirect::max_allowable_Theta_growth_iterations    = 10
 AHFinderDirect::max_allowable_Theta_nonshrink_iterations = 10
-AHFinderDirect::geometry_interpolator_name               = "Lagrange polynomial interpolation"
+AHFinderDirect::geometry_interpolator_name               = "CarpetX"
 AHFinderDirect::geometry_interpolator_pars = "order=4 boundary_off_centering_tolerance={1.0e-10 1.0e-10 1.0e-10 1.0e-10 1.0e-10 1.0e-10} boundary_extrapolation_tolerance={0.0 0.0 0.0 0.0 0.0 0.0}"
 AHFinderDirect::surface_interpolator_name                = "Lagrange polynomial interpolation"
 AHFinderDirect::surface_interpolator_pars                = "order=3"
