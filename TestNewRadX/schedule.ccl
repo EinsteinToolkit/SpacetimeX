@@ -28,7 +28,6 @@ SCHEDULE TestNewRadX_RHS IN ODESolvers_RHS
   LANG: C
   READS: state(everywhere)
   WRITES: rhs(interior)
-  SYNC: rhs
 } "Calculate scalar wave RHS"
 
 SCHEDULE TestNewRadX_Sync IN ODESolvers_PostStep
