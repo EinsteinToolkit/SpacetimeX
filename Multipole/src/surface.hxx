@@ -106,10 +106,10 @@ public:
 
     for (size_t si = 0; si < spinWeights.size(); ++si) {
       int sw = spinWeights[si];
-      realY_[si].resize(lmax + 1);
-      imagY_[si].resize(lmax + 1);
+      realY_[si].resize(lmax_ + 1);
+      imagY_[si].resize(lmax_ + 1);
 
-      for (int l = 0; l <= lmax; ++l) {
+      for (int l = 0; l <= lmax_; ++l) {
         realY_[si][l].resize(2 * l + 1);
         imagY_[si][l].resize(2 * l + 1);
 

@@ -39,10 +39,6 @@
 namespace Multipole {
 using namespace std;
 
-static inline int Index_2d(int it, int ip, int ntheta) {
-  return it + (ntheta + 1) * ip;
-}
-
 static bool file_exists(const string &name) {
   struct stat sts;
   return !(stat(name.c_str(), &sts) == -1 && errno == ENOENT);
