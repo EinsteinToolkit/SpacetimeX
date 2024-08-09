@@ -8,6 +8,11 @@ USES INCLUDE HEADER: loop_device.hxx
 
 PUBLIC:
 
+CCTK_REAL pt_pre[10] TYPE=scalar
+{
+  pt_pre_t
+} "Previous time of punctures"
+
 CCTK_REAL pt_loc[10] TYPE=scalar
 {
 	pt_loc_t pt_loc_x pt_loc_y pt_loc_z

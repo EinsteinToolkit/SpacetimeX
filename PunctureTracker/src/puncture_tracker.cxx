@@ -47,6 +47,7 @@ extern "C" void PunctureTracker_Init(CCTK_ARGUMENTS) {
       pt_vel_y[n] = 0.0;
       pt_vel_z[n] = 0.0;
     }
+    pt_pre_t[n] = 0.0;
   }
 }
 
@@ -67,12 +68,12 @@ extern "C" void PunctureTracker_Setup(CCTK_ARGUMENTS) {
         g_punctures->getVelocity()[0].push_back(pt_vel_x[n]);
         g_punctures->getVelocity()[1].push_back(pt_vel_y[n]);
         g_punctures->getVelocity()[2].push_back(pt_vel_z[n]);
+        g_punctures->getPreviousTime().push_back(pt_pre_t[n]);
       }
     }
   }
 
   const int nPunctures = g_punctures->getTime().size();
-  g_punctures->getPreviousTime().resize(nPunctures);
   g_punctures->getBeta()[0].resize(nPunctures);
   g_punctures->getBeta()[1].resize(nPunctures);
   g_punctures->getBeta()[2].resize(nPunctures);
@@ -173,6 +174,7 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
     pt_vel_x[i] = velocity[0][i];
     pt_vel_y[i] = velocity[1][i];
     pt_vel_z[i] = velocity[2][i];
+    pt_pre_t[i] = previousTime[i];
   }
 
   if (track_boxes) {
