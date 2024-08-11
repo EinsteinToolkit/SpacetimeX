@@ -47,7 +47,6 @@ extern "C" void PunctureTracker_Init(CCTK_ARGUMENTS) {
       pt_vel_y[n] = 0.0;
       pt_vel_z[n] = 0.0;
     }
-    pt_pre_t[n] = 0.0;
   }
 }
 
@@ -68,12 +67,12 @@ extern "C" void PunctureTracker_Setup(CCTK_ARGUMENTS) {
         g_punctures->getVelocity()[0].push_back(pt_vel_x[n]);
         g_punctures->getVelocity()[1].push_back(pt_vel_y[n]);
         g_punctures->getVelocity()[2].push_back(pt_vel_z[n]);
-        g_punctures->getPreviousTime().push_back(pt_pre_t[n]);
       }
     }
   }
 
   const int nPunctures = g_punctures->getTime().size();
+  g_punctures->getPreviousTime().resize(nPunctures);
   g_punctures->getBeta()[0].resize(nPunctures);
   g_punctures->getBeta()[1].resize(nPunctures);
   g_punctures->getBeta()[2].resize(nPunctures);
@@ -117,7 +116,6 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
       g_punctures->getLocation();
   const std::array<std::vector<CCTK_REAL>, Loop::dim> &velocity =
       g_punctures->getVelocity();
-  const std::vector<CCTK_REAL> &time = g_punctures->getTime();
 
   if (verbose) {
     for (int n = 0; n < nPunctures; ++n) {
@@ -166,15 +164,12 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
 
   // Write to pt_loc_foo and pt_vel_foo
   for (int i = 0; i < nPunctures; ++i) {
-    pt_loc_t[i] = time[i];
     pt_loc_x[i] = location[0][i];
     pt_loc_y[i] = location[1][i];
     pt_loc_z[i] = location[2][i];
-    pt_vel_t[i] = time[i];
     pt_vel_x[i] = velocity[0][i];
     pt_vel_y[i] = velocity[1][i];
     pt_vel_z[i] = velocity[2][i];
-    pt_pre_t[i] = previousTime[i];
   }
 
   if (track_boxes) {
