@@ -116,6 +116,7 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
       g_punctures->getLocation();
   const std::array<std::vector<CCTK_REAL>, Loop::dim> &velocity =
       g_punctures->getVelocity();
+  const std::vector<CCTK_REAL> &time = g_punctures->getTime();
 
   if (verbose) {
     for (int n = 0; n < nPunctures; ++n) {
@@ -164,9 +165,11 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
 
   // Write to pt_loc_foo and pt_vel_foo
   for (int i = 0; i < nPunctures; ++i) {
+    pt_loc_t[i] = time[i];
     pt_loc_x[i] = location[0][i];
     pt_loc_y[i] = location[1][i];
     pt_loc_z[i] = location[2][i];
+    pt_vel_t[i] = time[i];
     pt_vel_x[i] = velocity[0][i];
     pt_vel_y[i] = velocity[1][i];
     pt_vel_z[i] = velocity[2][i];
