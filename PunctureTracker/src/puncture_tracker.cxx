@@ -5,6 +5,8 @@
 #include <cctk_Parameters.h>
 #include <util_Table.h>
 
+#include <omp.h>
+
 #include <array>
 #include <cassert>
 #include <cmath>
