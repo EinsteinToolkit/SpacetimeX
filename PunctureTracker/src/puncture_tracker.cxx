@@ -5,8 +5,6 @@
 #include <cctk_Parameters.h>
 #include <util_Table.h>
 
-#include <mpi.h>
-
 #include <array>
 #include <cassert>
 #include <cmath>
@@ -17,7 +15,7 @@ namespace PunctureTracker {
 
 static PunctureContainer *g_punctures = nullptr;
 
-static double previous_time = 0.0;
+static int previous_iteration = 0;
 
 const int max_num_tracked = 10;
 
@@ -103,12 +101,13 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_PunctureTracker_Track;
   DECLARE_CCTK_PARAMETERS;
 
+  assert(!omp_in_parallel());
   // we can remove this segment when global mode works
-  if (cctk_time <= previous_time) {
+  if (cctk_iteration == previous_iteration) {
     return;
+  } else {
+    previous_iteration = cctk_iteration;
   }
-#pragma omp master
-  { previous_time = cctk_time; }
 
   // Do not track while setting up initial data; time interpolation may fail
   if (cctk_iteration == 0) {
