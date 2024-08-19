@@ -5,8 +5,6 @@
 #include <cctk_Parameters.h>
 #include <util_Table.h>
 
-#include <omp.h>
-
 #include <array>
 #include <cassert>
 #include <cmath>
@@ -103,7 +101,10 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_PunctureTracker_Track;
   DECLARE_CCTK_PARAMETERS;
 
+#ifndef AMREX_USE_GPU
   assert(!omp_in_parallel());
+#endif
+
   // we can remove this segment when global mode works
   if (cctk_iteration == previous_iteration) {
     return;
