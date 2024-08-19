@@ -17,6 +17,8 @@ namespace PunctureTracker {
 
 static PunctureContainer *g_punctures = nullptr;
 
+static double previous_time = 0.0;
+
 const int max_num_tracked = 10;
 
 extern "C" void PunctureTracker_Init(CCTK_ARGUMENTS) {
@@ -100,6 +102,13 @@ extern "C" void PunctureTracker_Finalize(CCTK_ARGUMENTS) {
 extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_PunctureTracker_Track;
   DECLARE_CCTK_PARAMETERS;
+
+  // we can remove this segment when global mode works
+  if (cctk_time <= previous_time) {
+    return;
+  }
+#pragma omp master
+  { previous_time = cctk_time; }
 
   // Do not track while setting up initial data; time interpolation may fail
   if (cctk_iteration == 0) {
