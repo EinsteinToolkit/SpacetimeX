@@ -1,3 +1,3 @@
 # Configuration definitions for thorn Z4co
 
-REQUIRES Arith Loop NewRadX
+REQUIRES Arith Loop Derivs NewRadX

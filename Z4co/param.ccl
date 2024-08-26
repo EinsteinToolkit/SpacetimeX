@@ -1,5 +1,12 @@
 # Parameter definitions for thorn Z4co
 
+CCTK_INT deriv_order "Order of spatial finite differencing" STEERABLE=never
+{
+  2 :: "Second order finite difference"
+  4 :: "Fourth order finite difference"
+  6 :: "Sixth order finite difference"
+} 4
+
 BOOLEAN calc_ADM_vars "Calculate ADM variables" STEERABLE=recover
 {
 } yes

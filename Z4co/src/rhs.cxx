@@ -10,8 +10,9 @@
 
 // #define Power(x, y) (Arith::pown((x), (y)))
 
-#include "derivs.hxx"
+#include "diss.hxx"
 
+#include <derivs.hxx>
 #include <loop_device.hxx>
 #include <mat.hxx>
 #include <simd.hxx>
@@ -112,37 +113,61 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
   const GF3D5<CCTK_REAL> tl_chi(make_gf());
   const vec<GF3D5<CCTK_REAL>, 3> tl_dchi(make_vec_gf());
   const smat<GF3D5<CCTK_REAL>, 3> tl_ddchi(make_mat_gf());
-  calc_derivs2(cctkGH, gf_chi, tl_chi, tl_dchi, tl_ddchi, layout5);
+
+  const Loop::GridDescBaseDevice grid(cctkGH);
+
+  const vect<CCTK_REAL, dim> dx(std::array<CCTK_REAL, dim>{
+      CCTK_DELTA_SPACE(0),
+      CCTK_DELTA_SPACE(1),
+      CCTK_DELTA_SPACE(2),
+  });
+
+  const auto calccopy = [&](const auto &gf, const auto &gf0) {
+    Derivs::calc_copy<0, 0, 0>(gf, layout5, grid, gf0);
+  };
+
+  const auto calcderivs = [&](const auto &gf, const auto &dgf,
+                              const auto &gf0) {
+    Derivs::calc_derivs<0, 0, 0>(gf, dgf, layout5, grid, gf0, dx, deriv_order);
+  };
+
+  const auto calcderivs2 = [&](const auto &gf, const auto &dgf,
+                               const auto &ddgf, const auto &gf0) {
+    Derivs::calc_derivs2<0, 0, 0>(gf, dgf, ddgf, layout5, grid, gf0, dx,
+                                  deriv_order);
+  };
+
+  calcderivs2(tl_chi, tl_dchi, tl_ddchi, gf_chi);
 
   const smat<GF3D5<CCTK_REAL>, 3> tl_gamt(make_mat_gf());
   const smat<vec<GF3D5<CCTK_REAL>, 3>, 3> tl_dgamt(make_mat_vec_gf());
   const smat<smat<GF3D5<CCTK_REAL>, 3>, 3> tl_ddgamt(make_mat_mat_gf());
-  calc_derivs2(cctkGH, gf_gamt, tl_gamt, tl_dgamt, tl_ddgamt, layout5);
+  calcderivs2(tl_gamt, tl_dgamt, tl_ddgamt, gf_gamt);
 
   const GF3D5<CCTK_REAL> tl_exKh(make_gf());
   const vec<GF3D5<CCTK_REAL>, 3> tl_dexKh(make_vec_gf());
-  calc_derivs(cctkGH, gf_exKh, tl_exKh, tl_dexKh, layout5);
+  calcderivs(tl_exKh, tl_dexKh, gf_exKh);
 
   const smat<GF3D5<CCTK_REAL>, 3> tl_exAt(make_mat_gf());
-  calc_copy(cctkGH, gf_exAt, tl_exAt, layout5);
+  calccopy(tl_exAt, gf_exAt);
 
   const vec<GF3D5<CCTK_REAL>, 3> tl_trGt(make_vec_gf());
   const vec<vec<GF3D5<CCTK_REAL>, 3>, 3> tl_dtrGt(make_vec_vec_gf());
-  calc_derivs(cctkGH, gf_trGt, tl_trGt, tl_dtrGt, layout5);
+  calcderivs(tl_trGt, tl_dtrGt, gf_trGt);
 
   const GF3D5<CCTK_REAL> tl_Theta(make_gf());
   const vec<GF3D5<CCTK_REAL>, 3> tl_dTheta(make_vec_gf());
-  calc_derivs(cctkGH, gf_Theta, tl_Theta, tl_dTheta, layout5);
+  calcderivs(tl_Theta, tl_dTheta, gf_Theta);
 
   const GF3D5<CCTK_REAL> tl_alpha(make_gf());
   const vec<GF3D5<CCTK_REAL>, 3> tl_dalpha(make_vec_gf());
   const smat<GF3D5<CCTK_REAL>, 3> tl_ddalpha(make_mat_gf());
-  calc_derivs2(cctkGH, gf_alpha, tl_alpha, tl_dalpha, tl_ddalpha, layout5);
+  calcderivs2(tl_alpha, tl_dalpha, tl_ddalpha, gf_alpha);
 
   const vec<GF3D5<CCTK_REAL>, 3> tl_beta(make_vec_gf());
   const vec<vec<GF3D5<CCTK_REAL>, 3>, 3> tl_dbeta(make_vec_vec_gf());
   const vec<smat<GF3D5<CCTK_REAL>, 3>, 3> tl_ddbeta(make_vec_mat_gf());
-  calc_derivs2(cctkGH, gf_beta, tl_beta, tl_dbeta, tl_ddbeta, layout5);
+  calcderivs2(tl_beta, tl_dbeta, tl_ddbeta, gf_beta);
 
   if (itmp != ntmps)
     CCTK_VERROR("Wrong number of temporary variables: ntmps=%d itmp=%d", ntmps,
@@ -211,8 +236,6 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
   const CCTK_REAL ceta = eta;
 
   // Loop
-  const Loop::GridDescBaseDevice grid(cctkGH);
-
 #ifdef __CUDACC__
   const nvtxRangeId_t range = nvtxRangeStartA("Z4co_RHS::rhs");
 #endif

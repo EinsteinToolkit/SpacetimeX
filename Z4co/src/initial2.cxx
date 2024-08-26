@@ -1,5 +1,4 @@
-#include "derivs.hxx"
-
+#include <derivs.hxx>
 #include <loop_device.hxx>
 #include <simd.hxx>
 
@@ -40,12 +39,44 @@ calc_gamma(const smat<T, D> &gu, const vec<smat<T, D>, D> &Gammal) {
 
 extern "C" void Z4co_Initial2(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_Z4co_Initial2;
+  DECLARE_CCTK_PARAMETERS;
 
-  const vec<CCTK_REAL, 3> dx{
+  const vect<CCTK_REAL, 3> dx{
       CCTK_DELTA_SPACE(0),
       CCTK_DELTA_SPACE(1),
       CCTK_DELTA_SPACE(2),
   };
+
+  function<vec<simd<CCTK_REAL>, dim>(
+      const GF3D2<const CCTK_REAL> &, const simdl<CCTK_REAL> &,
+      const vect<int, dim> &, const vect<CCTK_REAL, dim> &)>
+      calc_deriv;
+
+  switch (deriv_order) {
+  case 2:
+    calc_deriv = [](const GF3D2<const CCTK_REAL> &gf,
+                    const simdl<CCTK_REAL> &mask, const vect<int, dim> &I,
+                    const vect<CCTK_REAL, dim> &dx) {
+      return Derivs::calc_deriv<2>(gf, mask, I, dx);
+    };
+    break;
+  case 4:
+    calc_deriv = [](const GF3D2<const CCTK_REAL> &gf,
+                    const simdl<CCTK_REAL> &mask, const vect<int, dim> &I,
+                    const vect<CCTK_REAL, dim> &dx) {
+      return Derivs::calc_deriv<4>(gf, mask, I, dx);
+    };
+    break;
+  case 6:
+    calc_deriv = [](const GF3D2<const CCTK_REAL> &gf,
+                    const simdl<CCTK_REAL> &mask, const vect<int, dim> &I,
+                    const vect<CCTK_REAL, dim> &dx) {
+      return Derivs::calc_deriv<6>(gf, mask, I, dx);
+    };
+    break;
+  default:
+    assert(0);
+  }
 
   const array<int, dim> indextype = {0, 0, 0};
   const GF3D2layout layout1(cctkGH, indextype);
@@ -82,7 +113,7 @@ extern "C" void Z4co_Initial2(CCTK_ARGUMENTS) {
         const smat<vreal, 3> gammatu = calc_inv(gammat, vreal(1));
 
         const smat<vec<vreal, 3>, 3> dgammat([&](int a, int b) {
-          return deriv(mask, gf_gammat1(a, b), p.I, dx);
+          return calc_deriv(gf_gammat1(a, b), mask, p.I, dx);
         });
 
         const vec<smat<vreal, 3>, 3> Gammatl = calc_gammal(dgammat);
