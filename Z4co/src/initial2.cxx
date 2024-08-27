@@ -47,32 +47,19 @@ extern "C" void Z4co_Initial2(CCTK_ARGUMENTS) {
       CCTK_DELTA_SPACE(2),
   };
 
-  function<vec<simd<CCTK_REAL>, dim>(
+  vec<simd<CCTK_REAL>, dim> (*calc_deriv)(
       const GF3D2<const CCTK_REAL> &, const simdl<CCTK_REAL> &,
-      const vect<int, dim> &, const vect<CCTK_REAL, dim> &)>
-      calc_deriv;
+      const vect<int, dim> &, const vect<CCTK_REAL, dim> &);
 
   switch (deriv_order) {
   case 2:
-    calc_deriv = [](const GF3D2<const CCTK_REAL> &gf,
-                    const simdl<CCTK_REAL> &mask, const vect<int, dim> &I,
-                    const vect<CCTK_REAL, dim> &dx) {
-      return Derivs::calc_deriv<2>(gf, mask, I, dx);
-    };
+    calc_deriv = &Derivs::calc_deriv<2>;
     break;
   case 4:
-    calc_deriv = [](const GF3D2<const CCTK_REAL> &gf,
-                    const simdl<CCTK_REAL> &mask, const vect<int, dim> &I,
-                    const vect<CCTK_REAL, dim> &dx) {
-      return Derivs::calc_deriv<4>(gf, mask, I, dx);
-    };
+    calc_deriv = &Derivs::calc_deriv<4>;
     break;
   case 6:
-    calc_deriv = [](const GF3D2<const CCTK_REAL> &gf,
-                    const simdl<CCTK_REAL> &mask, const vect<int, dim> &I,
-                    const vect<CCTK_REAL, dim> &dx) {
-      return Derivs::calc_deriv<6>(gf, mask, I, dx);
-    };
+    calc_deriv = &Derivs::calc_deriv<6>;
     break;
   default:
     assert(0);
