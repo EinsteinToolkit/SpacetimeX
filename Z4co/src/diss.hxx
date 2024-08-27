@@ -2,27 +2,15 @@
 #define Z4CO_DERIVS_HXX
 
 #include <derivs.hxx>
-#include <div.hxx>
 #include <loop_device.hxx>
-#include <mat.hxx>
-#include <simd.hxx>
-#include <vec.hxx>
 
 #include <cctk.h>
 #include <cctk_Arguments.h>
 #include <cctk_Parameters.h>
 
-#include <algorithm>
-#include <cassert>
-#include <cmath>
-#include <ostream>
-#include <sstream>
-#include <type_traits>
-
 namespace Z4co {
 using namespace Arith;
 using namespace Loop;
-using namespace std;
 
 constexpr int deriv_o = 4;
 
