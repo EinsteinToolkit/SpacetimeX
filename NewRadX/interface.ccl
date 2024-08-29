@@ -2,8 +2,6 @@
 
 IMPLEMENTS: NewRadX
 
-INHERITS: CarpetX
-
 USES INCLUDE HEADER: loop_device.hxx
 
 INCLUDE HEADER: newradx.hxx in newradx.hxx
