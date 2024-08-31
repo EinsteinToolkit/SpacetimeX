@@ -41,7 +41,8 @@ apply_upwind_diss(const cGH *restrict const cctkGH, const GF3D2<const T> &gf_,
     calc_diss = &Derivs::calc_diss<2>;
     break;
   }
-  case 4: {
+  case 4:
+  case 6: {
     calc_deriv_upwind = &Derivs::calc_deriv_upwind<4>;
     calc_diss = &Derivs::calc_diss<4>;
     break;
