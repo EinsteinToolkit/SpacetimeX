@@ -3,7 +3,15 @@
 STORAGE: Psi4r_group
 STORAGE: Psi4i_group
 
-SCHEDULE WeylScal4_psi4_calc_4th AT evol AFTER ODESolvers_Solve
+SCHEDULE GROUP WeylScal4_psi4_calc_4th_group AT postinitial
+{
+} "WeylScal4_psi4_calc_4th_group"
+
+SCHEDULE GROUP WeylScal4_psi4_calc_4th_group AT evol AFTER (ODESolvers_Solve, ODESolvers_Solve_Subcycling)
+{
+} "WeylScal4_psi4_calc_4th_group"
+
+SCHEDULE WeylScal4_psi4_calc_4th IN WeylScal4_psi4_calc_4th_group
 {
   LANG: C
   READS: ADMBaseX::metric(everywhere)
