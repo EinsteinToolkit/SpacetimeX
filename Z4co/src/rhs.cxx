@@ -256,14 +256,21 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
 
   vreal (*calc_diss)(const GF3D2<const CCTK_REAL> &, const vbool &,
                      const vect<int, dim> &, const vect<CCTK_REAL, dim> &);
-  switch (deriv_order) {
-  case 2: {
+  switch (diss_order) {
+  case 3: {
     calc_diss = &Derivs::calc_diss<2>;
     break;
   }
-  case 4:
-  case 6: {
+  case 5: {
     calc_diss = &Derivs::calc_diss<4>;
+    break;
+  }
+  case 7: {
+    calc_diss = &Derivs::calc_diss<6>;
+    break;
+  }
+  case 9: {
+    calc_diss = &Derivs::calc_diss<8>;
     break;
   }
   default:

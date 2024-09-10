@@ -5,7 +5,16 @@ CCTK_INT deriv_order "Order of spatial finite differencing" STEERABLE=never
   2 :: "Second order finite difference"
   4 :: "Fourth order finite difference"
   6 :: "Sixth order finite difference"
+  8 :: "Eighth order finite difference"
 } 4
+
+CCTK_INT diss_order "Order of Kreiss-Oliger dissipation" STEERABLE=never
+{
+  3 :: "Third order KO dissipation"
+  5 :: "Fifth order KO dissipation"
+  7 :: "Seventh order KO dissipation"
+  9 :: "Ninth order KO dissipation"
+} 5
 
 BOOLEAN calc_ADM_vars "Calculate ADM variables" STEERABLE=recover
 {
