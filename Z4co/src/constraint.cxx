@@ -37,8 +37,8 @@ extern "C" void Z4co_Constraints(CCTK_ARGUMENTS) {
   DECLARE_CCTK_PARAMETERS;
 
   for (int d = 0; d < 3; ++d)
-    if (cctk_nghostzones[d] < deriv_order / 2 + 1)
-      CCTK_VERROR("Need at least %d ghost zones", deriv_order / 2 + 1);
+    if (cctk_nghostzones[d] < deriv_order / 2)
+      CCTK_VERROR("Need at least %d ghost zones", deriv_order / 2);
 
   //
 
