@@ -34,6 +34,9 @@ noinline([&]() __attribute__((__flatten__, __hot__)) {
     const GF3D2index index2(layout2, p.I);
     const GF3D5index index5(layout5, p.I);
 
+const vreal x0 = p.x + Arith::iota<vreal>() * p.dx;
+const vreal ceta = calceta(x0, p.y, p.z);
+
 const auto &tmp_eTtt = gf_eTtt(mask, index2);
 const auto &tmp_eTt = gf_eTt(mask, index2);
 const auto &tmp_eT = gf_eT(mask, index2);

@@ -49,6 +49,21 @@ CCTK_REAL eta "eta" STEERABLE=always
   *:* :: ""
 } 2.0
 
+CCTK_REAL veta_width "" STEERABLE=always
+{
+  (0:* :: ""
+} 50.0
+
+CCTK_REAL veta_central "" STEERABLE=always
+{
+  (0:* :: ""
+} 2.0
+
+CCTK_REAL veta_outer "" STEERABLE=always
+{
+  (0:* :: ""
+} 0.25
+
 CCTK_REAL chi_floor "Floor for chi" STEERABLE=always
 {
   (0:* :: ""

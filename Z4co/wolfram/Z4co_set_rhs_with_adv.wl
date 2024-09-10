@@ -47,6 +47,10 @@ $MainPrint[] :=
     pr["    const GF3D5index index5(layout5, p.I);"];
     pr[];
 
+    pr["const vreal x0 = p.x + Arith::iota<vreal>() * p.dx;"]
+    pr["const vreal ceta = calceta(x0, p.y, p.z);"];
+    pr[];
+
     PrintListInitializations[TmunuVarlist, "gf_", "index2"];
     PrintListInitializations[EvolVarlist, "tl_", "index5"];
     PrintListInitializations[dEvolVarlist, "tl_", "index5"];
