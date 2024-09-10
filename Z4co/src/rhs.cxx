@@ -227,8 +227,9 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
   const CCTK_REAL cmuL = f_mu_L;
   const CCTK_REAL cmuS = f_mu_S;
   // const CCTK_REAL ceta = eta;
-  const auto calceta = [=](const vreal x, const CCTK_REAL y,
-                           const CCTK_REAL z) {
+  const auto calceta = [=] CCTK_DEVICE(
+                           const vreal x, const CCTK_REAL y,
+                           const CCTK_REAL z) CCTK_ATTRIBUTE_ALWAYS_INLINE {
     const vreal r = sqrt(x * x + y * y + z * z);
     const CCTK_REAL is4 =
         1.0 / (veta_width * veta_width * veta_width * veta_width);
