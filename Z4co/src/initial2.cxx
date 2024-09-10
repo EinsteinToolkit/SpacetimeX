@@ -61,6 +61,9 @@ extern "C" void Z4co_Initial2(CCTK_ARGUMENTS) {
   case 6:
     calc_deriv = &Derivs::calc_deriv<6>;
     break;
+  case 8:
+    calc_deriv = &Derivs::calc_deriv<8>;
+    break;
   default:
     assert(0);
   }
