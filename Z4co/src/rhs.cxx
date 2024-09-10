@@ -88,7 +88,7 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
       GF3D2<const CCTK_REAL>(layout2, betaGz)};
 
   // Tile variables for derivatives and so on
-  const int ntmps = 136;
+  const int ntmps = 154;
   GF3D5vector<CCTK_REAL> tmps(layout5, ntmps);
   int itmp = 0;
 
@@ -118,10 +118,6 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
       CCTK_DELTA_SPACE(2),
   });
 
-  const auto calccopy = [&](const auto &gf, const auto &gf0) {
-    Derivs::calc_copy<0, 0, 0>(gf, layout5, grid, gf0);
-  };
-
   const auto calcderivs = [&](const auto &gf, const auto &dgf,
                               const auto &gf0) {
     Derivs::calc_derivs<0, 0, 0>(gf, dgf, layout5, grid, gf0, dx, deriv_order);
@@ -145,7 +141,8 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
   calcderivs(tl_exKh, tl_dexKh, gf_exKh);
 
   const smat<GF3D5<CCTK_REAL>, 3> tl_exAt(make_mat_gf());
-  calccopy(tl_exAt, gf_exAt);
+  const smat<vec<GF3D5<CCTK_REAL>, 3>, 3> tl_dexAt(make_mat_vec_gf());
+  calcderivs(tl_exAt, tl_dexAt, gf_exAt);
 
   const vec<GF3D5<CCTK_REAL>, 3> tl_trGt(make_vec_gf());
   const vec<vec<GF3D5<CCTK_REAL>, 3>, 3> tl_dtrGt(make_vec_vec_gf());
@@ -236,7 +233,7 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
   const nvtxRangeId_t range = nvtxRangeStartA("Z4co_RHS::rhs");
 #endif
 
-#include "../wolfram/Z4co_set_rhs.hxx"
+#include "../wolfram/Z4co_set_rhs_with_adv.hxx"
 
 #ifdef __CUDACC__
   nvtxRangeEnd(range);
@@ -245,22 +242,20 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
   // Upwind and dissipation terms
 
   // TODO: Consider fusing the loops to reduce memory bandwidth
-  vreal (*calc_deriv_upwind)(
-      const GF3D2<const CCTK_REAL> &, const vbool &, const vect<int, dim> &,
-      const vect<CCTK_REAL, dim> &, const vec<vreal, dim> &);
+
+  // vreal (*calc_deriv_upwind)(
+  //     const GF3D2<const CCTK_REAL> &, const vbool &, const vect<int, dim> &,
+  //     const vect<CCTK_REAL, dim> &, const vec<vreal, dim> &);
 
   vreal (*calc_diss)(const GF3D2<const CCTK_REAL> &, const vbool &,
                      const vect<int, dim> &, const vect<CCTK_REAL, dim> &);
-
   switch (deriv_order) {
   case 2: {
-    calc_deriv_upwind = &Derivs::calc_deriv_upwind<2>;
     calc_diss = &Derivs::calc_diss<2>;
     break;
   }
   case 4:
   case 6: {
-    calc_deriv_upwind = &Derivs::calc_deriv_upwind<4>;
     calc_diss = &Derivs::calc_diss<4>;
     break;
   }
@@ -268,45 +263,41 @@ extern "C" void Z4co_RHS(CCTK_ARGUMENTS) {
     assert(0);
   }
 
-  const auto apply_upwind_diss =
-      [&](const GF3D2<const CCTK_REAL> &gf_,
-          const vec<GF3D2<const CCTK_REAL>, dim> &gf_betaG_,
-          const GF3D2<CCTK_REAL> &gf_rhs_) {
-        grid.loop_int_device<0, 0, 0, vsize>(
-            grid.nghostzones,
-            [=] CCTK_DEVICE(const PointDesc &p) CCTK_ATTRIBUTE_ALWAYS_INLINE {
-              const vbool mask = mask_for_loop_tail<vbool>(p.i, p.imax);
-              const vec<vreal, dim> betaG = gf_betaG_(mask, p.I);
-              const vreal rhs_old = gf_rhs_(mask, p.I);
-              const vreal rhs_new =
-                  rhs_old + calc_deriv_upwind(gf_, mask, p.I, dx, betaG) +
-                  epsdiss * calc_diss(gf_, mask, p.I, dx);
-              gf_rhs_.store(mask, p.I, rhs_new);
-            });
-      };
+  const auto apply_diss = [&](const GF3D2<const CCTK_REAL> &gf_,
+                              const GF3D2<CCTK_REAL> &gf_rhs_) {
+    grid.loop_int_device<0, 0, 0, vsize>(
+        grid.nghostzones,
+        [=] CCTK_DEVICE(const PointDesc &p) CCTK_ATTRIBUTE_ALWAYS_INLINE {
+          const vbool mask = mask_for_loop_tail<vbool>(p.i, p.imax);
+          const vreal rhs_old = gf_rhs_(mask, p.I);
+          const vreal rhs_new =
+              rhs_old + epsdiss * calc_diss(gf_, mask, p.I, dx);
+          gf_rhs_.store(mask, p.I, rhs_new);
+        });
+  };
 
-  apply_upwind_diss(gf_chi, gf_beta, gf_dtchi);
+  apply_diss(gf_chi, gf_dtchi);
 
   for (int a = 0; a < 3; ++a)
     for (int b = a; b < 3; ++b)
-      apply_upwind_diss(gf_gamt(a, b), gf_beta, gf_dtgamt(a, b));
+      apply_diss(gf_gamt(a, b), gf_dtgamt(a, b));
 
-  apply_upwind_diss(gf_exKh, gf_beta, gf_dtexKh);
+  apply_diss(gf_exKh, gf_dtexKh);
 
   for (int a = 0; a < 3; ++a)
     for (int b = a; b < 3; ++b)
-      apply_upwind_diss(gf_exAt(a, b), gf_beta, gf_dtexAt(a, b));
+      apply_diss(gf_exAt(a, b), gf_dtexAt(a, b));
 
   for (int a = 0; a < 3; ++a)
-    apply_upwind_diss(gf_trGt(a), gf_beta, gf_dttrGt(a));
+    apply_diss(gf_trGt(a), gf_dttrGt(a));
 
   if (!set_Theta_zero)
-    apply_upwind_diss(gf_Theta, gf_beta, gf_dtTheta);
+    apply_diss(gf_Theta, gf_dtTheta);
 
-  apply_upwind_diss(gf_alpha, gf_beta, gf_dtalpha);
+  apply_diss(gf_alpha, gf_dtalpha);
 
   for (int a = 0; a < 3; ++a)
-    apply_upwind_diss(gf_beta(a), gf_beta, gf_dtbeta(a));
+    apply_diss(gf_beta(a), gf_dtbeta(a));
 }
 
 } // namespace Z4co
