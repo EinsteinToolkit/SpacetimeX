@@ -51,7 +51,7 @@ CarpetX::boundary_upper_z = "linear extrapolation"
 CarpetX::ghost_size = 3
 CarpetX::prolongation_type = "ddf"
 #CarpetX::prolongation_order = 5
-CarpetX::dtfac = 0.25
+CarpetX::dtfac = 0.125
 
 CarpetX::max_num_levels = $nlevels
 CarpetX::regrid_every = 128
