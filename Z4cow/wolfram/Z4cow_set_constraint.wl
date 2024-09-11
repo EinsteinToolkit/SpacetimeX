@@ -61,7 +61,7 @@ $MainPrint[] :=
     PrintInitializations[{Mode -> "MainIn", StorageType -> "Tile", TensorType -> "Smat"},
                          Drop[ddEvolVarlist, -2]];
     pr[];
-    PrintEquations[{Mode -> "Temp"}, Drop[Drop[IntermediateVarlist, {3}], {-4,-2}]];
+    PrintEquations[{Mode -> "Temp"}, Drop[Drop[IntermediateVarlist, {4}], {-4,-2}]];
     PrintEquations[{Mode -> "Temp"}, Drop[DDVarlist, -1]];
     PrintEquations[{Mode -> "Temp"}, RVarlist];
     PrintEquations[{Mode -> "Temp"}, Drop[MatterVarlist, -2]];

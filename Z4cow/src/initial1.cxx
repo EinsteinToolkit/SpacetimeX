@@ -84,7 +84,7 @@ extern "C" void Z4cow_Initial1(CCTK_ARGUMENTS) {
         const vreal detg = calc_det(g);
         const smat<vreal, 3> gu = calc_inv(g, detg);
 
-        const vreal W = pow(detg, -1.0 / 6.0);
+        const vreal W = pown(detg, -1.0 / 6.0);
         const smat<vreal, 3> gammat(
             [&](int a, int b) ARITH_INLINE { return W * W * g(a, b); });
         const vreal trK = sum_symm<3>(

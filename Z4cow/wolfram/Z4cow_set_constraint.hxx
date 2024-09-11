@@ -213,34 +213,34 @@ vreal invgamt33
 -Power(gamt12,2) + gamt11*gamt22
 ;
 
-vreal gam11
+vreal invgam11
 =
-gamt11/Power(W,2)
+invgamt11*Power(W,2)
 ;
 
-vreal gam12
+vreal invgam12
 =
-gamt12/Power(W,2)
+invgamt12*Power(W,2)
 ;
 
-vreal gam13
+vreal invgam13
 =
-gamt13/Power(W,2)
+invgamt13*Power(W,2)
 ;
 
-vreal gam22
+vreal invgam22
 =
-gamt22/Power(W,2)
+invgamt22*Power(W,2)
 ;
 
-vreal gam23
+vreal invgam23
 =
-gamt23/Power(W,2)
+invgamt23*Power(W,2)
 ;
 
-vreal gam33
+vreal invgam33
 =
-gamt33/Power(W,2)
+invgamt33*Power(W,2)
 ;
 
 vreal GtDDD111
