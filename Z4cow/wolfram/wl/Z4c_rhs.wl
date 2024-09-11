@@ -26,7 +26,7 @@ SetEQN[Gt[k_, i_, j_], invgamt[k, l] GtDDD[-l, i, j]];
 
 SetEQN[trGtd[i_], invgamt[k, l] Gt[i, -k, -l]];
 
-SetEQN[dgam[k_, i_, j_], W[] ^ -2 (-2 dlnW[k] gamt[i, j] + dgamt[k, i, j]]);
+SetEQN[dgam[k_, i_, j_], W[] ^ -2 (-2 dlnW[k] gamt[i, j] + dgamt[k, i, j])];
 
 SetEQN[GamDDD[k_, i_, j_], 1/2 (dgam[i, j, k] + dgam[j, k, i] - dgam[k, i, j])];
 
