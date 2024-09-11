@@ -17,54 +17,31 @@ using namespace Arith;
 using namespace Loop;
 
 extern "C" void Z4cow_Initial1(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTS_Z4cow_Initial1;
+  DECLARE_CCTK_ARGUMENTSX_Z4cow_Initial1;
 
   const array<int, dim> indextype = {0, 0, 0};
   const GF3D2layout layout1(cctkGH, indextype);
 
   // Input grid functions
-  const smat<GF3D2<const CCTK_REAL>, 3> gf_g1{
-      GF3D2<const CCTK_REAL>(layout1, gxx),
-      GF3D2<const CCTK_REAL>(layout1, gxy),
-      GF3D2<const CCTK_REAL>(layout1, gxz),
-      GF3D2<const CCTK_REAL>(layout1, gyy),
-      GF3D2<const CCTK_REAL>(layout1, gyz),
-      GF3D2<const CCTK_REAL>(layout1, gzz)};
-  const smat<GF3D2<const CCTK_REAL>, 3> gf_K1{
-      GF3D2<const CCTK_REAL>(layout1, kxx),
-      GF3D2<const CCTK_REAL>(layout1, kxy),
-      GF3D2<const CCTK_REAL>(layout1, kxz),
-      GF3D2<const CCTK_REAL>(layout1, kyy),
-      GF3D2<const CCTK_REAL>(layout1, kyz),
-      GF3D2<const CCTK_REAL>(layout1, kzz)};
-  const GF3D2<const CCTK_REAL> gf_alp1(layout1, alp);
-  const vec<GF3D2<const CCTK_REAL>, 3> gf_beta1{
-      GF3D2<const CCTK_REAL>(layout1, betax),
-      GF3D2<const CCTK_REAL>(layout1, betay),
-      GF3D2<const CCTK_REAL>(layout1, betaz)};
+  const smat<GF3D2<const CCTK_REAL>, 3> gf_g1{gxx, gxy, gxz, gyy, gyz, gzz};
+  const smat<GF3D2<const CCTK_REAL>, 3> gf_K1{kxx, kxy, kxz, kyy, kyz, kzz};
+  const GF3D2<const CCTK_REAL> &gf_alp1 = alp;
+  const vec<GF3D2<const CCTK_REAL>, 3> gf_beta1{betax, betay, betaz};
 
   // Output grid functions
-  const GF3D2<CCTK_REAL> gf_W1(layout1, W);
-  const smat<GF3D2<CCTK_REAL>, 3> gf_gammat1{
-      GF3D2<CCTK_REAL>(layout1, gammatxx), GF3D2<CCTK_REAL>(layout1, gammatxy),
-      GF3D2<CCTK_REAL>(layout1, gammatxz), GF3D2<CCTK_REAL>(layout1, gammatyy),
-      GF3D2<CCTK_REAL>(layout1, gammatyz), GF3D2<CCTK_REAL>(layout1, gammatzz)};
-  const GF3D2<CCTK_REAL> gf_Kh1(layout1, Kh);
-  const smat<GF3D2<CCTK_REAL>, 3> gf_At1{
-      GF3D2<CCTK_REAL>(layout1, Atxx), GF3D2<CCTK_REAL>(layout1, Atxy),
-      GF3D2<CCTK_REAL>(layout1, Atxz), GF3D2<CCTK_REAL>(layout1, Atyy),
-      GF3D2<CCTK_REAL>(layout1, Atyz), GF3D2<CCTK_REAL>(layout1, Atzz)};
-  const GF3D2<CCTK_REAL> gf_Theta1(layout1, Theta);
-  const GF3D2<CCTK_REAL> gf_alphaG1(layout1, alphaG);
-  const vec<GF3D2<CCTK_REAL>, 3> gf_betaG1{GF3D2<CCTK_REAL>(layout1, betaGx),
-                                           GF3D2<CCTK_REAL>(layout1, betaGy),
-                                           GF3D2<CCTK_REAL>(layout1, betaGz)};
+  const GF3D2<CCTK_REAL> &gf_W1 = W;
+  const smat<GF3D2<CCTK_REAL>, 3> gf_gammat1{gammatxx, gammatxy, gammatxz,
+                                             gammatyy, gammatyz, gammatzz};
+  const GF3D2<CCTK_REAL> &gf_Kh1 = Kh;
+  const smat<GF3D2<CCTK_REAL>, 3> gf_At1{Atxx, Atxy, Atxz, Atyy, Atyz, Atzz};
+  const GF3D2<CCTK_REAL> &gf_Theta1 = Theta;
+  const GF3D2<CCTK_REAL> &gf_alphaG1 = alphaG;
+  const vec<GF3D2<CCTK_REAL>, 3> gf_betaG1{betaGx, betaGy, betaGz};
 
   typedef simd<CCTK_REAL> vreal;
   typedef simdl<CCTK_REAL> vbool;
   constexpr size_t vsize = tuple_size_v<vreal>;
 
-  const Loop::GridDescBaseDevice grid(cctkGH);
 #ifdef __CUDACC__
   const nvtxRangeId_t range = nvtxRangeStartA("Z4cow_Initial1::initial1");
 #endif

@@ -27,12 +27,9 @@ extern "C" void Z4cow_Enforce(CCTK_ARGUMENTS) {
 
   const GF3D2<CCTK_REAL> &gf_W = W;
   const GF3D2<CCTK_REAL> &gf_alphaG = alphaG;
-  const smat<GF3D2<CCTK_REAL>, 3> gf_gammat{
-      gammatxx, gammatxy, gammatxz, gammatyy, gammatyz, gammatzz,
-  };
-  const smat<GF3D2<CCTK_REAL>, 3> gf_At{
-      Atxx, Atxy, Atxz, Atyy, Atyz, Atzz,
-  };
+  const smat<GF3D2<CCTK_REAL>, 3> gf_gammat{gammatxx, gammatxy, gammatxz,
+                                            gammatyy, gammatyz, gammatzz};
+  const smat<GF3D2<CCTK_REAL>, 3> gf_At{Atxx, Atxy, Atxz, Atyy, Atyz, Atzz};
 
   typedef simd<CCTK_REAL> vreal;
   typedef simdl<CCTK_REAL> vbool;

@@ -32,12 +32,18 @@ CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline T Power(T x, int y) {
 }
 
 extern "C" void Z4cow_RHS(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTS_Z4cow_RHS;
+  DECLARE_CCTK_ARGUMENTSX_Z4cow_RHS;
   DECLARE_CCTK_PARAMETERS;
 
   for (int d = 0; d < 3; ++d)
     if (cctk_nghostzones[d] < deriv_order / 2)
       CCTK_VERROR("Need at least %d ghost zones", deriv_order / 2);
+
+  const vect<CCTK_REAL, dim> dx{
+      CCTK_DELTA_SPACE(0),
+      CCTK_DELTA_SPACE(1),
+      CCTK_DELTA_SPACE(2),
+  };
 
   const array<int, dim> indextype = {0, 0, 0};
   const array<int, dim> nghostzones = {cctk_nghostzones[0], cctk_nghostzones[1],
@@ -49,41 +55,37 @@ extern "C" void Z4cow_RHS(CCTK_ARGUMENTS) {
   const GF3D5layout layout5(imin, imax);
 
   // Input grid functions
-  const GF3D2<const CCTK_REAL> gf_W(layout2, W);
-  const smat<GF3D2<const CCTK_REAL>, 3> gf_gamt{
-      GF3D2<const CCTK_REAL>(layout2, gammatxx),
-      GF3D2<const CCTK_REAL>(layout2, gammatxy),
-      GF3D2<const CCTK_REAL>(layout2, gammatxz),
-      GF3D2<const CCTK_REAL>(layout2, gammatyy),
-      GF3D2<const CCTK_REAL>(layout2, gammatyz),
-      GF3D2<const CCTK_REAL>(layout2, gammatzz)};
-  const GF3D2<const CCTK_REAL> gf_exKh(layout2, Kh);
-  const smat<GF3D2<const CCTK_REAL>, 3> gf_exAt{
-      GF3D2<const CCTK_REAL>(layout2, Atxx),
-      GF3D2<const CCTK_REAL>(layout2, Atxy),
-      GF3D2<const CCTK_REAL>(layout2, Atxz),
-      GF3D2<const CCTK_REAL>(layout2, Atyy),
-      GF3D2<const CCTK_REAL>(layout2, Atyz),
-      GF3D2<const CCTK_REAL>(layout2, Atzz)};
-  const vec<GF3D2<const CCTK_REAL>, 3> gf_trGt{
-      GF3D2<const CCTK_REAL>(layout2, Gamtx),
-      GF3D2<const CCTK_REAL>(layout2, Gamty),
-      GF3D2<const CCTK_REAL>(layout2, Gamtz)};
-  const GF3D2<const CCTK_REAL> gf_Theta(layout2, Theta);
-  const GF3D2<const CCTK_REAL> gf_alpha(layout2, alphaG);
-  const vec<GF3D2<const CCTK_REAL>, 3> gf_beta{
-      GF3D2<const CCTK_REAL>(layout2, betaGx),
-      GF3D2<const CCTK_REAL>(layout2, betaGy),
-      GF3D2<const CCTK_REAL>(layout2, betaGz)};
+  const GF3D2<const CCTK_REAL> &gf_W = W;
+  const smat<GF3D2<const CCTK_REAL>, 3> gf_gamt{gammatxx, gammatxy, gammatxz,
+                                                gammatyy, gammatyz, gammatzz};
+  const GF3D2<const CCTK_REAL> &gf_exKh = Kh;
+  const smat<GF3D2<const CCTK_REAL>, 3> gf_exAt{Atxx, Atxy, Atxz,
+                                                Atyy, Atyz, Atzz};
+  const vec<GF3D2<const CCTK_REAL>, 3> gf_trGt{Gamtx, Gamty, Gamtz};
+  const GF3D2<const CCTK_REAL> &gf_Theta = Theta;
+  const GF3D2<const CCTK_REAL> &gf_alpha = alphaG;
+  const vec<GF3D2<const CCTK_REAL>, 3> gf_beta{betaGx, betaGy, betaGz};
+
+  // More input grid functions
+  const GF3D2<const CCTK_REAL> &gf_eTtt = eTtt;
+  const vec<GF3D2<const CCTK_REAL>, 3> gf_eTt{eTtx, eTty, eTtz};
+  const smat<GF3D2<const CCTK_REAL>, 3> gf_eT{eTxx, eTxy, eTxz,
+                                              eTyy, eTyz, eTzz};
+
+  // Output grid functions
+  const GF3D2<CCTK_REAL> &gf_dtW = W_rhs;
+  const smat<GF3D2<CCTK_REAL>, 3> gf_dtgamt{gammatxx_rhs, gammatxy_rhs,
+                                            gammatxz_rhs, gammatyy_rhs,
+                                            gammatyz_rhs, gammatzz_rhs};
+  const GF3D2<CCTK_REAL> &gf_dtexKh = Kh_rhs;
+  const smat<GF3D2<CCTK_REAL>, 3> gf_dtexAt{Atxx_rhs, Atxy_rhs, Atxz_rhs,
+                                            Atyy_rhs, Atyz_rhs, Atzz_rhs};
+  const vec<GF3D2<CCTK_REAL>, 3> gf_dttrGt{Gamtx_rhs, Gamty_rhs, Gamtz_rhs};
+  const GF3D2<CCTK_REAL> &gf_dtTheta = Theta_rhs;
+  const GF3D2<CCTK_REAL> &gf_dtalpha = alphaG_rhs;
+  const vec<GF3D2<CCTK_REAL>, 3> gf_dtbeta{betaGx_rhs, betaGy_rhs, betaGz_rhs};
 
   // Define derivs lambdas
-  const Loop::GridDescBaseDevice grid(cctkGH);
-  const vect<CCTK_REAL, dim> dx(std::array<CCTK_REAL, dim>{
-      CCTK_DELTA_SPACE(0),
-      CCTK_DELTA_SPACE(1),
-      CCTK_DELTA_SPACE(2),
-  });
-
   const auto calcderivs = [&](const auto &gf, const auto &dgf,
                               const auto &gf0) {
     Derivs::calc_derivs<0, 0, 0>(gf, dgf, layout5, grid, gf0, dx, deriv_order);
@@ -153,45 +155,6 @@ extern "C" void Z4cow_RHS(CCTK_ARGUMENTS) {
     CCTK_VERROR("Wrong number of temporary variables: ntmps=%d itmp=%d", ntmps,
                 itmp);
   itmp = -1;
-
-  // More input grid functions
-  const GF3D2<const CCTK_REAL> gf_eTtt(layout2, eTtt);
-  const vec<GF3D2<const CCTK_REAL>, 3> gf_eTt{
-      GF3D2<const CCTK_REAL>(layout2, eTtx),
-      GF3D2<const CCTK_REAL>(layout2, eTty),
-      GF3D2<const CCTK_REAL>(layout2, eTtz)};
-  const smat<GF3D2<const CCTK_REAL>, 3> gf_eT{
-      GF3D2<const CCTK_REAL>(layout2, eTxx),
-      GF3D2<const CCTK_REAL>(layout2, eTxy),
-      GF3D2<const CCTK_REAL>(layout2, eTxz),
-      GF3D2<const CCTK_REAL>(layout2, eTyy),
-      GF3D2<const CCTK_REAL>(layout2, eTyz),
-      GF3D2<const CCTK_REAL>(layout2, eTzz)};
-
-  // Output grid functions
-  const GF3D2<CCTK_REAL> gf_dtW(layout2, W_rhs);
-  const smat<GF3D2<CCTK_REAL>, 3> gf_dtgamt{
-      GF3D2<CCTK_REAL>(layout2, gammatxx_rhs),
-      GF3D2<CCTK_REAL>(layout2, gammatxy_rhs),
-      GF3D2<CCTK_REAL>(layout2, gammatxz_rhs),
-      GF3D2<CCTK_REAL>(layout2, gammatyy_rhs),
-      GF3D2<CCTK_REAL>(layout2, gammatyz_rhs),
-      GF3D2<CCTK_REAL>(layout2, gammatzz_rhs)};
-  const GF3D2<CCTK_REAL> gf_dtexKh(layout2, Kh_rhs);
-  const smat<GF3D2<CCTK_REAL>, 3> gf_dtexAt{
-      GF3D2<CCTK_REAL>(layout2, Atxx_rhs), GF3D2<CCTK_REAL>(layout2, Atxy_rhs),
-      GF3D2<CCTK_REAL>(layout2, Atxz_rhs), GF3D2<CCTK_REAL>(layout2, Atyy_rhs),
-      GF3D2<CCTK_REAL>(layout2, Atyz_rhs), GF3D2<CCTK_REAL>(layout2, Atzz_rhs)};
-  const vec<GF3D2<CCTK_REAL>, 3> gf_dttrGt{
-      GF3D2<CCTK_REAL>(layout2, Gamtx_rhs),
-      GF3D2<CCTK_REAL>(layout2, Gamty_rhs),
-      GF3D2<CCTK_REAL>(layout2, Gamtz_rhs)};
-  const GF3D2<CCTK_REAL> gf_dtTheta(layout2, Theta_rhs);
-  const GF3D2<CCTK_REAL> gf_dtalpha(layout2, alphaG_rhs);
-  const vec<GF3D2<CCTK_REAL>, 3> gf_dtbeta{
-      GF3D2<CCTK_REAL>(layout2, betaGx_rhs),
-      GF3D2<CCTK_REAL>(layout2, betaGy_rhs),
-      GF3D2<CCTK_REAL>(layout2, betaGz_rhs)};
 
   // simd types
   typedef simd<CCTK_REAL> vreal;

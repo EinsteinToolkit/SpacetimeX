@@ -37,7 +37,7 @@ calc_gamma(const smat<T, D> &gu, const vec<smat<T, D>, D> &Gammal) {
 }
 
 extern "C" void Z4cow_Initial2(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTS_Z4cow_Initial2;
+  DECLARE_CCTK_ARGUMENTSX_Z4cow_Initial2;
   DECLARE_CCTK_PARAMETERS;
 
   const vect<CCTK_REAL, 3> dx{
@@ -46,10 +46,24 @@ extern "C" void Z4cow_Initial2(CCTK_ARGUMENTS) {
       CCTK_DELTA_SPACE(2),
   };
 
+  const array<int, dim> indextype = {0, 0, 0};
+  const GF3D2layout layout1(cctkGH, indextype);
+
+  // Input grid functions
+  const smat<GF3D2<const CCTK_REAL>, 3> gf_gammat1{
+      gammatxx, gammatxy, gammatxz, gammatyy, gammatyz, gammatzz};
+
+  // Output grid functions
+  const vec<GF3D2<CCTK_REAL>, 3> gf_Gamt1{Gamtx, Gamty, Gamtz};
+
+  typedef simd<CCTK_REAL> vreal;
+  typedef simdl<CCTK_REAL> vbool;
+  constexpr size_t vsize = tuple_size_v<vreal>;
+
   // Define derivs function
-  vec<simd<CCTK_REAL>, dim> (*calc_deriv)(
-      const GF3D2<const CCTK_REAL> &, const simdl<CCTK_REAL> &,
-      const vect<int, dim> &, const vect<CCTK_REAL, dim> &);
+  vec<vreal, dim> (*calc_deriv)(const GF3D2<const CCTK_REAL> &, const vbool &,
+                                const vect<int, dim> &,
+                                const vect<CCTK_REAL, dim> &);
   switch (deriv_order) {
   case 2:
     calc_deriv = &Derivs::calc_deriv<2>;
@@ -67,28 +81,6 @@ extern "C" void Z4cow_Initial2(CCTK_ARGUMENTS) {
     assert(0);
   }
 
-  const array<int, dim> indextype = {0, 0, 0};
-  const GF3D2layout layout1(cctkGH, indextype);
-
-  // Input grid functions
-  const smat<GF3D2<const CCTK_REAL>, 3> gf_gammat1{
-      GF3D2<const CCTK_REAL>(layout1, gammatxx),
-      GF3D2<const CCTK_REAL>(layout1, gammatxy),
-      GF3D2<const CCTK_REAL>(layout1, gammatxz),
-      GF3D2<const CCTK_REAL>(layout1, gammatyy),
-      GF3D2<const CCTK_REAL>(layout1, gammatyz),
-      GF3D2<const CCTK_REAL>(layout1, gammatzz)};
-
-  // Output grid functions
-  const vec<GF3D2<CCTK_REAL>, 3> gf_Gamt1{GF3D2<CCTK_REAL>(layout1, Gamtx),
-                                          GF3D2<CCTK_REAL>(layout1, Gamty),
-                                          GF3D2<CCTK_REAL>(layout1, Gamtz)};
-
-  typedef simd<CCTK_REAL> vreal;
-  typedef simdl<CCTK_REAL> vbool;
-  constexpr size_t vsize = tuple_size_v<vreal>;
-
-  const Loop::GridDescBaseDevice grid(cctkGH);
 #ifdef __CUDACC__
   const nvtxRangeId_t range = nvtxRangeStartA("Z4cow_Initial2::initial2");
 #endif
