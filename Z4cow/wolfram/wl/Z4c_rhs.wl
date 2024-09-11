@@ -12,9 +12,11 @@
 
 (****************)
 
-SetEQN[invgam[i_, j_], chi[] invgamt[i, j]];
+SetEQN[dlnW[i_], W[] ^ -1 dW[i]];
 
-SetEQN[gam[i_, j_], chi[] ^ -1 gamt[i, j]];
+SetEQN[invgam[i_, j_], W[] ^ 2 invgamt[i, j]];
+
+SetEQN[gam[i_, j_], W[] ^ -2 gamt[i, j]];
 
 SetEQN[GtDDD[k_, i_, j_], 1/2 (dgamt[i, j, k] + dgamt[j, k, i] - dgamt[k, i, j])];
 
@@ -24,7 +26,7 @@ SetEQN[Gt[k_, i_, j_], invgamt[k, l] GtDDD[-l, i, j]];
 
 SetEQN[trGtd[i_], invgamt[k, l] Gt[i, -k, -l]];
 
-SetEQN[dgam[k_, i_, j_], -chi[] ^ -2 dchi[k] gamt[i, j] + chi[] ^ -1 dgamt[k, i, j]];
+SetEQN[dgam[k_, i_, j_], W[] ^ -2 (-2 dlnW[k] gamt[i, j] + dgamt[k, i, j]]);
 
 SetEQN[GamDDD[k_, i_, j_], 1/2 (dgam[i, j, k] + dgam[j, k, i] - dgam[k, i, j])];
 
@@ -32,15 +34,13 @@ SetEQN[Gam[k_, i_, j_], invgam[k, l] GamDDD[-l, i, j]];
 
 SetEQN[exAtUU[i_, j_], invgamt[i, k] invgamt[j, l] exAt[-k, -l]];
 
-SetEQN[tDtDchi[i_, j_], ddchi[i, j] - Gt[k, i, j] dchi[-k]];
-
-(*SetEQN[DDalpha[i_, j_], ddalpha[i, j] - Gt[k, i, j] dalpha[-k] + 1/2 chi[] ^ -1 (dchi[i] dalpha[j] + dchi[j] dalpha[i]) - 1/2 gamt[i, j] invgamt[k, l] chi[] ^ -1 dchi[-l] dalpha[-k]];*)
+SetEQN[tDtDW[i_, j_], ddW[i, j] - Gt[k, i, j] dW[-k]];
 
 SetEQN[DDalpha[i_, j_], ddalpha[i, j] - Gam[k, i, j] dalpha[-k]];
 
 (* (8) *)
 
-SetEQN[Rtchi[i_, j_], 1 / (2 chi[]) tDtDchi[i, j] + 1 / (2 chi[]) gamt[i, j] invgamt[k, l] tDtDchi[-k, -l] - 1 / (4 chi[] ^ 2) dchi[i] dchi[j] - 3 / (4 chi[] ^ 2) gamt[i, j] invgamt[k, l] dchi[-k] dchi[-l]];
+SetEQN[RtW[i_, j_], 1 / W[] tDtDW[i, j] + 1 / W[] gamt[i, j] invgamt[k, l] tDtDW[-k, -l] - 2 gamt[i, j] invgamt[k, l] dlnW[-k] dlnW[-l]];
 
 (* (9) *)
 
@@ -48,7 +48,7 @@ SetEQN[Rt[i_, j_], -(1/2) invgamt[l, m] ddgamt[-l, -m, i, j] + 1/2 (gamt[-k, i] 
 
 (* (10) *)
 
-SetEQN[R[i_, j_], Rtchi[i, j] + Rt[i, j]];
+SetEQN[R[i_, j_], RtW[i, j] + Rt[i, j]];
 
 SetEQN[trR[], invgam[k, l] R[-k, -l]];
 
@@ -72,7 +72,7 @@ SetEQN[HC[], trR[] + exAt[-k, -l] exAtUU[k, l] - 2/3 (exKh[] + 2 Theta[]) ^ 2 - 
 
 (* (15) *)
 
-SetEQN[MtC[i_], trdexAtUU[i] + Gt[i, -j, -k] exAtUU[j, k] - 2/3 invgamt[i, j] (dexKh[-j] + 2 dTheta[-j]) - 2/3 exAtUU[i, j] chi[] ^ -1 dchi[-j] - 8 cpi invgamt[i, j] Sm[-j]];
+SetEQN[MtC[i_], trdexAtUU[i] + Gt[i, -j, -k] exAtUU[j, k] - 2/3 invgamt[i, j] (dexKh[-j] + 2 dTheta[-j]) - 4/3 exAtUU[i, j] dlnW[-j] - 8 cpi invgamt[i, j] Sm[-j]];
 
 (*******)
 
@@ -82,7 +82,7 @@ SetEQN[MtC[i_], trdexAtUU[i] + Gt[i, -j, -k] exAtUU[j, k] - 2/3 invgamt[i, j] (d
 
 (* (1) *)
 
-SetEQN[dtchi[], beta[k] dchi[-k] + 2/3 chi[] (alpha[] (exKh[] + 2 Theta[]) - dbeta[-i, i])];
+SetEQN[dtW[], beta[k] dW[-k] + 1/3 W[] (alpha[] (exKh[] + 2 Theta[]) - dbeta[-i, i])];
 
 (* (2) *)
 
@@ -94,11 +94,11 @@ SetEQN[dtexKh[], beta[k] dexKh[-k] - invgam[k, l] DDalpha[-k, -l] + alpha[] (exA
 
 (* (4) *)
 
-SetEQN[dtexAt[i_, j_], beta[k] dexAt[-k, i, j] + chi[] ((-DDalpha[i, j] + alpha[] (R[i, j] - 8 cpi Ss[i, j])) - 1/3 gam[i, j] invgam[k, l] (-DDalpha[-k, -l] + alpha[] (R[-k, -l] - 8 cpi Ss[-k, -l]))) + alpha[] ((exKh[] + 2 Theta[]) exAt[i, j] - 2 invgamt[k, l] exAt[-k, i] exAt[-l, j]) + (exAt[-k, i] dbeta[j, k] + exAt[-k, j] dbeta[i, k]) - 2/3 exAt[i, j] dbeta[-k, k]];
+SetEQN[dtexAt[i_, j_], beta[k] dexAt[-k, i, j] + W[] ^ 2 ((-DDalpha[i, j] + alpha[] (R[i, j] - 8 cpi Ss[i, j])) - 1/3 gam[i, j] invgam[k, l] (-DDalpha[-k, -l] + alpha[] (R[-k, -l] - 8 cpi Ss[-k, -l]))) + alpha[] ((exKh[] + 2 Theta[]) exAt[i, j] - 2 invgamt[k, l] exAt[-k, i] exAt[-l, j]) + (exAt[-k, i] dbeta[j, k] + exAt[-k, j] dbeta[i, k]) - 2/3 exAt[i, j] dbeta[-k, k]];
 
 (* (5) *)
 
-SetEQN[dttrGt[i_], beta[k] dtrGt[-k, i] - 2 exAtUU[i, j] dalpha[-j] + 2 alpha[] (Gt[i, -j, -k] exAtUU[j, k] - 3/2 exAtUU[i, j] dchi[-j] / chi[] - 1/3 invgamt[i, j] (2 dexKh[-j] + dTheta[-j]) - 8 cpi invgamt[i, j] Sm[-j]) + invgamt[j, k] ddbeta[-j, -k, i] + 1/3 invgamt[i, j] ddbeta[-j, -k, k] - trGtd[j] dbeta[-j, i] + 2/3 trGtd[i] dbeta[-j, j] - 2 alpha[] ckappa1 (trGt[i] - trGtd[i])];
+SetEQN[dttrGt[i_], beta[k] dtrGt[-k, i] - 2 exAtUU[i, j] dalpha[-j] + 2 alpha[] (Gt[i, -j, -k] exAtUU[j, k] - 3 exAtUU[i, j] dlnW[-j] - 1/3 invgamt[i, j] (2 dexKh[-j] + dTheta[-j]) - 8 cpi invgamt[i, j] Sm[-j]) + invgamt[j, k] ddbeta[-j, -k, i] + 1/3 invgamt[i, j] ddbeta[-j, -k, k] - trGtd[j] dbeta[-j, i] + 2/3 trGtd[i] dbeta[-j, j] - 2 alpha[] ckappa1 (trGt[i] - trGtd[i])];
 
 (* (6) *)
 
