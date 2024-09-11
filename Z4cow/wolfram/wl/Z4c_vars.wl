@@ -74,6 +74,7 @@ TmunuVarlist =
 
 IntermediateVarlist =
   TempTensors[
+    {dlnW[-k], PrintAs -> "\[PartialD]lnW"},
     (* {detinvgamt[], PrintAs -> "1/\!\(\*OverscriptBox[\(\[Gamma]\), \(~\)]\)"}, *)
     {invgamt[i, j], Symmetric[{i, j}], PrintAs -> "\!\(\*OverscriptBox[\(\[Gamma]\), \(~\)]\)"},
     {invgam[i, j], Symmetric[{i, j}], PrintAs -> "\[Gamma]"},
