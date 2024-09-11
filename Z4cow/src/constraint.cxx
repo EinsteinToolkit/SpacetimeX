@@ -12,9 +12,7 @@
 
 #include <derivs.hxx>
 #include <loop_device.hxx>
-#include <mat.hxx>
 #include <simd.hxx>
-#include <vec.hxx>
 
 #ifdef __CUDACC__
 #include <nvToolsExt.h>
@@ -32,8 +30,8 @@ CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline T Power(T x, int y) {
   return (y == 2) ? Arith::pow2(x) : Arith::pown(x, y);
 }
 
-extern "C" void Z4cow_RHS(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTS_Z4cow_RHS;
+extern "C" void Z4cow_Constraints(CCTK_ARGUMENTS) {
+  DECLARE_CCTK_ARGUMENTS_Z4cow_Constraints;
   DECLARE_CCTK_PARAMETERS;
 
   for (int d = 0; d < 3; ++d)
@@ -85,6 +83,9 @@ extern "C" void Z4cow_RHS(CCTK_ARGUMENTS) {
       CCTK_DELTA_SPACE(2),
   });
 
+  const auto calccopy = [&](const auto &gf, const auto &gf0) {
+    Derivs::calc_copy<0, 0, 0>(gf, layout5, grid, gf0);
+  };
   const auto calcderivs = [&](const auto &gf, const auto &dgf,
                               const auto &gf0) {
     Derivs::calc_derivs<0, 0, 0>(gf, dgf, layout5, grid, gf0, dx, deriv_order);
@@ -96,7 +97,7 @@ extern "C" void Z4cow_RHS(CCTK_ARGUMENTS) {
   };
 
   // Tile variables for derivatives and so on
-  const int ntmps = 154;
+  const int ntmps = 118;
   GF3D5vector<CCTK_REAL> tmps(layout5, ntmps);
   int itmp = 0;
 
@@ -110,7 +111,6 @@ extern "C" void Z4cow_RHS(CCTK_ARGUMENTS) {
   const auto make_vec_gf = [&]() { return make_vec(make_gf); };
   const auto make_mat_gf = [&]() { return make_mat(make_gf); };
   const auto make_vec_vec_gf = [&]() { return make_vec(make_vec_gf); };
-  const auto make_vec_mat_gf = [&]() { return make_vec(make_mat_gf); };
   const auto make_mat_vec_gf = [&]() { return make_mat(make_vec_gf); };
   const auto make_mat_mat_gf = [&]() { return make_mat(make_mat_gf); };
 
@@ -141,14 +141,10 @@ extern "C" void Z4cow_RHS(CCTK_ARGUMENTS) {
   calcderivs(tl_Theta, tl_dTheta, gf_Theta);
 
   const GF3D5<CCTK_REAL> tl_alpha(make_gf());
-  const vec<GF3D5<CCTK_REAL>, 3> tl_dalpha(make_vec_gf());
-  const smat<GF3D5<CCTK_REAL>, 3> tl_ddalpha(make_mat_gf());
-  calcderivs2(tl_alpha, tl_dalpha, tl_ddalpha, gf_alpha);
+  calccopy(tl_alpha, gf_alpha);
 
   const vec<GF3D5<CCTK_REAL>, 3> tl_beta(make_vec_gf());
-  const vec<vec<GF3D5<CCTK_REAL>, 3>, 3> tl_dbeta(make_vec_vec_gf());
-  const vec<smat<GF3D5<CCTK_REAL>, 3>, 3> tl_ddbeta(make_vec_mat_gf());
-  calcderivs2(tl_beta, tl_dbeta, tl_ddbeta, gf_beta);
+  calccopy(tl_beta, gf_beta);
 
   if (itmp != ntmps)
     CCTK_VERROR("Wrong number of temporary variables: ntmps=%d itmp=%d", ntmps,
@@ -170,29 +166,13 @@ extern "C" void Z4cow_RHS(CCTK_ARGUMENTS) {
       GF3D2<const CCTK_REAL>(layout2, eTzz)};
 
   // Output grid functions
-  const GF3D2<CCTK_REAL> gf_dtW(layout2, W_rhs);
-  const smat<GF3D2<CCTK_REAL>, 3> gf_dtgamt{
-      GF3D2<CCTK_REAL>(layout2, gammatxx_rhs),
-      GF3D2<CCTK_REAL>(layout2, gammatxy_rhs),
-      GF3D2<CCTK_REAL>(layout2, gammatxz_rhs),
-      GF3D2<CCTK_REAL>(layout2, gammatyy_rhs),
-      GF3D2<CCTK_REAL>(layout2, gammatyz_rhs),
-      GF3D2<CCTK_REAL>(layout2, gammatzz_rhs)};
-  const GF3D2<CCTK_REAL> gf_dtexKh(layout2, Kh_rhs);
-  const smat<GF3D2<CCTK_REAL>, 3> gf_dtexAt{
-      GF3D2<CCTK_REAL>(layout2, Atxx_rhs), GF3D2<CCTK_REAL>(layout2, Atxy_rhs),
-      GF3D2<CCTK_REAL>(layout2, Atxz_rhs), GF3D2<CCTK_REAL>(layout2, Atyy_rhs),
-      GF3D2<CCTK_REAL>(layout2, Atyz_rhs), GF3D2<CCTK_REAL>(layout2, Atzz_rhs)};
-  const vec<GF3D2<CCTK_REAL>, 3> gf_dttrGt{
-      GF3D2<CCTK_REAL>(layout2, Gamtx_rhs),
-      GF3D2<CCTK_REAL>(layout2, Gamty_rhs),
-      GF3D2<CCTK_REAL>(layout2, Gamtz_rhs)};
-  const GF3D2<CCTK_REAL> gf_dtTheta(layout2, Theta_rhs);
-  const GF3D2<CCTK_REAL> gf_dtalpha(layout2, alphaG_rhs);
-  const vec<GF3D2<CCTK_REAL>, 3> gf_dtbeta{
-      GF3D2<CCTK_REAL>(layout2, betaGx_rhs),
-      GF3D2<CCTK_REAL>(layout2, betaGy_rhs),
-      GF3D2<CCTK_REAL>(layout2, betaGz_rhs)};
+  const vec<GF3D2<CCTK_REAL>, 3> gf_ZtC{GF3D2<CCTK_REAL>(layout2, ZtCx),
+                                        GF3D2<CCTK_REAL>(layout2, ZtCy),
+                                        GF3D2<CCTK_REAL>(layout2, ZtCz)};
+  const GF3D2<CCTK_REAL> gf_HC(layout2, HC);
+  const vec<GF3D2<CCTK_REAL>, 3> gf_MtC{GF3D2<CCTK_REAL>(layout2, MtCx),
+                                        GF3D2<CCTK_REAL>(layout2, MtCy),
+                                        GF3D2<CCTK_REAL>(layout2, MtCz)};
 
   // simd types
   typedef simd<CCTK_REAL> vreal;
@@ -201,87 +181,16 @@ extern "C" void Z4cow_RHS(CCTK_ARGUMENTS) {
 
   // parameters
   const CCTK_REAL cpi = M_PI;
-  const CCTK_REAL ckappa1 = kappa1;
-  const CCTK_REAL ckappa2 = kappa2;
-  const CCTK_REAL cmuL = f_mu_L;
-  const CCTK_REAL cmuS = f_mu_S;
-  // const CCTK_REAL ceta = eta;
-  const auto calceta = [=] CCTK_DEVICE(
-                           const vreal x, const CCTK_REAL y,
-                           const CCTK_REAL z) CCTK_ATTRIBUTE_ALWAYS_INLINE {
-    const vreal r = sqrt(x * x + y * y + z * z);
-    const CCTK_REAL is4 =
-        1.0 / (veta_width * veta_width * veta_width * veta_width);
-    return (veta_central - veta_outer) * exp(-r * r * r * r * is4) + veta_outer;
-  };
 
-  // Loop
 #ifdef __CUDACC__
-  const nvtxRangeId_t range = nvtxRangeStartA("Z4cow_RHS::rhs");
+  const nvtxRangeId_t range = nvtxRangeStartA("Z4cow_Constraints::constraints");
 #endif
 
-#include "../wolfram/Z4cow_set_rhs.hxx"
+#include "../wolfram/Z4cow_set_constraint.hxx"
 
 #ifdef __CUDACC__
   nvtxRangeEnd(range);
 #endif
-
-  // Upwind and dissipation terms
-
-  // vreal (*calc_deriv_upwind)(
-  //     const GF3D2<const CCTK_REAL> &, const vbool &, const vect<int, dim> &,
-  //     const vect<CCTK_REAL, dim> &, const vec<vreal, dim> &);
-  vreal (*calc_diss)(const GF3D2<const CCTK_REAL> &, const vbool &,
-                     const vect<int, dim> &, const vect<CCTK_REAL, dim> &);
-  switch (diss_order) {
-  case 3: {
-    calc_diss = &Derivs::calc_diss<2>;
-    break;
-  }
-  case 5: {
-    calc_diss = &Derivs::calc_diss<4>;
-    break;
-  }
-  case 7: {
-    calc_diss = &Derivs::calc_diss<6>;
-    break;
-  }
-  case 9: {
-    calc_diss = &Derivs::calc_diss<8>;
-    break;
-  }
-  default:
-    assert(0);
-  }
-
-  const auto apply_diss = [&](const GF3D2<const CCTK_REAL> &gf_,
-                              const GF3D2<CCTK_REAL> &gf_rhs_) {
-    grid.loop_int_device<0, 0, 0, vsize>(
-        grid.nghostzones,
-        [=] CCTK_DEVICE(const PointDesc &p) CCTK_ATTRIBUTE_ALWAYS_INLINE {
-          const vbool mask = mask_for_loop_tail<vbool>(p.i, p.imax);
-          const vreal rhs_old = gf_rhs_(mask, p.I);
-          const vreal rhs_new =
-              rhs_old + epsdiss * calc_diss(gf_, mask, p.I, dx);
-          gf_rhs_.store(mask, p.I, rhs_new);
-        });
-  };
-
-  apply_diss(gf_W, gf_dtW);
-  for (int a = 0; a < 3; ++a)
-    for (int b = a; b < 3; ++b)
-      apply_diss(gf_gamt(a, b), gf_dtgamt(a, b));
-  apply_diss(gf_exKh, gf_dtexKh);
-  for (int a = 0; a < 3; ++a)
-    for (int b = a; b < 3; ++b)
-      apply_diss(gf_exAt(a, b), gf_dtexAt(a, b));
-  for (int a = 0; a < 3; ++a)
-    apply_diss(gf_trGt(a), gf_dttrGt(a));
-  if (!set_Theta_zero)
-    apply_diss(gf_Theta, gf_dtTheta);
-  apply_diss(gf_alpha, gf_dtalpha);
-  for (int a = 0; a < 3; ++a)
-    apply_diss(gf_beta(a), gf_dtbeta(a));
 }
 
 } // namespace Z4cow
