@@ -25,7 +25,6 @@
 namespace Z4cow {
 using namespace Arith;
 using namespace Loop;
-using namespace std;
 
 template <typename T>
 CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline T Power(T x, int y) {

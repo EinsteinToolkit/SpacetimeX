@@ -12,7 +12,6 @@
 namespace Z4cow {
 using namespace Arith;
 using namespace Loop;
-using namespace std;
 
 // Gammal_abc
 template <typename T, int D>

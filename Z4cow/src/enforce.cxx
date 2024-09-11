@@ -17,7 +17,6 @@
 namespace Z4cow {
 using namespace Arith;
 using namespace Loop;
-using namespace std;
 
 extern "C" void Z4cow_Enforce(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTSX_Z4cow_Enforce;
