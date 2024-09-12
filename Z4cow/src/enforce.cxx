@@ -56,7 +56,7 @@ extern "C" void Z4cow_Enforce(CCTK_ARGUMENTS) {
         // Enforce algebraic constraints
         // See arXiv:1212.2901 [gr-qc].
         const vreal detgammat_old = calc_det(gammat_old);
-        const vreal W1_old = pown(detgammat_old, -1.0 / 6.0);
+        const vreal W1_old = 1 / cbrt(sqrt(detgammat_old));
         const smat<vreal, 3> gammat([&](int a, int b) ARITH_INLINE {
           return W1_old * W1_old * gammat_old(a, b);
         });
