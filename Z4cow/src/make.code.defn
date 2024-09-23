@@ -7,6 +7,7 @@ SRCS = \
 	enforce.cxx	\
 	initial1.cxx \
 	initial2.cxx \
+	initiallapse.cxx \
 	newradx.cxx \
 	rhs.cxx
 

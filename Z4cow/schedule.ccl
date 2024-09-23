@@ -143,6 +143,13 @@ SCHEDULE Z4cow_Initial2 IN Z4cow_InitialGroup AFTER Z4cow_Initial1
   WRITES: Gam_tilde(interior)
 } "Convert ADM to Z4c variables, part 2"
 
+SCHEDULE Z4cow_InitialLapse IN Z4cow_InitialGroup AFTER Z4cow_Initial2
+{
+  LANG: C
+  READS: W(interior)
+  WRITES: alphaG(interior)
+} "Set initial lapse"
+
 SCHEDULE Z4cow_Enforce IN Z4cow_PostStepGroup
 {
   LANG: C
