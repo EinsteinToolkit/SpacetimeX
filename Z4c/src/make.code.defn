@@ -9,6 +9,7 @@ SRCS =						\
 	enforce.cxx				\
 	initial1.cxx				\
 	initial2.cxx				\
+	initial3.cxx				\
 	rhs.cxx					\
 	test.cxx
 

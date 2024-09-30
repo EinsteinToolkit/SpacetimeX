@@ -133,6 +133,19 @@ SCHEDULE Z4c_Initial2 IN Z4c_InitialGroup AFTER Z4c_Initial1
   # SYNC: Gam_tilde
 } "Convert ADM to Z4c variables, part 2"
 
+SCHEDULE Z4c_Initial3 IN Z4c_InitialGroup AFTER Z4c_Initial2
+{
+  LANG: C
+  WRITES: chi_pre(everywhere)
+  WRITES: gamma_tilde_pre(everywhere)
+  WRITES: K_hat_pre(everywhere)
+  WRITES: A_tilde_pre(everywhere)
+  WRITES: Gam_tilde_pre(everywhere)
+  WRITES: Theta_pre(everywhere)
+  WRITES: alphaG_pre(everywhere)
+  WRITES: betaG_pre(everywhere)
+} "Convert ADM to Z4c variables, part 3"
+
 
 
 SCHEDULE Z4c_Enforce IN Z4c_PostStepGroup
@@ -154,6 +167,14 @@ SCHEDULE Z4c_Enforce IN Z4c_PostStepGroup
   SYNC: Theta
   SYNC: alphaG
   SYNC: betaG
+  SYNC: chi_pre
+  SYNC: gamma_tilde_pre
+  SYNC: K_hat_pre
+  SYNC: A_tilde_pre
+  SYNC: Gam_tilde_pre
+  SYNC: Theta_pre
+  SYNC: alphaG_pre
+  SYNC: betaG_pre
 } "Enforce algebraic Z4c constraints"
 
 if (calc_ADM_vars) {
