@@ -53,11 +53,11 @@ CCTK_REAL betaG_rhs TYPE=gf TAGS='parities={-1 +1 +1   +1 -1 +1   +1 +1 -1} chec
 
 # for RKAB
 
-CCTK_REAL chi_pre TYPE=gf TAGS='checkpoint="no"' "chi"
-CCTK_REAL gamma_tilde_pre TYPE=gf TAGS='parities={+1 +1 +1   -1 -1 +1   -1 +1 -1   +1 +1 +1   +1 -1 -1   +1 +1 +1} checkpoint="no"' { gammatxx_pre gammatxy_pre gammatxz_pre gammatyy_pre gammatyz_pre gammatzz_pre } "gamma-tilde"
-CCTK_REAL K_hat_pre TYPE=gf TAGS='checkpoint="no"' { Kh_pre } "K-hat"
-CCTK_REAL A_tilde_pre TYPE=gf TAGS='parities={+1 +1 +1   -1 -1 +1   -1 +1 -1   +1 +1 +1   +1 -1 -1   +1 +1 +1} checkpoint="no"' { Atxx_pre Atxy_pre Atxz_pre Atyy_pre Atyz_pre Atzz_pre } "A-tilde"
-CCTK_REAL Gam_tilde_pre TYPE=gf TAGS='parities={-1 +1 +1   +1 -1 +1   +1 +1 -1} checkpoint="no"' { Gamtx_pre Gamty_pre Gamtz_pre } "Gamma-tilde"
-CCTK_REAL Theta_pre TYPE=gf TAGS='checkpoint="no"' "Theta"
-CCTK_REAL alphaG_pre TYPE=gf TAGS='checkpoint="no"' "alpha"
-CCTK_REAL betaG_pre TYPE=gf TAGS='parities={-1 +1 +1   +1 -1 +1   +1 +1 -1} checkpoint="no"' { betaGx_pre betaGy_pre betaGz_pre } "beta"
+CCTK_REAL chi_pre TYPE=gf TAGS='checkpoint="yes"' "chi"
+CCTK_REAL gamma_tilde_pre TYPE=gf TAGS='parities={+1 +1 +1   -1 -1 +1   -1 +1 -1   +1 +1 +1   +1 -1 -1   +1 +1 +1} checkpoint="yes"' { gammatxx_pre gammatxy_pre gammatxz_pre gammatyy_pre gammatyz_pre gammatzz_pre } "gamma-tilde"
+CCTK_REAL K_hat_pre TYPE=gf TAGS='checkpoint="yes"' { Kh_pre } "K-hat"
+CCTK_REAL A_tilde_pre TYPE=gf TAGS='parities={+1 +1 +1   -1 -1 +1   -1 +1 -1   +1 +1 +1   +1 -1 -1   +1 +1 +1} checkpoint="yes"' { Atxx_pre Atxy_pre Atxz_pre Atyy_pre Atyz_pre Atzz_pre } "A-tilde"
+CCTK_REAL Gam_tilde_pre TYPE=gf TAGS='parities={-1 +1 +1   +1 -1 +1   +1 +1 -1} checkpoint="yes"' { Gamtx_pre Gamty_pre Gamtz_pre } "Gamma-tilde"
+CCTK_REAL Theta_pre TYPE=gf TAGS='checkpoint="yes"' "Theta"
+CCTK_REAL alphaG_pre TYPE=gf TAGS='checkpoint="yes"' "alpha"
+CCTK_REAL betaG_pre TYPE=gf TAGS='parities={-1 +1 +1   +1 -1 +1   +1 +1 -1} checkpoint="yes"' { betaGx_pre betaGy_pre betaGz_pre } "beta"
