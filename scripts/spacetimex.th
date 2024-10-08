@@ -152,6 +152,7 @@ CarpetX/Algo
 CarpetX/Arith
 CarpetX/BoxInBox
 CarpetX/CarpetX
+CarpetX/CarpetXRegrid
 CarpetX/CoordinatesX
 CarpetX/Derivs
 CarpetX/ErrorEstimator

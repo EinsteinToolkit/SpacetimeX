@@ -13,14 +13,14 @@ SCHEDULE TestNewRadX_EstimateError AT postinitial
 {
   LANG: C
   READS: state(everywhere)
-  WRITES: CarpetX::regrid_error(interior)
+  WRITES: CarpetXRegrid::regrid_error(interior)
 } "Estimate error for regridding"
 
 SCHEDULE TestNewRadX_EstimateError AT poststep
 {
   LANG: C
   READS: state(everywhere)
-  WRITES: CarpetX::regrid_error(interior)
+  WRITES: CarpetXRegrid::regrid_error(interior)
 } "Estimate error for regridding"
 
 SCHEDULE TestNewRadX_RHS IN ODESolvers_RHS
