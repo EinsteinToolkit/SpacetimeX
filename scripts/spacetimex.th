@@ -152,6 +152,7 @@ CarpetX/Algo
 CarpetX/Arith
 CarpetX/BoxInBox
 CarpetX/CarpetX
+CarpetX/CarpetXRegrid
 CarpetX/CoordinatesX
 CarpetX/Derivs
 CarpetX/ErrorEstimator
@@ -164,7 +165,7 @@ CarpetX/TmunuBaseX
 !TARGET   = $ARR
 !TYPE     = ignore
 !CHECKOUT =
-SpacetimeX/AHFinderDirect
+#SpacetimeX/AHFinderDirect
 SpacetimeX/AHFinderX
 SpacetimeX/BrillLindquist
 SpacetimeX/Cowling

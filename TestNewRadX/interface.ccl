@@ -2,7 +2,7 @@
 
 IMPLEMENTS: TestNewRadX
 
-INHERITS: CarpetX
+INHERITS: CarpetXRegrid
 
 USES INCLUDE HEADER: loop_device.hxx
 USES INCLUDE HEADER: newradx.hxx

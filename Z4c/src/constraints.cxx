@@ -20,7 +20,7 @@
 #include <cctk_Parameters.h>
 
 #ifdef __CUDACC__
-#include <nvToolsExt.h>
+#include <nvtx3/nvToolsExt.h>
 #endif
 
 #include <cmath>
