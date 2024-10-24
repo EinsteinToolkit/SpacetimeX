@@ -1,10 +1,10 @@
-#include "newradx.hxx"
-#include "CarpetX/CarpetX/src/driver.hxx"
-#include "loop.hxx"
-#include "loop_device.hxx"
 #include <cctk.h>
 #include <cctk_Arguments_Checked.h>
 #include <cmath>
+#include "loop.hxx"
+#include "loop_device.hxx"
+#include "driver.hxx"
+#include "newradx.hxx"
 
 namespace NewRadX {
 
