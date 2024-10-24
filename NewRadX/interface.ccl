@@ -2,6 +2,7 @@
 
 IMPLEMENTS: NewRadX
 
+USES INCLUDE HEADER: driver.hxx
 USES INCLUDE HEADER: loop_device.hxx
 
 INCLUDE HEADER: newradx.hxx in newradx.hxx
