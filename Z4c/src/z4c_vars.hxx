@@ -540,9 +540,9 @@ template <typename T> struct z4c_vars : z4c_vars_noderivs<T> {
         ZtC([&](int a) ARITH_INLINE { return (Gamt(a) - Gamtd(a)) / 2; }), //
         // (14)
         HC(Rsc //
-           + sum_symm<3>([&](int x, int y)
+           - sum_symm<3>([&](int x, int y)
                              ARITH_INLINE { return At(x, y) * Atu(x, y); }) //
-           - 2 / T(3) * pow2(Kh + 2 * Theta)                                //
+           + 2 / T(3) * pow2(Kh + 2 * Theta)                                //
            - 16 * T(M_PI) * rho),
         // (15)
         MtC([&](int a) ARITH_INLINE {
@@ -554,7 +554,7 @@ template <typename T> struct z4c_vars : z4c_vars_noderivs<T> {
                      return (delta3(a, x) + gammatu(a, x)) *
                             (dKh(x) + 2 * dTheta(x));
                    }) //
-                 - 2 / T(3) * sum<3>([&](int x) ARITH_INLINE {
+                 - 3 / T(2) * sum<3>([&](int x) ARITH_INLINE {
                      return Atu(a, x) * dchi(x) / (1 + chi);
                    }) //
                  - 8 * T(M_PI) * sum<3>([&](int x) ARITH_INLINE {
