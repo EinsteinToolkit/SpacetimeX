@@ -538,6 +538,9 @@ template <typename T> struct z4c_vars : z4c_vars_noderivs<T> {
         // Constraints
         // (13)
         ZtC([&](int a) ARITH_INLINE { return (Gamt(a) - Gamtd(a)) / 2; }), //
+        // For the Hamiltonian and momentum constraints, the equations in
+        // 1212.2901 is incorrect, whereas the one in 0912.2920 is correct,
+        // as double-checked by Liwei Ji.
         // (14)
         HC(Rsc //
            - sum_symm<3>([&](int x, int y)
