@@ -993,13 +993,14 @@ local_ZtC3.store(mask, index2,
 );
 
 local_HC.store(mask, index2, 
-exAt11*exAtUU11 + 2*exAt12*exAtUU12 + 2*exAt13*exAtUU13 + exAt22*exAtUU22 + 
-  2*exAt23*exAtUU23 + exAt33*exAtUU33 - (2*Power(exKh,2))/3. - 16*cpi*rho - 
-  (8*exKh*Theta)/3. - (8*Power(Theta,2))/3. + trR
+(-3*exAt11*exAtUU11 - 6*exAt12*exAtUU12 - 6*exAt13*exAtUU13 - 
+    3*exAt22*exAtUU22 - 6*exAt23*exAtUU23 - 3*exAt33*exAtUU33 + 
+    2*Power(exKh,2) - 48*cpi*rho + 8*exKh*Theta + 8*Power(Theta,2) + 3*trR)/
+  3.
 );
 
 local_MtC1.store(mask, index2, 
-(-4*dlnW1*exAtUU11 - 4*dlnW2*exAtUU12 - 4*dlnW3*exAtUU13 + 
+(-9*dlnW1*exAtUU11 - 9*dlnW2*exAtUU12 - 9*dlnW3*exAtUU13 + 
     3*exAtUU11*Gt111 + 6*exAtUU12*Gt112 + 6*exAtUU13*Gt113 + 
     3*exAtUU22*Gt122 + 6*exAtUU23*Gt123 + 3*exAtUU33*Gt133 - 
     2*dexKh1*invgamt11 - 4*dTheta1*invgamt11 - 2*dexKh2*invgamt12 - 
@@ -1009,7 +1010,7 @@ local_MtC1.store(mask, index2,
 );
 
 local_MtC2.store(mask, index2, 
-(-4*dlnW1*exAtUU12 - 4*dlnW2*exAtUU22 - 4*dlnW3*exAtUU23 + 
+(-9*dlnW1*exAtUU12 - 9*dlnW2*exAtUU22 - 9*dlnW3*exAtUU23 + 
     3*exAtUU11*Gt211 + 6*exAtUU12*Gt212 + 6*exAtUU13*Gt213 + 
     3*exAtUU22*Gt222 + 6*exAtUU23*Gt223 + 3*exAtUU33*Gt233 - 
     2*dexKh1*invgamt12 - 4*dTheta1*invgamt12 - 2*dexKh2*invgamt22 - 
@@ -1019,7 +1020,7 @@ local_MtC2.store(mask, index2,
 );
 
 local_MtC3.store(mask, index2, 
-(-4*dlnW1*exAtUU13 - 4*dlnW2*exAtUU23 - 4*dlnW3*exAtUU33 + 
+(-9*dlnW1*exAtUU13 - 9*dlnW2*exAtUU23 - 9*dlnW3*exAtUU33 + 
     3*exAtUU11*Gt311 + 6*exAtUU12*Gt312 + 6*exAtUU13*Gt313 + 
     3*exAtUU22*Gt322 + 6*exAtUU23*Gt323 + 3*exAtUU33*Gt333 - 
     2*dexKh1*invgamt13 - 4*dTheta1*invgamt13 - 2*dexKh2*invgamt23 - 

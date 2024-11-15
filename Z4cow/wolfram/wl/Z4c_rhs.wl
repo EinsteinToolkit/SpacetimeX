@@ -68,11 +68,11 @@ SetEQN[ZtC[i_], (trGt[i] - trGtd[i]) / 2];
 
 (* (14) *)
 
-SetEQN[HC[], trR[] + exAt[-k, -l] exAtUU[k, l] - 2/3 (exKh[] + 2 Theta[]) ^ 2 - 16 cpi rho[]];
+SetEQN[HC[], trR[] - exAt[-k, -l] exAtUU[k, l] + 2/3 (exKh[] + 2 Theta[]) ^ 2 - 16 cpi rho[]];
 
 (* (15) *)
 
-SetEQN[MtC[i_], trdexAtUU[i] + Gt[i, -j, -k] exAtUU[j, k] - 2/3 invgamt[i, j] (dexKh[-j] + 2 dTheta[-j]) - 4/3 exAtUU[i, j] dlnW[-j] - 8 cpi invgamt[i, j] Sm[-j]];
+SetEQN[MtC[i_], trdexAtUU[i] + Gt[i, -j, -k] exAtUU[j, k] - 2/3 invgamt[i, j] (dexKh[-j] + 2 dTheta[-j]) - 3 exAtUU[i, j] dlnW[-j] - 8 cpi invgamt[i, j] Sm[-j]];
 
 (*******)
 
