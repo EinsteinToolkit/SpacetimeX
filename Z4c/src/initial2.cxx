@@ -8,7 +8,7 @@
 #include <cctk_Arguments.h>
 
 #ifdef __CUDACC__
-#include <nvToolsExt.h>
+#include <nvtx3/nvToolsExt.h>
 #endif
 
 namespace Z4c {
