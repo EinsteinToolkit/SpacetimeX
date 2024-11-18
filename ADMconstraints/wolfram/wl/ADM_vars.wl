@@ -50,8 +50,8 @@ IntermediateVarlist =
     {invgam[i, j], Symmetric[{i, j}], PrintAs -> "\[Gamma]"},
     {GamDDD [-k, -i, -j], Symmetric[{-i, -j}], PrintAs -> "\[CapitalGamma]"},
     {Gam     [k, -i, -j], Symmetric[{-i, -j}], PrintAs -> "\[CapitalGamma]"},
-    {tr1dGam[-i, -j], Symmetric[{-i, -j}], PrintAs -> "\[PartialD]\[CapitalGamma]^(tr1)"},
-    {tr2dGam[-i, -j], Symmetric[{-i, -j}], PrintAs -> "\[PartialD]\[CapitalGamma]^(tr2)"},
+    {tr1dGam[-i, -j], Symmetric[{-i, -j}], PrintAs -> "\[PartialD]\!\(\*SuperscriptBox[\(\[CapitalGamma]\), \((tr1)\)]\)"},
+    {tr2dGam[-i, -j], Symmetric[{-i, -j}], PrintAs -> "\[PartialD]\!\(\*SuperscriptBox[\(\[CapitalGamma]\), \((tr2)\)]\)"},
     {R[-i, -j], Symmetric[{-i, -j}], PrintAs -> "R"},
     {trK[], PrintAs -> "K"},
     {DADMK[-k, -i, -j], Symmetric[{-i, -j}], PrintAs -> "\[Del]K"}
