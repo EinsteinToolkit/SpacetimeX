@@ -1,0 +1,20 @@
+# Interface definition for thorn ADMconstraints
+
+IMPLEMENTS: ADMconstraints
+
+INHERITS: ADMBaseX TmunuBaseX
+
+USES INCLUDE HEADER: defs.hxx
+USES INCLUDE HEADER: derivs.hxx
+USES INCLUDE HEADER: div.hxx
+USES INCLUDE HEADER: dual.hxx
+USES INCLUDE HEADER: loop_device.hxx
+USES INCLUDE HEADER: mat.hxx
+USES INCLUDE HEADER: simd.hxx
+USES INCLUDE HEADER: sum.hxx
+USES INCLUDE HEADER: vec.hxx
+USES INCLUDE HEADER: vect.hxx
+
+CCTK_REAL HC TYPE=gf TAGS='checkpoint="no"' "H"
+
+CCTK_REAL MC TYPE=gf TAGS='parities={-1 +1 +1   +1 -1 +1   +1 +1 -1} checkpoint="no"' { MCx MCy MCz } "M"
