@@ -5,9 +5,9 @@
 #define ADM_SET_CONSTRAINT_HXX
 
 const GF3D2<CCTK_REAL> &local_HC = gf_HC;
-const GF3D2<CCTK_REAL> &local_MtC1 = gf_MtC(0);
-const GF3D2<CCTK_REAL> &local_MtC2 = gf_MtC(1);
-const GF3D2<CCTK_REAL> &local_MtC3 = gf_MtC(2);
+const GF3D2<CCTK_REAL> &local_MC1 = gf_MC(0);
+const GF3D2<CCTK_REAL> &local_MC2 = gf_MC(1);
+const GF3D2<CCTK_REAL> &local_MC3 = gf_MC(2);
 
 noinline([&]() __attribute__((__flatten__, __hot__)) {
   grid.loop_int_device<0, 0, 0, vsize>(
@@ -1237,7 +1237,7 @@ local_HC.store(mask, index2,
   2*invgam23*R23 + invgam33*R33 - 16*cpi*rho + Power(trK,2)
 );
 
-local_MtC1.store(mask, index2,
+local_MC1.store(mask, index2,
 -(DADMK212*Power(invgam12,2)) + 2*DADMK123*invgam12*invgam13 -
   DADMK213*invgam12*invgam13 - DADMK312*invgam12*invgam13 +
   DADMK133*Power(invgam13,2) - DADMK313*Power(invgam13,2) +
@@ -1253,7 +1253,7 @@ local_MtC1.store(mask, index2,
   8*cpi*invgam13*Sm3
 );
 
-local_MtC2.store(mask, index2,
+local_MC2.store(mask, index2,
 -(DADMK112*Power(invgam12,2)) + DADMK211*Power(invgam12,2) -
   DADMK113*invgam12*invgam13 + DADMK311*invgam12*invgam13 +
   DADMK112*invgam11*invgam22 - DADMK211*invgam11*invgam22 +
@@ -1268,7 +1268,7 @@ local_MtC2.store(mask, index2,
   8*cpi*invgam12*Sm1 - 8*cpi*invgam22*Sm2 - 8*cpi*invgam23*Sm3
 );
 
-local_MtC3.store(mask, index2,
+local_MC3.store(mask, index2,
 -(DADMK112*invgam12*invgam13) + DADMK211*invgam12*invgam13 -
   DADMK113*Power(invgam13,2) + DADMK311*Power(invgam13,2) -
   DADMK122*invgam13*invgam22 + DADMK212*invgam13*invgam22 +

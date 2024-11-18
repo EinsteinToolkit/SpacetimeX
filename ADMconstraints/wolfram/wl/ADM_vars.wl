@@ -74,7 +74,7 @@ MatterVarlist =
 ConstraintVarlist =
   GridTensors[
     {HC[], PrintAs -> "H"},
-    {MtC[i], PrintAs -> "M"}
+    {MC[i], PrintAs -> "M"}
   ];
 
 (************)

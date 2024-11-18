@@ -38,4 +38,4 @@ SetEQN[Sm[i_], -ADMalpha[]^-1 (eTt[i] - ADMbeta[k] eT[-k, i])];
 
 SetEQN[HC[], invgam[k, l] R[-k, -l] + trK[]^2 - invgam[i, k] invgam[j, l] ADMK[-i, -j] ADMK[-k, -l] - 16 cpi rho[]];
 
-SetEQN[MtC[i_], (invgam[i, k] invgam[j, l] - invgam[i, j] invgam[k, l]) DADMK[-j, -k, -l] - 8 cpi invgam[i, j] Sm[-j]];
+SetEQN[MC[i_], (invgam[i, k] invgam[j, l] - invgam[i, j] invgam[k, l]) DADMK[-j, -k, -l] - 8 cpi invgam[i, j] Sm[-j]];
