@@ -15,7 +15,7 @@
 ADMVarlist =
   GridTensors[
     {ADMgam[-i, -j], Symmetric[{-i, -j}], PrintAs -> "\!\(\*SuperscriptBox[\(\[Gamma]\), \((ADM)\)]\)"},
-    {ADMK[-i, -j], Symmetric[{-i, -j}], PrintAs -> "\!\(\*SuperscriptBox[\(K\), \((ADM)\)]\)"},
+    {ADMK  [-i, -j], Symmetric[{-i, -j}], PrintAs -> "\!\(\*SuperscriptBox[\(K\), \((ADM)\)]\)"},
     {ADMalpha[], PrintAs -> "\!\(\*SuperscriptBox[\(\[Alpha]\), \((ADM)\)]\)"},
     {ADMbeta[i], PrintAs -> "\!\(\*SuperscriptBox[\(\[Beta]\), \((ADM)\)]\)"}
   ];
@@ -23,7 +23,7 @@ ADMVarlist =
 dADMVarlist =
   GridTensors[
     {dADMgam[-k, -i, -j], Symmetric[{-i, -j}], PrintAs -> "\[PartialD]\!\(\*SuperscriptBox[\(\[Gamma]\), \((ADM)\)]\)"},
-    {dADMK[-k, -i, -j], Symmetric[{-i, -j}], PrintAs -> "\[PartialD]\!\(\*SuperscriptBox[\(K\), \((ADM)\)]\)"}
+    {dADMK  [-k, -i, -j], Symmetric[{-i, -j}], PrintAs -> "\[PartialD]\!\(\*SuperscriptBox[\(K\), \((ADM)\)]\)"}
   ];
 
 ddADMVarlist =
@@ -50,8 +50,9 @@ IntermediateVarlist =
     {invgam[i, j], Symmetric[{i, j}], PrintAs -> "\[Gamma]"},
     {GamDDD [-k, -i, -j], Symmetric[{-i, -j}], PrintAs -> "\[CapitalGamma]"},
     {Gam     [k, -i, -j], Symmetric[{-i, -j}], PrintAs -> "\[CapitalGamma]"},
-    {dGam[-m, k, -i, -j], Symmetric[{-i, -j}], PrintAs -> "\[PartialD]\[CapitalGamma]"},
-    {R[-i, -j], Symmetric[{-i, -j}]},
+    {tr1dGam[-i, -j], Symmetric[{-i, -j}], PrintAs -> "\[PartialD]\[CapitalGamma]^(tr1)"},
+    {tr2dGam[-i, -j], Symmetric[{-i, -j}], PrintAs -> "\[PartialD]\[CapitalGamma]^(tr2)"},
+    {R[-i, -j], Symmetric[{-i, -j}], PrintAs -> "R"},
     {trK[], PrintAs -> "K"},
     {DADMK[-k, -i, -j], Symmetric[{-i, -j}], PrintAs -> "\[Del]K"}
   ];
