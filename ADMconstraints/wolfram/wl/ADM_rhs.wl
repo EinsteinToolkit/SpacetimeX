@@ -10,25 +10,25 @@
 
 (****************)
 
-SetEQN[GamDDD[k_, i_, j_], 1/2 (dADMgam[i, j, k] + dADMgam[j, k, i] - dADMgam[k, i, j])];
+SetEQN[GamDDD[k_, i_, j_], 1/2 (dgam[i, j, k] + dgam[j, k, i] - dgam[k, i, j])];
 
 SetEQN[Gam[k_, i_, j_], invgam[k, l] GamDDD[-l, i, j]];
 
-SetEQN[tr1dGam[i_, j_], -invgam[k, p] invgam[l, q] dADMgam[-k, -p, -q] GamDDD[-l, i, j] + 1/2 invgam[k, l] (ddADMgam[-k, i, j, -l] + ddADMgam[-k, j, -l, i] - ddADMgam[-k, -l, i, j])];
+SetEQN[tr1dGam[i_, j_], -invgam[k, p] invgam[l, q] dgam[-k, -p, -q] GamDDD[-l, i, j] + 1/2 invgam[k, l] (ddgam[-k, i, j, -l] + ddgam[-k, j, -l, i] - ddgam[-k, -l, i, j])];
 
-SetEQN[tr2dGam[m_, i_], 1/2 (invgam[k, l] ddADMgam[m, i, -k, -l] - invgam[k, p] invgam[l, q] dADMgam[m, -p, -q] dADMgam[i, -k, -l])];
+SetEQN[tr2dGam[m_, i_], 1/2 (invgam[k, l] ddgam[m, i, -k, -l] - invgam[k, p] invgam[l, q] dgam[m, -p, -q] dgam[i, -k, -l])];
 
 SetEQN[R[j_, k_], tr1dGam[j, k] - tr2dGam[j, k] + Gam[i, -i, -p] Gam[p, j, k] - Gam[i, j, -p] Gam[p, -i, k]];
 
-SetEQN[trK[], invgam[k, l] ADMK[-k, -l]];
+SetEQN[trexK[], invgam[k, l] exK[-k, -l]];
 
-SetEQN[DADMK[k_, i_, j_], dADMK[k, i, j] - Gam[l, k, i] ADMK[-l, j] - Gam[l, k, j] ADMK[-l, i]];
+SetEQN[DexK[k_, i_, j_], dexK[k, i, j] - Gam[l, k, i] exK[-l, j] - Gam[l, k, j] exK[-l, i]];
 
 (* matter *)
 
-SetEQN[rho[], ADMalpha[]^-2 (eTtt[] - 2 ADMbeta[j] eTt[-j] + ADMbeta[i] ADMbeta[j] eT[-i, -j])];
+SetEQN[rho[], alpha[]^-2 (eTtt[] - 2 beta[j] eTt[-j] + beta[i] beta[j] eT[-i, -j])];
 
-SetEQN[Sm[i_], -ADMalpha[]^-1 (eTt[i] - ADMbeta[k] eT[-k, i])];
+SetEQN[Sm[i_], -alpha[]^-1 (eTt[i] - beta[k] eT[-k, i])];
 
 (***************)
 
@@ -36,6 +36,6 @@ SetEQN[Sm[i_], -ADMalpha[]^-1 (eTt[i] - ADMbeta[k] eT[-k, i])];
 
 (***************)
 
-SetEQN[HC[], invgam[k, l] R[-k, -l] + trK[]^2 - invgam[i, k] invgam[j, l] ADMK[-i, -j] ADMK[-k, -l] - 16 cpi rho[]];
+SetEQN[HC[], invgam[k, l] R[-k, -l] + trexK[]^2 - invgam[i, k] invgam[j, l] exK[-i, -j] exK[-k, -l] - 16 cpi rho[]];
 
-SetEQN[MC[i_], (invgam[i, k] invgam[j, l] - invgam[i, j] invgam[k, l]) DADMK[-j, -k, -l] - 8 cpi invgam[i, j] Sm[-j]];
+SetEQN[MC[i_], (invgam[i, k] invgam[j, l] - invgam[i, j] invgam[k, l]) DexK[-j, -k, -l] - 8 cpi invgam[i, j] Sm[-j]];

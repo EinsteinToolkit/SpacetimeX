@@ -19,13 +19,13 @@ noinline([&]() __attribute__((__flatten__, __hot__)) {
 const auto &tmp_eTtt = gf_eTtt(mask, index2);
 const auto &tmp_eTt = gf_eTt(mask, index2);
 const auto &tmp_eT = gf_eT(mask, index2);
-const auto &tmp_ADMgam = tl_ADMgam(mask, index5);
-const auto &tmp_ADMK = tl_ADMK(mask, index5);
-const auto &tmp_ADMalpha = tl_ADMalpha(mask, index5);
-const auto &tmp_ADMbeta = tl_ADMbeta(mask, index5);
-const auto &tmp_dADMgam = tl_dADMgam(mask, index5);
-const auto &tmp_dADMK = tl_dADMK(mask, index5);
-const auto &tmp_ddADMgam = tl_ddADMgam(mask, index5);
+const auto &tmp_gam = tl_gam(mask, index5);
+const auto &tmp_exK = tl_exK(mask, index5);
+const auto &tmp_alpha = tl_alpha(mask, index5);
+const auto &tmp_beta = tl_beta(mask, index5);
+const auto &tmp_dgam = tl_dgam(mask, index5);
+const auto &tmp_dexK = tl_dexK(mask, index5);
+const auto &tmp_ddgam = tl_ddgam(mask, index5);
 
 const vreal eTtt = tmp_eTtt;
 const vreal eTt1 = tmp_eTt(0);
@@ -37,220 +37,219 @@ const vreal eT13 = tmp_eT(0,2);
 const vreal eT22 = tmp_eT(1,1);
 const vreal eT23 = tmp_eT(1,2);
 const vreal eT33 = tmp_eT(2,2);
-const vreal ADMgam11 = tmp_ADMgam(0,0);
-const vreal ADMgam12 = tmp_ADMgam(0,1);
-const vreal ADMgam13 = tmp_ADMgam(0,2);
-const vreal ADMgam22 = tmp_ADMgam(1,1);
-const vreal ADMgam23 = tmp_ADMgam(1,2);
-const vreal ADMgam33 = tmp_ADMgam(2,2);
-const vreal ADMK11 = tmp_ADMK(0,0);
-const vreal ADMK12 = tmp_ADMK(0,1);
-const vreal ADMK13 = tmp_ADMK(0,2);
-const vreal ADMK22 = tmp_ADMK(1,1);
-const vreal ADMK23 = tmp_ADMK(1,2);
-const vreal ADMK33 = tmp_ADMK(2,2);
-const vreal ADMalpha = tmp_ADMalpha;
-const vreal ADMbeta1 = tmp_ADMbeta(0);
-const vreal ADMbeta2 = tmp_ADMbeta(1);
-const vreal ADMbeta3 = tmp_ADMbeta(2);
-const vreal dADMgam111 = tmp_dADMgam(0,0)(0);
-const vreal dADMgam112 = tmp_dADMgam(0,1)(0);
-const vreal dADMgam113 = tmp_dADMgam(0,2)(0);
-const vreal dADMgam122 = tmp_dADMgam(1,1)(0);
-const vreal dADMgam123 = tmp_dADMgam(1,2)(0);
-const vreal dADMgam133 = tmp_dADMgam(2,2)(0);
-const vreal dADMgam211 = tmp_dADMgam(0,0)(1);
-const vreal dADMgam212 = tmp_dADMgam(0,1)(1);
-const vreal dADMgam213 = tmp_dADMgam(0,2)(1);
-const vreal dADMgam222 = tmp_dADMgam(1,1)(1);
-const vreal dADMgam223 = tmp_dADMgam(1,2)(1);
-const vreal dADMgam233 = tmp_dADMgam(2,2)(1);
-const vreal dADMgam311 = tmp_dADMgam(0,0)(2);
-const vreal dADMgam312 = tmp_dADMgam(0,1)(2);
-const vreal dADMgam313 = tmp_dADMgam(0,2)(2);
-const vreal dADMgam322 = tmp_dADMgam(1,1)(2);
-const vreal dADMgam323 = tmp_dADMgam(1,2)(2);
-const vreal dADMgam333 = tmp_dADMgam(2,2)(2);
-const vreal dADMK111 = tmp_dADMK(0,0)(0);
-const vreal dADMK112 = tmp_dADMK(0,1)(0);
-const vreal dADMK113 = tmp_dADMK(0,2)(0);
-const vreal dADMK122 = tmp_dADMK(1,1)(0);
-const vreal dADMK123 = tmp_dADMK(1,2)(0);
-const vreal dADMK133 = tmp_dADMK(2,2)(0);
-const vreal dADMK211 = tmp_dADMK(0,0)(1);
-const vreal dADMK212 = tmp_dADMK(0,1)(1);
-const vreal dADMK213 = tmp_dADMK(0,2)(1);
-const vreal dADMK222 = tmp_dADMK(1,1)(1);
-const vreal dADMK223 = tmp_dADMK(1,2)(1);
-const vreal dADMK233 = tmp_dADMK(2,2)(1);
-const vreal dADMK311 = tmp_dADMK(0,0)(2);
-const vreal dADMK312 = tmp_dADMK(0,1)(2);
-const vreal dADMK313 = tmp_dADMK(0,2)(2);
-const vreal dADMK322 = tmp_dADMK(1,1)(2);
-const vreal dADMK323 = tmp_dADMK(1,2)(2);
-const vreal dADMK333 = tmp_dADMK(2,2)(2);
-const vreal ddADMgam1111 = tmp_ddADMgam(0,0)(0,0);
-const vreal ddADMgam1112 = tmp_ddADMgam(0,1)(0,0);
-const vreal ddADMgam1113 = tmp_ddADMgam(0,2)(0,0);
-const vreal ddADMgam1122 = tmp_ddADMgam(1,1)(0,0);
-const vreal ddADMgam1123 = tmp_ddADMgam(1,2)(0,0);
-const vreal ddADMgam1133 = tmp_ddADMgam(2,2)(0,0);
-const vreal ddADMgam1211 = tmp_ddADMgam(0,0)(0,1);
-const vreal ddADMgam1212 = tmp_ddADMgam(0,1)(0,1);
-const vreal ddADMgam1213 = tmp_ddADMgam(0,2)(0,1);
-const vreal ddADMgam1222 = tmp_ddADMgam(1,1)(0,1);
-const vreal ddADMgam1223 = tmp_ddADMgam(1,2)(0,1);
-const vreal ddADMgam1233 = tmp_ddADMgam(2,2)(0,1);
-const vreal ddADMgam1311 = tmp_ddADMgam(0,0)(0,2);
-const vreal ddADMgam1312 = tmp_ddADMgam(0,1)(0,2);
-const vreal ddADMgam1313 = tmp_ddADMgam(0,2)(0,2);
-const vreal ddADMgam1322 = tmp_ddADMgam(1,1)(0,2);
-const vreal ddADMgam1323 = tmp_ddADMgam(1,2)(0,2);
-const vreal ddADMgam1333 = tmp_ddADMgam(2,2)(0,2);
-const vreal ddADMgam2211 = tmp_ddADMgam(0,0)(1,1);
-const vreal ddADMgam2212 = tmp_ddADMgam(0,1)(1,1);
-const vreal ddADMgam2213 = tmp_ddADMgam(0,2)(1,1);
-const vreal ddADMgam2222 = tmp_ddADMgam(1,1)(1,1);
-const vreal ddADMgam2223 = tmp_ddADMgam(1,2)(1,1);
-const vreal ddADMgam2233 = tmp_ddADMgam(2,2)(1,1);
-const vreal ddADMgam2311 = tmp_ddADMgam(0,0)(1,2);
-const vreal ddADMgam2312 = tmp_ddADMgam(0,1)(1,2);
-const vreal ddADMgam2313 = tmp_ddADMgam(0,2)(1,2);
-const vreal ddADMgam2322 = tmp_ddADMgam(1,1)(1,2);
-const vreal ddADMgam2323 = tmp_ddADMgam(1,2)(1,2);
-const vreal ddADMgam2333 = tmp_ddADMgam(2,2)(1,2);
-const vreal ddADMgam3311 = tmp_ddADMgam(0,0)(2,2);
-const vreal ddADMgam3312 = tmp_ddADMgam(0,1)(2,2);
-const vreal ddADMgam3313 = tmp_ddADMgam(0,2)(2,2);
-const vreal ddADMgam3322 = tmp_ddADMgam(1,1)(2,2);
-const vreal ddADMgam3323 = tmp_ddADMgam(1,2)(2,2);
-const vreal ddADMgam3333 = tmp_ddADMgam(2,2)(2,2);
+const vreal gam11 = tmp_gam(0,0);
+const vreal gam12 = tmp_gam(0,1);
+const vreal gam13 = tmp_gam(0,2);
+const vreal gam22 = tmp_gam(1,1);
+const vreal gam23 = tmp_gam(1,2);
+const vreal gam33 = tmp_gam(2,2);
+const vreal exK11 = tmp_exK(0,0);
+const vreal exK12 = tmp_exK(0,1);
+const vreal exK13 = tmp_exK(0,2);
+const vreal exK22 = tmp_exK(1,1);
+const vreal exK23 = tmp_exK(1,2);
+const vreal exK33 = tmp_exK(2,2);
+const vreal alpha = tmp_alpha;
+const vreal beta1 = tmp_beta(0);
+const vreal beta2 = tmp_beta(1);
+const vreal beta3 = tmp_beta(2);
+const vreal dgam111 = tmp_dgam(0,0)(0);
+const vreal dgam112 = tmp_dgam(0,1)(0);
+const vreal dgam113 = tmp_dgam(0,2)(0);
+const vreal dgam122 = tmp_dgam(1,1)(0);
+const vreal dgam123 = tmp_dgam(1,2)(0);
+const vreal dgam133 = tmp_dgam(2,2)(0);
+const vreal dgam211 = tmp_dgam(0,0)(1);
+const vreal dgam212 = tmp_dgam(0,1)(1);
+const vreal dgam213 = tmp_dgam(0,2)(1);
+const vreal dgam222 = tmp_dgam(1,1)(1);
+const vreal dgam223 = tmp_dgam(1,2)(1);
+const vreal dgam233 = tmp_dgam(2,2)(1);
+const vreal dgam311 = tmp_dgam(0,0)(2);
+const vreal dgam312 = tmp_dgam(0,1)(2);
+const vreal dgam313 = tmp_dgam(0,2)(2);
+const vreal dgam322 = tmp_dgam(1,1)(2);
+const vreal dgam323 = tmp_dgam(1,2)(2);
+const vreal dgam333 = tmp_dgam(2,2)(2);
+const vreal dexK111 = tmp_dexK(0,0)(0);
+const vreal dexK112 = tmp_dexK(0,1)(0);
+const vreal dexK113 = tmp_dexK(0,2)(0);
+const vreal dexK122 = tmp_dexK(1,1)(0);
+const vreal dexK123 = tmp_dexK(1,2)(0);
+const vreal dexK133 = tmp_dexK(2,2)(0);
+const vreal dexK211 = tmp_dexK(0,0)(1);
+const vreal dexK212 = tmp_dexK(0,1)(1);
+const vreal dexK213 = tmp_dexK(0,2)(1);
+const vreal dexK222 = tmp_dexK(1,1)(1);
+const vreal dexK223 = tmp_dexK(1,2)(1);
+const vreal dexK233 = tmp_dexK(2,2)(1);
+const vreal dexK311 = tmp_dexK(0,0)(2);
+const vreal dexK312 = tmp_dexK(0,1)(2);
+const vreal dexK313 = tmp_dexK(0,2)(2);
+const vreal dexK322 = tmp_dexK(1,1)(2);
+const vreal dexK323 = tmp_dexK(1,2)(2);
+const vreal dexK333 = tmp_dexK(2,2)(2);
+const vreal ddgam1111 = tmp_ddgam(0,0)(0,0);
+const vreal ddgam1112 = tmp_ddgam(0,1)(0,0);
+const vreal ddgam1113 = tmp_ddgam(0,2)(0,0);
+const vreal ddgam1122 = tmp_ddgam(1,1)(0,0);
+const vreal ddgam1123 = tmp_ddgam(1,2)(0,0);
+const vreal ddgam1133 = tmp_ddgam(2,2)(0,0);
+const vreal ddgam1211 = tmp_ddgam(0,0)(0,1);
+const vreal ddgam1212 = tmp_ddgam(0,1)(0,1);
+const vreal ddgam1213 = tmp_ddgam(0,2)(0,1);
+const vreal ddgam1222 = tmp_ddgam(1,1)(0,1);
+const vreal ddgam1223 = tmp_ddgam(1,2)(0,1);
+const vreal ddgam1233 = tmp_ddgam(2,2)(0,1);
+const vreal ddgam1311 = tmp_ddgam(0,0)(0,2);
+const vreal ddgam1312 = tmp_ddgam(0,1)(0,2);
+const vreal ddgam1313 = tmp_ddgam(0,2)(0,2);
+const vreal ddgam1322 = tmp_ddgam(1,1)(0,2);
+const vreal ddgam1323 = tmp_ddgam(1,2)(0,2);
+const vreal ddgam1333 = tmp_ddgam(2,2)(0,2);
+const vreal ddgam2211 = tmp_ddgam(0,0)(1,1);
+const vreal ddgam2212 = tmp_ddgam(0,1)(1,1);
+const vreal ddgam2213 = tmp_ddgam(0,2)(1,1);
+const vreal ddgam2222 = tmp_ddgam(1,1)(1,1);
+const vreal ddgam2223 = tmp_ddgam(1,2)(1,1);
+const vreal ddgam2233 = tmp_ddgam(2,2)(1,1);
+const vreal ddgam2311 = tmp_ddgam(0,0)(1,2);
+const vreal ddgam2312 = tmp_ddgam(0,1)(1,2);
+const vreal ddgam2313 = tmp_ddgam(0,2)(1,2);
+const vreal ddgam2322 = tmp_ddgam(1,1)(1,2);
+const vreal ddgam2323 = tmp_ddgam(1,2)(1,2);
+const vreal ddgam2333 = tmp_ddgam(2,2)(1,2);
+const vreal ddgam3311 = tmp_ddgam(0,0)(2,2);
+const vreal ddgam3312 = tmp_ddgam(0,1)(2,2);
+const vreal ddgam3313 = tmp_ddgam(0,2)(2,2);
+const vreal ddgam3322 = tmp_ddgam(1,1)(2,2);
+const vreal ddgam3323 = tmp_ddgam(1,2)(2,2);
+const vreal ddgam3333 = tmp_ddgam(2,2)(2,2);
 
 vreal detinvgam
 =
-1/(-(Power(ADMgam13,2)*ADMgam22) + 2*ADMgam12*ADMgam13*ADMgam23 -
-    ADMgam11*Power(ADMgam23,2) - Power(ADMgam12,2)*ADMgam33 +
-    ADMgam11*ADMgam22*ADMgam33)
+1/(-(Power(gam13,2)*gam22) + 2*gam12*gam13*gam23 - gam11*Power(gam23,2) -
+    Power(gam12,2)*gam33 + gam11*gam22*gam33)
 ;
 
 vreal invgam11
 =
-(-Power(ADMgam23,2) + ADMgam22*ADMgam33)*detinvgam
+detinvgam*(-Power(gam23,2) + gam22*gam33)
 ;
 
 vreal invgam12
 =
-(ADMgam13*ADMgam23 - ADMgam12*ADMgam33)*detinvgam
+detinvgam*(gam13*gam23 - gam12*gam33)
 ;
 
 vreal invgam13
 =
-(-(ADMgam13*ADMgam22) + ADMgam12*ADMgam23)*detinvgam
+detinvgam*(-(gam13*gam22) + gam12*gam23)
 ;
 
 vreal invgam22
 =
-(-Power(ADMgam13,2) + ADMgam11*ADMgam33)*detinvgam
+detinvgam*(-Power(gam13,2) + gam11*gam33)
 ;
 
 vreal invgam23
 =
-(ADMgam12*ADMgam13 - ADMgam11*ADMgam23)*detinvgam
+detinvgam*(gam12*gam13 - gam11*gam23)
 ;
 
 vreal invgam33
 =
-(-Power(ADMgam12,2) + ADMgam11*ADMgam22)*detinvgam
+detinvgam*(-Power(gam12,2) + gam11*gam22)
 ;
 
 vreal GamDDD111
 =
-dADMgam111/2.
+dgam111/2.
 ;
 
 vreal GamDDD112
 =
-dADMgam211/2.
+dgam211/2.
 ;
 
 vreal GamDDD113
 =
-dADMgam311/2.
+dgam311/2.
 ;
 
 vreal GamDDD122
 =
--0.5*dADMgam122 + dADMgam212
+-0.5*dgam122 + dgam212
 ;
 
 vreal GamDDD123
 =
-(-dADMgam123 + dADMgam213 + dADMgam312)/2.
+(-dgam123 + dgam213 + dgam312)/2.
 ;
 
 vreal GamDDD133
 =
--0.5*dADMgam133 + dADMgam313
+-0.5*dgam133 + dgam313
 ;
 
 vreal GamDDD211
 =
-dADMgam112 - dADMgam211/2.
+dgam112 - dgam211/2.
 ;
 
 vreal GamDDD212
 =
-dADMgam122/2.
+dgam122/2.
 ;
 
 vreal GamDDD213
 =
-(dADMgam123 - dADMgam213 + dADMgam312)/2.
+(dgam123 - dgam213 + dgam312)/2.
 ;
 
 vreal GamDDD222
 =
-dADMgam222/2.
+dgam222/2.
 ;
 
 vreal GamDDD223
 =
-dADMgam322/2.
+dgam322/2.
 ;
 
 vreal GamDDD233
 =
--0.5*dADMgam233 + dADMgam323
+-0.5*dgam233 + dgam323
 ;
 
 vreal GamDDD311
 =
-dADMgam113 - dADMgam311/2.
+dgam113 - dgam311/2.
 ;
 
 vreal GamDDD312
 =
-(dADMgam123 + dADMgam213 - dADMgam312)/2.
+(dgam123 + dgam213 - dgam312)/2.
 ;
 
 vreal GamDDD313
 =
-dADMgam133/2.
+dgam133/2.
 ;
 
 vreal GamDDD322
 =
-dADMgam223 - dADMgam322/2.
+dgam223 - dgam322/2.
 ;
 
 vreal GamDDD323
 =
-dADMgam233/2.
+dgam233/2.
 ;
 
 vreal GamDDD333
 =
-dADMgam333/2.
+dgam333/2.
 ;
 
 vreal Gam111
@@ -345,706 +344,696 @@ GamDDD133*invgam13 + GamDDD233*invgam23 + GamDDD333*invgam33
 
 vreal tr1dGam11
 =
-(ddADMgam1111*invgam11)/2. + ddADMgam1112*invgam12 -
-  2*dADMgam112*GamDDD111*invgam11*invgam12 -
-  dADMgam211*GamDDD111*invgam11*invgam12 -
-  dADMgam122*GamDDD111*Power(invgam12,2) -
-  dADMgam212*GamDDD111*Power(invgam12,2) -
-  dADMgam112*GamDDD211*Power(invgam12,2) -
-  dADMgam211*GamDDD211*Power(invgam12,2) + ddADMgam1113*invgam13 -
-  2*dADMgam113*GamDDD111*invgam11*invgam13 -
-  dADMgam311*GamDDD111*invgam11*invgam13 -
-  2*dADMgam123*GamDDD111*invgam12*invgam13 -
-  dADMgam213*GamDDD111*invgam12*invgam13 -
-  dADMgam312*GamDDD111*invgam12*invgam13 -
-  dADMgam113*GamDDD211*invgam12*invgam13 -
-  dADMgam311*GamDDD211*invgam12*invgam13 -
-  dADMgam112*GamDDD311*invgam12*invgam13 -
-  dADMgam211*GamDDD311*invgam12*invgam13 -
-  dADMgam133*GamDDD111*Power(invgam13,2) -
-  dADMgam313*GamDDD111*Power(invgam13,2) -
-  dADMgam113*GamDDD311*Power(invgam13,2) -
-  dADMgam311*GamDDD311*Power(invgam13,2) -
-  dADMgam111*invgam11*(GamDDD111*invgam11 + GamDDD211*invgam12 +
-     GamDDD311*invgam13) + ddADMgam1212*invgam22 -
-  (ddADMgam2211*invgam22)/2. - dADMgam212*GamDDD111*invgam11*invgam22 -
-  dADMgam112*GamDDD211*invgam11*invgam22 -
-  dADMgam222*GamDDD111*invgam12*invgam22 -
-  dADMgam122*GamDDD211*invgam12*invgam22 -
-  2*dADMgam212*GamDDD211*invgam12*invgam22 -
-  dADMgam223*GamDDD111*invgam13*invgam22 -
-  dADMgam123*GamDDD211*invgam13*invgam22 -
-  dADMgam312*GamDDD211*invgam13*invgam22 -
-  dADMgam212*GamDDD311*invgam13*invgam22 -
-  dADMgam222*GamDDD211*Power(invgam22,2) + ddADMgam1213*invgam23 +
-  ddADMgam1312*invgam23 - ddADMgam2311*invgam23 -
-  dADMgam213*GamDDD111*invgam11*invgam23 -
-  dADMgam312*GamDDD111*invgam11*invgam23 -
-  dADMgam113*GamDDD211*invgam11*invgam23 -
-  dADMgam112*GamDDD311*invgam11*invgam23 -
-  dADMgam223*GamDDD111*invgam12*invgam23 -
-  dADMgam322*GamDDD111*invgam12*invgam23 -
-  dADMgam123*GamDDD211*invgam12*invgam23 -
-  2*dADMgam213*GamDDD211*invgam12*invgam23 -
-  dADMgam312*GamDDD211*invgam12*invgam23 -
-  dADMgam122*GamDDD311*invgam12*invgam23 -
-  dADMgam212*GamDDD311*invgam12*invgam23 -
-  dADMgam233*GamDDD111*invgam13*invgam23 -
-  dADMgam323*GamDDD111*invgam13*invgam23 -
-  dADMgam133*GamDDD211*invgam13*invgam23 -
-  dADMgam313*GamDDD211*invgam13*invgam23 -
-  dADMgam123*GamDDD311*invgam13*invgam23 -
-  dADMgam213*GamDDD311*invgam13*invgam23 -
-  2*dADMgam312*GamDDD311*invgam13*invgam23 -
-  2*dADMgam223*GamDDD211*invgam22*invgam23 -
-  dADMgam322*GamDDD211*invgam22*invgam23 -
-  dADMgam222*GamDDD311*invgam22*invgam23 -
-  dADMgam233*GamDDD211*Power(invgam23,2) -
-  dADMgam323*GamDDD211*Power(invgam23,2) -
-  dADMgam223*GamDDD311*Power(invgam23,2) -
-  dADMgam322*GamDDD311*Power(invgam23,2) + ddADMgam1313*invgam33 -
-  (ddADMgam3311*invgam33)/2. - dADMgam313*GamDDD111*invgam11*invgam33 -
-  dADMgam113*GamDDD311*invgam11*invgam33 -
-  dADMgam323*GamDDD111*invgam12*invgam33 -
-  dADMgam313*GamDDD211*invgam12*invgam33 -
-  dADMgam123*GamDDD311*invgam12*invgam33 -
-  dADMgam213*GamDDD311*invgam12*invgam33 -
-  dADMgam333*GamDDD111*invgam13*invgam33 -
-  dADMgam133*GamDDD311*invgam13*invgam33 -
-  2*dADMgam313*GamDDD311*invgam13*invgam33 -
-  dADMgam323*GamDDD211*invgam22*invgam33 -
-  dADMgam223*GamDDD311*invgam22*invgam33 -
-  dADMgam333*GamDDD211*invgam23*invgam33 -
-  dADMgam233*GamDDD311*invgam23*invgam33 -
-  2*dADMgam323*GamDDD311*invgam23*invgam33 -
-  dADMgam333*GamDDD311*Power(invgam33,2)
+(ddgam1111*invgam11)/2. + ddgam1112*invgam12 -
+  2*dgam112*GamDDD111*invgam11*invgam12 -
+  dgam211*GamDDD111*invgam11*invgam12 -
+  dgam122*GamDDD111*Power(invgam12,2) -
+  dgam212*GamDDD111*Power(invgam12,2) -
+  dgam112*GamDDD211*Power(invgam12,2) -
+  dgam211*GamDDD211*Power(invgam12,2) + ddgam1113*invgam13 -
+  2*dgam113*GamDDD111*invgam11*invgam13 -
+  dgam311*GamDDD111*invgam11*invgam13 -
+  2*dgam123*GamDDD111*invgam12*invgam13 -
+  dgam213*GamDDD111*invgam12*invgam13 -
+  dgam312*GamDDD111*invgam12*invgam13 -
+  dgam113*GamDDD211*invgam12*invgam13 -
+  dgam311*GamDDD211*invgam12*invgam13 -
+  dgam112*GamDDD311*invgam12*invgam13 -
+  dgam211*GamDDD311*invgam12*invgam13 -
+  dgam133*GamDDD111*Power(invgam13,2) -
+  dgam313*GamDDD111*Power(invgam13,2) -
+  dgam113*GamDDD311*Power(invgam13,2) -
+  dgam311*GamDDD311*Power(invgam13,2) -
+  dgam111*invgam11*(GamDDD111*invgam11 + GamDDD211*invgam12 +
+     GamDDD311*invgam13) + ddgam1212*invgam22 - (ddgam2211*invgam22)/2. -
+  dgam212*GamDDD111*invgam11*invgam22 -
+  dgam112*GamDDD211*invgam11*invgam22 -
+  dgam222*GamDDD111*invgam12*invgam22 -
+  dgam122*GamDDD211*invgam12*invgam22 -
+  2*dgam212*GamDDD211*invgam12*invgam22 -
+  dgam223*GamDDD111*invgam13*invgam22 -
+  dgam123*GamDDD211*invgam13*invgam22 -
+  dgam312*GamDDD211*invgam13*invgam22 -
+  dgam212*GamDDD311*invgam13*invgam22 -
+  dgam222*GamDDD211*Power(invgam22,2) + ddgam1213*invgam23 +
+  ddgam1312*invgam23 - ddgam2311*invgam23 -
+  dgam213*GamDDD111*invgam11*invgam23 -
+  dgam312*GamDDD111*invgam11*invgam23 -
+  dgam113*GamDDD211*invgam11*invgam23 -
+  dgam112*GamDDD311*invgam11*invgam23 -
+  dgam223*GamDDD111*invgam12*invgam23 -
+  dgam322*GamDDD111*invgam12*invgam23 -
+  dgam123*GamDDD211*invgam12*invgam23 -
+  2*dgam213*GamDDD211*invgam12*invgam23 -
+  dgam312*GamDDD211*invgam12*invgam23 -
+  dgam122*GamDDD311*invgam12*invgam23 -
+  dgam212*GamDDD311*invgam12*invgam23 -
+  dgam233*GamDDD111*invgam13*invgam23 -
+  dgam323*GamDDD111*invgam13*invgam23 -
+  dgam133*GamDDD211*invgam13*invgam23 -
+  dgam313*GamDDD211*invgam13*invgam23 -
+  dgam123*GamDDD311*invgam13*invgam23 -
+  dgam213*GamDDD311*invgam13*invgam23 -
+  2*dgam312*GamDDD311*invgam13*invgam23 -
+  2*dgam223*GamDDD211*invgam22*invgam23 -
+  dgam322*GamDDD211*invgam22*invgam23 -
+  dgam222*GamDDD311*invgam22*invgam23 -
+  dgam233*GamDDD211*Power(invgam23,2) -
+  dgam323*GamDDD211*Power(invgam23,2) -
+  dgam223*GamDDD311*Power(invgam23,2) -
+  dgam322*GamDDD311*Power(invgam23,2) + ddgam1313*invgam33 -
+  (ddgam3311*invgam33)/2. - dgam313*GamDDD111*invgam11*invgam33 -
+  dgam113*GamDDD311*invgam11*invgam33 -
+  dgam323*GamDDD111*invgam12*invgam33 -
+  dgam313*GamDDD211*invgam12*invgam33 -
+  dgam123*GamDDD311*invgam12*invgam33 -
+  dgam213*GamDDD311*invgam12*invgam33 -
+  dgam333*GamDDD111*invgam13*invgam33 -
+  dgam133*GamDDD311*invgam13*invgam33 -
+  2*dgam313*GamDDD311*invgam13*invgam33 -
+  dgam323*GamDDD211*invgam22*invgam33 -
+  dgam223*GamDDD311*invgam22*invgam33 -
+  dgam333*GamDDD211*invgam23*invgam33 -
+  dgam233*GamDDD311*invgam23*invgam33 -
+  2*dgam323*GamDDD311*invgam23*invgam33 - dgam333*GamDDD311*Power(invgam33,2)
 ;
 
 vreal tr1dGam12
 =
-(ddADMgam1211*invgam11 + ddADMgam1122*invgam12 + ddADMgam2211*invgam12 -
-    4*dADMgam112*GamDDD112*invgam11*invgam12 -
-    2*dADMgam211*GamDDD112*invgam11*invgam12 -
-    2*dADMgam122*GamDDD112*Power(invgam12,2) -
-    2*dADMgam212*GamDDD112*Power(invgam12,2) -
-    2*dADMgam112*GamDDD212*Power(invgam12,2) -
-    2*dADMgam211*GamDDD212*Power(invgam12,2) + ddADMgam1123*invgam13 +
-    ddADMgam1213*invgam13 - ddADMgam1312*invgam13 + ddADMgam2311*invgam13 -
-    4*dADMgam113*GamDDD112*invgam11*invgam13 -
-    2*dADMgam311*GamDDD112*invgam11*invgam13 -
-    4*dADMgam123*GamDDD112*invgam12*invgam13 -
-    2*dADMgam213*GamDDD112*invgam12*invgam13 -
-    2*dADMgam312*GamDDD112*invgam12*invgam13 -
-    2*dADMgam113*GamDDD212*invgam12*invgam13 -
-    2*dADMgam311*GamDDD212*invgam12*invgam13 -
-    2*dADMgam112*GamDDD312*invgam12*invgam13 -
-    2*dADMgam211*GamDDD312*invgam12*invgam13 -
-    2*dADMgam133*GamDDD112*Power(invgam13,2) -
-    2*dADMgam313*GamDDD112*Power(invgam13,2) -
-    2*dADMgam113*GamDDD312*Power(invgam13,2) -
-    2*dADMgam311*GamDDD312*Power(invgam13,2) -
-    2*dADMgam111*invgam11*(GamDDD112*invgam11 + GamDDD212*invgam12 +
-       GamDDD312*invgam13) + ddADMgam1222*invgam22 -
-    2*dADMgam212*GamDDD112*invgam11*invgam22 -
-    2*dADMgam112*GamDDD212*invgam11*invgam22 -
-    2*dADMgam222*GamDDD112*invgam12*invgam22 -
-    2*dADMgam122*GamDDD212*invgam12*invgam22 -
-    4*dADMgam212*GamDDD212*invgam12*invgam22 -
-    2*dADMgam223*GamDDD112*invgam13*invgam22 -
-    2*dADMgam123*GamDDD212*invgam13*invgam22 -
-    2*dADMgam312*GamDDD212*invgam13*invgam22 -
-    2*dADMgam212*GamDDD312*invgam13*invgam22 -
-    2*dADMgam222*GamDDD212*Power(invgam22,2) + ddADMgam1223*invgam23 +
-    ddADMgam1322*invgam23 + ddADMgam2213*invgam23 - ddADMgam2312*invgam23 -
-    2*dADMgam213*GamDDD112*invgam11*invgam23 -
-    2*dADMgam312*GamDDD112*invgam11*invgam23 -
-    2*dADMgam113*GamDDD212*invgam11*invgam23 -
-    2*dADMgam112*GamDDD312*invgam11*invgam23 -
-    2*dADMgam223*GamDDD112*invgam12*invgam23 -
-    2*dADMgam322*GamDDD112*invgam12*invgam23 -
-    2*dADMgam123*GamDDD212*invgam12*invgam23 -
-    4*dADMgam213*GamDDD212*invgam12*invgam23 -
-    2*dADMgam312*GamDDD212*invgam12*invgam23 -
-    2*dADMgam122*GamDDD312*invgam12*invgam23 -
-    2*dADMgam212*GamDDD312*invgam12*invgam23 -
-    2*dADMgam233*GamDDD112*invgam13*invgam23 -
-    2*dADMgam323*GamDDD112*invgam13*invgam23 -
-    2*dADMgam133*GamDDD212*invgam13*invgam23 -
-    2*dADMgam313*GamDDD212*invgam13*invgam23 -
-    2*dADMgam123*GamDDD312*invgam13*invgam23 -
-    2*dADMgam213*GamDDD312*invgam13*invgam23 -
-    4*dADMgam312*GamDDD312*invgam13*invgam23 -
-    4*dADMgam223*GamDDD212*invgam22*invgam23 -
-    2*dADMgam322*GamDDD212*invgam22*invgam23 -
-    2*dADMgam222*GamDDD312*invgam22*invgam23 -
-    2*dADMgam233*GamDDD212*Power(invgam23,2) -
-    2*dADMgam323*GamDDD212*Power(invgam23,2) -
-    2*dADMgam223*GamDDD312*Power(invgam23,2) -
-    2*dADMgam322*GamDDD312*Power(invgam23,2) + ddADMgam1323*invgam33 +
-    ddADMgam2313*invgam33 - ddADMgam3312*invgam33 -
-    2*dADMgam313*GamDDD112*invgam11*invgam33 -
-    2*dADMgam113*GamDDD312*invgam11*invgam33 -
-    2*dADMgam323*GamDDD112*invgam12*invgam33 -
-    2*dADMgam313*GamDDD212*invgam12*invgam33 -
-    2*dADMgam123*GamDDD312*invgam12*invgam33 -
-    2*dADMgam213*GamDDD312*invgam12*invgam33 -
-    2*dADMgam333*GamDDD112*invgam13*invgam33 -
-    2*dADMgam133*GamDDD312*invgam13*invgam33 -
-    4*dADMgam313*GamDDD312*invgam13*invgam33 -
-    2*dADMgam323*GamDDD212*invgam22*invgam33 -
-    2*dADMgam223*GamDDD312*invgam22*invgam33 -
-    2*dADMgam333*GamDDD212*invgam23*invgam33 -
-    2*dADMgam233*GamDDD312*invgam23*invgam33 -
-    4*dADMgam323*GamDDD312*invgam23*invgam33 -
-    2*dADMgam333*GamDDD312*Power(invgam33,2))/2.
+(ddgam1211*invgam11 + ddgam1122*invgam12 + ddgam2211*invgam12 -
+    4*dgam112*GamDDD112*invgam11*invgam12 -
+    2*dgam211*GamDDD112*invgam11*invgam12 -
+    2*dgam122*GamDDD112*Power(invgam12,2) -
+    2*dgam212*GamDDD112*Power(invgam12,2) -
+    2*dgam112*GamDDD212*Power(invgam12,2) -
+    2*dgam211*GamDDD212*Power(invgam12,2) + ddgam1123*invgam13 +
+    ddgam1213*invgam13 - ddgam1312*invgam13 + ddgam2311*invgam13 -
+    4*dgam113*GamDDD112*invgam11*invgam13 -
+    2*dgam311*GamDDD112*invgam11*invgam13 -
+    4*dgam123*GamDDD112*invgam12*invgam13 -
+    2*dgam213*GamDDD112*invgam12*invgam13 -
+    2*dgam312*GamDDD112*invgam12*invgam13 -
+    2*dgam113*GamDDD212*invgam12*invgam13 -
+    2*dgam311*GamDDD212*invgam12*invgam13 -
+    2*dgam112*GamDDD312*invgam12*invgam13 -
+    2*dgam211*GamDDD312*invgam12*invgam13 -
+    2*dgam133*GamDDD112*Power(invgam13,2) -
+    2*dgam313*GamDDD112*Power(invgam13,2) -
+    2*dgam113*GamDDD312*Power(invgam13,2) -
+    2*dgam311*GamDDD312*Power(invgam13,2) -
+    2*dgam111*invgam11*(GamDDD112*invgam11 + GamDDD212*invgam12 +
+       GamDDD312*invgam13) + ddgam1222*invgam22 -
+    2*dgam212*GamDDD112*invgam11*invgam22 -
+    2*dgam112*GamDDD212*invgam11*invgam22 -
+    2*dgam222*GamDDD112*invgam12*invgam22 -
+    2*dgam122*GamDDD212*invgam12*invgam22 -
+    4*dgam212*GamDDD212*invgam12*invgam22 -
+    2*dgam223*GamDDD112*invgam13*invgam22 -
+    2*dgam123*GamDDD212*invgam13*invgam22 -
+    2*dgam312*GamDDD212*invgam13*invgam22 -
+    2*dgam212*GamDDD312*invgam13*invgam22 -
+    2*dgam222*GamDDD212*Power(invgam22,2) + ddgam1223*invgam23 +
+    ddgam1322*invgam23 + ddgam2213*invgam23 - ddgam2312*invgam23 -
+    2*dgam213*GamDDD112*invgam11*invgam23 -
+    2*dgam312*GamDDD112*invgam11*invgam23 -
+    2*dgam113*GamDDD212*invgam11*invgam23 -
+    2*dgam112*GamDDD312*invgam11*invgam23 -
+    2*dgam223*GamDDD112*invgam12*invgam23 -
+    2*dgam322*GamDDD112*invgam12*invgam23 -
+    2*dgam123*GamDDD212*invgam12*invgam23 -
+    4*dgam213*GamDDD212*invgam12*invgam23 -
+    2*dgam312*GamDDD212*invgam12*invgam23 -
+    2*dgam122*GamDDD312*invgam12*invgam23 -
+    2*dgam212*GamDDD312*invgam12*invgam23 -
+    2*dgam233*GamDDD112*invgam13*invgam23 -
+    2*dgam323*GamDDD112*invgam13*invgam23 -
+    2*dgam133*GamDDD212*invgam13*invgam23 -
+    2*dgam313*GamDDD212*invgam13*invgam23 -
+    2*dgam123*GamDDD312*invgam13*invgam23 -
+    2*dgam213*GamDDD312*invgam13*invgam23 -
+    4*dgam312*GamDDD312*invgam13*invgam23 -
+    4*dgam223*GamDDD212*invgam22*invgam23 -
+    2*dgam322*GamDDD212*invgam22*invgam23 -
+    2*dgam222*GamDDD312*invgam22*invgam23 -
+    2*dgam233*GamDDD212*Power(invgam23,2) -
+    2*dgam323*GamDDD212*Power(invgam23,2) -
+    2*dgam223*GamDDD312*Power(invgam23,2) -
+    2*dgam322*GamDDD312*Power(invgam23,2) + ddgam1323*invgam33 +
+    ddgam2313*invgam33 - ddgam3312*invgam33 -
+    2*dgam313*GamDDD112*invgam11*invgam33 -
+    2*dgam113*GamDDD312*invgam11*invgam33 -
+    2*dgam323*GamDDD112*invgam12*invgam33 -
+    2*dgam313*GamDDD212*invgam12*invgam33 -
+    2*dgam123*GamDDD312*invgam12*invgam33 -
+    2*dgam213*GamDDD312*invgam12*invgam33 -
+    2*dgam333*GamDDD112*invgam13*invgam33 -
+    2*dgam133*GamDDD312*invgam13*invgam33 -
+    4*dgam313*GamDDD312*invgam13*invgam33 -
+    2*dgam323*GamDDD212*invgam22*invgam33 -
+    2*dgam223*GamDDD312*invgam22*invgam33 -
+    2*dgam333*GamDDD212*invgam23*invgam33 -
+    2*dgam233*GamDDD312*invgam23*invgam33 -
+    4*dgam323*GamDDD312*invgam23*invgam33 -
+    2*dgam333*GamDDD312*Power(invgam33,2))/2.
 ;
 
 vreal tr1dGam13
 =
-(ddADMgam1311*invgam11 + ddADMgam1123*invgam12 - ddADMgam1213*invgam12 +
-    ddADMgam1312*invgam12 + ddADMgam2311*invgam12 -
-    4*dADMgam112*GamDDD113*invgam11*invgam12 -
-    2*dADMgam211*GamDDD113*invgam11*invgam12 -
-    2*dADMgam122*GamDDD113*Power(invgam12,2) -
-    2*dADMgam212*GamDDD113*Power(invgam12,2) -
-    2*dADMgam112*GamDDD213*Power(invgam12,2) -
-    2*dADMgam211*GamDDD213*Power(invgam12,2) + ddADMgam1133*invgam13 +
-    ddADMgam3311*invgam13 - 4*dADMgam113*GamDDD113*invgam11*invgam13 -
-    2*dADMgam311*GamDDD113*invgam11*invgam13 -
-    4*dADMgam123*GamDDD113*invgam12*invgam13 -
-    2*dADMgam213*GamDDD113*invgam12*invgam13 -
-    2*dADMgam312*GamDDD113*invgam12*invgam13 -
-    2*dADMgam113*GamDDD213*invgam12*invgam13 -
-    2*dADMgam311*GamDDD213*invgam12*invgam13 -
-    2*dADMgam112*GamDDD313*invgam12*invgam13 -
-    2*dADMgam211*GamDDD313*invgam12*invgam13 -
-    2*dADMgam133*GamDDD113*Power(invgam13,2) -
-    2*dADMgam313*GamDDD113*Power(invgam13,2) -
-    2*dADMgam113*GamDDD313*Power(invgam13,2) -
-    2*dADMgam311*GamDDD313*Power(invgam13,2) -
-    2*dADMgam111*invgam11*(GamDDD113*invgam11 + GamDDD213*invgam12 +
-       GamDDD313*invgam13) + ddADMgam1223*invgam22 -
-    ddADMgam2213*invgam22 + ddADMgam2312*invgam22 -
-    2*dADMgam212*GamDDD113*invgam11*invgam22 -
-    2*dADMgam112*GamDDD213*invgam11*invgam22 -
-    2*dADMgam222*GamDDD113*invgam12*invgam22 -
-    2*dADMgam122*GamDDD213*invgam12*invgam22 -
-    4*dADMgam212*GamDDD213*invgam12*invgam22 -
-    2*dADMgam223*GamDDD113*invgam13*invgam22 -
-    2*dADMgam123*GamDDD213*invgam13*invgam22 -
-    2*dADMgam312*GamDDD213*invgam13*invgam22 -
-    2*dADMgam212*GamDDD313*invgam13*invgam22 -
-    2*dADMgam222*GamDDD213*Power(invgam22,2) + ddADMgam1233*invgam23 +
-    ddADMgam1323*invgam23 - ddADMgam2313*invgam23 + ddADMgam3312*invgam23 -
-    2*dADMgam213*GamDDD113*invgam11*invgam23 -
-    2*dADMgam312*GamDDD113*invgam11*invgam23 -
-    2*dADMgam113*GamDDD213*invgam11*invgam23 -
-    2*dADMgam112*GamDDD313*invgam11*invgam23 -
-    2*dADMgam223*GamDDD113*invgam12*invgam23 -
-    2*dADMgam322*GamDDD113*invgam12*invgam23 -
-    2*dADMgam123*GamDDD213*invgam12*invgam23 -
-    4*dADMgam213*GamDDD213*invgam12*invgam23 -
-    2*dADMgam312*GamDDD213*invgam12*invgam23 -
-    2*dADMgam122*GamDDD313*invgam12*invgam23 -
-    2*dADMgam212*GamDDD313*invgam12*invgam23 -
-    2*dADMgam233*GamDDD113*invgam13*invgam23 -
-    2*dADMgam323*GamDDD113*invgam13*invgam23 -
-    2*dADMgam133*GamDDD213*invgam13*invgam23 -
-    2*dADMgam313*GamDDD213*invgam13*invgam23 -
-    2*dADMgam123*GamDDD313*invgam13*invgam23 -
-    2*dADMgam213*GamDDD313*invgam13*invgam23 -
-    4*dADMgam312*GamDDD313*invgam13*invgam23 -
-    4*dADMgam223*GamDDD213*invgam22*invgam23 -
-    2*dADMgam322*GamDDD213*invgam22*invgam23 -
-    2*dADMgam222*GamDDD313*invgam22*invgam23 -
-    2*dADMgam233*GamDDD213*Power(invgam23,2) -
-    2*dADMgam323*GamDDD213*Power(invgam23,2) -
-    2*dADMgam223*GamDDD313*Power(invgam23,2) -
-    2*dADMgam322*GamDDD313*Power(invgam23,2) + ddADMgam1333*invgam33 -
-    2*dADMgam313*GamDDD113*invgam11*invgam33 -
-    2*dADMgam113*GamDDD313*invgam11*invgam33 -
-    2*dADMgam323*GamDDD113*invgam12*invgam33 -
-    2*dADMgam313*GamDDD213*invgam12*invgam33 -
-    2*dADMgam123*GamDDD313*invgam12*invgam33 -
-    2*dADMgam213*GamDDD313*invgam12*invgam33 -
-    2*dADMgam333*GamDDD113*invgam13*invgam33 -
-    2*dADMgam133*GamDDD313*invgam13*invgam33 -
-    4*dADMgam313*GamDDD313*invgam13*invgam33 -
-    2*dADMgam323*GamDDD213*invgam22*invgam33 -
-    2*dADMgam223*GamDDD313*invgam22*invgam33 -
-    2*dADMgam333*GamDDD213*invgam23*invgam33 -
-    2*dADMgam233*GamDDD313*invgam23*invgam33 -
-    4*dADMgam323*GamDDD313*invgam23*invgam33 -
-    2*dADMgam333*GamDDD313*Power(invgam33,2))/2.
+(ddgam1311*invgam11 + ddgam1123*invgam12 - ddgam1213*invgam12 +
+    ddgam1312*invgam12 + ddgam2311*invgam12 -
+    4*dgam112*GamDDD113*invgam11*invgam12 -
+    2*dgam211*GamDDD113*invgam11*invgam12 -
+    2*dgam122*GamDDD113*Power(invgam12,2) -
+    2*dgam212*GamDDD113*Power(invgam12,2) -
+    2*dgam112*GamDDD213*Power(invgam12,2) -
+    2*dgam211*GamDDD213*Power(invgam12,2) + ddgam1133*invgam13 +
+    ddgam3311*invgam13 - 4*dgam113*GamDDD113*invgam11*invgam13 -
+    2*dgam311*GamDDD113*invgam11*invgam13 -
+    4*dgam123*GamDDD113*invgam12*invgam13 -
+    2*dgam213*GamDDD113*invgam12*invgam13 -
+    2*dgam312*GamDDD113*invgam12*invgam13 -
+    2*dgam113*GamDDD213*invgam12*invgam13 -
+    2*dgam311*GamDDD213*invgam12*invgam13 -
+    2*dgam112*GamDDD313*invgam12*invgam13 -
+    2*dgam211*GamDDD313*invgam12*invgam13 -
+    2*dgam133*GamDDD113*Power(invgam13,2) -
+    2*dgam313*GamDDD113*Power(invgam13,2) -
+    2*dgam113*GamDDD313*Power(invgam13,2) -
+    2*dgam311*GamDDD313*Power(invgam13,2) -
+    2*dgam111*invgam11*(GamDDD113*invgam11 + GamDDD213*invgam12 +
+       GamDDD313*invgam13) + ddgam1223*invgam22 - ddgam2213*invgam22 +
+    ddgam2312*invgam22 - 2*dgam212*GamDDD113*invgam11*invgam22 -
+    2*dgam112*GamDDD213*invgam11*invgam22 -
+    2*dgam222*GamDDD113*invgam12*invgam22 -
+    2*dgam122*GamDDD213*invgam12*invgam22 -
+    4*dgam212*GamDDD213*invgam12*invgam22 -
+    2*dgam223*GamDDD113*invgam13*invgam22 -
+    2*dgam123*GamDDD213*invgam13*invgam22 -
+    2*dgam312*GamDDD213*invgam13*invgam22 -
+    2*dgam212*GamDDD313*invgam13*invgam22 -
+    2*dgam222*GamDDD213*Power(invgam22,2) + ddgam1233*invgam23 +
+    ddgam1323*invgam23 - ddgam2313*invgam23 + ddgam3312*invgam23 -
+    2*dgam213*GamDDD113*invgam11*invgam23 -
+    2*dgam312*GamDDD113*invgam11*invgam23 -
+    2*dgam113*GamDDD213*invgam11*invgam23 -
+    2*dgam112*GamDDD313*invgam11*invgam23 -
+    2*dgam223*GamDDD113*invgam12*invgam23 -
+    2*dgam322*GamDDD113*invgam12*invgam23 -
+    2*dgam123*GamDDD213*invgam12*invgam23 -
+    4*dgam213*GamDDD213*invgam12*invgam23 -
+    2*dgam312*GamDDD213*invgam12*invgam23 -
+    2*dgam122*GamDDD313*invgam12*invgam23 -
+    2*dgam212*GamDDD313*invgam12*invgam23 -
+    2*dgam233*GamDDD113*invgam13*invgam23 -
+    2*dgam323*GamDDD113*invgam13*invgam23 -
+    2*dgam133*GamDDD213*invgam13*invgam23 -
+    2*dgam313*GamDDD213*invgam13*invgam23 -
+    2*dgam123*GamDDD313*invgam13*invgam23 -
+    2*dgam213*GamDDD313*invgam13*invgam23 -
+    4*dgam312*GamDDD313*invgam13*invgam23 -
+    4*dgam223*GamDDD213*invgam22*invgam23 -
+    2*dgam322*GamDDD213*invgam22*invgam23 -
+    2*dgam222*GamDDD313*invgam22*invgam23 -
+    2*dgam233*GamDDD213*Power(invgam23,2) -
+    2*dgam323*GamDDD213*Power(invgam23,2) -
+    2*dgam223*GamDDD313*Power(invgam23,2) -
+    2*dgam322*GamDDD313*Power(invgam23,2) + ddgam1333*invgam33 -
+    2*dgam313*GamDDD113*invgam11*invgam33 -
+    2*dgam113*GamDDD313*invgam11*invgam33 -
+    2*dgam323*GamDDD113*invgam12*invgam33 -
+    2*dgam313*GamDDD213*invgam12*invgam33 -
+    2*dgam123*GamDDD313*invgam12*invgam33 -
+    2*dgam213*GamDDD313*invgam12*invgam33 -
+    2*dgam333*GamDDD113*invgam13*invgam33 -
+    2*dgam133*GamDDD313*invgam13*invgam33 -
+    4*dgam313*GamDDD313*invgam13*invgam33 -
+    2*dgam323*GamDDD213*invgam22*invgam33 -
+    2*dgam223*GamDDD313*invgam22*invgam33 -
+    2*dgam333*GamDDD213*invgam23*invgam33 -
+    2*dgam233*GamDDD313*invgam23*invgam33 -
+    4*dgam323*GamDDD313*invgam23*invgam33 -
+    2*dgam333*GamDDD313*Power(invgam33,2))/2.
 ;
 
 vreal tr1dGam22
 =
--0.5*(ddADMgam1122*invgam11) + ddADMgam1212*invgam11 -
-  dADMgam111*GamDDD122*Power(invgam11,2) + ddADMgam2212*invgam12 -
-  2*dADMgam112*GamDDD122*invgam11*invgam12 -
-  dADMgam211*GamDDD122*invgam11*invgam12 -
-  dADMgam111*GamDDD222*invgam11*invgam12 -
-  dADMgam122*GamDDD122*Power(invgam12,2) -
-  dADMgam212*GamDDD122*Power(invgam12,2) -
-  dADMgam112*GamDDD222*Power(invgam12,2) -
-  dADMgam211*GamDDD222*Power(invgam12,2) + ddADMgam1223*invgam13 -
-  ddADMgam1322*invgam13 + ddADMgam2312*invgam13 -
-  2*dADMgam113*GamDDD122*invgam11*invgam13 -
-  dADMgam311*GamDDD122*invgam11*invgam13 -
-  dADMgam111*GamDDD322*invgam11*invgam13 -
-  2*dADMgam123*GamDDD122*invgam12*invgam13 -
-  dADMgam213*GamDDD122*invgam12*invgam13 -
-  dADMgam312*GamDDD122*invgam12*invgam13 -
-  dADMgam113*GamDDD222*invgam12*invgam13 -
-  dADMgam311*GamDDD222*invgam12*invgam13 -
-  dADMgam112*GamDDD322*invgam12*invgam13 -
-  dADMgam211*GamDDD322*invgam12*invgam13 -
-  dADMgam133*GamDDD122*Power(invgam13,2) -
-  dADMgam313*GamDDD122*Power(invgam13,2) -
-  dADMgam113*GamDDD322*Power(invgam13,2) -
-  dADMgam311*GamDDD322*Power(invgam13,2) + (ddADMgam2222*invgam22)/2. -
-  dADMgam212*GamDDD122*invgam11*invgam22 -
-  dADMgam112*GamDDD222*invgam11*invgam22 -
-  dADMgam222*GamDDD122*invgam12*invgam22 -
-  dADMgam122*GamDDD222*invgam12*invgam22 -
-  2*dADMgam212*GamDDD222*invgam12*invgam22 -
-  dADMgam223*GamDDD122*invgam13*invgam22 -
-  dADMgam123*GamDDD222*invgam13*invgam22 -
-  dADMgam312*GamDDD222*invgam13*invgam22 -
-  dADMgam212*GamDDD322*invgam13*invgam22 -
-  dADMgam222*GamDDD222*Power(invgam22,2) + ddADMgam2223*invgam23 -
-  dADMgam213*GamDDD122*invgam11*invgam23 -
-  dADMgam312*GamDDD122*invgam11*invgam23 -
-  dADMgam113*GamDDD222*invgam11*invgam23 -
-  dADMgam112*GamDDD322*invgam11*invgam23 -
-  dADMgam223*GamDDD122*invgam12*invgam23 -
-  dADMgam322*GamDDD122*invgam12*invgam23 -
-  dADMgam123*GamDDD222*invgam12*invgam23 -
-  2*dADMgam213*GamDDD222*invgam12*invgam23 -
-  dADMgam312*GamDDD222*invgam12*invgam23 -
-  dADMgam122*GamDDD322*invgam12*invgam23 -
-  dADMgam212*GamDDD322*invgam12*invgam23 -
-  dADMgam233*GamDDD122*invgam13*invgam23 -
-  dADMgam323*GamDDD122*invgam13*invgam23 -
-  dADMgam133*GamDDD222*invgam13*invgam23 -
-  dADMgam313*GamDDD222*invgam13*invgam23 -
-  dADMgam123*GamDDD322*invgam13*invgam23 -
-  dADMgam213*GamDDD322*invgam13*invgam23 -
-  2*dADMgam312*GamDDD322*invgam13*invgam23 -
-  2*dADMgam223*GamDDD222*invgam22*invgam23 -
-  dADMgam322*GamDDD222*invgam22*invgam23 -
-  dADMgam222*GamDDD322*invgam22*invgam23 -
-  dADMgam233*GamDDD222*Power(invgam23,2) -
-  dADMgam323*GamDDD222*Power(invgam23,2) -
-  dADMgam223*GamDDD322*Power(invgam23,2) -
-  dADMgam322*GamDDD322*Power(invgam23,2) + ddADMgam2323*invgam33 -
-  (ddADMgam3322*invgam33)/2. - dADMgam313*GamDDD122*invgam11*invgam33 -
-  dADMgam113*GamDDD322*invgam11*invgam33 -
-  dADMgam323*GamDDD122*invgam12*invgam33 -
-  dADMgam313*GamDDD222*invgam12*invgam33 -
-  dADMgam123*GamDDD322*invgam12*invgam33 -
-  dADMgam213*GamDDD322*invgam12*invgam33 -
-  dADMgam333*GamDDD122*invgam13*invgam33 -
-  dADMgam133*GamDDD322*invgam13*invgam33 -
-  2*dADMgam313*GamDDD322*invgam13*invgam33 -
-  dADMgam323*GamDDD222*invgam22*invgam33 -
-  dADMgam223*GamDDD322*invgam22*invgam33 -
-  dADMgam333*GamDDD222*invgam23*invgam33 -
-  dADMgam233*GamDDD322*invgam23*invgam33 -
-  2*dADMgam323*GamDDD322*invgam23*invgam33 -
-  dADMgam333*GamDDD322*Power(invgam33,2)
+-0.5*(ddgam1122*invgam11) + ddgam1212*invgam11 -
+  dgam111*GamDDD122*Power(invgam11,2) + ddgam2212*invgam12 -
+  2*dgam112*GamDDD122*invgam11*invgam12 -
+  dgam211*GamDDD122*invgam11*invgam12 -
+  dgam111*GamDDD222*invgam11*invgam12 -
+  dgam122*GamDDD122*Power(invgam12,2) -
+  dgam212*GamDDD122*Power(invgam12,2) -
+  dgam112*GamDDD222*Power(invgam12,2) -
+  dgam211*GamDDD222*Power(invgam12,2) + ddgam1223*invgam13 -
+  ddgam1322*invgam13 + ddgam2312*invgam13 -
+  2*dgam113*GamDDD122*invgam11*invgam13 -
+  dgam311*GamDDD122*invgam11*invgam13 -
+  dgam111*GamDDD322*invgam11*invgam13 -
+  2*dgam123*GamDDD122*invgam12*invgam13 -
+  dgam213*GamDDD122*invgam12*invgam13 -
+  dgam312*GamDDD122*invgam12*invgam13 -
+  dgam113*GamDDD222*invgam12*invgam13 -
+  dgam311*GamDDD222*invgam12*invgam13 -
+  dgam112*GamDDD322*invgam12*invgam13 -
+  dgam211*GamDDD322*invgam12*invgam13 -
+  dgam133*GamDDD122*Power(invgam13,2) -
+  dgam313*GamDDD122*Power(invgam13,2) -
+  dgam113*GamDDD322*Power(invgam13,2) -
+  dgam311*GamDDD322*Power(invgam13,2) + (ddgam2222*invgam22)/2. -
+  dgam212*GamDDD122*invgam11*invgam22 -
+  dgam112*GamDDD222*invgam11*invgam22 -
+  dgam222*GamDDD122*invgam12*invgam22 -
+  dgam122*GamDDD222*invgam12*invgam22 -
+  2*dgam212*GamDDD222*invgam12*invgam22 -
+  dgam223*GamDDD122*invgam13*invgam22 -
+  dgam123*GamDDD222*invgam13*invgam22 -
+  dgam312*GamDDD222*invgam13*invgam22 -
+  dgam212*GamDDD322*invgam13*invgam22 -
+  dgam222*GamDDD222*Power(invgam22,2) + ddgam2223*invgam23 -
+  dgam213*GamDDD122*invgam11*invgam23 -
+  dgam312*GamDDD122*invgam11*invgam23 -
+  dgam113*GamDDD222*invgam11*invgam23 -
+  dgam112*GamDDD322*invgam11*invgam23 -
+  dgam223*GamDDD122*invgam12*invgam23 -
+  dgam322*GamDDD122*invgam12*invgam23 -
+  dgam123*GamDDD222*invgam12*invgam23 -
+  2*dgam213*GamDDD222*invgam12*invgam23 -
+  dgam312*GamDDD222*invgam12*invgam23 -
+  dgam122*GamDDD322*invgam12*invgam23 -
+  dgam212*GamDDD322*invgam12*invgam23 -
+  dgam233*GamDDD122*invgam13*invgam23 -
+  dgam323*GamDDD122*invgam13*invgam23 -
+  dgam133*GamDDD222*invgam13*invgam23 -
+  dgam313*GamDDD222*invgam13*invgam23 -
+  dgam123*GamDDD322*invgam13*invgam23 -
+  dgam213*GamDDD322*invgam13*invgam23 -
+  2*dgam312*GamDDD322*invgam13*invgam23 -
+  2*dgam223*GamDDD222*invgam22*invgam23 -
+  dgam322*GamDDD222*invgam22*invgam23 -
+  dgam222*GamDDD322*invgam22*invgam23 -
+  dgam233*GamDDD222*Power(invgam23,2) -
+  dgam323*GamDDD222*Power(invgam23,2) -
+  dgam223*GamDDD322*Power(invgam23,2) -
+  dgam322*GamDDD322*Power(invgam23,2) + ddgam2323*invgam33 -
+  (ddgam3322*invgam33)/2. - dgam313*GamDDD122*invgam11*invgam33 -
+  dgam113*GamDDD322*invgam11*invgam33 -
+  dgam323*GamDDD122*invgam12*invgam33 -
+  dgam313*GamDDD222*invgam12*invgam33 -
+  dgam123*GamDDD322*invgam12*invgam33 -
+  dgam213*GamDDD322*invgam12*invgam33 -
+  dgam333*GamDDD122*invgam13*invgam33 -
+  dgam133*GamDDD322*invgam13*invgam33 -
+  2*dgam313*GamDDD322*invgam13*invgam33 -
+  dgam323*GamDDD222*invgam22*invgam33 -
+  dgam223*GamDDD322*invgam22*invgam33 -
+  dgam333*GamDDD222*invgam23*invgam33 -
+  dgam233*GamDDD322*invgam23*invgam33 -
+  2*dgam323*GamDDD322*invgam23*invgam33 - dgam333*GamDDD322*Power(invgam33,2)
 ;
 
 vreal tr1dGam23
 =
-(-(ddADMgam1123*invgam11) + ddADMgam1213*invgam11 + ddADMgam1312*invgam11 -
-    2*dADMgam111*GamDDD123*Power(invgam11,2) - ddADMgam1223*invgam12 +
-    ddADMgam1322*invgam12 + ddADMgam2213*invgam12 + ddADMgam2312*invgam12 -
-    4*dADMgam112*GamDDD123*invgam11*invgam12 -
-    2*dADMgam211*GamDDD123*invgam11*invgam12 -
-    2*dADMgam111*GamDDD223*invgam11*invgam12 -
-    2*dADMgam122*GamDDD123*Power(invgam12,2) -
-    2*dADMgam212*GamDDD123*Power(invgam12,2) -
-    2*dADMgam112*GamDDD223*Power(invgam12,2) -
-    2*dADMgam211*GamDDD223*Power(invgam12,2) + ddADMgam1233*invgam13 -
-    ddADMgam1323*invgam13 + ddADMgam2313*invgam13 + ddADMgam3312*invgam13 -
-    4*dADMgam113*GamDDD123*invgam11*invgam13 -
-    2*dADMgam311*GamDDD123*invgam11*invgam13 -
-    2*dADMgam111*GamDDD323*invgam11*invgam13 -
-    4*dADMgam123*GamDDD123*invgam12*invgam13 -
-    2*dADMgam213*GamDDD123*invgam12*invgam13 -
-    2*dADMgam312*GamDDD123*invgam12*invgam13 -
-    2*dADMgam113*GamDDD223*invgam12*invgam13 -
-    2*dADMgam311*GamDDD223*invgam12*invgam13 -
-    2*dADMgam112*GamDDD323*invgam12*invgam13 -
-    2*dADMgam211*GamDDD323*invgam12*invgam13 -
-    2*dADMgam133*GamDDD123*Power(invgam13,2) -
-    2*dADMgam313*GamDDD123*Power(invgam13,2) -
-    2*dADMgam113*GamDDD323*Power(invgam13,2) -
-    2*dADMgam311*GamDDD323*Power(invgam13,2) + ddADMgam2322*invgam22 -
-    2*dADMgam212*GamDDD123*invgam11*invgam22 -
-    2*dADMgam112*GamDDD223*invgam11*invgam22 -
-    2*dADMgam222*GamDDD123*invgam12*invgam22 -
-    2*dADMgam122*GamDDD223*invgam12*invgam22 -
-    4*dADMgam212*GamDDD223*invgam12*invgam22 -
-    2*dADMgam223*GamDDD123*invgam13*invgam22 -
-    2*dADMgam123*GamDDD223*invgam13*invgam22 -
-    2*dADMgam312*GamDDD223*invgam13*invgam22 -
-    2*dADMgam212*GamDDD323*invgam13*invgam22 -
-    2*dADMgam222*GamDDD223*Power(invgam22,2) + ddADMgam2233*invgam23 +
-    ddADMgam3322*invgam23 - 2*dADMgam213*GamDDD123*invgam11*invgam23 -
-    2*dADMgam312*GamDDD123*invgam11*invgam23 -
-    2*dADMgam113*GamDDD223*invgam11*invgam23 -
-    2*dADMgam112*GamDDD323*invgam11*invgam23 -
-    2*dADMgam223*GamDDD123*invgam12*invgam23 -
-    2*dADMgam322*GamDDD123*invgam12*invgam23 -
-    2*dADMgam123*GamDDD223*invgam12*invgam23 -
-    4*dADMgam213*GamDDD223*invgam12*invgam23 -
-    2*dADMgam312*GamDDD223*invgam12*invgam23 -
-    2*dADMgam122*GamDDD323*invgam12*invgam23 -
-    2*dADMgam212*GamDDD323*invgam12*invgam23 -
-    2*dADMgam233*GamDDD123*invgam13*invgam23 -
-    2*dADMgam323*GamDDD123*invgam13*invgam23 -
-    2*dADMgam133*GamDDD223*invgam13*invgam23 -
-    2*dADMgam313*GamDDD223*invgam13*invgam23 -
-    2*dADMgam123*GamDDD323*invgam13*invgam23 -
-    2*dADMgam213*GamDDD323*invgam13*invgam23 -
-    4*dADMgam312*GamDDD323*invgam13*invgam23 -
-    4*dADMgam223*GamDDD223*invgam22*invgam23 -
-    2*dADMgam322*GamDDD223*invgam22*invgam23 -
-    2*dADMgam222*GamDDD323*invgam22*invgam23 -
-    2*dADMgam233*GamDDD223*Power(invgam23,2) -
-    2*dADMgam323*GamDDD223*Power(invgam23,2) -
-    2*dADMgam223*GamDDD323*Power(invgam23,2) -
-    2*dADMgam322*GamDDD323*Power(invgam23,2) + ddADMgam2333*invgam33 -
-    2*dADMgam313*GamDDD123*invgam11*invgam33 -
-    2*dADMgam113*GamDDD323*invgam11*invgam33 -
-    2*dADMgam323*GamDDD123*invgam12*invgam33 -
-    2*dADMgam313*GamDDD223*invgam12*invgam33 -
-    2*dADMgam123*GamDDD323*invgam12*invgam33 -
-    2*dADMgam213*GamDDD323*invgam12*invgam33 -
-    2*dADMgam333*GamDDD123*invgam13*invgam33 -
-    2*dADMgam133*GamDDD323*invgam13*invgam33 -
-    4*dADMgam313*GamDDD323*invgam13*invgam33 -
-    2*dADMgam323*GamDDD223*invgam22*invgam33 -
-    2*dADMgam223*GamDDD323*invgam22*invgam33 -
-    2*dADMgam333*GamDDD223*invgam23*invgam33 -
-    2*dADMgam233*GamDDD323*invgam23*invgam33 -
-    4*dADMgam323*GamDDD323*invgam23*invgam33 -
-    2*dADMgam333*GamDDD323*Power(invgam33,2))/2.
+(-(ddgam1123*invgam11) + ddgam1213*invgam11 + ddgam1312*invgam11 -
+    2*dgam111*GamDDD123*Power(invgam11,2) - ddgam1223*invgam12 +
+    ddgam1322*invgam12 + ddgam2213*invgam12 + ddgam2312*invgam12 -
+    4*dgam112*GamDDD123*invgam11*invgam12 -
+    2*dgam211*GamDDD123*invgam11*invgam12 -
+    2*dgam111*GamDDD223*invgam11*invgam12 -
+    2*dgam122*GamDDD123*Power(invgam12,2) -
+    2*dgam212*GamDDD123*Power(invgam12,2) -
+    2*dgam112*GamDDD223*Power(invgam12,2) -
+    2*dgam211*GamDDD223*Power(invgam12,2) + ddgam1233*invgam13 -
+    ddgam1323*invgam13 + ddgam2313*invgam13 + ddgam3312*invgam13 -
+    4*dgam113*GamDDD123*invgam11*invgam13 -
+    2*dgam311*GamDDD123*invgam11*invgam13 -
+    2*dgam111*GamDDD323*invgam11*invgam13 -
+    4*dgam123*GamDDD123*invgam12*invgam13 -
+    2*dgam213*GamDDD123*invgam12*invgam13 -
+    2*dgam312*GamDDD123*invgam12*invgam13 -
+    2*dgam113*GamDDD223*invgam12*invgam13 -
+    2*dgam311*GamDDD223*invgam12*invgam13 -
+    2*dgam112*GamDDD323*invgam12*invgam13 -
+    2*dgam211*GamDDD323*invgam12*invgam13 -
+    2*dgam133*GamDDD123*Power(invgam13,2) -
+    2*dgam313*GamDDD123*Power(invgam13,2) -
+    2*dgam113*GamDDD323*Power(invgam13,2) -
+    2*dgam311*GamDDD323*Power(invgam13,2) + ddgam2322*invgam22 -
+    2*dgam212*GamDDD123*invgam11*invgam22 -
+    2*dgam112*GamDDD223*invgam11*invgam22 -
+    2*dgam222*GamDDD123*invgam12*invgam22 -
+    2*dgam122*GamDDD223*invgam12*invgam22 -
+    4*dgam212*GamDDD223*invgam12*invgam22 -
+    2*dgam223*GamDDD123*invgam13*invgam22 -
+    2*dgam123*GamDDD223*invgam13*invgam22 -
+    2*dgam312*GamDDD223*invgam13*invgam22 -
+    2*dgam212*GamDDD323*invgam13*invgam22 -
+    2*dgam222*GamDDD223*Power(invgam22,2) + ddgam2233*invgam23 +
+    ddgam3322*invgam23 - 2*dgam213*GamDDD123*invgam11*invgam23 -
+    2*dgam312*GamDDD123*invgam11*invgam23 -
+    2*dgam113*GamDDD223*invgam11*invgam23 -
+    2*dgam112*GamDDD323*invgam11*invgam23 -
+    2*dgam223*GamDDD123*invgam12*invgam23 -
+    2*dgam322*GamDDD123*invgam12*invgam23 -
+    2*dgam123*GamDDD223*invgam12*invgam23 -
+    4*dgam213*GamDDD223*invgam12*invgam23 -
+    2*dgam312*GamDDD223*invgam12*invgam23 -
+    2*dgam122*GamDDD323*invgam12*invgam23 -
+    2*dgam212*GamDDD323*invgam12*invgam23 -
+    2*dgam233*GamDDD123*invgam13*invgam23 -
+    2*dgam323*GamDDD123*invgam13*invgam23 -
+    2*dgam133*GamDDD223*invgam13*invgam23 -
+    2*dgam313*GamDDD223*invgam13*invgam23 -
+    2*dgam123*GamDDD323*invgam13*invgam23 -
+    2*dgam213*GamDDD323*invgam13*invgam23 -
+    4*dgam312*GamDDD323*invgam13*invgam23 -
+    4*dgam223*GamDDD223*invgam22*invgam23 -
+    2*dgam322*GamDDD223*invgam22*invgam23 -
+    2*dgam222*GamDDD323*invgam22*invgam23 -
+    2*dgam233*GamDDD223*Power(invgam23,2) -
+    2*dgam323*GamDDD223*Power(invgam23,2) -
+    2*dgam223*GamDDD323*Power(invgam23,2) -
+    2*dgam322*GamDDD323*Power(invgam23,2) + ddgam2333*invgam33 -
+    2*dgam313*GamDDD123*invgam11*invgam33 -
+    2*dgam113*GamDDD323*invgam11*invgam33 -
+    2*dgam323*GamDDD123*invgam12*invgam33 -
+    2*dgam313*GamDDD223*invgam12*invgam33 -
+    2*dgam123*GamDDD323*invgam12*invgam33 -
+    2*dgam213*GamDDD323*invgam12*invgam33 -
+    2*dgam333*GamDDD123*invgam13*invgam33 -
+    2*dgam133*GamDDD323*invgam13*invgam33 -
+    4*dgam313*GamDDD323*invgam13*invgam33 -
+    2*dgam323*GamDDD223*invgam22*invgam33 -
+    2*dgam223*GamDDD323*invgam22*invgam33 -
+    2*dgam333*GamDDD223*invgam23*invgam33 -
+    2*dgam233*GamDDD323*invgam23*invgam33 -
+    4*dgam323*GamDDD323*invgam23*invgam33 -
+    2*dgam333*GamDDD323*Power(invgam33,2))/2.
 ;
 
 vreal tr1dGam33
 =
--0.5*(ddADMgam1133*invgam11) + ddADMgam1313*invgam11 -
-  dADMgam111*GamDDD133*Power(invgam11,2) - ddADMgam1233*invgam12 +
-  ddADMgam1323*invgam12 + ddADMgam2313*invgam12 -
-  2*dADMgam112*GamDDD133*invgam11*invgam12 -
-  dADMgam211*GamDDD133*invgam11*invgam12 -
-  dADMgam111*GamDDD233*invgam11*invgam12 -
-  dADMgam122*GamDDD133*Power(invgam12,2) -
-  dADMgam212*GamDDD133*Power(invgam12,2) -
-  dADMgam112*GamDDD233*Power(invgam12,2) -
-  dADMgam211*GamDDD233*Power(invgam12,2) + ddADMgam3313*invgam13 -
-  2*dADMgam113*GamDDD133*invgam11*invgam13 -
-  dADMgam311*GamDDD133*invgam11*invgam13 -
-  dADMgam111*GamDDD333*invgam11*invgam13 -
-  2*dADMgam123*GamDDD133*invgam12*invgam13 -
-  dADMgam213*GamDDD133*invgam12*invgam13 -
-  dADMgam312*GamDDD133*invgam12*invgam13 -
-  dADMgam113*GamDDD233*invgam12*invgam13 -
-  dADMgam311*GamDDD233*invgam12*invgam13 -
-  dADMgam112*GamDDD333*invgam12*invgam13 -
-  dADMgam211*GamDDD333*invgam12*invgam13 -
-  dADMgam133*GamDDD133*Power(invgam13,2) -
-  dADMgam313*GamDDD133*Power(invgam13,2) -
-  dADMgam113*GamDDD333*Power(invgam13,2) -
-  dADMgam311*GamDDD333*Power(invgam13,2) - (ddADMgam2233*invgam22)/2. +
-  ddADMgam2323*invgam22 - dADMgam212*GamDDD133*invgam11*invgam22 -
-  dADMgam112*GamDDD233*invgam11*invgam22 -
-  dADMgam222*GamDDD133*invgam12*invgam22 -
-  dADMgam122*GamDDD233*invgam12*invgam22 -
-  2*dADMgam212*GamDDD233*invgam12*invgam22 -
-  dADMgam223*GamDDD133*invgam13*invgam22 -
-  dADMgam123*GamDDD233*invgam13*invgam22 -
-  dADMgam312*GamDDD233*invgam13*invgam22 -
-  dADMgam212*GamDDD333*invgam13*invgam22 -
-  dADMgam222*GamDDD233*Power(invgam22,2) + ddADMgam3323*invgam23 -
-  dADMgam213*GamDDD133*invgam11*invgam23 -
-  dADMgam312*GamDDD133*invgam11*invgam23 -
-  dADMgam113*GamDDD233*invgam11*invgam23 -
-  dADMgam112*GamDDD333*invgam11*invgam23 -
-  dADMgam223*GamDDD133*invgam12*invgam23 -
-  dADMgam322*GamDDD133*invgam12*invgam23 -
-  dADMgam123*GamDDD233*invgam12*invgam23 -
-  2*dADMgam213*GamDDD233*invgam12*invgam23 -
-  dADMgam312*GamDDD233*invgam12*invgam23 -
-  dADMgam122*GamDDD333*invgam12*invgam23 -
-  dADMgam212*GamDDD333*invgam12*invgam23 -
-  dADMgam233*GamDDD133*invgam13*invgam23 -
-  dADMgam323*GamDDD133*invgam13*invgam23 -
-  dADMgam133*GamDDD233*invgam13*invgam23 -
-  dADMgam313*GamDDD233*invgam13*invgam23 -
-  dADMgam123*GamDDD333*invgam13*invgam23 -
-  dADMgam213*GamDDD333*invgam13*invgam23 -
-  2*dADMgam312*GamDDD333*invgam13*invgam23 -
-  2*dADMgam223*GamDDD233*invgam22*invgam23 -
-  dADMgam322*GamDDD233*invgam22*invgam23 -
-  dADMgam222*GamDDD333*invgam22*invgam23 -
-  dADMgam233*GamDDD233*Power(invgam23,2) -
-  dADMgam323*GamDDD233*Power(invgam23,2) -
-  dADMgam223*GamDDD333*Power(invgam23,2) -
-  dADMgam322*GamDDD333*Power(invgam23,2) + (ddADMgam3333*invgam33)/2. -
-  dADMgam313*GamDDD133*invgam11*invgam33 -
-  dADMgam113*GamDDD333*invgam11*invgam33 -
-  dADMgam323*GamDDD133*invgam12*invgam33 -
-  dADMgam313*GamDDD233*invgam12*invgam33 -
-  dADMgam123*GamDDD333*invgam12*invgam33 -
-  dADMgam213*GamDDD333*invgam12*invgam33 -
-  dADMgam333*GamDDD133*invgam13*invgam33 -
-  dADMgam133*GamDDD333*invgam13*invgam33 -
-  2*dADMgam313*GamDDD333*invgam13*invgam33 -
-  dADMgam323*GamDDD233*invgam22*invgam33 -
-  dADMgam223*GamDDD333*invgam22*invgam33 -
-  dADMgam333*GamDDD233*invgam23*invgam33 -
-  dADMgam233*GamDDD333*invgam23*invgam33 -
-  2*dADMgam323*GamDDD333*invgam23*invgam33 -
-  dADMgam333*GamDDD333*Power(invgam33,2)
+-0.5*(ddgam1133*invgam11) + ddgam1313*invgam11 -
+  dgam111*GamDDD133*Power(invgam11,2) - ddgam1233*invgam12 +
+  ddgam1323*invgam12 + ddgam2313*invgam12 -
+  2*dgam112*GamDDD133*invgam11*invgam12 -
+  dgam211*GamDDD133*invgam11*invgam12 -
+  dgam111*GamDDD233*invgam11*invgam12 -
+  dgam122*GamDDD133*Power(invgam12,2) -
+  dgam212*GamDDD133*Power(invgam12,2) -
+  dgam112*GamDDD233*Power(invgam12,2) -
+  dgam211*GamDDD233*Power(invgam12,2) + ddgam3313*invgam13 -
+  2*dgam113*GamDDD133*invgam11*invgam13 -
+  dgam311*GamDDD133*invgam11*invgam13 -
+  dgam111*GamDDD333*invgam11*invgam13 -
+  2*dgam123*GamDDD133*invgam12*invgam13 -
+  dgam213*GamDDD133*invgam12*invgam13 -
+  dgam312*GamDDD133*invgam12*invgam13 -
+  dgam113*GamDDD233*invgam12*invgam13 -
+  dgam311*GamDDD233*invgam12*invgam13 -
+  dgam112*GamDDD333*invgam12*invgam13 -
+  dgam211*GamDDD333*invgam12*invgam13 -
+  dgam133*GamDDD133*Power(invgam13,2) -
+  dgam313*GamDDD133*Power(invgam13,2) -
+  dgam113*GamDDD333*Power(invgam13,2) -
+  dgam311*GamDDD333*Power(invgam13,2) - (ddgam2233*invgam22)/2. +
+  ddgam2323*invgam22 - dgam212*GamDDD133*invgam11*invgam22 -
+  dgam112*GamDDD233*invgam11*invgam22 -
+  dgam222*GamDDD133*invgam12*invgam22 -
+  dgam122*GamDDD233*invgam12*invgam22 -
+  2*dgam212*GamDDD233*invgam12*invgam22 -
+  dgam223*GamDDD133*invgam13*invgam22 -
+  dgam123*GamDDD233*invgam13*invgam22 -
+  dgam312*GamDDD233*invgam13*invgam22 -
+  dgam212*GamDDD333*invgam13*invgam22 -
+  dgam222*GamDDD233*Power(invgam22,2) + ddgam3323*invgam23 -
+  dgam213*GamDDD133*invgam11*invgam23 -
+  dgam312*GamDDD133*invgam11*invgam23 -
+  dgam113*GamDDD233*invgam11*invgam23 -
+  dgam112*GamDDD333*invgam11*invgam23 -
+  dgam223*GamDDD133*invgam12*invgam23 -
+  dgam322*GamDDD133*invgam12*invgam23 -
+  dgam123*GamDDD233*invgam12*invgam23 -
+  2*dgam213*GamDDD233*invgam12*invgam23 -
+  dgam312*GamDDD233*invgam12*invgam23 -
+  dgam122*GamDDD333*invgam12*invgam23 -
+  dgam212*GamDDD333*invgam12*invgam23 -
+  dgam233*GamDDD133*invgam13*invgam23 -
+  dgam323*GamDDD133*invgam13*invgam23 -
+  dgam133*GamDDD233*invgam13*invgam23 -
+  dgam313*GamDDD233*invgam13*invgam23 -
+  dgam123*GamDDD333*invgam13*invgam23 -
+  dgam213*GamDDD333*invgam13*invgam23 -
+  2*dgam312*GamDDD333*invgam13*invgam23 -
+  2*dgam223*GamDDD233*invgam22*invgam23 -
+  dgam322*GamDDD233*invgam22*invgam23 -
+  dgam222*GamDDD333*invgam22*invgam23 -
+  dgam233*GamDDD233*Power(invgam23,2) -
+  dgam323*GamDDD233*Power(invgam23,2) -
+  dgam223*GamDDD333*Power(invgam23,2) -
+  dgam322*GamDDD333*Power(invgam23,2) + (ddgam3333*invgam33)/2. -
+  dgam313*GamDDD133*invgam11*invgam33 -
+  dgam113*GamDDD333*invgam11*invgam33 -
+  dgam323*GamDDD133*invgam12*invgam33 -
+  dgam313*GamDDD233*invgam12*invgam33 -
+  dgam123*GamDDD333*invgam12*invgam33 -
+  dgam213*GamDDD333*invgam12*invgam33 -
+  dgam333*GamDDD133*invgam13*invgam33 -
+  dgam133*GamDDD333*invgam13*invgam33 -
+  2*dgam313*GamDDD333*invgam13*invgam33 -
+  dgam323*GamDDD233*invgam22*invgam33 -
+  dgam223*GamDDD333*invgam22*invgam33 -
+  dgam333*GamDDD233*invgam23*invgam33 -
+  dgam233*GamDDD333*invgam23*invgam33 -
+  2*dgam323*GamDDD333*invgam23*invgam33 - dgam333*GamDDD333*Power(invgam33,2)
 ;
 
 vreal tr2dGam11
 =
-(ddADMgam1111*invgam11 - Power(dADMgam111,2)*Power(invgam11,2) +
-    2*ddADMgam1112*invgam12 - 2*Power(dADMgam112,2)*Power(invgam12,2) +
-    2*ddADMgam1113*invgam13 - 4*dADMgam112*dADMgam113*invgam12*invgam13 -
-    2*Power(dADMgam113,2)*Power(invgam13,2) -
-    2*dADMgam111*(2*dADMgam112*invgam11*invgam12 +
-       dADMgam122*Power(invgam12,2) +
-       invgam13*(2*dADMgam113*invgam11 + 2*dADMgam123*invgam12 +
-          dADMgam133*invgam13)) + ddADMgam1122*invgam22 -
-    2*Power(dADMgam112,2)*invgam11*invgam22 -
-    4*dADMgam112*dADMgam122*invgam12*invgam22 -
-    4*dADMgam112*dADMgam123*invgam13*invgam22 -
-    Power(dADMgam122,2)*Power(invgam22,2) + 2*ddADMgam1123*invgam23 -
-    4*dADMgam112*dADMgam113*invgam11*invgam23 -
-    4*dADMgam113*dADMgam122*invgam12*invgam23 -
-    4*dADMgam112*dADMgam123*invgam12*invgam23 -
-    4*dADMgam113*dADMgam123*invgam13*invgam23 -
-    4*dADMgam112*dADMgam133*invgam13*invgam23 -
-    4*dADMgam122*dADMgam123*invgam22*invgam23 -
-    2*Power(dADMgam123,2)*Power(invgam23,2) -
-    2*dADMgam122*dADMgam133*Power(invgam23,2) + ddADMgam1133*invgam33 -
-    2*Power(dADMgam113,2)*invgam11*invgam33 -
-    4*dADMgam113*dADMgam123*invgam12*invgam33 -
-    4*dADMgam113*dADMgam133*invgam13*invgam33 -
-    2*Power(dADMgam123,2)*invgam22*invgam33 -
-    4*dADMgam123*dADMgam133*invgam23*invgam33 -
-    Power(dADMgam133,2)*Power(invgam33,2))/2.
+(ddgam1111*invgam11 - Power(dgam111,2)*Power(invgam11,2) +
+    2*ddgam1112*invgam12 - 2*Power(dgam112,2)*Power(invgam12,2) +
+    2*ddgam1113*invgam13 - 4*dgam112*dgam113*invgam12*invgam13 -
+    2*Power(dgam113,2)*Power(invgam13,2) -
+    2*dgam111*(2*dgam112*invgam11*invgam12 + dgam122*Power(invgam12,2) +
+       invgam13*(2*dgam113*invgam11 + 2*dgam123*invgam12 +
+          dgam133*invgam13)) + ddgam1122*invgam22 -
+    2*Power(dgam112,2)*invgam11*invgam22 -
+    4*dgam112*dgam122*invgam12*invgam22 -
+    4*dgam112*dgam123*invgam13*invgam22 -
+    Power(dgam122,2)*Power(invgam22,2) + 2*ddgam1123*invgam23 -
+    4*dgam112*dgam113*invgam11*invgam23 -
+    4*dgam113*dgam122*invgam12*invgam23 -
+    4*dgam112*dgam123*invgam12*invgam23 -
+    4*dgam113*dgam123*invgam13*invgam23 -
+    4*dgam112*dgam133*invgam13*invgam23 -
+    4*dgam122*dgam123*invgam22*invgam23 -
+    2*Power(dgam123,2)*Power(invgam23,2) -
+    2*dgam122*dgam133*Power(invgam23,2) + ddgam1133*invgam33 -
+    2*Power(dgam113,2)*invgam11*invgam33 -
+    4*dgam113*dgam123*invgam12*invgam33 -
+    4*dgam113*dgam133*invgam13*invgam33 -
+    2*Power(dgam123,2)*invgam22*invgam33 -
+    4*dgam123*dgam133*invgam23*invgam33 - Power(dgam133,2)*Power(invgam33,2)\
+)/2.
 ;
 
 vreal tr2dGam12
 =
-(ddADMgam1211*invgam11 + 2*ddADMgam1212*invgam12 -
-    2*dADMgam112*dADMgam211*invgam11*invgam12 -
-    dADMgam122*dADMgam211*Power(invgam12,2) -
-    2*dADMgam112*dADMgam212*Power(invgam12,2) + 2*ddADMgam1213*invgam13 -
-    2*dADMgam113*dADMgam211*invgam11*invgam13 -
-    2*dADMgam123*dADMgam211*invgam12*invgam13 -
-    2*dADMgam113*dADMgam212*invgam12*invgam13 -
-    2*dADMgam112*dADMgam213*invgam12*invgam13 -
-    dADMgam133*dADMgam211*Power(invgam13,2) -
-    2*dADMgam113*dADMgam213*Power(invgam13,2) -
-    dADMgam111*(dADMgam211*Power(invgam11,2) +
-       2*dADMgam212*invgam11*invgam12 + dADMgam222*Power(invgam12,2) +
-       2*dADMgam213*invgam11*invgam13 + 2*dADMgam223*invgam12*invgam13 +
-       dADMgam233*Power(invgam13,2)) + ddADMgam1222*invgam22 -
-    2*dADMgam112*dADMgam212*invgam11*invgam22 -
-    2*dADMgam122*dADMgam212*invgam12*invgam22 -
-    2*dADMgam112*dADMgam222*invgam12*invgam22 -
-    2*dADMgam123*dADMgam212*invgam13*invgam22 -
-    2*dADMgam112*dADMgam223*invgam13*invgam22 -
-    dADMgam122*dADMgam222*Power(invgam22,2) + 2*ddADMgam1223*invgam23 -
-    2*dADMgam113*dADMgam212*invgam11*invgam23 -
-    2*dADMgam112*dADMgam213*invgam11*invgam23 -
-    2*dADMgam123*dADMgam212*invgam12*invgam23 -
-    2*dADMgam122*dADMgam213*invgam12*invgam23 -
-    2*dADMgam113*dADMgam222*invgam12*invgam23 -
-    2*dADMgam112*dADMgam223*invgam12*invgam23 -
-    2*dADMgam133*dADMgam212*invgam13*invgam23 -
-    2*dADMgam123*dADMgam213*invgam13*invgam23 -
-    2*dADMgam113*dADMgam223*invgam13*invgam23 -
-    2*dADMgam112*dADMgam233*invgam13*invgam23 -
-    2*dADMgam123*dADMgam222*invgam22*invgam23 -
-    2*dADMgam122*dADMgam223*invgam22*invgam23 -
-    dADMgam133*dADMgam222*Power(invgam23,2) -
-    2*dADMgam123*dADMgam223*Power(invgam23,2) -
-    dADMgam122*dADMgam233*Power(invgam23,2) + ddADMgam1233*invgam33 -
-    2*dADMgam113*dADMgam213*invgam11*invgam33 -
-    2*dADMgam123*dADMgam213*invgam12*invgam33 -
-    2*dADMgam113*dADMgam223*invgam12*invgam33 -
-    2*dADMgam133*dADMgam213*invgam13*invgam33 -
-    2*dADMgam113*dADMgam233*invgam13*invgam33 -
-    2*dADMgam123*dADMgam223*invgam22*invgam33 -
-    2*dADMgam133*dADMgam223*invgam23*invgam33 -
-    2*dADMgam123*dADMgam233*invgam23*invgam33 -
-    dADMgam133*dADMgam233*Power(invgam33,2))/2.
+(ddgam1211*invgam11 + 2*ddgam1212*invgam12 -
+    2*dgam112*dgam211*invgam11*invgam12 -
+    dgam122*dgam211*Power(invgam12,2) -
+    2*dgam112*dgam212*Power(invgam12,2) + 2*ddgam1213*invgam13 -
+    2*dgam113*dgam211*invgam11*invgam13 -
+    2*dgam123*dgam211*invgam12*invgam13 -
+    2*dgam113*dgam212*invgam12*invgam13 -
+    2*dgam112*dgam213*invgam12*invgam13 -
+    dgam133*dgam211*Power(invgam13,2) -
+    2*dgam113*dgam213*Power(invgam13,2) -
+    dgam111*(dgam211*Power(invgam11,2) + 2*dgam212*invgam11*invgam12 +
+       dgam222*Power(invgam12,2) + 2*dgam213*invgam11*invgam13 +
+       2*dgam223*invgam12*invgam13 + dgam233*Power(invgam13,2)) +
+    ddgam1222*invgam22 - 2*dgam112*dgam212*invgam11*invgam22 -
+    2*dgam122*dgam212*invgam12*invgam22 -
+    2*dgam112*dgam222*invgam12*invgam22 -
+    2*dgam123*dgam212*invgam13*invgam22 -
+    2*dgam112*dgam223*invgam13*invgam22 -
+    dgam122*dgam222*Power(invgam22,2) + 2*ddgam1223*invgam23 -
+    2*dgam113*dgam212*invgam11*invgam23 -
+    2*dgam112*dgam213*invgam11*invgam23 -
+    2*dgam123*dgam212*invgam12*invgam23 -
+    2*dgam122*dgam213*invgam12*invgam23 -
+    2*dgam113*dgam222*invgam12*invgam23 -
+    2*dgam112*dgam223*invgam12*invgam23 -
+    2*dgam133*dgam212*invgam13*invgam23 -
+    2*dgam123*dgam213*invgam13*invgam23 -
+    2*dgam113*dgam223*invgam13*invgam23 -
+    2*dgam112*dgam233*invgam13*invgam23 -
+    2*dgam123*dgam222*invgam22*invgam23 -
+    2*dgam122*dgam223*invgam22*invgam23 -
+    dgam133*dgam222*Power(invgam23,2) -
+    2*dgam123*dgam223*Power(invgam23,2) -
+    dgam122*dgam233*Power(invgam23,2) + ddgam1233*invgam33 -
+    2*dgam113*dgam213*invgam11*invgam33 -
+    2*dgam123*dgam213*invgam12*invgam33 -
+    2*dgam113*dgam223*invgam12*invgam33 -
+    2*dgam133*dgam213*invgam13*invgam33 -
+    2*dgam113*dgam233*invgam13*invgam33 -
+    2*dgam123*dgam223*invgam22*invgam33 -
+    2*dgam133*dgam223*invgam23*invgam33 -
+    2*dgam123*dgam233*invgam23*invgam33 - dgam133*dgam233*Power(invgam33,2))/
+  2.
 ;
 
 vreal tr2dGam13
 =
-(ddADMgam1311*invgam11 + 2*ddADMgam1312*invgam12 -
-    2*dADMgam112*dADMgam311*invgam11*invgam12 -
-    dADMgam122*dADMgam311*Power(invgam12,2) -
-    2*dADMgam112*dADMgam312*Power(invgam12,2) + 2*ddADMgam1313*invgam13 -
-    2*dADMgam113*dADMgam311*invgam11*invgam13 -
-    2*dADMgam123*dADMgam311*invgam12*invgam13 -
-    2*dADMgam113*dADMgam312*invgam12*invgam13 -
-    2*dADMgam112*dADMgam313*invgam12*invgam13 -
-    dADMgam133*dADMgam311*Power(invgam13,2) -
-    2*dADMgam113*dADMgam313*Power(invgam13,2) -
-    dADMgam111*(dADMgam311*Power(invgam11,2) +
-       2*dADMgam312*invgam11*invgam12 + dADMgam322*Power(invgam12,2) +
-       2*dADMgam313*invgam11*invgam13 + 2*dADMgam323*invgam12*invgam13 +
-       dADMgam333*Power(invgam13,2)) + ddADMgam1322*invgam22 -
-    2*dADMgam112*dADMgam312*invgam11*invgam22 -
-    2*dADMgam122*dADMgam312*invgam12*invgam22 -
-    2*dADMgam112*dADMgam322*invgam12*invgam22 -
-    2*dADMgam123*dADMgam312*invgam13*invgam22 -
-    2*dADMgam112*dADMgam323*invgam13*invgam22 -
-    dADMgam122*dADMgam322*Power(invgam22,2) + 2*ddADMgam1323*invgam23 -
-    2*dADMgam113*dADMgam312*invgam11*invgam23 -
-    2*dADMgam112*dADMgam313*invgam11*invgam23 -
-    2*dADMgam123*dADMgam312*invgam12*invgam23 -
-    2*dADMgam122*dADMgam313*invgam12*invgam23 -
-    2*dADMgam113*dADMgam322*invgam12*invgam23 -
-    2*dADMgam112*dADMgam323*invgam12*invgam23 -
-    2*dADMgam133*dADMgam312*invgam13*invgam23 -
-    2*dADMgam123*dADMgam313*invgam13*invgam23 -
-    2*dADMgam113*dADMgam323*invgam13*invgam23 -
-    2*dADMgam112*dADMgam333*invgam13*invgam23 -
-    2*dADMgam123*dADMgam322*invgam22*invgam23 -
-    2*dADMgam122*dADMgam323*invgam22*invgam23 -
-    dADMgam133*dADMgam322*Power(invgam23,2) -
-    2*dADMgam123*dADMgam323*Power(invgam23,2) -
-    dADMgam122*dADMgam333*Power(invgam23,2) + ddADMgam1333*invgam33 -
-    2*dADMgam113*dADMgam313*invgam11*invgam33 -
-    2*dADMgam123*dADMgam313*invgam12*invgam33 -
-    2*dADMgam113*dADMgam323*invgam12*invgam33 -
-    2*dADMgam133*dADMgam313*invgam13*invgam33 -
-    2*dADMgam113*dADMgam333*invgam13*invgam33 -
-    2*dADMgam123*dADMgam323*invgam22*invgam33 -
-    2*dADMgam133*dADMgam323*invgam23*invgam33 -
-    2*dADMgam123*dADMgam333*invgam23*invgam33 -
-    dADMgam133*dADMgam333*Power(invgam33,2))/2.
+(ddgam1311*invgam11 + 2*ddgam1312*invgam12 -
+    2*dgam112*dgam311*invgam11*invgam12 -
+    dgam122*dgam311*Power(invgam12,2) -
+    2*dgam112*dgam312*Power(invgam12,2) + 2*ddgam1313*invgam13 -
+    2*dgam113*dgam311*invgam11*invgam13 -
+    2*dgam123*dgam311*invgam12*invgam13 -
+    2*dgam113*dgam312*invgam12*invgam13 -
+    2*dgam112*dgam313*invgam12*invgam13 -
+    dgam133*dgam311*Power(invgam13,2) -
+    2*dgam113*dgam313*Power(invgam13,2) -
+    dgam111*(dgam311*Power(invgam11,2) + 2*dgam312*invgam11*invgam12 +
+       dgam322*Power(invgam12,2) + 2*dgam313*invgam11*invgam13 +
+       2*dgam323*invgam12*invgam13 + dgam333*Power(invgam13,2)) +
+    ddgam1322*invgam22 - 2*dgam112*dgam312*invgam11*invgam22 -
+    2*dgam122*dgam312*invgam12*invgam22 -
+    2*dgam112*dgam322*invgam12*invgam22 -
+    2*dgam123*dgam312*invgam13*invgam22 -
+    2*dgam112*dgam323*invgam13*invgam22 -
+    dgam122*dgam322*Power(invgam22,2) + 2*ddgam1323*invgam23 -
+    2*dgam113*dgam312*invgam11*invgam23 -
+    2*dgam112*dgam313*invgam11*invgam23 -
+    2*dgam123*dgam312*invgam12*invgam23 -
+    2*dgam122*dgam313*invgam12*invgam23 -
+    2*dgam113*dgam322*invgam12*invgam23 -
+    2*dgam112*dgam323*invgam12*invgam23 -
+    2*dgam133*dgam312*invgam13*invgam23 -
+    2*dgam123*dgam313*invgam13*invgam23 -
+    2*dgam113*dgam323*invgam13*invgam23 -
+    2*dgam112*dgam333*invgam13*invgam23 -
+    2*dgam123*dgam322*invgam22*invgam23 -
+    2*dgam122*dgam323*invgam22*invgam23 -
+    dgam133*dgam322*Power(invgam23,2) -
+    2*dgam123*dgam323*Power(invgam23,2) -
+    dgam122*dgam333*Power(invgam23,2) + ddgam1333*invgam33 -
+    2*dgam113*dgam313*invgam11*invgam33 -
+    2*dgam123*dgam313*invgam12*invgam33 -
+    2*dgam113*dgam323*invgam12*invgam33 -
+    2*dgam133*dgam313*invgam13*invgam33 -
+    2*dgam113*dgam333*invgam13*invgam33 -
+    2*dgam123*dgam323*invgam22*invgam33 -
+    2*dgam133*dgam323*invgam23*invgam33 -
+    2*dgam123*dgam333*invgam23*invgam33 - dgam133*dgam333*Power(invgam33,2))/
+  2.
 ;
 
 vreal tr2dGam22
 =
-(ddADMgam2211*invgam11 - Power(dADMgam211,2)*Power(invgam11,2) +
-    2*ddADMgam2212*invgam12 - 2*Power(dADMgam212,2)*Power(invgam12,2) +
-    2*ddADMgam2213*invgam13 - 4*dADMgam212*dADMgam213*invgam12*invgam13 -
-    2*Power(dADMgam213,2)*Power(invgam13,2) -
-    2*dADMgam211*(2*dADMgam212*invgam11*invgam12 +
-       dADMgam222*Power(invgam12,2) +
-       invgam13*(2*dADMgam213*invgam11 + 2*dADMgam223*invgam12 +
-          dADMgam233*invgam13)) + ddADMgam2222*invgam22 -
-    2*Power(dADMgam212,2)*invgam11*invgam22 -
-    4*dADMgam212*dADMgam222*invgam12*invgam22 -
-    4*dADMgam212*dADMgam223*invgam13*invgam22 -
-    Power(dADMgam222,2)*Power(invgam22,2) + 2*ddADMgam2223*invgam23 -
-    4*dADMgam212*dADMgam213*invgam11*invgam23 -
-    4*dADMgam213*dADMgam222*invgam12*invgam23 -
-    4*dADMgam212*dADMgam223*invgam12*invgam23 -
-    4*dADMgam213*dADMgam223*invgam13*invgam23 -
-    4*dADMgam212*dADMgam233*invgam13*invgam23 -
-    4*dADMgam222*dADMgam223*invgam22*invgam23 -
-    2*Power(dADMgam223,2)*Power(invgam23,2) -
-    2*dADMgam222*dADMgam233*Power(invgam23,2) + ddADMgam2233*invgam33 -
-    2*Power(dADMgam213,2)*invgam11*invgam33 -
-    4*dADMgam213*dADMgam223*invgam12*invgam33 -
-    4*dADMgam213*dADMgam233*invgam13*invgam33 -
-    2*Power(dADMgam223,2)*invgam22*invgam33 -
-    4*dADMgam223*dADMgam233*invgam23*invgam33 -
-    Power(dADMgam233,2)*Power(invgam33,2))/2.
+(ddgam2211*invgam11 - Power(dgam211,2)*Power(invgam11,2) +
+    2*ddgam2212*invgam12 - 2*Power(dgam212,2)*Power(invgam12,2) +
+    2*ddgam2213*invgam13 - 4*dgam212*dgam213*invgam12*invgam13 -
+    2*Power(dgam213,2)*Power(invgam13,2) -
+    2*dgam211*(2*dgam212*invgam11*invgam12 + dgam222*Power(invgam12,2) +
+       invgam13*(2*dgam213*invgam11 + 2*dgam223*invgam12 +
+          dgam233*invgam13)) + ddgam2222*invgam22 -
+    2*Power(dgam212,2)*invgam11*invgam22 -
+    4*dgam212*dgam222*invgam12*invgam22 -
+    4*dgam212*dgam223*invgam13*invgam22 -
+    Power(dgam222,2)*Power(invgam22,2) + 2*ddgam2223*invgam23 -
+    4*dgam212*dgam213*invgam11*invgam23 -
+    4*dgam213*dgam222*invgam12*invgam23 -
+    4*dgam212*dgam223*invgam12*invgam23 -
+    4*dgam213*dgam223*invgam13*invgam23 -
+    4*dgam212*dgam233*invgam13*invgam23 -
+    4*dgam222*dgam223*invgam22*invgam23 -
+    2*Power(dgam223,2)*Power(invgam23,2) -
+    2*dgam222*dgam233*Power(invgam23,2) + ddgam2233*invgam33 -
+    2*Power(dgam213,2)*invgam11*invgam33 -
+    4*dgam213*dgam223*invgam12*invgam33 -
+    4*dgam213*dgam233*invgam13*invgam33 -
+    2*Power(dgam223,2)*invgam22*invgam33 -
+    4*dgam223*dgam233*invgam23*invgam33 - Power(dgam233,2)*Power(invgam33,2)\
+)/2.
 ;
 
 vreal tr2dGam23
 =
-(ddADMgam2311*invgam11 + 2*ddADMgam2312*invgam12 -
-    2*dADMgam212*dADMgam311*invgam11*invgam12 -
-    dADMgam222*dADMgam311*Power(invgam12,2) -
-    2*dADMgam212*dADMgam312*Power(invgam12,2) + 2*ddADMgam2313*invgam13 -
-    2*dADMgam213*dADMgam311*invgam11*invgam13 -
-    2*dADMgam223*dADMgam311*invgam12*invgam13 -
-    2*dADMgam213*dADMgam312*invgam12*invgam13 -
-    2*dADMgam212*dADMgam313*invgam12*invgam13 -
-    dADMgam233*dADMgam311*Power(invgam13,2) -
-    2*dADMgam213*dADMgam313*Power(invgam13,2) -
-    dADMgam211*(dADMgam311*Power(invgam11,2) +
-       2*dADMgam312*invgam11*invgam12 + dADMgam322*Power(invgam12,2) +
-       2*dADMgam313*invgam11*invgam13 + 2*dADMgam323*invgam12*invgam13 +
-       dADMgam333*Power(invgam13,2)) + ddADMgam2322*invgam22 -
-    2*dADMgam212*dADMgam312*invgam11*invgam22 -
-    2*dADMgam222*dADMgam312*invgam12*invgam22 -
-    2*dADMgam212*dADMgam322*invgam12*invgam22 -
-    2*dADMgam223*dADMgam312*invgam13*invgam22 -
-    2*dADMgam212*dADMgam323*invgam13*invgam22 -
-    dADMgam222*dADMgam322*Power(invgam22,2) + 2*ddADMgam2323*invgam23 -
-    2*dADMgam213*dADMgam312*invgam11*invgam23 -
-    2*dADMgam212*dADMgam313*invgam11*invgam23 -
-    2*dADMgam223*dADMgam312*invgam12*invgam23 -
-    2*dADMgam222*dADMgam313*invgam12*invgam23 -
-    2*dADMgam213*dADMgam322*invgam12*invgam23 -
-    2*dADMgam212*dADMgam323*invgam12*invgam23 -
-    2*dADMgam233*dADMgam312*invgam13*invgam23 -
-    2*dADMgam223*dADMgam313*invgam13*invgam23 -
-    2*dADMgam213*dADMgam323*invgam13*invgam23 -
-    2*dADMgam212*dADMgam333*invgam13*invgam23 -
-    2*dADMgam223*dADMgam322*invgam22*invgam23 -
-    2*dADMgam222*dADMgam323*invgam22*invgam23 -
-    dADMgam233*dADMgam322*Power(invgam23,2) -
-    2*dADMgam223*dADMgam323*Power(invgam23,2) -
-    dADMgam222*dADMgam333*Power(invgam23,2) + ddADMgam2333*invgam33 -
-    2*dADMgam213*dADMgam313*invgam11*invgam33 -
-    2*dADMgam223*dADMgam313*invgam12*invgam33 -
-    2*dADMgam213*dADMgam323*invgam12*invgam33 -
-    2*dADMgam233*dADMgam313*invgam13*invgam33 -
-    2*dADMgam213*dADMgam333*invgam13*invgam33 -
-    2*dADMgam223*dADMgam323*invgam22*invgam33 -
-    2*dADMgam233*dADMgam323*invgam23*invgam33 -
-    2*dADMgam223*dADMgam333*invgam23*invgam33 -
-    dADMgam233*dADMgam333*Power(invgam33,2))/2.
+(ddgam2311*invgam11 + 2*ddgam2312*invgam12 -
+    2*dgam212*dgam311*invgam11*invgam12 -
+    dgam222*dgam311*Power(invgam12,2) -
+    2*dgam212*dgam312*Power(invgam12,2) + 2*ddgam2313*invgam13 -
+    2*dgam213*dgam311*invgam11*invgam13 -
+    2*dgam223*dgam311*invgam12*invgam13 -
+    2*dgam213*dgam312*invgam12*invgam13 -
+    2*dgam212*dgam313*invgam12*invgam13 -
+    dgam233*dgam311*Power(invgam13,2) -
+    2*dgam213*dgam313*Power(invgam13,2) -
+    dgam211*(dgam311*Power(invgam11,2) + 2*dgam312*invgam11*invgam12 +
+       dgam322*Power(invgam12,2) + 2*dgam313*invgam11*invgam13 +
+       2*dgam323*invgam12*invgam13 + dgam333*Power(invgam13,2)) +
+    ddgam2322*invgam22 - 2*dgam212*dgam312*invgam11*invgam22 -
+    2*dgam222*dgam312*invgam12*invgam22 -
+    2*dgam212*dgam322*invgam12*invgam22 -
+    2*dgam223*dgam312*invgam13*invgam22 -
+    2*dgam212*dgam323*invgam13*invgam22 -
+    dgam222*dgam322*Power(invgam22,2) + 2*ddgam2323*invgam23 -
+    2*dgam213*dgam312*invgam11*invgam23 -
+    2*dgam212*dgam313*invgam11*invgam23 -
+    2*dgam223*dgam312*invgam12*invgam23 -
+    2*dgam222*dgam313*invgam12*invgam23 -
+    2*dgam213*dgam322*invgam12*invgam23 -
+    2*dgam212*dgam323*invgam12*invgam23 -
+    2*dgam233*dgam312*invgam13*invgam23 -
+    2*dgam223*dgam313*invgam13*invgam23 -
+    2*dgam213*dgam323*invgam13*invgam23 -
+    2*dgam212*dgam333*invgam13*invgam23 -
+    2*dgam223*dgam322*invgam22*invgam23 -
+    2*dgam222*dgam323*invgam22*invgam23 -
+    dgam233*dgam322*Power(invgam23,2) -
+    2*dgam223*dgam323*Power(invgam23,2) -
+    dgam222*dgam333*Power(invgam23,2) + ddgam2333*invgam33 -
+    2*dgam213*dgam313*invgam11*invgam33 -
+    2*dgam223*dgam313*invgam12*invgam33 -
+    2*dgam213*dgam323*invgam12*invgam33 -
+    2*dgam233*dgam313*invgam13*invgam33 -
+    2*dgam213*dgam333*invgam13*invgam33 -
+    2*dgam223*dgam323*invgam22*invgam33 -
+    2*dgam233*dgam323*invgam23*invgam33 -
+    2*dgam223*dgam333*invgam23*invgam33 - dgam233*dgam333*Power(invgam33,2))/
+  2.
 ;
 
 vreal tr2dGam33
 =
-(ddADMgam3311*invgam11 - Power(dADMgam311,2)*Power(invgam11,2) +
-    2*ddADMgam3312*invgam12 - 2*Power(dADMgam312,2)*Power(invgam12,2) +
-    2*ddADMgam3313*invgam13 - 4*dADMgam312*dADMgam313*invgam12*invgam13 -
-    2*Power(dADMgam313,2)*Power(invgam13,2) -
-    2*dADMgam311*(2*dADMgam312*invgam11*invgam12 +
-       dADMgam322*Power(invgam12,2) +
-       invgam13*(2*dADMgam313*invgam11 + 2*dADMgam323*invgam12 +
-          dADMgam333*invgam13)) + ddADMgam3322*invgam22 -
-    2*Power(dADMgam312,2)*invgam11*invgam22 -
-    4*dADMgam312*dADMgam322*invgam12*invgam22 -
-    4*dADMgam312*dADMgam323*invgam13*invgam22 -
-    Power(dADMgam322,2)*Power(invgam22,2) + 2*ddADMgam3323*invgam23 -
-    4*dADMgam312*dADMgam313*invgam11*invgam23 -
-    4*dADMgam313*dADMgam322*invgam12*invgam23 -
-    4*dADMgam312*dADMgam323*invgam12*invgam23 -
-    4*dADMgam313*dADMgam323*invgam13*invgam23 -
-    4*dADMgam312*dADMgam333*invgam13*invgam23 -
-    4*dADMgam322*dADMgam323*invgam22*invgam23 -
-    2*Power(dADMgam323,2)*Power(invgam23,2) -
-    2*dADMgam322*dADMgam333*Power(invgam23,2) + ddADMgam3333*invgam33 -
-    2*Power(dADMgam313,2)*invgam11*invgam33 -
-    4*dADMgam313*dADMgam323*invgam12*invgam33 -
-    4*dADMgam313*dADMgam333*invgam13*invgam33 -
-    2*Power(dADMgam323,2)*invgam22*invgam33 -
-    4*dADMgam323*dADMgam333*invgam23*invgam33 -
-    Power(dADMgam333,2)*Power(invgam33,2))/2.
+(ddgam3311*invgam11 - Power(dgam311,2)*Power(invgam11,2) +
+    2*ddgam3312*invgam12 - 2*Power(dgam312,2)*Power(invgam12,2) +
+    2*ddgam3313*invgam13 - 4*dgam312*dgam313*invgam12*invgam13 -
+    2*Power(dgam313,2)*Power(invgam13,2) -
+    2*dgam311*(2*dgam312*invgam11*invgam12 + dgam322*Power(invgam12,2) +
+       invgam13*(2*dgam313*invgam11 + 2*dgam323*invgam12 +
+          dgam333*invgam13)) + ddgam3322*invgam22 -
+    2*Power(dgam312,2)*invgam11*invgam22 -
+    4*dgam312*dgam322*invgam12*invgam22 -
+    4*dgam312*dgam323*invgam13*invgam22 -
+    Power(dgam322,2)*Power(invgam22,2) + 2*ddgam3323*invgam23 -
+    4*dgam312*dgam313*invgam11*invgam23 -
+    4*dgam313*dgam322*invgam12*invgam23 -
+    4*dgam312*dgam323*invgam12*invgam23 -
+    4*dgam313*dgam323*invgam13*invgam23 -
+    4*dgam312*dgam333*invgam13*invgam23 -
+    4*dgam322*dgam323*invgam22*invgam23 -
+    2*Power(dgam323,2)*Power(invgam23,2) -
+    2*dgam322*dgam333*Power(invgam23,2) + ddgam3333*invgam33 -
+    2*Power(dgam313,2)*invgam11*invgam33 -
+    4*dgam313*dgam323*invgam12*invgam33 -
+    4*dgam313*dgam333*invgam13*invgam33 -
+    2*Power(dgam323,2)*invgam22*invgam33 -
+    4*dgam323*dgam333*invgam23*invgam33 - Power(dgam333,2)*Power(invgam33,2)\
+)/2.
 ;
 
 vreal R11
@@ -1089,197 +1078,195 @@ vreal R33
   Gam233*Gam323 + Gam113*Gam333 + Gam223*Gam333 + tr1dGam33 - tr2dGam33
 ;
 
-vreal trK
+vreal trexK
 =
-ADMK11*invgam11 + 2*ADMK12*invgam12 + 2*ADMK13*invgam13 + ADMK22*invgam22 +
-  2*ADMK23*invgam23 + ADMK33*invgam33
+exK11*invgam11 + 2*exK12*invgam12 + 2*exK13*invgam13 + exK22*invgam22 +
+  2*exK23*invgam23 + exK33*invgam33
 ;
 
-vreal DADMK111
+vreal DexK111
 =
-dADMK111 - 2*(ADMK11*Gam111 + ADMK12*Gam211 + ADMK13*Gam311)
+dexK111 - 2*(exK11*Gam111 + exK12*Gam211 + exK13*Gam311)
 ;
 
-vreal DADMK112
+vreal DexK112
 =
-dADMK112 - ADMK11*Gam112 - ADMK22*Gam211 - ADMK12*(Gam111 + Gam212) -
-  ADMK23*Gam311 - ADMK13*Gam312
+dexK112 - exK11*Gam112 - exK22*Gam211 - exK12*(Gam111 + Gam212) -
+  exK23*Gam311 - exK13*Gam312
 ;
 
-vreal DADMK113
+vreal DexK113
 =
-dADMK113 - ADMK11*Gam113 - ADMK23*Gam211 - ADMK12*Gam213 - ADMK33*Gam311 -
-  ADMK13*(Gam111 + Gam313)
+dexK113 - exK11*Gam113 - exK23*Gam211 - exK12*Gam213 - exK33*Gam311 -
+  exK13*(Gam111 + Gam313)
 ;
 
-vreal DADMK122
+vreal DexK122
 =
-dADMK122 - 2*(ADMK12*Gam112 + ADMK22*Gam212 + ADMK23*Gam312)
+dexK122 - 2*(exK12*Gam112 + exK22*Gam212 + exK23*Gam312)
 ;
 
-vreal DADMK123
+vreal DexK123
 =
-dADMK123 - ADMK13*Gam112 - ADMK12*Gam113 - ADMK23*Gam212 - ADMK22*Gam213 -
-  ADMK33*Gam312 - ADMK23*Gam313
+dexK123 - exK13*Gam112 - exK12*Gam113 - exK23*Gam212 - exK22*Gam213 -
+  exK33*Gam312 - exK23*Gam313
 ;
 
-vreal DADMK133
+vreal DexK133
 =
-dADMK133 - 2*(ADMK13*Gam113 + ADMK23*Gam213 + ADMK33*Gam313)
+dexK133 - 2*(exK13*Gam113 + exK23*Gam213 + exK33*Gam313)
 ;
 
-vreal DADMK211
+vreal DexK211
 =
-dADMK211 - 2*(ADMK11*Gam112 + ADMK12*Gam212 + ADMK13*Gam312)
+dexK211 - 2*(exK11*Gam112 + exK12*Gam212 + exK13*Gam312)
 ;
 
-vreal DADMK212
+vreal DexK212
 =
-dADMK212 - ADMK11*Gam122 - ADMK22*Gam212 - ADMK12*(Gam112 + Gam222) -
-  ADMK23*Gam312 - ADMK13*Gam322
+dexK212 - exK11*Gam122 - exK22*Gam212 - exK12*(Gam112 + Gam222) -
+  exK23*Gam312 - exK13*Gam322
 ;
 
-vreal DADMK213
+vreal DexK213
 =
-dADMK213 - ADMK11*Gam123 - ADMK23*Gam212 - ADMK12*Gam223 - ADMK33*Gam312 -
-  ADMK13*(Gam112 + Gam323)
+dexK213 - exK11*Gam123 - exK23*Gam212 - exK12*Gam223 - exK33*Gam312 -
+  exK13*(Gam112 + Gam323)
 ;
 
-vreal DADMK222
+vreal DexK222
 =
-dADMK222 - 2*(ADMK12*Gam122 + ADMK22*Gam222 + ADMK23*Gam322)
+dexK222 - 2*(exK12*Gam122 + exK22*Gam222 + exK23*Gam322)
 ;
 
-vreal DADMK223
+vreal DexK223
 =
-dADMK223 - ADMK13*Gam122 - ADMK12*Gam123 - ADMK23*Gam222 - ADMK22*Gam223 -
-  ADMK33*Gam322 - ADMK23*Gam323
+dexK223 - exK13*Gam122 - exK12*Gam123 - exK23*Gam222 - exK22*Gam223 -
+  exK33*Gam322 - exK23*Gam323
 ;
 
-vreal DADMK233
+vreal DexK233
 =
-dADMK233 - 2*(ADMK13*Gam123 + ADMK23*Gam223 + ADMK33*Gam323)
+dexK233 - 2*(exK13*Gam123 + exK23*Gam223 + exK33*Gam323)
 ;
 
-vreal DADMK311
+vreal DexK311
 =
-dADMK311 - 2*(ADMK11*Gam113 + ADMK12*Gam213 + ADMK13*Gam313)
+dexK311 - 2*(exK11*Gam113 + exK12*Gam213 + exK13*Gam313)
 ;
 
-vreal DADMK312
+vreal DexK312
 =
-dADMK312 - ADMK11*Gam123 - ADMK22*Gam213 - ADMK12*(Gam113 + Gam223) -
-  ADMK23*Gam313 - ADMK13*Gam323
+dexK312 - exK11*Gam123 - exK22*Gam213 - exK12*(Gam113 + Gam223) -
+  exK23*Gam313 - exK13*Gam323
 ;
 
-vreal DADMK313
+vreal DexK313
 =
-dADMK313 - ADMK11*Gam133 - ADMK23*Gam213 - ADMK12*Gam233 - ADMK33*Gam313 -
-  ADMK13*(Gam113 + Gam333)
+dexK313 - exK11*Gam133 - exK23*Gam213 - exK12*Gam233 - exK33*Gam313 -
+  exK13*(Gam113 + Gam333)
 ;
 
-vreal DADMK322
+vreal DexK322
 =
-dADMK322 - 2*(ADMK12*Gam123 + ADMK22*Gam223 + ADMK23*Gam323)
+dexK322 - 2*(exK12*Gam123 + exK22*Gam223 + exK23*Gam323)
 ;
 
-vreal DADMK323
+vreal DexK323
 =
-dADMK323 - ADMK13*Gam123 - ADMK12*Gam133 - ADMK23*Gam223 - ADMK22*Gam233 -
-  ADMK33*Gam323 - ADMK23*Gam333
+dexK323 - exK13*Gam123 - exK12*Gam133 - exK23*Gam223 - exK22*Gam233 -
+  exK33*Gam323 - exK23*Gam333
 ;
 
-vreal DADMK333
+vreal DexK333
 =
-dADMK333 - 2*(ADMK13*Gam133 + ADMK23*Gam233 + ADMK33*Gam333)
+dexK333 - 2*(exK13*Gam133 + exK23*Gam233 + exK33*Gam333)
 ;
 
 vreal rho
 =
-(Power(ADMbeta1,2)*eT11 + Power(ADMbeta2,2)*eT22 +
-    2*ADMbeta2*ADMbeta3*eT23 + Power(ADMbeta3,2)*eT33 +
-    2*ADMbeta1*(ADMbeta2*eT12 + ADMbeta3*eT13 - eTt1) - 2*ADMbeta2*eTt2 -
-    2*ADMbeta3*eTt3 + eTtt)/Power(ADMalpha,2)
+(Power(beta1,2)*eT11 + Power(beta2,2)*eT22 + 2*beta2*beta3*eT23 +
+    Power(beta3,2)*eT33 + 2*beta1*(beta2*eT12 + beta3*eT13 - eTt1) -
+    2*beta2*eTt2 - 2*beta3*eTt3 + eTtt)/Power(alpha,2)
 ;
 
 vreal Sm1
 =
-(ADMbeta1*eT11 + ADMbeta2*eT12 + ADMbeta3*eT13 - eTt1)/ADMalpha
+(beta1*eT11 + beta2*eT12 + beta3*eT13 - eTt1)/alpha
 ;
 
 vreal Sm2
 =
-(ADMbeta1*eT12 + ADMbeta2*eT22 + ADMbeta3*eT23 - eTt2)/ADMalpha
+(beta1*eT12 + beta2*eT22 + beta3*eT23 - eTt2)/alpha
 ;
 
 vreal Sm3
 =
-(ADMbeta1*eT13 + ADMbeta2*eT23 + ADMbeta3*eT33 - eTt3)/ADMalpha
+(beta1*eT13 + beta2*eT23 + beta3*eT33 - eTt3)/alpha
 ;
 
 
 local_HC.store(mask, index2,
--(Power(ADMK11,2)*Power(invgam11,2)) - 2*Power(ADMK13,2)*Power(invgam13,2) -
-  2*ADMK11*(2*ADMK12*invgam11*invgam12 + ADMK22*Power(invgam12,2) +
-     invgam13*(2*ADMK13*invgam11 + 2*ADMK23*invgam12 + ADMK33*invgam13)) -
-  Power(ADMK22,2)*Power(invgam22,2) -
-  2*Power(ADMK12,2)*(Power(invgam12,2) + invgam11*invgam22) -
-  4*ADMK13*ADMK22*invgam12*invgam23 - 4*ADMK13*ADMK23*invgam13*invgam23 -
-  4*ADMK22*ADMK23*invgam22*invgam23 - 2*Power(ADMK23,2)*Power(invgam23,2) -
-  2*ADMK22*ADMK33*Power(invgam23,2) -
-  4*ADMK12*(ADMK13*invgam12*invgam13 + ADMK22*invgam12*invgam22 +
-     ADMK23*invgam13*invgam22 + ADMK13*invgam11*invgam23 +
-     ADMK23*invgam12*invgam23 + ADMK33*invgam13*invgam23) -
-  2*Power(ADMK13,2)*invgam11*invgam33 - 4*ADMK13*ADMK23*invgam12*invgam33 -
-  4*ADMK13*ADMK33*invgam13*invgam33 - 2*Power(ADMK23,2)*invgam22*invgam33 -
-  4*ADMK23*ADMK33*invgam23*invgam33 - Power(ADMK33,2)*Power(invgam33,2) +
+-(Power(exK11,2)*Power(invgam11,2)) - 2*Power(exK13,2)*Power(invgam13,2) -
+  2*exK11*(2*exK12*invgam11*invgam12 + exK22*Power(invgam12,2) +
+     invgam13*(2*exK13*invgam11 + 2*exK23*invgam12 + exK33*invgam13)) -
+  Power(exK22,2)*Power(invgam22,2) -
+  2*Power(exK12,2)*(Power(invgam12,2) + invgam11*invgam22) -
+  4*exK13*exK22*invgam12*invgam23 - 4*exK13*exK23*invgam13*invgam23 -
+  4*exK22*exK23*invgam22*invgam23 - 2*Power(exK23,2)*Power(invgam23,2) -
+  2*exK22*exK33*Power(invgam23,2) -
+  4*exK12*(exK13*invgam12*invgam13 + exK22*invgam12*invgam22 +
+     exK23*invgam13*invgam22 + exK13*invgam11*invgam23 +
+     exK23*invgam12*invgam23 + exK33*invgam13*invgam23) -
+  2*Power(exK13,2)*invgam11*invgam33 - 4*exK13*exK23*invgam12*invgam33 -
+  4*exK13*exK33*invgam13*invgam33 - 2*Power(exK23,2)*invgam22*invgam33 -
+  4*exK23*exK33*invgam23*invgam33 - Power(exK33,2)*Power(invgam33,2) +
   invgam11*R11 + 2*invgam12*R12 + 2*invgam13*R13 + invgam22*R22 +
-  2*invgam23*R23 + invgam33*R33 - 16*cpi*rho + Power(trK,2)
+  2*invgam23*R23 + invgam33*R33 - 16*cpi*rho + Power(trexK,2)
 );
 
 local_MC1.store(mask, index2,
--(DADMK212*Power(invgam12,2)) + 2*DADMK123*invgam12*invgam13 -
-  DADMK213*invgam12*invgam13 - DADMK312*invgam12*invgam13 +
-  DADMK133*Power(invgam13,2) - DADMK313*Power(invgam13,2) +
-  DADMK212*invgam11*invgam22 + DADMK223*invgam13*invgam22 -
-  DADMK322*invgam13*invgam22 +
-  DADMK122*(Power(invgam12,2) - invgam11*invgam22) -
-  2*DADMK123*invgam11*invgam23 + DADMK213*invgam11*invgam23 +
-  DADMK312*invgam11*invgam23 - DADMK223*invgam12*invgam23 +
-  DADMK322*invgam12*invgam23 + DADMK233*invgam13*invgam23 -
-  DADMK323*invgam13*invgam23 - DADMK133*invgam11*invgam33 +
-  DADMK313*invgam11*invgam33 - DADMK233*invgam12*invgam33 +
-  DADMK323*invgam12*invgam33 - 8*cpi*invgam11*Sm1 - 8*cpi*invgam12*Sm2 -
-  8*cpi*invgam13*Sm3
+-(DexK212*Power(invgam12,2)) + 2*DexK123*invgam12*invgam13 -
+  DexK213*invgam12*invgam13 - DexK312*invgam12*invgam13 +
+  DexK133*Power(invgam13,2) - DexK313*Power(invgam13,2) +
+  DexK212*invgam11*invgam22 + DexK223*invgam13*invgam22 -
+  DexK322*invgam13*invgam22 + DexK122*
+   (Power(invgam12,2) - invgam11*invgam22) - 2*DexK123*invgam11*invgam23 +
+  DexK213*invgam11*invgam23 + DexK312*invgam11*invgam23 -
+  DexK223*invgam12*invgam23 + DexK322*invgam12*invgam23 +
+  DexK233*invgam13*invgam23 - DexK323*invgam13*invgam23 -
+  DexK133*invgam11*invgam33 + DexK313*invgam11*invgam33 -
+  DexK233*invgam12*invgam33 + DexK323*invgam12*invgam33 -
+  8*cpi*invgam11*Sm1 - 8*cpi*invgam12*Sm2 - 8*cpi*invgam13*Sm3
 );
 
 local_MC2.store(mask, index2,
--(DADMK112*Power(invgam12,2)) + DADMK211*Power(invgam12,2) -
-  DADMK113*invgam12*invgam13 + DADMK311*invgam12*invgam13 +
-  DADMK112*invgam11*invgam22 - DADMK211*invgam11*invgam22 +
-  DADMK123*invgam13*invgam22 - 2*DADMK213*invgam13*invgam22 +
-  DADMK312*invgam13*invgam22 + DADMK113*invgam11*invgam23 -
-  DADMK311*invgam11*invgam23 - DADMK123*invgam12*invgam23 +
-  2*DADMK213*invgam12*invgam23 - DADMK312*invgam12*invgam23 +
-  DADMK133*invgam13*invgam23 - DADMK313*invgam13*invgam23 +
-  DADMK233*Power(invgam23,2) - DADMK323*Power(invgam23,2) -
-  DADMK133*invgam12*invgam33 + DADMK313*invgam12*invgam33 -
-  DADMK233*invgam22*invgam33 + DADMK323*invgam22*invgam33 -
+-(DexK112*Power(invgam12,2)) + DexK211*Power(invgam12,2) -
+  DexK113*invgam12*invgam13 + DexK311*invgam12*invgam13 +
+  DexK112*invgam11*invgam22 - DexK211*invgam11*invgam22 +
+  DexK123*invgam13*invgam22 - 2*DexK213*invgam13*invgam22 +
+  DexK312*invgam13*invgam22 + DexK113*invgam11*invgam23 -
+  DexK311*invgam11*invgam23 - DexK123*invgam12*invgam23 +
+  2*DexK213*invgam12*invgam23 - DexK312*invgam12*invgam23 +
+  DexK133*invgam13*invgam23 - DexK313*invgam13*invgam23 +
+  DexK233*Power(invgam23,2) - DexK323*Power(invgam23,2) -
+  DexK133*invgam12*invgam33 + DexK313*invgam12*invgam33 -
+  DexK233*invgam22*invgam33 + DexK323*invgam22*invgam33 -
   8*cpi*invgam12*Sm1 - 8*cpi*invgam22*Sm2 - 8*cpi*invgam23*Sm3
 );
 
 local_MC3.store(mask, index2,
--(DADMK112*invgam12*invgam13) + DADMK211*invgam12*invgam13 -
-  DADMK113*Power(invgam13,2) + DADMK311*Power(invgam13,2) -
-  DADMK122*invgam13*invgam22 + DADMK212*invgam13*invgam22 +
-  DADMK112*invgam11*invgam23 - DADMK211*invgam11*invgam23 +
-  DADMK122*invgam12*invgam23 - DADMK212*invgam12*invgam23 -
-  DADMK123*invgam13*invgam23 - DADMK213*invgam13*invgam23 +
-  2*DADMK312*invgam13*invgam23 - DADMK223*Power(invgam23,2) +
-  DADMK322*Power(invgam23,2) + DADMK113*invgam11*invgam33 -
-  DADMK311*invgam11*invgam33 + DADMK123*invgam12*invgam33 +
-  DADMK213*invgam12*invgam33 - 2*DADMK312*invgam12*invgam33 +
-  DADMK223*invgam22*invgam33 - DADMK322*invgam22*invgam33 -
+-(DexK112*invgam12*invgam13) + DexK211*invgam12*invgam13 -
+  DexK113*Power(invgam13,2) + DexK311*Power(invgam13,2) -
+  DexK122*invgam13*invgam22 + DexK212*invgam13*invgam22 +
+  DexK112*invgam11*invgam23 - DexK211*invgam11*invgam23 +
+  DexK122*invgam12*invgam23 - DexK212*invgam12*invgam23 -
+  DexK123*invgam13*invgam23 - DexK213*invgam13*invgam23 +
+  2*DexK312*invgam13*invgam23 - DexK223*Power(invgam23,2) +
+  DexK322*Power(invgam23,2) + DexK113*invgam11*invgam33 -
+  DexK311*invgam11*invgam33 + DexK123*invgam12*invgam33 +
+  DexK213*invgam12*invgam33 - 2*DexK312*invgam12*invgam33 +
+  DexK223*invgam22*invgam33 - DexK322*invgam22*invgam33 -
   8*cpi*invgam13*Sm1 - 8*cpi*invgam23*Sm2 - 8*cpi*invgam33*Sm3
 );
 
