@@ -53,16 +53,10 @@ extern "C" void ADMconstraints(CCTK_ARGUMENTS) {
   const GF3D5layout layout5(imin, imax);
 
   // Input grid functions
-  const GF3D2<const CCTK_REAL> &gf_W = W;
-  const smat<GF3D2<const CCTK_REAL>, 3> gf_gamt{gammatxx, gammatxy, gammatxz,
-                                                gammatyy, gammatyz, gammatzz};
-  const GF3D2<const CCTK_REAL> &gf_exKh = Kh;
-  const smat<GF3D2<const CCTK_REAL>, 3> gf_exAt{Atxx, Atxy, Atxz,
-                                                Atyy, Atyz, Atzz};
-  const vec<GF3D2<const CCTK_REAL>, 3> gf_trGt{Gamtx, Gamty, Gamtz};
-  const GF3D2<const CCTK_REAL> &gf_Theta = Theta;
-  const GF3D2<const CCTK_REAL> &gf_alpha = alphaG;
-  const vec<GF3D2<const CCTK_REAL>, 3> gf_beta{betaGx, betaGy, betaGz};
+  const smat<GF3D2<const CCTK_REAL>, 3> gf_gam{gxx, gxy, gxz, gyy, gyz, gzz};
+  const smat<GF3D2<const CCTK_REAL>, 3> gf_exK{Kxx, Kxy, Kxz, Kyy, Kyz, Kzz};
+  const GF3D2<const CCTK_REAL> &gf_alpha = alp;
+  const vec<GF3D2<const CCTK_REAL>, 3> gf_beta{betax, betay, betaz};
 
   // More input grid functions
   const GF3D2<const CCTK_REAL> &gf_eTtt = eTtt;
@@ -71,9 +65,8 @@ extern "C" void ADMconstraints(CCTK_ARGUMENTS) {
                                               eTyy, eTyz, eTzz};
 
   // Output grid functions
-  const vec<GF3D2<CCTK_REAL>, 3> gf_ZtC{ZtCx, ZtCy, ZtCz};
   const GF3D2<CCTK_REAL> &gf_HC = HC;
-  const vec<GF3D2<CCTK_REAL>, 3> gf_MtC{MtCx, MtCy, MtCz};
+  const vec<GF3D2<CCTK_REAL>, 3> gf_MC{MCx, MCy, MCz};
 
   // Define derivs lambdas
   const auto calccopy = [&](const auto &gf, const auto &gf0) {
@@ -90,7 +83,7 @@ extern "C" void ADMconstraints(CCTK_ARGUMENTS) {
   };
 
   // Tile variables for derivatives and so on
-  const int ntmps = 118;
+  const int ntmps = 88;
   GF3D5vector<CCTK_REAL> tmps(layout5, ntmps);
   int itmp = 0;
 
@@ -107,31 +100,14 @@ extern "C" void ADMconstraints(CCTK_ARGUMENTS) {
   const auto make_mat_vec_gf = [&]() { return make_mat(make_vec_gf); };
   const auto make_mat_mat_gf = [&]() { return make_mat(make_mat_gf); };
 
-  const GF3D5<CCTK_REAL> tl_W(make_gf());
-  const vec<GF3D5<CCTK_REAL>, 3> tl_dW(make_vec_gf());
-  const smat<GF3D5<CCTK_REAL>, 3> tl_ddW(make_mat_gf());
-  calcderivs2(tl_W, tl_dW, tl_ddW, gf_W);
+  const smat<GF3D5<CCTK_REAL>, 3> tl_gam(make_mat_gf());
+  const smat<vec<GF3D5<CCTK_REAL>, 3>, 3> tl_dgam(make_mat_vec_gf());
+  const smat<smat<GF3D5<CCTK_REAL>, 3>, 3> tl_ddgam(make_mat_mat_gf());
+  calcderivs2(tl_gam, tl_dgam, tl_ddgam, gf_gam);
 
-  const smat<GF3D5<CCTK_REAL>, 3> tl_gamt(make_mat_gf());
-  const smat<vec<GF3D5<CCTK_REAL>, 3>, 3> tl_dgamt(make_mat_vec_gf());
-  const smat<smat<GF3D5<CCTK_REAL>, 3>, 3> tl_ddgamt(make_mat_mat_gf());
-  calcderivs2(tl_gamt, tl_dgamt, tl_ddgamt, gf_gamt);
-
-  const GF3D5<CCTK_REAL> tl_exKh(make_gf());
-  const vec<GF3D5<CCTK_REAL>, 3> tl_dexKh(make_vec_gf());
-  calcderivs(tl_exKh, tl_dexKh, gf_exKh);
-
-  const smat<GF3D5<CCTK_REAL>, 3> tl_exAt(make_mat_gf());
-  const smat<vec<GF3D5<CCTK_REAL>, 3>, 3> tl_dexAt(make_mat_vec_gf());
-  calcderivs(tl_exAt, tl_dexAt, gf_exAt);
-
-  const vec<GF3D5<CCTK_REAL>, 3> tl_trGt(make_vec_gf());
-  const vec<vec<GF3D5<CCTK_REAL>, 3>, 3> tl_dtrGt(make_vec_vec_gf());
-  calcderivs(tl_trGt, tl_dtrGt, gf_trGt);
-
-  const GF3D5<CCTK_REAL> tl_Theta(make_gf());
-  const vec<GF3D5<CCTK_REAL>, 3> tl_dTheta(make_vec_gf());
-  calcderivs(tl_Theta, tl_dTheta, gf_Theta);
+  const smat<GF3D5<CCTK_REAL>, 3> tl_exK(make_mat_gf());
+  const smat<vec<GF3D5<CCTK_REAL>, 3>, 3> tl_dexK(make_mat_vec_gf());
+  calcderivs(tl_exK, tl_dexK, gf_exK);
 
   const GF3D5<CCTK_REAL> tl_alpha(make_gf());
   calccopy(tl_alpha, gf_alpha);
