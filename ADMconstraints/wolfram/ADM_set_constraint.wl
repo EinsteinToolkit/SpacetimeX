@@ -4,8 +4,7 @@
 
 (* (c) Liwei Ji, 07/2024 *)
 
-Needs["xAct`xCoba`", FileNameJoin[{Environment["GENERATO"], "src/Generato.wl"
-  }]]
+Needs["xAct`xCoba`", FileNameJoin[{Environment["GENERATO"], "src/Generato.wl"}]]
 
 SetPVerbose[False];
 
@@ -62,15 +61,14 @@ $MainPrint[] :=
                          ddADMVarlist];
     pr[];
     PrintEquations[{Mode -> "Temp"}, Drop[IntermediateVarlist, {-1}]];
-
+    pr[];
+    (* treat DexK separately *)
     Module[{printDK},
-      printDK[kk_,ii_,jj_] := PrintComponentEquations[GetDefaultChart[],
-                                                      DexK[{kk,-GetDefaultChart[]},{ii,-GetDefaultChart[]},{jj,-GetDefaultChart[]}]];
+      printDK[kk_, ii_, jj_] := PrintComponentEquation[GetDefaultChart[], DexK[{kk, -GetDefaultChart[]}, {ii, -GetDefaultChart[]}, {jj, -GetDefaultChart[]}]];
       SetParsePrintCompEQNMode[{NewVar -> True}];
-      Do[If[ii!=jj || ii!=kk || jj!=kk, printDK[kk,ii,jj]], {kk,1,3}, {ii,1,3}, {jj,ii,3}]
+      Do[If[ii != jj || ii != kk || jj != kk, printDK[kk, ii, jj]], {kk, 1, 3}, {ii, 1, 3}, {jj, ii, 3}]
     ];
     pr[];
-
     PrintEquations[{Mode -> "Temp"}, MatterVarlist];
     pr[];
     PrintEquations[{Mode -> "Main"}, ConstraintVarlist];

@@ -1084,10 +1084,6 @@ exK11*invgam11 + 2*exK12*invgam12 + 2*exK13*invgam13 + exK22*invgam22 +
   2*exK23*invgam23 + exK33*invgam33
 ;
 
-vreal DexK111
-=
-dexK111 - 2*(exK11*Gam111 + exK12*Gam211 + exK13*Gam311)
-;
 
 vreal DexK112
 =
@@ -1134,11 +1130,6 @@ dexK213 - exK11*Gam123 - exK23*Gam212 - exK12*Gam223 - exK33*Gam312 -
   exK13*(Gam112 + Gam323)
 ;
 
-vreal DexK222
-=
-dexK222 - 2*(exK12*Gam122 + exK22*Gam222 + exK23*Gam322)
-;
-
 vreal DexK223
 =
 dexK223 - exK13*Gam122 - exK12*Gam123 - exK23*Gam222 - exK22*Gam223 -
@@ -1178,10 +1169,6 @@ dexK323 - exK13*Gam123 - exK12*Gam133 - exK23*Gam223 - exK22*Gam233 -
   exK33*Gam323 - exK23*Gam333
 ;
 
-vreal DexK333
-=
-dexK333 - 2*(exK13*Gam133 + exK23*Gam233 + exK33*Gam333)
-;
 
 vreal rho
 =
