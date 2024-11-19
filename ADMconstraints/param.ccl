@@ -1,1 +1,13 @@
 # Parameter definitions for thorn ADMconstraints
+
+BOOLEAN calc_constraints "Calculate constraints" STEERABLE=recover
+{
+} yes
+
+CCTK_INT deriv_order "Order of spatial finite differencing" STEERABLE=never
+{
+  2 :: "Second order finite difference"
+  4 :: "Fourth order finite difference"
+  6 :: "Sixth order finite difference"
+  8 :: "Eighth order finite difference"
+} 4

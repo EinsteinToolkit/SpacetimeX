@@ -29,8 +29,8 @@ CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline T Power(T x, int y) {
   return (y == 2) ? Arith::pow2(x) : Arith::pown(x, y);
 }
 
-extern "C" void ADMconstraints(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTSX_ADMconstraints;
+extern "C" void ADMconstraints_CalcConstraints(CCTK_ARGUMENTS) {
+  DECLARE_CCTK_ARGUMENTSX_ADMconstraints_CalcConstraints;
   DECLARE_CCTK_PARAMETERS;
 
   for (int d = 0; d < 3; ++d)
@@ -54,7 +54,7 @@ extern "C" void ADMconstraints(CCTK_ARGUMENTS) {
 
   // Input grid functions
   const smat<GF3D2<const CCTK_REAL>, 3> gf_gam{gxx, gxy, gxz, gyy, gyz, gzz};
-  const smat<GF3D2<const CCTK_REAL>, 3> gf_exK{Kxx, Kxy, Kxz, Kyy, Kyz, Kzz};
+  const smat<GF3D2<const CCTK_REAL>, 3> gf_exK{kxx, kxy, kxz, kyy, kyz, kzz};
   const GF3D2<const CCTK_REAL> &gf_alpha = alp;
   const vec<GF3D2<const CCTK_REAL>, 3> gf_beta{betax, betay, betaz};
 

@@ -1,7 +1,7 @@
 # Schedule definitions for thorn ADMconstraints
 
 STORAGE: HC
-STORAGE: MtC
+STORAGE: MC
 
 
 
@@ -12,7 +12,7 @@ SCHEDULE GROUP ADMconstraints_AnalysisGroup AT analysis
 
 
 if (calc_constraints) {
-  SCHEDULE ADMconstraints_Constraints IN ADMconstraints_AnalysisGroup
+  SCHEDULE ADMconstraints_CalcConstraints IN ADMconstraints_AnalysisGroup
   {
     LANG: C
     READS: ADMBaseX::metric(everywhere)
@@ -23,6 +23,6 @@ if (calc_constraints) {
     READS: TmunuBaseX::eTti(interior)
     READS: TmunuBaseX::eTij(interior)
     WRITES: HC(interior)
-    WRITES: MtC(interior)
+    WRITES: MC(interior)
   } "Calculate ADM Constraints"
 }
