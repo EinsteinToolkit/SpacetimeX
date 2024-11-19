@@ -96,7 +96,6 @@ extern "C" void ADMconstraints_CalcConstraints(CCTK_ARGUMENTS) {
   };
   const auto make_vec_gf = [&]() { return make_vec(make_gf); };
   const auto make_mat_gf = [&]() { return make_mat(make_gf); };
-  const auto make_vec_vec_gf = [&]() { return make_vec(make_vec_gf); };
   const auto make_mat_vec_gf = [&]() { return make_mat(make_vec_gf); };
   const auto make_mat_mat_gf = [&]() { return make_mat(make_mat_gf); };
 

@@ -26,9 +26,9 @@ SetEQN[DexK[k_, i_, j_], dexK[k, i, j] - Gam[l, k, i] exK[-l, j] - Gam[l, k, j] 
 
 (* matter *)
 
-SetEQN[rho[], alpha[]^-2 (eTtt[] - 2 beta[j] eTt[-j] + beta[i] beta[j] eT[-i, -j])];
+SetEQN[rho[], alpha[] ^ -2 (eTtt[] - 2 beta[j] eTt[-j] + beta[i] beta[j] eT[-i, -j])];
 
-SetEQN[Sm[i_], -alpha[]^-1 (eTt[i] - beta[k] eT[-k, i])];
+SetEQN[Sm[i_], -alpha[] ^ -1 (eTt[i] - beta[k] eT[-k, i])];
 
 (***************)
 
@@ -36,6 +36,6 @@ SetEQN[Sm[i_], -alpha[]^-1 (eTt[i] - beta[k] eT[-k, i])];
 
 (***************)
 
-SetEQN[HC[], invgam[k, l] R[-k, -l] + trexK[]^2 - invgam[i, k] invgam[j, l] exK[-i, -j] exK[-k, -l] - 16 cpi rho[]];
+SetEQN[HC[], invgam[k, l] R[-k, -l] + trexK[] ^ 2 - invgam[i, k] invgam[j, l] exK[-i, -j] exK[-k, -l] - 16 cpi rho[]];
 
 SetEQN[MC[i_], (invgam[i, k] invgam[j, l] - invgam[i, j] invgam[k, l]) DexK[-j, -k, -l] - 8 cpi invgam[i, j] Sm[-j]];
