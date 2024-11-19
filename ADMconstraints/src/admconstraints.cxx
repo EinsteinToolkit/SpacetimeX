@@ -129,10 +129,10 @@ extern "C" void ADMconstraints(CCTK_ARGUMENTS) {
   const CCTK_REAL cpi = M_PI;
 
 #ifdef __CUDACC__
-  const nvtxRangeId_t range = nvtxRangeStartA("Z4cow_Constraints::constraints");
+  const nvtxRangeId_t range = nvtxRangeStartA("ADMconstraints::constraints");
 #endif
 
-#include "../wolfram/Z4cow_set_constraint.hxx"
+#include "../wolfram/ADM_set_constraint.hxx"
 
 #ifdef __CUDACC__
   nvtxRangeEnd(range);
