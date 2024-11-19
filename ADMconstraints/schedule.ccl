@@ -1,0 +1,28 @@
+# Schedule definitions for thorn ADMconstraints
+
+STORAGE: HC
+STORAGE: MtC
+
+
+
+
+SCHEDULE GROUP ADMconstraints_AnalysisGroup AT analysis
+{
+} "Analyse Z4c variables"
+
+
+if (calc_constraints) {
+  SCHEDULE ADMconstraints_Constraints IN ADMconstraints_AnalysisGroup
+  {
+    LANG: C
+    READS: ADMBaseX::metric(everywhere)
+    READS: ADMBaseX::curv(everywhere)
+    READS: ADMBaseX::lapse(everywhere)
+    READS: ADMBaseX::shift(everywhere)
+    READS: TmunuBaseX::eTtt(interior)
+    READS: TmunuBaseX::eTti(interior)
+    READS: TmunuBaseX::eTij(interior)
+    WRITES: HC(interior)
+    WRITES: MtC(interior)
+  } "Calculate ADM Constraints"
+}
