@@ -56,18 +56,35 @@ $MainPrint[] :=
     PrintInitializations[{Mode -> "MainIn", StorageType -> "Tile"},
                          ADMVarlist];
     PrintInitializations[{Mode -> "MainIn", StorageType -> "Tile", TensorType -> "Vect"},
-                         dADMVarlist];
+                         Drop[dADMVarlist, {-1}]];
+
+    (* treat dexK separately *)
+    Module[{printdK, varname, symmetry, printname},
+      {varname, symmetry, printname} = ParseVar[dADMVarlist[[-1]]];
+      printdK[kk_, ii_, jj_] := PrintComponentInitialization[{varname, symmetry}, dexK[{kk, -GetDefaultChart[]}, {ii, -GetDefaultChart[]}, {jj, -GetDefaultChart[]}]];
+      SetParsePrintCompInitMode[MainIn -> True];
+      SetParsePrintCompInitStorageType[Tile -> True];
+      SetParsePrintCompInitTensorType[Vect -> True];
+      Do[If[ii != jj || ii != kk || jj != kk, printdK[kk, ii, jj]], {kk, 1, 3}, {ii, 1, 3}, {jj, ii, 3}]
+      CleanParsePrintCompInitStorageType[];
+      CleanParsePrintCompInitTensorType[];
+      CleanParsePrintCompInitMode[];
+    ];
+
     PrintInitializations[{Mode -> "MainIn", StorageType -> "Tile", TensorType -> "Smat"},
                          ddADMVarlist];
     pr[];
     PrintEquations[{Mode -> "Temp"}, Drop[IntermediateVarlist, {-1}]];
     pr[];
+
     (* treat DexK separately *)
     Module[{printDK},
       printDK[kk_, ii_, jj_] := PrintComponentEquation[GetDefaultChart[], DexK[{kk, -GetDefaultChart[]}, {ii, -GetDefaultChart[]}, {jj, -GetDefaultChart[]}]];
       SetParsePrintCompEQNMode[{NewVar -> True}];
       Do[If[ii != jj || ii != kk || jj != kk, printDK[kk, ii, jj]], {kk, 1, 3}, {ii, 1, 3}, {jj, ii, 3}]
+      CleanParsePrintCompEQNMode[];
     ];
+
     pr[];
     PrintEquations[{Mode -> "Temp"}, MatterVarlist];
     pr[];
