@@ -24,5 +24,18 @@ if (calc_constraints) {
     READS: TmunuBaseX::eTij(interior)
     WRITES: HC(interior)
     WRITES: MC(interior)
+    SYNC: HC MC
   } "Calculate ADM Constraints"
+
+  if (use_lapse_mask) {
+    SCHEDULE ADMconstraints_LapseMask IN ADMconstraints_AnalysisGroup AFTER ADMconstraints_CalcConstraints
+    {
+      LANG: C
+      READS: ADMBaseX::lapse(interior)
+      READS: HC(interior)
+      READS: MC(interior)
+      WRITES: HC(interior)
+      WRITES: MC(interior)
+    } "Apply lapse mask"
+  }
 }

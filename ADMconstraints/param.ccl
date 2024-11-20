@@ -11,3 +11,12 @@ CCTK_INT deriv_order "Order of spatial finite differencing" STEERABLE=never
   6 :: "Sixth order finite difference"
   8 :: "Eighth order finite difference"
 } 4
+
+BOOLEAN use_lapse_mask "Exclude the region when lapse is small" STEERABLE=recover
+{
+} yes
+
+CCTK_REAL lapse_mask_cutoff "Exclude the regin when lapse is smaller then the cutoff" STEERABLE=always
+{
+  *:* :: ""
+} 0.3

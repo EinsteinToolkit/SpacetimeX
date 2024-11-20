@@ -2,7 +2,8 @@
 
 # Source files in this directory
 SRCS = \
-	admconstraints.cxx
+	admconstraints.cxx \
+  lapsemask.cxx
 
 # Subdirectories containing source files
 SUBDIRS =
