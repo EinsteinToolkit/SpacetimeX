@@ -12,7 +12,17 @@ SCHEDULE GROUP ADMconstraints_AnalysisGroup AT analysis
 
 
 if (calc_constraints) {
-  SCHEDULE ADMconstraints_CalcConstraints IN ADMconstraints_AnalysisGroup
+  SCHEDULE ADMconstraints_Sync IN ADMconstraints_AnalysisGroup
+  {
+    LANG: C
+    OPTIONS: global
+    SYNC: ADMBaseX::metric
+    SYNC: ADMBaseX::curv
+    SYNC: ADMBaseX::lapse
+    SYNC: ADMBaseX::shift
+  } "Synchronize"
+
+  SCHEDULE ADMconstraints_CalcConstraints IN ADMconstraints_AnalysisGroup AFTER ADMconstraints_Sync
   {
     LANG: C
     READS: ADMBaseX::metric(everywhere)
@@ -24,7 +34,6 @@ if (calc_constraints) {
     READS: TmunuBaseX::eTij(interior)
     WRITES: HC(interior)
     WRITES: MC(interior)
-    SYNC: HC MC
   } "Calculate ADM Constraints"
 
   if (use_lapse_mask) {
@@ -36,6 +45,7 @@ if (calc_constraints) {
       READS: MC(interior)
       WRITES: HC(interior)
       WRITES: MC(interior)
+      SYNC: HC MC
     } "Apply lapse mask"
   }
 }

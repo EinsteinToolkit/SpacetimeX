@@ -29,6 +29,10 @@ CCTK_DEVICE CCTK_HOST CCTK_ATTRIBUTE_ALWAYS_INLINE inline T Power(T x, int y) {
   return (y == 2) ? Arith::pow2(x) : Arith::pown(x, y);
 }
 
+extern "C" void ADMconstraints_Sync(CCTK_ARGUMENTS) {
+  // do nothing
+}
+
 extern "C" void ADMconstraints_CalcConstraints(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTSX_ADMconstraints_CalcConstraints;
   DECLARE_CCTK_PARAMETERS;
