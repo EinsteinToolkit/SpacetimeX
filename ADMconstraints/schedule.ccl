@@ -8,7 +8,7 @@ STORAGE: MC
 
 SCHEDULE GROUP ADMconstraints_AnalysisGroup AT analysis
 {
-} "Analyse Z4c variables"
+} "Analyse ADM variables"
 
 
 if (calc_constraints) {
