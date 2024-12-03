@@ -1,9 +1,10 @@
-#include "newradx.hxx"
-#include "loop.hxx"
-#include "loop_device.hxx"
 #include <cctk.h>
 #include <cctk_Arguments_Checked.h>
 #include <cmath>
+#include "loop.hxx"
+#include "loop_device.hxx"
+#include "driver.hxx"
+#include "newradx.hxx"
 
 namespace NewRadX {
 
@@ -109,10 +110,24 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
     assert(0);
   };
 
+  const auto symmetries = CarpetX::ghext->patchdata.at(cctk_patch).symmetries;
+  const vect<vect<bool, Loop::dim>, 2> is_sym_bnd {
+    {
+      symmetries[0][0] != CarpetX::symmetry_t::none,
+      symmetries[0][1] != CarpetX::symmetry_t::none,
+      symmetries[0][2] != CarpetX::symmetry_t::none
+    },
+    {
+      symmetries[1][0] != CarpetX::symmetry_t::none,
+      symmetries[1][1] != CarpetX::symmetry_t::none,
+      symmetries[1][2] != CarpetX::symmetry_t::none
+    }
+  };
+
   const Loop::GridDescBaseDevice grid(cctkGH);
   grid.loop_outermost_int_device<0, 0, 0>(
-      grid.nghostzones,
-      [=] CCTK_DEVICE CCTK_HOST(const Loop::PointDesc &p)
+      grid.nghostzones, is_sym_bnd,
+      [=] CCTK_DEVICE(const Loop::PointDesc &p)
           CCTK_ATTRIBUTE_ALWAYS_INLINE {
             // The main part of the boundary condition assumes that we have an
             // outgoing radial wave with some speed v0:
