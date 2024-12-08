@@ -133,10 +133,6 @@ extern "C" void TestNewRadX_RHS(CCTK_ARGUMENTS) {
   }
 }
 
-extern "C" void TestNewRadX_Sync(CCTK_ARGUMENTS) {
-  // do nothing
-}
-
 extern "C" void TestNewRadX_CompareSolution(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTSX_TestNewRadX_CompareSolution;
   DECLARE_CCTK_PARAMETERS;
