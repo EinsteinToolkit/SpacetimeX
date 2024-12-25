@@ -16,7 +16,12 @@ BOOLEAN use_lapse_mask "Exclude the region when lapse is small" STEERABLE=recove
 {
 } yes
 
-CCTK_REAL lapse_mask_cutoff "Exclude the regin when lapse is smaller then the cutoff" STEERABLE=always
+CCTK_REAL lapse_mask_cutoff "Exclude the region when lapse is smaller than the cutoff" STEERABLE=always
 {
   *:* :: ""
 } 0.3
+
+CCTK_REAL lapse_mask_outer_radius "Exclude the region when the distance to the origin is larger than the radius" STEERABLE=always
+{
+  *:* :: ""
+} 30
