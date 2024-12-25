@@ -17,7 +17,7 @@ extern "C" void ADMconstraints_LapseMask(CCTK_ARGUMENTS) {
   grid.loop_int_device<0, 0, 0>(
       grid.nghostzones, [=] ARITH_DEVICE(const PointDesc &p) ARITH_INLINE {
         const CCTK_REAL rad = sqrt(p.x * p.x + p.y * p.y + p.z * p.z);
-        if (alp(p.I) < local_cutoff && rad > local_outer_radius) {
+        if (alp(p.I) < local_cutoff || rad > local_outer_radius) {
           HC(p.I) = 0.0;
           MCx(p.I) = 0.0;
           MCy(p.I) = 0.0;
