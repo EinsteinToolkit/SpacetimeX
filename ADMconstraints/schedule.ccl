@@ -34,6 +34,7 @@ if (calc_constraints) {
     READS: TmunuBaseX::eTij(interior)
     WRITES: HC(interior)
     WRITES: MC(interior)
+    SYNC: HC MC
   } "Calculate ADM Constraints"
 
   if (use_lapse_mask) {
