@@ -1,0 +1,52 @@
+# Schedule definitions for thorn ADMconstraints
+
+STORAGE: HC
+STORAGE: MC
+
+
+
+
+SCHEDULE GROUP ADMconstraints_AnalysisGroup AT analysis
+{
+} "Analyse ADM variables"
+
+
+if (calc_constraints) {
+  SCHEDULE ADMconstraints_Sync IN ADMconstraints_AnalysisGroup
+  {
+    LANG: C
+    OPTIONS: global
+    SYNC: ADMBaseX::metric
+    SYNC: ADMBaseX::curv
+    SYNC: ADMBaseX::lapse
+    SYNC: ADMBaseX::shift
+  } "Synchronize"
+
+  SCHEDULE ADMconstraints_CalcConstraints IN ADMconstraints_AnalysisGroup AFTER ADMconstraints_Sync
+  {
+    LANG: C
+    READS: ADMBaseX::metric(everywhere)
+    READS: ADMBaseX::curv(everywhere)
+    READS: ADMBaseX::lapse(everywhere)
+    READS: ADMBaseX::shift(everywhere)
+    READS: TmunuBaseX::eTtt(interior)
+    READS: TmunuBaseX::eTti(interior)
+    READS: TmunuBaseX::eTij(interior)
+    WRITES: HC(interior)
+    WRITES: MC(interior)
+    SYNC: HC MC
+  } "Calculate ADM Constraints"
+
+  if (use_lapse_mask) {
+    SCHEDULE ADMconstraints_LapseMask IN ADMconstraints_AnalysisGroup AFTER ADMconstraints_CalcConstraints
+    {
+      LANG: C
+      READS: ADMBaseX::lapse(interior)
+      READS: HC(interior)
+      READS: MC(interior)
+      WRITES: HC(interior)
+      WRITES: MC(interior)
+      SYNC: HC MC
+    } "Apply lapse mask"
+  }
+}

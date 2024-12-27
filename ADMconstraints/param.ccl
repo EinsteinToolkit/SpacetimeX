@@ -1,0 +1,27 @@
+# Parameter definitions for thorn ADMconstraints
+
+BOOLEAN calc_constraints "Calculate constraints" STEERABLE=recover
+{
+} yes
+
+CCTK_INT deriv_order "Order of spatial finite differencing" STEERABLE=never
+{
+  2 :: "Second order finite difference"
+  4 :: "Fourth order finite difference"
+  6 :: "Sixth order finite difference"
+  8 :: "Eighth order finite difference"
+} 4
+
+BOOLEAN use_lapse_mask "Exclude the region when lapse is small" STEERABLE=recover
+{
+} yes
+
+CCTK_REAL lapse_mask_cutoff "Exclude the region when lapse is smaller than the cutoff" STEERABLE=always
+{
+  *:* :: ""
+} 0.3
+
+CCTK_REAL lapse_mask_outer_radius "Exclude the region when the distance to the origin is larger than the radius" STEERABLE=always
+{
+  *:* :: ""
+} 30.0

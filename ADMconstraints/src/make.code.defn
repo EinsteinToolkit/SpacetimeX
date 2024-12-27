@@ -1,0 +1,9 @@
+# Main make.code.defn file for thorn Z4c
+
+# Source files in this directory
+SRCS = \
+	admconstraints.cxx \
+  lapsemask.cxx
+
+# Subdirectories containing source files
+SUBDIRS =
