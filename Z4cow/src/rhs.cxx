@@ -190,43 +190,60 @@ extern "C" void Z4cow_RHS(CCTK_ARGUMENTS) {
 
   // Upwind and dissipation terms
 
-  // vreal (*calc_deriv_upwind)(
-  //     const GF3D2<const CCTK_REAL> &, const vbool &, const vect<int, dim> &,
-  //     const vect<CCTK_REAL, dim> &, const vec<vreal, dim> &);
-  vreal (*calc_diss)(const GF3D2<const CCTK_REAL> &, const vbool &,
-                     const vect<int, dim> &, const vect<CCTK_REAL, dim> &);
-  switch (diss_order) {
-  case 3: {
-    calc_diss = &Derivs::calc_diss<2>;
-    break;
-  }
-  case 5: {
-    calc_diss = &Derivs::calc_diss<4>;
-    break;
-  }
-  case 7: {
-    calc_diss = &Derivs::calc_diss<6>;
-    break;
-  }
-  case 9: {
-    calc_diss = &Derivs::calc_diss<8>;
-    break;
-  }
-  default:
-    assert(0);
-  }
-
   const auto apply_diss = [&](const GF3D2<const CCTK_REAL> &gf_,
                               const GF3D2<CCTK_REAL> &gf_rhs_) {
-    grid.loop_int_device<0, 0, 0, vsize>(
-        grid.nghostzones,
-        [=] CCTK_DEVICE(const PointDesc &p) CCTK_ATTRIBUTE_ALWAYS_INLINE {
-          const vbool mask = mask_for_loop_tail<vbool>(p.i, p.imax);
-          const vreal rhs_old = gf_rhs_(mask, p.I);
-          const vreal rhs_new =
-              rhs_old + epsdiss * calc_diss(gf_, mask, p.I, dx);
-          gf_rhs_.store(mask, p.I, rhs_new);
-        });
+    switch (diss_order) {
+    case 3: {
+      grid.loop_int_device<0, 0, 0, vsize>(
+          grid.nghostzones,
+          [=] CCTK_DEVICE(const PointDesc &p) CCTK_ATTRIBUTE_ALWAYS_INLINE {
+            const vbool mask = mask_for_loop_tail<vbool>(p.i, p.imax);
+            const vreal rhs_old = gf_rhs_(mask, p.I);
+            const vreal rhs_new =
+                rhs_old + epsdiss * Derivs::calc_diss<2>(gf_, mask, p.I, dx);
+            gf_rhs_.store(mask, p.I, rhs_new);
+          });
+      break;
+    }
+    case 5: {
+      grid.loop_int_device<0, 0, 0, vsize>(
+          grid.nghostzones,
+          [=] CCTK_DEVICE(const PointDesc &p) CCTK_ATTRIBUTE_ALWAYS_INLINE {
+            const vbool mask = mask_for_loop_tail<vbool>(p.i, p.imax);
+            const vreal rhs_old = gf_rhs_(mask, p.I);
+            const vreal rhs_new =
+                rhs_old + epsdiss * Derivs::calc_diss<4>(gf_, mask, p.I, dx);
+            gf_rhs_.store(mask, p.I, rhs_new);
+          });
+      break;
+    }
+    case 7: {
+      grid.loop_int_device<0, 0, 0, vsize>(
+          grid.nghostzones,
+          [=] CCTK_DEVICE(const PointDesc &p) CCTK_ATTRIBUTE_ALWAYS_INLINE {
+            const vbool mask = mask_for_loop_tail<vbool>(p.i, p.imax);
+            const vreal rhs_old = gf_rhs_(mask, p.I);
+            const vreal rhs_new =
+                rhs_old + epsdiss * Derivs::calc_diss<6>(gf_, mask, p.I, dx);
+            gf_rhs_.store(mask, p.I, rhs_new);
+          });
+      break;
+    }
+    case 9: {
+      grid.loop_int_device<0, 0, 0, vsize>(
+          grid.nghostzones,
+          [=] CCTK_DEVICE(const PointDesc &p) CCTK_ATTRIBUTE_ALWAYS_INLINE {
+            const vbool mask = mask_for_loop_tail<vbool>(p.i, p.imax);
+            const vreal rhs_old = gf_rhs_(mask, p.I);
+            const vreal rhs_new =
+                rhs_old + epsdiss * Derivs::calc_diss<8>(gf_, mask, p.I, dx);
+            gf_rhs_.store(mask, p.I, rhs_new);
+          });
+      break;
+    }
+    default:
+      assert(0);
+    }
   };
 
   apply_diss(gf_W, gf_dtW);
