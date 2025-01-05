@@ -12,15 +12,17 @@ SCHEDULE GROUP ADMconstraints_AnalysisGroup AT analysis
 
 
 if (calc_constraints) {
-  SCHEDULE ADMconstraints_Sync IN ADMconstraints_AnalysisGroup
-  {
-    LANG: C
-    OPTIONS: global
-    SYNC: ADMBaseX::metric
-    SYNC: ADMBaseX::curv
-    SYNC: ADMBaseX::lapse
-    SYNC: ADMBaseX::shift
-  } "Synchronize"
+  if (sync_adm_variables_before_calculating_constraints) {
+    SCHEDULE ADMconstraints_Sync IN ADMconstraints_AnalysisGroup
+    {
+      LANG: C
+      OPTIONS: global
+      SYNC: ADMBaseX::metric
+      SYNC: ADMBaseX::curv
+      SYNC: ADMBaseX::lapse
+      SYNC: ADMBaseX::shift
+    } "Synchronize"
+  }
 
   SCHEDULE ADMconstraints_CalcConstraints IN ADMconstraints_AnalysisGroup AFTER ADMconstraints_Sync
   {
