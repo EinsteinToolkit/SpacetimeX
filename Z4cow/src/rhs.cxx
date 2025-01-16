@@ -182,7 +182,11 @@ extern "C" void Z4cow_RHS(CCTK_ARGUMENTS) {
   const nvtxRangeId_t range = nvtxRangeStartA("Z4cow_RHS::rhs");
 #endif
 
+  if (set_Theta_zero) {
+#include "../wolfram/Z4cow_set_rhs_freezeTheta.hxx"
+  } else {
 #include "../wolfram/Z4cow_set_rhs.hxx"
+  }
 
 #ifdef __CUDACC__
   nvtxRangeEnd(range);
