@@ -99,7 +99,8 @@ RVarlist =
   TempTensors[
     {RtW[-i, -j], Symmetric[{-i, -j}], PrintAs -> "\!\(\*SuperscriptBox[OverscriptBox[\(R\), \(~\)], \(W\)]\)"},
     {Rt[-i, -j], Symmetric[{-i, -j}], PrintAs -> "\!\(\*OverscriptBox[\(R\), \(~\)]\)"},
-    {R[-i, -j], Symmetric[{-i, -j}]}, {trR[], PrintAs -> "R"}
+    {R[-i, -j], Symmetric[{-i, -j}]},
+    {trR[], PrintAs -> "R"}
   ];
 
 (* Matter *)
