@@ -1,6 +1,6 @@
 # Configuration definition for thorn NewRadX
 
-REQUIRES Loop
+REQUIRES CarpetX Loop
 
 PROVIDES NewRadX
 {
