@@ -1,19 +1,38 @@
+# Settings
+#################################
+$rho                = 1  # Refinement factor. Should be 1, 2, 4
+
+$base_cells         = 64 # (unrefined) nnumber of cells to use on the x direction
+$thin_cells         = 4  # Number of cells to use on the y and z directions
+
+$final_time         = 1000
+$time_stepper       = "RK4"
+$dtfac              = 0.25
+
+$out_every_time     = 1.0
+#################################
+
+$num_cells = $base_cells * $rho
+$dxyz      = 1.0 / $num_cells
+
+$dt        = $dtfac * $dxyz
+$out_every = ceil($out_every_time / $dt)
+
 ActiveThorns = "
     ADMBaseX
     CarpetX
     Formaline
     IOUtil
     ODESolvers
+    TmunuBaseX
     Z4c
 "
  
-$rho = 1
-$ncells = 64 * $rho
-
+Cactus::presync_mode = "mixed-error"
 Cactus::cctk_show_schedule = no
 
 Cactus::terminate = "time"
-Cactus::cctk_final_time = 100.0
+Cactus::cctk_final_time = $final_time
 
 CarpetX::verbose = no
 
@@ -22,31 +41,41 @@ CarpetX::ymin = 0.0
 CarpetX::zmin = 0.0
 
 CarpetX::xmax = 1.0
-CarpetX::ymax = 2.0 / $ncells
-CarpetX::zmax = 2.0 / $ncells
+CarpetX::ymax = $thin_cells * $dxyz
+CarpetX::zmax = $thin_cells * $dxyz
 
-CarpetX::ncells_x = $ncells
-CarpetX::ncells_y = 2
-CarpetX::ncells_z = 2
+CarpetX::ncells_x = $num_cells
+CarpetX::ncells_y = $thin_cells
+CarpetX::ncells_z = $thin_cells
 
-CarpetX::blocking_factor_x = 64
-CarpetX::blocking_factor_y = 2
-CarpetX::blocking_factor_z = 2
+CarpetX::blocking_factor_x = $base_cells
+CarpetX::blocking_factor_y = $thin_cells
+CarpetX::blocking_factor_z = $thin_cells
 
-CarpetX::ghost_size = 2
+CarpetX::ghost_size = 3
 
-ODESolvers::method = "RK2"
-CarpetX::dtfac = 1.0 / 4
+ODESolvers::method = $time_stepper
+CarpetX::dtfac = $dtfac
 
 ADMBaseX::initial_data = "Cartesian Minkowski"
 ADMBaseX::initial_lapse = "one"
 ADMBaseX::initial_shift = "zero"
-ADMBaseX::noise_amplitude = 1.0e-10 / ($rho*$rho)
+ADMBaseX::noise_amplitude = 1.0e-10 / ($rho * $rho)
+
+CarpetX::periodic   = yes
+Carpetx::periodic_x = yes
+Carpetx::periodic_y = yes
+Carpetx::periodic_z = yes
 
 Z4c::epsdiss = 0.32
 
 IO::out_dir = $parfile
-IO::out_every = 4 * $ncells
+IO::out_every = $out_every
 
 CarpetX::out_plotfile_groups = ""
-CarpetX::out_tsv = yes
+
+CarpetX::out_tsv      = no
+CarpetX::out_tsv_vars = ""
+
+CarpetX::out_norm_vars          = "all"
+CarpetX::out_norm_omit_unstable = no
