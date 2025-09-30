@@ -1,1 +1,5 @@
 # Parameter definitions for thorn NewRadX
+
+CCTK_BOOLEAN apply_inner_boundary "Apply radiative BC at inner boundary of a multipatch systems, if such boundary exists (e.g. Thornburg06 inner sphere)" STEERABLE=always
+{
+} "no"
