@@ -22,6 +22,10 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
                    const Loop::GF3D2<CCTK_REAL> &rhs, const CCTK_REAL var0,
                    const CCTK_REAL v0, const CCTK_REAL radpower);
 
+#define NEWRADX_MULTIPATCH_QUANTITIES                                          \
+  vcoordx, vcoordy, vcoordz, vJ_da_dx, vJ_da_dy, vJ_da_dz, vJ_db_dx, vJ_db_dy, \
+      vJ_db_dz, vJ_dc_dx, vJ_dc_dy, vJ_dc_dz
+
 /**
  * @brief Applies radiative boundary condition to the RHS of a state variable.
  * Assumes that:
@@ -46,6 +50,15 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
                    const Loop::GF3D2<const CCTK_REAL> &vcoordx,
                    const Loop::GF3D2<const CCTK_REAL> &vcoordy,
                    const Loop::GF3D2<const CCTK_REAL> &vcoordz,
+                   const Loop::GF3D2<const CCTK_REAL> &vJ_da_dx,
+                   const Loop::GF3D2<const CCTK_REAL> &vJ_da_dy,
+                   const Loop::GF3D2<const CCTK_REAL> &vJ_da_dz,
+                   const Loop::GF3D2<const CCTK_REAL> &vJ_db_dx,
+                   const Loop::GF3D2<const CCTK_REAL> &vJ_db_dy,
+                   const Loop::GF3D2<const CCTK_REAL> &vJ_db_dz,
+                   const Loop::GF3D2<const CCTK_REAL> &vJ_dc_dx,
+                   const Loop::GF3D2<const CCTK_REAL> &vJ_dc_dy,
+                   const Loop::GF3D2<const CCTK_REAL> &vJ_dc_dz,
                    const CCTK_REAL var0, const CCTK_REAL v0,
                    const CCTK_REAL radpower);
 
