@@ -81,6 +81,7 @@ extern "C" void PunctureTracker_Setup(CCTK_ARGUMENTS) {
 
   // enabled if refinement regions should follow the punctures
   if (track_boxes) {
+    assert(nPunctures <= 3); // BoxInBox currently hardcodes position[3]
     const std::array<std::vector<CCTK_REAL>, Loop::dim> &location =
         g_punctures->getLocation();
     for (int n = 0; n < nPunctures; ++n) {
