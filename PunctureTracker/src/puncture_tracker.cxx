@@ -83,7 +83,7 @@ extern "C" void PunctureTracker_Setup(CCTK_ARGUMENTS) {
   if (track_boxes) {
     const std::array<std::vector<CCTK_REAL>, Loop::dim> &location =
         g_punctures->getLocation();
-    for (int n = 0; n < 3; ++n) { // since BoxInBox hard codes position[3]
+    for (int n = 0; n < 3; ++n) { // BoxInBox currently hardcodes position[3]
       if (n < nPunctures) {
         CCTK_VINFO("Writing punc coords to box %d.", n);
         position_x[n] = location[0][n];
@@ -193,7 +193,7 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
   }
 
   if (track_boxes) {
-    for (int i = 0; i < 3; ++i) { // since BoxInBox hard codes position[3]
+    for (int i = 0; i < 3; ++i) { // BoxInBox currently hardcodes position[3]
       if (i < nPunctures) {
         position_x[i] = location[0][i];
         position_y[i] = location[1][i];
