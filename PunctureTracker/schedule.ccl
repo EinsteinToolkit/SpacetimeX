@@ -23,6 +23,7 @@ SCHEDULE PunctureTracker_Setup IN PunctureTracker_SetupGroup
   OPTIONS: GLOBAL
   READS: pt_loc
   READS: pt_vel
+  READS: BoxInBox::positions
   WRITES: BoxInBox::positions
 } "Calculate initial location of punctures"
 
@@ -31,6 +32,7 @@ SCHEDULE PunctureTracker_Track AT evol AFTER ODESolvers_Solve
   LANG: C
   OPTIONS: GLOBAL
   READS: ADMBaseX::shift(everywhere)
+  READS: BoxInBox::positions
   WRITES: pt_loc
   WRITES: pt_vel
   WRITES: BoxInBox::positions
