@@ -83,11 +83,17 @@ extern "C" void PunctureTracker_Setup(CCTK_ARGUMENTS) {
   if (track_boxes) {
     const std::array<std::vector<CCTK_REAL>, Loop::dim> &location =
         g_punctures->getLocation();
-    for (int n = 0; n < nPunctures; ++n) {
-      CCTK_VINFO("Writing punc coords to box %d.", n);
-      position_x[n] = location[0][n];
-      position_y[n] = location[1][n];
-      position_z[n] = location[2][n];
+    for (int n = 0; n < 3; ++n) { // since BoxInBox hard codes position[3]
+      if (n < nPunctures) {
+        CCTK_VINFO("Writing punc coords to box %d.", n);
+        position_x[n] = location[0][n];
+        position_y[n] = location[1][n];
+        position_z[n] = location[2][n];
+      } else {
+        position_x[n] = 0.0;
+        position_y[n] = 0.0;
+        position_z[n] = 0.0;
+      }
     }
   }
 }
@@ -164,22 +170,39 @@ extern "C" void PunctureTracker_Track(CCTK_ARGUMENTS) {
   g_punctures->broadcast(CCTK_PASS_CTOC);
 
   // Write to pt_loc_foo and pt_vel_foo
-  for (int i = 0; i < nPunctures; ++i) {
-    pt_loc_t[i] = time[i];
-    pt_loc_x[i] = location[0][i];
-    pt_loc_y[i] = location[1][i];
-    pt_loc_z[i] = location[2][i];
-    pt_vel_t[i] = time[i];
-    pt_vel_x[i] = velocity[0][i];
-    pt_vel_y[i] = velocity[1][i];
-    pt_vel_z[i] = velocity[2][i];
+  for (int i = 0; i < max_num_tracked; ++i) {
+    if (i < nPunctures) {
+      pt_loc_t[i] = time[i];
+      pt_loc_x[i] = location[0][i];
+      pt_loc_y[i] = location[1][i];
+      pt_loc_z[i] = location[2][i];
+      pt_vel_t[i] = time[i];
+      pt_vel_x[i] = velocity[0][i];
+      pt_vel_y[i] = velocity[1][i];
+      pt_vel_z[i] = velocity[2][i];
+    } else {
+      pt_loc_t[i] = 0.0;
+      pt_loc_x[i] = 0.0;
+      pt_loc_y[i] = 0.0;
+      pt_loc_z[i] = 0.0;
+      pt_vel_t[i] = 0.0;
+      pt_vel_x[i] = 0.0;
+      pt_vel_y[i] = 0.0;
+      pt_vel_z[i] = 0.0;
+    }
   }
 
   if (track_boxes) {
-    for (int i = 0; i < nPunctures; ++i) {
-      position_x[i] = location[0][i];
-      position_y[i] = location[1][i];
-      position_z[i] = location[2][i];
+    for (int i = 0; i < 3; ++i) { // since BoxInBox hard codes position[3]
+      if (i < nPunctures) {
+        position_x[i] = location[0][i];
+        position_y[i] = location[1][i];
+        position_z[i] = location[2][i];
+      } else {
+        position_x[i] = 0.0;
+        position_y[i] = 0.0;
+        position_z[i] = 0.0;
+      }
     }
   }
 }
