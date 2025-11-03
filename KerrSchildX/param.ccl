@@ -1,0 +1,47 @@
+# Parameter definitions for thorn KerrSchild
+
+SHARES: ADMBaseX
+
+EXTENDS KEYWORD initial_data 
+{
+  "kerrschildx" :: "Kerr-Schild black hole"
+} 
+
+EXTENDS KEYWORD initial_lapse
+{
+  "kerrschildx" :: "Kerr-Schild black hole"
+}
+
+EXTENDS KEYWORD initial_shift
+{
+  "kerrschildx" :: "Kerr-Schild black hole"
+}
+
+EXTENDS KEYWORD initial_dtlapse
+{
+  "kerrschildx" :: "Kerr-Schild black hole"
+}
+
+EXTENDS KEYWORD initial_dtshift
+{
+  "kerrschildx" :: "Kerr-Schild black hole"
+}
+
+
+
+PRIVATE:
+
+CCTK_REAL mass "Mass"
+{
+  0.0:* :: ""
+} 1.0
+
+CCTK_REAL spin "Spin parameter"
+{
+  -1.0:+1.0 :: ""
+} 0.0
+
+CCTK_REAL epsilon "Avoid division by zero"
+{
+  0:* :: ""
+} 1.0e-8

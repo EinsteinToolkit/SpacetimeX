@@ -1,0 +1,43 @@
+ActiveThorns = "
+    ADMBaseX
+    CarpetX
+    CoordinatesX
+    Formaline
+    IOUtil
+    KerrSchildX
+"
+
+Cactus::cctk_show_schedule = yes   # no
+CarpetX::verbose = no
+
+Cactus::presync_mode = "mixed-error"
+
+CarpetX::xmin = -4.0
+CarpetX::ymin = -4.0
+CarpetX::zmin = -4.0
+
+CarpetX::xmax = +4.0
+CarpetX::ymax = +4.0
+CarpetX::zmax = +4.0
+
+CarpetX::ncells_x = 16
+CarpetX::ncells_y = 16
+CarpetX::ncells_z = 16
+
+CarpetX::blocking_factor_x = 16
+CarpetX::blocking_factor_y = 16
+CarpetX::blocking_factor_z = 16
+
+ADMBaseX::initial_data = "kerrschildx"
+ADMBaseX::initial_lapse = "kerrschildx"
+ADMBaseX::initial_shift = "kerrschildx"
+ADMBaseX::initial_dtlapse = "kerrschildx"
+ADMBaseX::initial_dtshift = "kerrschildx"
+
+Cactus::cctk_itlast = 0
+
+IO::out_dir = $parfile
+CarpetX::out_tsv_every = 1
+CarpetX::out_tsv_vars = "ADMBaseX::metric ADMBaseX::curv ADMBaseX::lapse ADMBaseX::shift ADMBaseX::dtlapse ADMBaseX::dtshift"
+CarpetX::out_silo_every = 1
+CarpetX::out_silo_vars = "ADMBaseX::metric ADMBaseX::curv ADMBaseX::lapse ADMBaseX::shift ADMBaseX::dtlapse ADMBaseX::dtshift"
