@@ -36,9 +36,9 @@ CCTK_REAL mass "Mass"
   0.0:* :: ""
 } 1.0
 
-CCTK_REAL spin "Spin parameter"
+CCTK_REAL spin "Spin parameter (with dimension `mass`)"
 {
-  -1.0:+1.0 :: ""
+  *:* :: "Must be -mass < spin < mass"
 } 0.0
 
 CCTK_REAL epsilon "Avoid division by zero"
