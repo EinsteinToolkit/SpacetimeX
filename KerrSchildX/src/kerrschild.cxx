@@ -337,8 +337,7 @@ extern "C" void KerrSchild_InitialData(CCTK_ARGUMENTS) {
         if (write_lapse) {
           // Calculate lapse from the upper metric
           alp_(p.I) = 1 / sqrt(-gutt);
-        } else
-          assert(0);
+        }
         if (write_shift) {
           // Calculate shift from the upper metric
           betax_(p.I) = -gutx / gutt;
