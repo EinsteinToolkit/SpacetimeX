@@ -239,7 +239,7 @@ extern "C" void KerrSchild_InitialData(CCTK_ARGUMENTS) {
             // Current point
             t, x, y, z,
             // Derivative direction
-            0, 1, 0, 0,
+            0, 0, 1, 0,
             // Downstairs metric
             dygtt, dygtx, dygty, dygtz, dygxx, dygxy, dygxz, dygyy, dygyz,
             dygzz,
