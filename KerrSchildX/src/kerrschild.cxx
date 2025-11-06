@@ -129,8 +129,8 @@ static void kerr_schild_derivs(
   guzz = dguzz.eps;
 }
 
-extern "C" void KerrSchild_ParamCheck(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTSX_KerrSchild_ParamCheck;
+extern "C" void KerrSchildX_ParamCheck(CCTK_ARGUMENTS) {
+  DECLARE_CCTK_ARGUMENTSX_KerrSchildX_ParamCheck;
   DECLARE_CCTK_PARAMETERS;
 
   using std::abs;
@@ -140,8 +140,8 @@ extern "C" void KerrSchild_ParamCheck(CCTK_ARGUMENTS) {
         double(spin), double(mass));
 }
 
-extern "C" void KerrSchild_InitialData(CCTK_ARGUMENTS) {
-  DECLARE_CCTK_ARGUMENTSX_KerrSchild_InitialData;
+extern "C" void KerrSchildX_InitialData(CCTK_ARGUMENTS) {
+  DECLARE_CCTK_ARGUMENTSX_KerrSchildX_InitialData;
   DECLARE_CCTK_PARAMETERS;
 
   using Arith::pow2, Arith::pown;
