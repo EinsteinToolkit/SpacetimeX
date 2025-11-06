@@ -181,7 +181,7 @@ void TwoPuncturesX_TwoPunctures(CCTK_ARGUMENTS) {
   enum GRID_SETUP_METHOD { GSM_Taylor_expansion, GSM_evaluation };
   enum GRID_SETUP_METHOD gsm;
 
-  int antisymmetric_lapse, averaged_lapse, pmn_lapse, brownsville_lapse;
+  int antisymmetric_lapse, averaged_lapse, pmn_lapse, W_lapse, brownsville_lapse;
 
   int const nvar = 1, n1 = npoints_A, n2 = npoints_B, n3 = npoints_phi;
 
@@ -398,9 +398,16 @@ void TwoPuncturesX_TwoPunctures(CCTK_ARGUMENTS) {
       CCTK_EQUALS(initial_lapse, "twopunctures-antisymmetric");
   averaged_lapse = CCTK_EQUALS(initial_lapse, "twopunctures-averaged");
   pmn_lapse = CCTK_EQUALS(initial_lapse, "psi^n");
-  if (pmn_lapse)
-    CCTK_VINFO("Setting initial lapse to psi^%f profile.",
+  if (pmn_lapse) {
+		CCTK_VInfo(CCTK_THORNSTRING, "Setting initial lapse to psi^%f profile,",
                (double)initial_lapse_psi_exponent);
+		CCTK_VInfo(CCTK_THORNSTRING, "where psi is the *uncorrected* conformal");
+		CCTK_VInfo(CCTK_THORNSTRING, "factor, not psi+u!");
+  }
+  W_lapse = CCTK_EQUALS(initial_lapse, "W");
+  if (W_lapse)
+    CCTK_VInfo(CCTK_THORNSTRING,
+               "Setting initial lapse to W=(psi+u)^{-2}, needed for slow-start lapse.");
   brownsville_lapse = CCTK_EQUALS(initial_lapse, "brownsville");
   if (brownsville_lapse)
     CCTK_VINFO("Setting initial lapse to a Brownsville-style profile "
@@ -572,6 +579,13 @@ void TwoPuncturesX_TwoPunctures(CCTK_ARGUMENTS) {
     gyy[ind] = pow(psi1 / static_psi, 4);
     gyz[ind] = 0;
     gzz[ind] = pow(psi1 / static_psi, 4);
+
+    // W=(psi+u)^{-2}, needed for slow-start lapse; see arXiv:2404.01137, Phys. Rev. D 110, 064045 (2024)
+    if(W_lapse) {
+      // ADM gij = e^{4 phi} * gtildeij
+      //  --> psi1 / static_psi = e^phi = psi
+      alp[ind] = 1.0 / pow (psi1 / static_psi, 2); // <- alpha = W = psi^{-2}
+    }
 
     kxx[ind] = Aij[0][0] / pow(psi1, 2);
     kxy[ind] = Aij[0][1] / pow(psi1, 2);
