@@ -129,6 +129,17 @@ static void kerr_schild_derivs(
   guzz = dguzz.eps;
 }
 
+extern "C" void KerrSchild_ParamCheck(CCTK_ARGUMENTS) {
+  DECLARE_CCTK_ARGUMENTSX_KerrSchild_ParamCheck;
+  DECLARE_CCTK_PARAMETERS;
+
+  using std::abs;
+  if (abs(spin) >= mass)
+    CCTK_VPARAMWARN(
+        "Spin parameter %g must have absolute value less than mass %g",
+        double(spin), double(mass));
+}
+
 extern "C" void KerrSchild_InitialData(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTSX_KerrSchild_InitialData;
   DECLARE_CCTK_PARAMETERS;
