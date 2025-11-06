@@ -5,6 +5,12 @@ if (CCTK_Equals(initial_data, "kerrschildx") ||
     CCTK_Equals(initial_shift, "kerrschildx") ||
     CCTK_Equals(initial_dtlapse, "kerrschildx") ||
     CCTK_Equals(initial_dtshift, "kerrschildx")) {
+  SCHEDULE KerrSchild_ParamCheck AT paramcheck
+  {
+    LANG: C
+    OPTIONS: global
+  } "Check Kerr-Schild parameters"
+
   SCHEDULE KerrSchild_InitialData IN ADMBaseX_SetADMVars
   {
     LANG: C
