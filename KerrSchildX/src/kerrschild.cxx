@@ -12,7 +12,7 @@
 namespace KerrSchild {
 
 template <typename T>
-static void kerr_schild(
+static CCTK_DEVICE void kerr_schild(
     // Parameters
     const T m, const T a, const T epsilon,
     // Current point
@@ -74,7 +74,7 @@ static void kerr_schild(
 }
 
 template <typename T>
-static void kerr_schild_derivs(
+static CCTK_DEVICE void kerr_schild_derivs(
     // Parameters
     const T m, const T a, const T epsilon,
     // Current point
