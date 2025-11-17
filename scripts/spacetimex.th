@@ -169,14 +169,15 @@ CarpetX/TmunuBaseX
 SpacetimeX/AHFinderX
 SpacetimeX/BrillLindquist
 SpacetimeX/Cowling
+SpacetimeX/KerrSchildX
 SpacetimeX/Multipole
 SpacetimeX/NewRadX
-SpacetimeX/TestNewRadX
-SpacetimeX/Punctures
 SpacetimeX/PunctureTracker
+SpacetimeX/Punctures
 SpacetimeX/SphericalHarmonics
 SpacetimeX/SphericalSurface
 SpacetimeX/StaticTrumpet
+SpacetimeX/TestNewRadX
 SpacetimeX/TwoPuncturesX
 SpacetimeX/Weyl
 SpacetimeX/WeylScal4
