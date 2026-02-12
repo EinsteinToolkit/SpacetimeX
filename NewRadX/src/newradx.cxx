@@ -256,8 +256,62 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
         rhs(p.I) = -vx * g_dvar.dx - vy * g_dvar.dy - vz * g_dvar.dz -
                    sv0 * (var(p.I) - var0) / r;
 
-        if (radpower > 0.0) {
-          // TODO: Coulomb correction (port from Cartesian overload)
+        // Coulomb correction: estimate and extrapolate the 1/r^n
+        // component from interior points to the radiative boundary.
+        // Only applied at the outer boundary — at the inner boundary
+        // the asymptotic 1/r^n assumption breaks down (r is small,
+        // rint > r, so the rescaling amplifies rather than attenuates).
+        if (radpower > 0.0 && p.NI[2] != -1) {
+          // Displacement to get from p.I to interior point placed
+          // nghostpoints away
+          const vect<int, dim> displacement{grid.nghostzones[0] * p.NI[0],
+                                            grid.nghostzones[1] * p.NI[1],
+                                            grid.nghostzones[2] * p.NI[2]};
+          const vect<int, dim> intp = p.I - displacement;
+
+          assert(intp[0] >= grid.nghostzones[0]);
+          assert(intp[1] >= grid.nghostzones[1]);
+          assert(intp[2] >= grid.nghostzones[2]);
+          assert(intp[0] <= grid.lsh[0] - grid.nghostzones[0] - 1);
+          assert(intp[1] <= grid.lsh[1] - grid.nghostzones[1] - 1);
+          assert(intp[2] <= grid.lsh[2] - grid.nghostzones[2] - 1);
+
+          // Global coordinates at interior point
+          const auto xint = vcoordx(intp);
+          const auto yint = vcoordy(intp);
+          const auto zint = vcoordz(intp);
+          const auto rint = sqrt(pow2(xint) + pow2(yint) + pow2(zint));
+
+          // Find local wave speeds at interior point
+          const auto vxint = sv0 * xint / rint;
+          const auto vyint = sv0 * yint / rint;
+          const auto vzint = sv0 * zint / rint;
+
+          // Local derivatives at interior point (centered stencils)
+          const LocalFirstDerivatives l_dvar_int{.da = c2o<0>(p, intp, var),
+                                                 .db = c2o<1>(p, intp, var),
+                                                 .dc = c2o<2>(p, intp, var)};
+
+          // Jacobians at interior point
+          const Jacobians jac_int{
+              vJ_da_dx(intp), vJ_da_dy(intp), vJ_da_dz(intp),
+              vJ_db_dx(intp), vJ_db_dy(intp), vJ_db_dz(intp),
+              vJ_dc_dx(intp), vJ_dc_dy(intp), vJ_dc_dz(intp)};
+
+          // Global derivatives at interior point
+          const auto g_dvar_int{project_first(l_dvar_int, jac_int)};
+
+          // Radiative part at interior point
+          const auto rad = -vxint * g_dvar_int.dx - vyint * g_dvar_int.dy -
+                           vzint * g_dvar_int.dz -
+                           sv0 * (var(intp) - var0) / rint;
+
+          // Extrapolate Coulomb component, rescale to account for radial
+          // fall-off
+          const auto aux = (rhs(intp) - rad) * pow(rint / r, radpower);
+
+          // Radiative rhs with extrapolated Coulomb correction
+          rhs(p.I) += aux;
         }
       });
 }
