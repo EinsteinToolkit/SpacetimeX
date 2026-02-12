@@ -167,11 +167,11 @@ CarpetX/TmunuBaseX
 !URL      = https://github.com/lucass-carneiro/CapyrX
 !REPO_PATH= $2
 !CHECKOUT =
-CapyrX_GlobalDerivatives
-CapyrX_MultiPatch
-CapyrX_TestMultiPatch
-CapyrX_WaveToy
-CapyrX_WaveToy_SecondOrder
+CapyrX/CapyrX_GlobalDerivatives
+CapyrX/CapyrX_MultiPatch
+CapyrX/CapyrX_TestMultiPatch
+CapyrX/CapyrX_WaveToy
+CapyrX/CapyrX_WaveToy_SecondOrder
 
 # SpacetimeX thorns
 !TARGET   = $ARR
