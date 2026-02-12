@@ -1,4 +1,5 @@
 #include <cctk.h>
+#include <cctk_Parameters.h>
 
 #include <loop_device.hxx>
 #include <driver.hxx>
@@ -207,6 +208,7 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
   using namespace CapyrX::MultiPatch::GlobalDerivatives;
 
   DECLARE_CCTK_ARGUMENTS;
+  DECLARE_CCTK_PARAMETERS;
 
   const auto symmetries = CarpetX::ghext->patchdata.at(cctk_patch).symmetries;
   const vect<vect<bool, Loop::dim>, 2> is_sym_bnd{
@@ -221,9 +223,15 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
   grid.loop_outermost_int_device<0, 0, 0>(
       grid.nghostzones, is_sym_bnd,
       [=] CCTK_DEVICE(const Loop::PointDesc &p) CCTK_ATTRIBUTE_ALWAYS_INLINE {
-        // Make sure we are always on the outer boundary of a patch system
-        assert(p.patch != 0);
-        assert(p.NI[2] >= 0);
+        // Skip inner radial boundary unless requested
+        if (!apply_inner_boundary && p.NI[2] == -1) {
+          return;
+        }
+
+        // At the outer boundary absorb outgoing waves; at the inner
+        // boundary absorb incoming waves (flip sign of v0).
+        const CCTK_REAL sign = (p.NI[2] == -1) ? -1.0 : 1.0;
+        const auto sv0 = sign * v0;
 
         // Find local wave speeds at radiative boundary point p.I
         const auto x = vcoordx(p.I);
@@ -231,14 +239,14 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
         const auto z = vcoordz(p.I);
         const auto r = sqrt(pow2(x) + pow2(y) + pow2(z));
 
-        const auto vx = v0 * vcoordx(p.I) / r;
-        const auto vy = v0 * vcoordy(p.I) / r;
-        const auto vz = v0 * vcoordz(p.I) / r;
+        const auto vx = sv0 * x / r;
+        const auto vy = sv0 * y / r;
+        const auto vz = sv0 * z / r;
 
-        // Local derivatives
-        const LocalFirstDerivatives l_dvar{.da = r2o<0>(p, p.I, var),
-                                           .db = r2o<1>(p, p.I, var),
-                                           .dc = r2o<2>(p, p.I, var)};
+        // Local derivatives (stencil auto-selected by boundary location)
+        const LocalFirstDerivatives l_dvar{.da = calc_deriv<0>(p, var),
+                                           .db = calc_deriv<1>(p, var),
+                                           .dc = calc_deriv<2>(p, var)};
 
         // Global derivatives
         const Jacobians jac{VERTEX_JACOBIANS(p)};
@@ -246,10 +254,10 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
 
         // radiative rhs
         rhs(p.I) = -vx * g_dvar.dx - vy * g_dvar.dy - vz * g_dvar.dz -
-                   v0 * (var(p.I) - var0) / r;
+                   sv0 * (var(p.I) - var0) / r;
 
         if (radpower > 0.0) {
-          // TODO
+          // TODO: Coulomb correction (port from Cartesian overload)
         }
       });
 }

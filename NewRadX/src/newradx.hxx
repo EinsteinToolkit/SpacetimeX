@@ -1,3 +1,6 @@
+#ifndef NEWRADX_HXX
+#define NEWRADX_HXX
+
 #include <cctk.h>
 #include <loop_device.hxx>
 
@@ -27,22 +30,8 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
       vJ_db_dz, vJ_dc_dx, vJ_dc_dy, vJ_dc_dz
 
 /**
- * @brief Applies radiative boundary condition to the RHS of a state variable.
- * Assumes that:
- *   1. Using multiple patches
- *   2. Patch 0 is cartesian
- *   3. Patches != 0 are spherical-like
- *   4. The local c coordinate is radial and points outward
- *
- * @param cctkGH Pointer to Cactus grid hierarchy struct.
- * @param var State variable which will have boundary conditions applied to it.
- * @param rhs RHS of the evolution equation for @param var
- * @param vcoordx x coordinates grid function.
- * @param vcoordy y coordinates grid function.
- * @param vcoordz z coordinates grid function.
- * @param var0 Value at infinity.
- * @param v0 Propagation speed.
- * @param radpower Radial fall-off exponent
+ * @brief Applies radiative boundary condition to the RHS of a state variable
+ * on multipatch grids.
  */
 void NewRadX_Apply(const cGH *restrict const cctkGH,
                    const Loop::GF3D2<const CCTK_REAL> &var,
@@ -63,3 +52,5 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
                    const CCTK_REAL radpower);
 
 } // namespace NewRadX
+
+#endif // NEWRADX_HXX
