@@ -161,18 +161,6 @@ CarpetX/Loop
 CarpetX/ODESolvers
 CarpetX/TmunuBaseX
 
-# CapyrX thorns
-!TARGET   = $ARR
-!TYPE     = git
-!URL      = https://github.com/lucass-carneiro/CapyrX
-!REPO_PATH= $2
-!CHECKOUT =
-CapyrX/CapyrX_GlobalDerivatives
-CapyrX/CapyrX_MultiPatch
-CapyrX/CapyrX_TestMultiPatch
-CapyrX/CapyrX_WaveToy
-CapyrX/CapyrX_WaveToy_SecondOrder
-
 # SpacetimeX thorns
 !TARGET   = $ARR
 !TYPE     = ignore
@@ -194,3 +182,4 @@ SpacetimeX/TwoPuncturesX
 SpacetimeX/Weyl
 SpacetimeX/WeylScal4
 SpacetimeX/Z4c
+
