@@ -4,8 +4,6 @@
 #include <loop_device.hxx>
 #include <driver.hxx>
 
-#include <global_derivatives.hxx>
-
 #include "newradx.hxx"
 
 #include <cmath>
@@ -209,8 +207,6 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
                    const Loop::GF3D2<const CCTK_REAL> &vJ_dc_dz,
                    const CCTK_REAL var0, const CCTK_REAL v0,
                    const CCTK_REAL radpower) {
-  using namespace CapyrX::MultiPatch::GlobalDerivatives;
-
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
