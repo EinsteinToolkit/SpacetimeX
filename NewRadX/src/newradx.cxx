@@ -4,8 +4,6 @@
 #include <loop_device.hxx>
 #include <driver.hxx>
 
-#include <global_derivatives.hxx>
-
 #include "newradx.hxx"
 
 #include <cmath>
@@ -205,8 +203,6 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
                    const Loop::GF3D2<const CCTK_REAL> &vJ_dc_dz,
                    const CCTK_REAL var0, const CCTK_REAL v0,
                    const CCTK_REAL radpower) {
-  using namespace CapyrX::MultiPatch::GlobalDerivatives;
-
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
@@ -243,17 +239,29 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
         const auto vy = sv0 * y / r;
         const auto vz = sv0 * z / r;
 
-        // Local derivatives (stencil auto-selected by boundary location)
-        const LocalFirstDerivatives l_dvar{.da = calc_deriv<0>(p, var),
-                                           .db = calc_deriv<1>(p, var),
-                                           .dc = calc_deriv<2>(p, var)};
+        // Local derivatives
+        const auto dgf_da = calc_deriv<0>(p, var);
+        const auto dgf_db = calc_deriv<1>(p, var);
+        const auto dgf_dc = calc_deriv<2>(p, var);
+
+        // Jacobians
+        const auto da_dx = vJ_da_dx(p.I);
+        const auto da_dy = vJ_da_dy(p.I);
+        const auto da_dz = vJ_da_dz(p.I);
+        const auto db_dx = vJ_db_dx(p.I);
+        const auto db_dy = vJ_db_dy(p.I);
+        const auto db_dz = vJ_db_dz(p.I);
+        const auto dc_dx = vJ_dc_dx(p.I);
+        const auto dc_dy = vJ_dc_dy(p.I);
+        const auto dc_dz = vJ_dc_dz(p.I);
 
         // Global derivatives
-        const Jacobians jac{VERTEX_JACOBIANS(p)};
-        const auto g_dvar{project_first(l_dvar, jac)};
+        const auto dgf_dx = dgf_db * db_dx + dgf_dc * dc_dx + da_dx * dgf_da;
+        const auto dgf_dy = dgf_dc * dc_dy + db_dy * dgf_db + da_dy * dgf_da;
+        const auto dgf_dz = dc_dz * dgf_dc + db_dz * dgf_db + da_dz * dgf_da;
 
         // radiative rhs
-        rhs(p.I) = -vx * g_dvar.dx - vy * g_dvar.dy - vz * g_dvar.dz -
+        rhs(p.I) = -vx * dgf_dx - vy * dgf_dy - vz * dgf_dz -
                    sv0 * (var(p.I) - var0) / r;
 
         // Coulomb correction: estimate and extrapolate the 1/r^n
@@ -287,23 +295,29 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
           const auto vyint = sv0 * yint / rint;
           const auto vzint = sv0 * zint / rint;
 
-          // Local derivatives at interior point (centered stencils)
-          const LocalFirstDerivatives l_dvar_int{.da = c2o<0>(p, intp, var),
-                                                 .db = c2o<1>(p, intp, var),
-                                                 .dc = c2o<2>(p, intp, var)};
+          // Local derivatives at interior point
+          const auto dgf_da = c2o<0>(p, intp, var);
+          const auto dgf_db = c2o<1>(p, intp, var);
+          const auto dgf_dc = c2o<2>(p, intp, var);
 
           // Jacobians at interior point
-          const Jacobians jac_int{
-              vJ_da_dx(intp), vJ_da_dy(intp), vJ_da_dz(intp),
-              vJ_db_dx(intp), vJ_db_dy(intp), vJ_db_dz(intp),
-              vJ_dc_dx(intp), vJ_dc_dy(intp), vJ_dc_dz(intp)};
+          const auto da_dx = vJ_da_dx(intp);
+          const auto da_dy = vJ_da_dy(intp);
+          const auto da_dz = vJ_da_dz(intp);
+          const auto db_dx = vJ_db_dx(intp);
+          const auto db_dy = vJ_db_dy(intp);
+          const auto db_dz = vJ_db_dz(intp);
+          const auto dc_dx = vJ_dc_dx(intp);
+          const auto dc_dy = vJ_dc_dy(intp);
+          const auto dc_dz = vJ_dc_dz(intp);
 
           // Global derivatives at interior point
-          const auto g_dvar_int{project_first(l_dvar_int, jac_int)};
+          const auto dgf_dx = dgf_db * db_dx + dgf_dc * dc_dx + da_dx * dgf_da;
+          const auto dgf_dy = dgf_dc * dc_dy + db_dy * dgf_db + da_dy * dgf_da;
+          const auto dgf_dz = dc_dz * dgf_dc + db_dz * dgf_db + da_dz * dgf_da;
 
           // Radiative part at interior point
-          const auto rad = -vxint * g_dvar_int.dx - vyint * g_dvar_int.dy -
-                           vzint * g_dvar_int.dz -
+          const auto rad = -vxint * dgf_dx - vyint * dgf_dy - vzint * dgf_dz -
                            sv0 * (var(intp) - var0) / rint;
 
           // Extrapolate Coulomb component, rescale to account for radial
