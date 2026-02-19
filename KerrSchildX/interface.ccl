@@ -1,0 +1,5 @@
+# Interface definition for thorn KerrSchildX
+
+IMPLEMENTS: KerrSchildX
+
+INHERITS: ADMBaseX CoordinatesX

@@ -11,7 +11,8 @@ EXTENDS KEYWORD initial_lapse
 {
   "twopunctures-antisymmetric" :: "antisymmetric lapse for two puncture black holes, -1 <= alpha <= +1"
   "twopunctures-averaged"      :: "averaged lapse for two puncture black holes, 0 <= alpha <= +1"
-  "psi^n"                      :: "Based on the initial conformal factor"
+  "psi^n"                      :: "Based on the initial uncorrected conformal factor psi, not psi+u"
+  "W"                          :: "Evolved variable W=(psi+u)^{-2}, needed for slow-start lapse; see arXiv:2404.01137, Phys. Rev. D 110, 064045 (2024)"
   "brownsville"                :: "See Phys. Rev. D 74, 041501 (2006)"
 }
 

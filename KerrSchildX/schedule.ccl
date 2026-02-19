@@ -1,0 +1,26 @@
+# Schedule definitions for thorn KerrSchild
+
+if (CCTK_Equals(initial_data, "kerrschildx") ||
+    CCTK_Equals(initial_lapse, "kerrschildx") ||
+    CCTK_Equals(initial_shift, "kerrschildx") ||
+    CCTK_Equals(initial_dtlapse, "kerrschildx") ||
+    CCTK_Equals(initial_dtshift, "kerrschildx"))
+{
+  SCHEDULE KerrSchildX_ParamCheck AT paramcheck
+  {
+    LANG: C
+    OPTIONS: global
+  } "Check Kerr-Schild parameters"
+
+  SCHEDULE KerrSchildX_InitialData IN ADMBaseX_SetADMVars
+  {
+    LANG: C
+    READS: CoordinatesX::vertex_coords(everywhere)
+    WRITES: ADMBaseX::metric(everywhere)
+    WRITES: ADMBaseX::curv(everywhere)
+    WRITES: ADMBaseX::lapse(everywhere)
+    WRITES: ADMBaseX::shift(everywhere)
+    WRITES: ADMBaseX::dtlapse(everywhere)
+    WRITES: ADMBaseX::dtshift(everywhere)
+  } "Create Kerr-Schild initial data"
+}
