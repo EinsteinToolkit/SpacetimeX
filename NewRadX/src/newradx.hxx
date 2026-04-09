@@ -31,7 +31,38 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
 
 /**
  * @brief Applies radiative boundary condition to the RHS of a state variable
- * on multipatch grids.
+ * on multipatch grids. See above for original credits.
+ *
+ * @param cctkGH Pointer to Cactus grid hierarchy struct.
+ * @param var State variable which will have boundary conditions applied to it.
+ * @param rhs RHS of the evolution equation for @param var
+ * @param vcoordx Global x vertex coordinates grid function. Providade by
+ * CoordinatesX
+ * @param vcoordy Global y vertex coordinates grid function. Providade by
+ * CoordinatesX
+ * @param vcoordz Global z vertex coordinates grid function. Providade by
+ * CoordinatesX
+ * @param vJ_da_dx Vertex centered coordinate transformation Jacobian da/dx.
+ * Provided by any thorn implementing the Multipatch interface.
+ * @param vJ_da_dy Vertex centered coordinate transformation Jacobian da/dy.
+ * Provided by any thorn implementing the Multipatch interface.
+ * @param vJ_da_dz Vertex centered coordinate transformation Jacobian da/dz.
+ * Provided by any thorn implementing the Multipatch interface.
+ * @param vJ_db_dx Vertex centered coordinate transformation Jacobian db/dx.
+ * Provided by any thorn implementing the Multipatch interface.
+ * @param vJ_db_dy Vertex centered coordinate transformation Jacobian db/dy.
+ * Provided by any thorn implementing the Multipatch interface.
+ * @param vJ_db_dz Vertex centered coordinate transformation Jacobian db/dz.
+ * Provided by any thorn implementing the Multipatch interface.
+ * @param vJ_dc_dx Vertex centered coordinate transformation Jacobian dc/dx.
+ * Provided by any thorn implementing the Multipatch interface.
+ * @param vJ_dc_dy Vertex centered coordinate transformation Jacobian dc/dy.
+ * Provided by any thorn implementing the Multipatch interface.
+ * @param vJ_dc_dz Vertex centered coordinate transformation Jacobian dc/dz.
+ * Provided by any thorn implementing the Multipatch interface.
+ * @param var0 Value at infinity.
+ * @param v0 Propagation speed.
+ * @param radpower Radial fall-off exponent
  */
 void NewRadX_Apply(const cGH *restrict const cctkGH,
                    const Loop::GF3D2<const CCTK_REAL> &var,

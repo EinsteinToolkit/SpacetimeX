@@ -256,9 +256,9 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
         const auto dc_dz = vJ_dc_dz(p.I);
 
         // Global derivatives
-        const auto dgf_dx = dgf_db * db_dx + dgf_dc * dc_dx + da_dx * dgf_da;
-        const auto dgf_dy = dgf_dc * dc_dy + db_dy * dgf_db + da_dy * dgf_da;
-        const auto dgf_dz = dc_dz * dgf_dc + db_dz * dgf_db + da_dz * dgf_da;
+        const auto dgf_dx = dgf_da * da_dx + dgf_db * db_dx + dgf_dc * dc_dx;
+        const auto dgf_dy = dgf_da * da_dy + dgf_db * db_dy + dgf_dc * dc_dy;
+        const auto dgf_dz = dgf_da * da_dz + dgf_db * db_dz + dgf_dc * dc_dz;
 
         // radiative rhs
         rhs(p.I) = -vx * dgf_dx - vy * dgf_dy - vz * dgf_dz -
@@ -312,9 +312,9 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
           const auto dc_dz = vJ_dc_dz(intp);
 
           // Global derivatives at interior point
-          const auto dgf_dx = dgf_db * db_dx + dgf_dc * dc_dx + da_dx * dgf_da;
-          const auto dgf_dy = dgf_dc * dc_dy + db_dy * dgf_db + da_dy * dgf_da;
-          const auto dgf_dz = dc_dz * dgf_dc + db_dz * dgf_db + da_dz * dgf_da;
+          const auto dgf_dx = dgf_da * da_dx + dgf_db * db_dx + dgf_dc * dc_dx;
+          const auto dgf_dy = dgf_da * da_dy + dgf_db * db_dy + dgf_dc * dc_dy;
+          const auto dgf_dz = dgf_da * da_dz + dgf_db * db_dz + dgf_dc * dc_dz;
 
           // Radiative part at interior point
           const auto rad = -vxint * dgf_dx - vyint * dgf_dy - vzint * dgf_dz -
