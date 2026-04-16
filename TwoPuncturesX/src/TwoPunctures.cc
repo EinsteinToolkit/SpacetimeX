@@ -100,7 +100,7 @@ static void set_initial_guess(const cGH* cctkGH, derivs v) {
           /* Calculation of (x,r)*/
           C_To_c(nvar, X, R, &(s_x[indx]), &r, U);
           /* Calculation of (y,z)*/
-          rx3_To_xyz(nvar, s_x[i3D], r, phi, &(s_y[indx]), &(s_z[indx]), U);
+          rx3_To_xyz(nvar, s_x[indx], r, phi, &(s_y[indx]), &(s_z[indx]), U);
           fprintf(debug_file,
                   "%.16g %.16g %.16g %.16g %.16g %.16g %.16g %.16g %.16g %.16g "
                   "%.16g %.16g %.16g %.16g %.16g %.16g %.16g %.16g %.16g\n",
@@ -590,7 +590,7 @@ void TwoPuncturesX_TwoPunctures(CCTK_ARGUMENTS) {
       }
       if (r_minus < TP_Extend_Radius) {
         alp[ind] = ((1.0 - 0.5 * EXTEND(*mm, r_minus) - 0.5 * *mp / r_plus) /
-                    (1.0 + 0.5 * EXTEND(*mp, r_minus) + 0.5 * *mp / r_plus));
+                    (1.0 + 0.5 * EXTEND(*mm, r_minus) + 0.5 * *mp / r_plus));
       }
 
       if (averaged_lapse) {
