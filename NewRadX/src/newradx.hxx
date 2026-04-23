@@ -36,11 +36,11 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
  * @param cctkGH Pointer to Cactus grid hierarchy struct.
  * @param var State variable which will have boundary conditions applied to it.
  * @param rhs RHS of the evolution equation for @param var
- * @param vcoordx Global x vertex coordinates grid function. Providade by
+ * @param vcoordx Global x vertex coordinates grid function. Provided by
  * CoordinatesX
- * @param vcoordy Global y vertex coordinates grid function. Providade by
+ * @param vcoordy Global y vertex coordinates grid function. Provided by
  * CoordinatesX
- * @param vcoordz Global z vertex coordinates grid function. Providade by
+ * @param vcoordz Global z vertex coordinates grid function. Provided by
  * CoordinatesX
  * @param vJ_da_dx Vertex centered coordinate transformation Jacobian da/dx.
  * Provided by any thorn implementing the Multipatch interface.
