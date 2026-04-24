@@ -141,7 +141,7 @@ static void set_initial_guess(const cGH* cctkGH, derivs v) {
         R = 2 * (1.0 * j / n2);
         if (X * X + R * R > 1.0) {
           C_To_c(nvar, X, R, &(s_x[indx]), &r, U);
-          rx3_To_xyz(nvar, s_x[i3D], r, phi, &(s_y[indx]), &(s_z[indx]), U);
+          rx3_To_xyz(nvar, s_x[indx], r, phi, &(s_y[indx]), &(s_z[indx]), U);
           *U.d0 = s_x[indx] * s_x[indx];
           *U.d1 = 2 * s_x[indx];
           *U.d2 = 0.0;
