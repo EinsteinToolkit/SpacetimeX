@@ -37,8 +37,10 @@ static void set_initial_guess(const cGH* cctkGH, derivs v) {
   derivs U;
   FILE *debug_file;
 
-  if (solve_momentum_constraint)
-    nvar = 4;
+  if (solve_momentum_constraint) {
+     CCTK_ERROR("solve_momentum_constraint=yes is not implemented in TwoPuncturesX");
+     // nvar = 4;
+  }
 
   s_x = (CCTK_REAL*)calloc(n1 * n2 * n3, sizeof(CCTK_REAL));
   s_y = (CCTK_REAL*)calloc(n1 * n2 * n3, sizeof(CCTK_REAL));
@@ -624,7 +626,8 @@ void TwoPuncturesX_TwoPunctures(CCTK_ARGUMENTS) {
   }
 
   if (use_sources && rescale_sources) {
-    assert(0); // TODO: Implement via critical region
+    // TODO: Is the omp single declaration enough to handle potential threading issues?
+    // assert(0); // TODO: Implement via critical region
 #pragma omp single
     Rescale_Sources(cctkGH, np, vcoordx, vcoordy, vcoordz, NULL, gxx, gyy, gzz,
                     gxy, gxz, gyz);

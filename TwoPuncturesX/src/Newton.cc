@@ -422,7 +422,7 @@ static int bicgstab(const cGH* const cctkGH, int const nvar,
   free_ivector(ncols, 0, ntotal - 1);
 
   /* iteration failed */
-  if (ii >= itmax)
+  if (ii >= itmax && *normres > tol)
     return -1;
 
   /* breakdown */
