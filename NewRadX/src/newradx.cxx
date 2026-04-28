@@ -74,7 +74,11 @@ static inline CCTK_ATTRIBUTE_ALWAYS_INLINE CCTK_DEVICE CCTK_REAL calc_deriv(
     return l2o<dir>(p, p.I, gf);
 
   } else {
-    assert(0);
+#if !defined(__CUDACC__) && !defined(__HIP_PLATFORM_AMD__) &&                  \
+    !defined(__HIP_PLATFORM_HCC__) && !defined(__INTEL_LLVM_COMPILER)
+    CCTK_VERROR("Internal error: Unreconized point location %d", p.NI[dir]);
+#endif
+    amrex::Abort();
   }
 }
 
