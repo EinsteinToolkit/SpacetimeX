@@ -1,0 +1,19 @@
+# ParticleToyX
+
+SCHEDULE ParticleToyX_init AT initial
+{
+  LANG: C
+  OPTIONS: global
+} "Initialize particles"
+
+SCHEDULE ParticleToyX_accel AT poststep
+{
+  LANG: C
+  OPTIONS: global
+} "Calculate particle acceleration"
+
+SCHEDULE ParticleToyX_evolve AT evol AFTER ODESolvers_Solve
+{
+  LANG: C
+  OPTIONS: global
+} "Evolve particles"
