@@ -1,0 +1,63 @@
+# Kerr-Schild initial data, spinning (a = 0.8), smooth regularization.
+#
+# Exercises a nonzero spin and the "parabolic" singularity smoothing, neither of
+# which was covered before.
+
+ActiveThorns = "
+    ADMBaseX
+    CarpetX
+    CoordinatesX
+    IOUtil
+    KerrSchildX
+    ODESolvers
+"
+
+Cactus::cctk_show_schedule = no
+Cactus::cctk_itlast = 0
+
+CarpetX::verbose = no
+Cactus::presync_mode = "mixed-error"
+CarpetX::poison_undefined_values = yes
+
+CarpetX::xmin = -4.0
+CarpetX::ymin = -4.0
+CarpetX::zmin = -4.0
+
+CarpetX::xmax = +4.0
+CarpetX::ymax = +4.0
+CarpetX::zmax = +4.0
+
+CarpetX::ncells_x = 16
+CarpetX::ncells_y = 16
+CarpetX::ncells_z = 16
+
+CarpetX::blocking_factor_x = 16
+CarpetX::blocking_factor_y = 16
+CarpetX::blocking_factor_z = 16
+
+ADMBaseX::initial_data    = "kerrschildx"
+ADMBaseX::initial_lapse   = "kerrschildx"
+ADMBaseX::initial_shift   = "kerrschildx"
+ADMBaseX::initial_dtlapse = "kerrschildx"
+ADMBaseX::initial_dtshift = "kerrschildx"
+
+KerrSchildX::mass = 1.0
+KerrSchildX::spin = 0.8
+
+KerrSchildX::r_regularization = "parabolic"
+KerrSchildX::epsilon          = 1.0
+KerrSchildX::power            = 8
+
+IO::out_dir = $parfile
+IO::out_every = 1
+IO::parfile_write = no
+
+CarpetX::out_metadata = no
+CarpetX::out_tsv_vars = "
+    ADMBaseX::metric
+    ADMBaseX::curv
+    ADMBaseX::lapse
+    ADMBaseX::shift
+    ADMBaseX::dtlapse
+    ADMBaseX::dtshift
+"

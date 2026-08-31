@@ -1,4 +1,4 @@
-# Schedule definitions for thorn KerrSchild
+# Schedule definitions for thorn KerrSchildX
 
 if (CCTK_Equals(initial_data, "kerrschildx") ||
     CCTK_Equals(initial_lapse, "kerrschildx") ||
@@ -11,16 +11,69 @@ if (CCTK_Equals(initial_data, "kerrschildx") ||
     LANG: C
     OPTIONS: global
   } "Check Kerr-Schild parameters"
+}
 
-  SCHEDULE KerrSchildX_InitialData IN ADMBaseX_SetADMVars
+# The data are set in the ADM initial-data bins, so that an evolution thorn
+# reading ADMBaseX at CCTK_INITIAL (e.g. Z4c_Initial1) sees them. To apply
+# the analytic solution as a prescribed background at every step instead,
+# activate thorn Cowling, which re-parents these groups into
+# ADMBaseX_SetADMVars.
+#
+# Note that ADMBaseX only declares these groups when ODESolvers (or Cowling)
+# is active.
+#
+# There is one routine per keyword, each declaring exactly the variables it
+# writes. A single routine writing all six groups would mark variables valid
+# that it had not set whenever only a subset of the keywords selects
+# "kerrschildx".
+
+if (CCTK_Equals(initial_data, "kerrschildx"))
+{
+  SCHEDULE KerrSchildX_InitialData IN ADMBaseX_InitialData
   {
     LANG: C
     READS: CoordinatesX::vertex_coords(everywhere)
     WRITES: ADMBaseX::metric(everywhere)
     WRITES: ADMBaseX::curv(everywhere)
+  } "Set up Kerr-Schild metric and extrinsic curvature"
+}
+
+if (CCTK_Equals(initial_lapse, "kerrschildx"))
+{
+  SCHEDULE KerrSchildX_InitialLapse IN ADMBaseX_InitialGauge
+  {
+    LANG: C
+    READS: CoordinatesX::vertex_coords(everywhere)
     WRITES: ADMBaseX::lapse(everywhere)
+  } "Set up Kerr-Schild lapse"
+}
+
+if (CCTK_Equals(initial_shift, "kerrschildx"))
+{
+  SCHEDULE KerrSchildX_InitialShift IN ADMBaseX_InitialGauge
+  {
+    LANG: C
+    READS: CoordinatesX::vertex_coords(everywhere)
     WRITES: ADMBaseX::shift(everywhere)
+  } "Set up Kerr-Schild shift"
+}
+
+if (CCTK_Equals(initial_dtlapse, "kerrschildx"))
+{
+  SCHEDULE KerrSchildX_InitialDtLapse IN ADMBaseX_InitialGauge
+  {
+    LANG: C
+    READS: CoordinatesX::vertex_coords(everywhere)
     WRITES: ADMBaseX::dtlapse(everywhere)
+  } "Set up Kerr-Schild time derivative of the lapse"
+}
+
+if (CCTK_Equals(initial_dtshift, "kerrschildx"))
+{
+  SCHEDULE KerrSchildX_InitialDtShift IN ADMBaseX_InitialGauge
+  {
+    LANG: C
+    READS: CoordinatesX::vertex_coords(everywhere)
     WRITES: ADMBaseX::dtshift(everywhere)
-  } "Create Kerr-Schild initial data"
+  } "Set up Kerr-Schild time derivative of the shift"
 }

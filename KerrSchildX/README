@@ -6,4 +6,92 @@ Licence      : LGPL
 
 1. Purpose
 
-Set up Kerr-Schild initial conditions
+Set up Kerr-Schild initial conditions.
+
+The metric is the Kerr solution in Cartesian Kerr-Schild coordinates,
+
+  g_ab = eta_ab + 2 H l_a l_b ,
+
+with the spin along the z axis and the black hole at the coordinate origin.
+Kerr-Schild coordinates are horizon penetrating, so the grid contains the
+region inside the horizon, including the ring singularity at r = 0 (see
+section 3).
+
+The thorn sets all of ADMBaseX's metric, curv, lapse, shift, dtlapse and
+dtshift. Spatial and time derivatives of the metric are obtained by
+forward-mode automatic differentiation (Arith::dual), so they are exact to
+machine precision and need no ghost zones; every routine can therefore write
+"everywhere".
+
+Because the metric is stationary in these coordinates, dtlapse and dtshift are
+identically zero. They are computed rather than hard-wired so that a boosted or
+moving black hole would work without further changes.
+
+
+2. Parameters
+
+  mass              black hole mass M, must be positive
+  spin              spin parameter a, WITH DIMENSION mass, so |spin| < mass
+                    (this is a, not the dimensionless a/M, and not the angular
+                    momentum J)
+  r_regularization  how to regularize r near the ring singularity
+  epsilon           regularization scale
+  power             exponent used by the smooth regularization variants
+
+The five ADMBaseX keywords initial_data, initial_lapse, initial_shift,
+initial_dtlapse and initial_dtshift each accept the value "kerrschildx", and
+each selects one independently scheduled routine. Selecting only some of them
+is supported.
+
+
+3. Regularizing the ring singularity
+
+r is the Kerr auxiliary radius; the curvature singularity is at r = 0, which
+lies on the grid. Three variants are available, following thorn Exact's
+src/metrics/Kerr_KerrSchild.F:
+
+  "max"        r <- sqrt(max(epsilon, r^2))
+               The legacy behaviour, and still the default so that existing
+               results are reproduced bit for bit. Note that here epsilon
+               bounds r^2 rather than r. Continuous but NOT differentiable at
+               r^2 = epsilon, which radiates grid-scale error in an evolution.
+
+  "power-law"  r <- (r^power + epsilon^power)^(1/power)
+               Smooth everywhere. power must be 2, 4 or 8, so that the root is
+               a chain of square roots. Perturbs r at all radii, by
+               ~epsilon^power / (power r^(power-1)).
+
+  "parabolic"  For r < epsilon, r is replaced by an even polynomial in r that
+               is matched smoothly at r = epsilon and stays positive at r = 0
+               (a "stuffed" black hole). power must be 2, 4, 6 or 8. Exact
+               outside r = epsilon.
+
+For an evolution prefer "parabolic" with epsilon comfortably inside the
+horizon, r_+ = M + sqrt(M^2 - a^2). See par/kerr-z4c-ah.par.
+
+
+4. Scheduling
+
+The routines run in ADMBaseX_InitialData and ADMBaseX_InitialGauge, so that an
+evolution thorn reading ADMBaseX at CCTK_INITIAL (such as Z4c_Initial1) sees
+the data. ADMBaseX only declares those groups when ODESolvers is active, so a
+parameter file must activate ODESolvers even when it does not evolve.
+
+To apply the analytic solution as a prescribed background at every time step
+instead of once as initial data, additionally activate thorn Cowling, which
+re-parents the initial-data groups into ADMBaseX_SetADMVars.
+
+
+5. Parameter files
+
+  par/kerrschild.par     minimal setup, dumps the data at iteration 0
+  par/kerr-z4c-ah.par    Kerr with a/M = 0.8, Z4c, and AHFinderDirect locating
+                         the horizon; documents the expected horizon diagnostics
+
+
+6. References
+
+Kerr-Schild form of the Kerr metric: see e.g. Misner, Thorne & Wheeler,
+"Gravitation", Box 33.2, or the review in
+<https://arxiv.org/abs/0706.0622> (Visser, "The Kerr spacetime: A brief
+introduction").

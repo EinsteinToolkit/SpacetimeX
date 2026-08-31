@@ -5,6 +5,7 @@ ActiveThorns = "
     Formaline
     IOUtil
     KerrSchildX
+    ODESolvers
 "
 
 Cactus::cctk_show_schedule = yes   # no

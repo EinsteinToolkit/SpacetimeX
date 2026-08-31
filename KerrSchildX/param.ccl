@@ -1,4 +1,4 @@
-# Parameter definitions for thorn KerrSchild
+# Parameter definitions for thorn KerrSchildX
 
 SHARES: ADMBaseX
 
@@ -33,7 +33,7 @@ PRIVATE:
 
 CCTK_REAL mass "Mass"
 {
-  0.0:* :: ""
+  (0.0:* :: "Must be positive, and larger than |spin|"
 } 1.0
 
 CCTK_REAL spin "Spin parameter (with dimension `mass`)"
@@ -41,7 +41,19 @@ CCTK_REAL spin "Spin parameter (with dimension `mass`)"
   *:* :: "Must be -mass < spin < mass"
 } 0.0
 
-CCTK_REAL epsilon "Avoid division by zero"
+KEYWORD r_regularization "How to regularize the auxiliary radius r near the ring singularity"
 {
-  0:* :: ""
+  "max"       :: "Floor r^2 at `epsilon`. Continuous but not differentiable; `epsilon` bounds r^2, not r"
+  "power-law" :: "r -> (r^power + epsilon^power)^(1/power). Smooth everywhere; `power` must be 2, 4, or 8"
+  "parabolic" :: "For r < epsilon, replace r by a smoothly matched even polynomial (a `stuffed` black hole); `power` must be 2, 4, 6, or 8"
+} "max"
+
+CCTK_REAL epsilon "Avoid division by zero. Bounds r^2 for r_regularization=max, and r otherwise"
+{
+  (0:* :: "Must be positive"
 } 1.0e-8
+
+CCTK_INT power "Exponent used by the smooth `r_regularization` variants"
+{
+  2:8 :: "See the description of r_regularization"
+} 8

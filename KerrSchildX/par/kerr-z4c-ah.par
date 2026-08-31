@@ -1,0 +1,174 @@
+# Kerr black hole in Kerr-Schild coordinates: Z4c evolution + apparent horizon.
+#
+# Validation setup. At cctk_itlast = 0 this only sets up the analytic data and
+# locates the horizon once, which is enough to check the horizon finder against
+# the exact Kerr answer:
+#
+#   M = 1, a = 0.8  =>  r_+ = M + sqrt(M^2 - a^2)      = 1.6
+#                       horizon is an oblate spheroid in Cartesian KS coords,
+#                       semi-axes sqrt(r_+^2 + a^2)     = 1.788854 in x, y
+#                                 r_+                   = 1.6      in z
+#                       area      A = 8 pi M r_+        = 40.21239
+#                       irreducible mass sqrt(A/16 pi)  = 0.8944272
+#
+# So BH_diagnostics.ah1.gp should report min radius ~ 1.6, max radius ~ 1.79,
+# area ~ 40.21, m_irreducible ~ 0.894, and Theta_(l) at round-off.
+#
+# To evolve instead, raise cctk_itlast, and move the outer boundary out.
+
+ActiveThorns = "
+    ADMBaseX
+    AEILocalInterp
+    AHFinderDirect
+    CarpetX
+    CoordinatesX
+    Formaline
+    IOUtil
+    KerrSchildX
+    ODESolvers
+    SphericalSurface
+    SystemTopology
+    TmunuBaseX
+    Z4c
+"
+
+Cactus::cctk_show_schedule = yes
+
+Cactus::presync_mode = "mixed-error"
+
+Cactus::terminate = "iteration"
+Cactus::cctk_itlast = 0
+
+CarpetX::verbose = no
+CarpetX::poison_undefined_values = yes
+
+# ---------------------------------------------------------------- grid --------
+
+CarpetX::xmin = -8.0
+CarpetX::ymin = -8.0
+CarpetX::zmin = -8.0
+
+CarpetX::xmax = +8.0
+CarpetX::ymax = +8.0
+CarpetX::zmax = +8.0
+
+CarpetX::ncells_x = 64
+CarpetX::ncells_y = 64
+CarpetX::ncells_z = 64
+
+# dx = 0.25, so the horizon (r_+ = 1.6) is covered by ~6.4 points per M.
+# No AMR: the horizon sits far inside a single uniform level, which keeps every
+# interpolation stencil away from a refinement or domain boundary. That matters
+# because CarpetX_Interpolate aborts the run for an out-of-domain point rather
+# than reporting failure, so AHFinderDirect's "surface left the grid" path
+# cannot trigger.
+CarpetX::max_num_levels = 1
+
+CarpetX::ghost_size = 3
+
+# Must match AHFinderDirect::geometry_interpolator_pars below; CarpetX asserts
+# that the requested order equals this parameter.
+CarpetX::interpolation_order = 4
+
+CarpetX::dtfac = 0.25
+ODESolvers::method = "RK4"
+
+# ------------------------------------------------------- initial data --------
+
+ADMBaseX::initial_data    = "kerrschildx"
+ADMBaseX::initial_lapse   = "kerrschildx"
+ADMBaseX::initial_shift   = "kerrschildx"
+ADMBaseX::initial_dtlapse = "kerrschildx"
+ADMBaseX::initial_dtshift = "kerrschildx"
+
+KerrSchildX::mass = 1.0
+KerrSchildX::spin = 0.8            # dimensional, in units of mass: |spin| < mass
+
+# Smooth the ring singularity out to r = 1.0, well inside r_+ = 1.6, so that
+# the metric is C^1 everywhere on the grid. These are the settings that
+# par/ks-mclachlan.par uses for the Carpet-era equivalent of this run.
+KerrSchildX::r_regularization = "parabolic"
+KerrSchildX::epsilon          = 1.0
+KerrSchildX::power            = 8
+
+# ------------------------------------------------------------- Z4c -----------
+
+Z4c::calc_ADM_vars    = yes        # required: AHFinderDirect reads ADMBaseX
+Z4c::calc_ADMRHS_vars = no
+Z4c::calc_constraints = yes
+
+Z4c::chi_floor    = 1.0e-6
+Z4c::alphaG_floor = 1.0e-8
+Z4c::epsdiss      = 0.32
+
+# ------------------------------------------------ apparent horizon -----------
+
+AHFinderDirect::N_horizons  = 1
+AHFinderDirect::find_every  = 1
+AHFinderDirect::move_origins = yes
+AHFinderDirect::verbose_level = "physics details"
+
+# The default is to run only at CCTK_POSTSTEP, which would find nothing at all
+# in an itlast = 0 run.
+AHFinderDirect::run_at_CCTK_POSTINITIAL = yes
+
+# "CarpetX" is the only geometry interpolator CarpetX accepts; the default
+# ("Hermite polynomial interpolation") aborts. The surface and interpatch
+# interpolators act on the angular grid and stay with AEILocalInterp.
+AHFinderDirect::geometry_interpolator_name   = "CarpetX"
+AHFinderDirect::geometry_interpolator_pars   = "order=4"
+AHFinderDirect::surface_interpolator_name    = "Lagrange polynomial interpolation"
+AHFinderDirect::surface_interpolator_pars    = "order=3"
+AHFinderDirect::interpatch_interpolator_name = "Lagrange polynomial interpolation"
+AHFinderDirect::interpatch_interpolator_pars = "order=3"
+
+# AHFinderDirect knows the analytic Kerr-Schild horizon shape and can start
+# from the exact oblate ellipsoid. NOTE the different spin convention: this
+# parameter is the DIMENSIONLESS a = J/m^2, i.e. KerrSchildX::spin / mass.
+AHFinderDirect::initial_guess_method[1]                    = "Kerr/Kerr-Schild"
+AHFinderDirect::initial_guess__Kerr_KerrSchild__mass[1]    = 1.0
+AHFinderDirect::initial_guess__Kerr_KerrSchild__spin[1]    = 0.8
+AHFinderDirect::initial_guess__Kerr_KerrSchild__x_posn[1]  = 0.0
+AHFinderDirect::initial_guess__Kerr_KerrSchild__y_posn[1]  = 0.0
+AHFinderDirect::initial_guess__Kerr_KerrSchild__z_posn[1]  = 0.0
+
+AHFinderDirect::origin_x[1] = 0.0
+AHFinderDirect::origin_y[1] = 0.0
+AHFinderDirect::origin_z[1] = 0.0
+
+AHFinderDirect::which_surface_to_store_info[1]     = 0
+AHFinderDirect::reset_horizon_after_not_finding[1] = no
+AHFinderDirect::max_allowable_horizon_radius[1]    = 4.0
+
+# The ACCUMULATOR expression for max_N_zones_per_right_angle is commented out
+# in param.ccl, so both of these must be set by hand.
+AHFinderDirect::N_zones_per_right_angle[1] = 24
+AHFinderDirect::max_N_zones_per_right_angle = 24
+
+AHFinderDirect::output_h_every = 1
+
+SphericalSurface::nsurfaces = 1
+SphericalSurface::maxntheta = 66
+SphericalSurface::maxnphi   = 124
+
+SphericalSurface::ntheta      [0] = 41
+SphericalSurface::nphi        [0] = 80
+SphericalSurface::nghoststheta[0] = 2
+SphericalSurface::nghostsphi  [0] = 2
+
+# ----------------------------------------------------------- output ----------
+
+IO::out_dir   = $parfile
+IO::out_every = 1
+
+CarpetX::out_metadata = no
+
+CarpetX::out_tsv_vars = "
+    ADMBaseX::metric
+    ADMBaseX::curv
+    ADMBaseX::lapse
+    ADMBaseX::shift
+    ADMBaseX::dtlapse
+    ADMBaseX::dtshift
+    Z4c::allC
+"
