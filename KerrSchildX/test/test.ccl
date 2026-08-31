@@ -1,0 +1,27 @@
+# KerrSchildX writes CarpetX TSV output.
+#
+# Declare the extension here rather than relying on CarpetX/test/test.ccl.
+# lib/sbin/RunTestUtils.pl:295 accumulates EXTENSIONS into a single global
+# entry, while ABSTOL/RELTOL/NPROCS are kept per thorn -- so a test run that
+# selects only SpacetimeX would never parse CarpetX's declaration, would not
+# recognise any .tsv file, and would compare nothing while still reporting
+# success.
+EXTENSIONS tsv
+
+# The data are analytic and evaluated at iteration 0, so the only differences
+# expected between platforms are in the last digits, from a different math
+# library or from FMA contraction. Values span 1e-17 to 1e6; the largest are
+# K_ij immediately next to the floored ring singularity in the Schwarzschild
+# case, which is exactly the behaviour worth pinning.
+ABSTOL 1e-10
+RELTOL 1e-10
+
+TEST kerrschild
+{
+  NPROCS 1
+}
+
+TEST kerrschild-spin
+{
+  NPROCS 1
+}
