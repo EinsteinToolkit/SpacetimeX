@@ -66,6 +66,18 @@ CarpetX::max_num_levels = 1
 
 CarpetX::ghost_size = 3
 
+# Outer boundary. The default is "none", which never fills the outer boundary
+# and never marks it valid, so Z4c_Initial2 (which READS gamma_tilde
+# everywhere) aborts with "The outer boundary is invalid because:
+# MakeNewLevelFromScratch". The Z4c variables are stored as deviations that
+# fall off as 1/r, which is what "robin" assumes.
+CarpetX::boundary_x       = "robin"
+CarpetX::boundary_y       = "robin"
+CarpetX::boundary_z       = "robin"
+CarpetX::boundary_upper_x = "robin"
+CarpetX::boundary_upper_y = "robin"
+CarpetX::boundary_upper_z = "robin"
+
 # Must match AHFinderDirect::geometry_interpolator_pars below; CarpetX asserts
 # that the requested order equals this parameter.
 CarpetX::interpolation_order = 4
