@@ -755,8 +755,7 @@ template <typename T> struct z4c_vars : z4c_vars_noderivs<T> {
                  1 / (1 + chi) *
                      (At_rhs(a, b) + (Kh_rhs + 2 * Theta_rhs) / 3 *
                                          (delta3(a, b) + gammat(a, b))) +
-                 1 / (1 + chi) *
-                     (At(a, b) + (Kh + 2 * Theta) / 3 * gammat_rhs(a, b));
+                 1 / (1 + chi) * (Kh + 2 * Theta) / 3 * gammat_rhs(a, b);
         }),
         //
         dtalpha_rhs(evolveA ? A_rhs : dtalpha_target_rhs),
