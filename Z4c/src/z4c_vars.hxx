@@ -531,17 +531,25 @@ template <typename T> struct z4c_vars : z4c_vars_noderivs<T> {
                      return (delta3(a, x) + gammatu(a, x)) * Si(x);
                    });
         }),
-        // arXiv:1111.2177, (73)
+        // arXiv:1111.2177, (73), with every piece contracted in its physical
+        // form. HC and Theta are physical scalars already, but MtC and ZtC
+        // are the conformal quantities with an upper index,
+        //     M^a = (1 + chi) MtC^a,   Z^a = (1 + chi) ZtC^a,
+        // and the physical metric is g_ab = (delta_ab + gammat_ab)/(1 + chi),
+        // so
+        //     M_a M^a = g_ab M^a M^b
+        //             = (1 + chi) (delta_ab + gammat_ab) MtC^a MtC^b,
+        // and likewise for Z_a Z^a.
         allC(sqrt(
             fmax(T(0),
                  pow2(HC) //
-                     + sum<3>([&](int x) ARITH_INLINE {
+                     + (1 + chi) * sum<3>([&](int x) ARITH_INLINE {
                          return MtC(x) * sum<3>([&](int y) ARITH_INLINE {
                                   return (delta3(x, y) + gammat(x, y)) * MtC(y);
                                 });
                        })          //
                      + pow2(Theta) //
-                     + 2 * sum<3>([&](int x) ARITH_INLINE {
+                     + 2 * (1 + chi) * sum<3>([&](int x) ARITH_INLINE {
                          return ZtC(x) * sum<3>([&](int y) ARITH_INLINE {
                                   return (delta3(x, y) + gammat(x, y)) * ZtC(y);
                                 });
