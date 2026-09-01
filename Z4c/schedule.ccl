@@ -177,9 +177,15 @@ if (calc_ADM_vars) {
     WRITES: ADMBaseX::metric(everywhere)
     WRITES: ADMBaseX::curv(everywhere)
     WRITES: ADMBaseX::lapse(everywhere)
-    WRITES: ADMBaseX::dtlapse(everywhere)
     WRITES: ADMBaseX::shift(everywhere)
+    # The main loop writes dtlapse and dtshift everywhere, but the advection
+    # term beta^i d_i u needs a stencil and is added on the interior only.
+    # Synchronising afterwards carries the corrected interior values into the
+    # ghost zones; the outer boundary layer keeps the source term alone.
+    WRITES: ADMBaseX::dtlapse(everywhere)
     WRITES: ADMBaseX::dtshift(everywhere)
+    SYNC: ADMBaseX::dtlapse
+    SYNC: ADMBaseX::dtshift
   } "Convert Z4c to ADM variables"
 }
 

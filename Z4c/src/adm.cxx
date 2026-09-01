@@ -1,3 +1,4 @@
+#include "derivs.hxx"
 #include "z4c_vars.hxx"
 
 #include <loop_device.hxx>
@@ -64,8 +65,7 @@ extern "C" void Z4c_ADM(CCTK_ARGUMENTS) {
   const GF3D2<const CCTK_REAL> gf_A1(layout1, A);
 
   const vec<GF3D2<const CCTK_REAL>, 3> gf_B1{
-      GF3D2<const CCTK_REAL>(layout1, Bx),
-      GF3D2<const CCTK_REAL>(layout1, By),
+      GF3D2<const CCTK_REAL>(layout1, Bx), GF3D2<const CCTK_REAL>(layout1, By),
       GF3D2<const CCTK_REAL>(layout1, Bz)};
 
   const smat<GF3D2<CCTK_REAL>, 3> gf_g1{
@@ -126,6 +126,31 @@ extern "C" void Z4c_ADM(CCTK_ARGUMENTS) {
 #ifdef __CUDACC__
   nvtxRangeEnd(range);
 #endif
+
+  // vars.dtalpha and vars.dtbeta are only the source terms of the gauge
+  // conditions. The conditions themselves are advected along the shift,
+  //
+  //     d/dt alpha  = -alpha f_mu_L Khat + beta^i d_i alpha
+  //
+  // and correspondingly for the shift, so ADMBaseX::dtlapse and dtshift are
+  // wrong by beta^i d_i alpha (a few percent near a black hole horizon)
+  // unless that term is added here as well. It is added for both gauges: with
+  // evolveA the stored value is A, and the lapse is still advected on top of
+  // it.
+  //
+  // Kreiss-Oliger dissipation is deliberately NOT added. It is applied to the
+  // evolved right hand sides in rhs.cxx because it stabilises the discrete
+  // update, but it is not part of d/dt alpha in any sense that a thorn
+  // reading ADMBaseX::dtlapse would want.
+  //
+  // A derivative needs neighbours, so unlike the loop above this covers the
+  // interior only. schedule.ccl synchronises dtlapse and dtshift afterwards,
+  // which carries the corrected interior values into the ghost zones; the
+  // outer boundary layer keeps the source term alone.
+  apply_upwind(cctkGH, gf_alphaG1, gf_betaG1, gf_dtalp1);
+
+  for (int a = 0; a < 3; ++a)
+    apply_upwind(cctkGH, gf_betaG1(a), gf_betaG1, gf_dtbeta1(a));
 }
 
 } // namespace Z4c

@@ -88,8 +88,7 @@ extern "C" void Z4c_RHS(CCTK_ARGUMENTS) {
   const GF3D2<const CCTK_REAL> gf_A1(layout1, A);
 
   const vec<GF3D2<const CCTK_REAL>, 3> gf_B1{
-      GF3D2<const CCTK_REAL>(layout1, Bx),
-      GF3D2<const CCTK_REAL>(layout1, By),
+      GF3D2<const CCTK_REAL>(layout1, Bx), GF3D2<const CCTK_REAL>(layout1, By),
       GF3D2<const CCTK_REAL>(layout1, Bz)};
 
   //
@@ -213,10 +212,9 @@ extern "C" void Z4c_RHS(CCTK_ARGUMENTS) {
 
   const GF3D2<CCTK_REAL> gf_A_rhs1(layout1, A_rhs);
 
-  const vec<GF3D2<CCTK_REAL>, 3> gf_B_rhs1{
-      GF3D2<CCTK_REAL>(layout1, Bx_rhs),
-      GF3D2<CCTK_REAL>(layout1, By_rhs),
-      GF3D2<CCTK_REAL>(layout1, Bz_rhs)};
+  const vec<GF3D2<CCTK_REAL>, 3> gf_B_rhs1{GF3D2<CCTK_REAL>(layout1, Bx_rhs),
+                                           GF3D2<CCTK_REAL>(layout1, By_rhs),
+                                           GF3D2<CCTK_REAL>(layout1, Bz_rhs)};
 
   //
 
@@ -253,7 +251,7 @@ extern "C" void Z4c_RHS(CCTK_ARGUMENTS) {
               gf_alphaG0(mask, index0), gf_dalphaG0(mask, index0),
               gf_ddalphaG0(mask, index0), //
               gf_betaG0(mask, index0), gf_dbetaG0(mask, index0),
-              gf_ddbetaG0(mask, index0), //
+              gf_ddbetaG0(mask, index0),                //
               gf_A1(mask, index1), gf_B1(mask, index1), //
               gf_eTtt1(mask, index1), gf_eTti1(mask, index1),
               gf_eTij1(mask, index1));
@@ -348,39 +346,55 @@ extern "C" void Z4c_RHS(CCTK_ARGUMENTS) {
 
   // TODO: Consider fusing the loops to reduce memory bandwidth
 
-  apply_upwind_diss(cctkGH, gf_chi1, gf_betaG1, gf_chi_rhs1);
+  apply_upwind(cctkGH, gf_chi1, gf_betaG1, gf_chi_rhs1);
+  apply_diss(cctkGH, gf_chi1, gf_chi_rhs1);
 
   for (int a = 0; a < 3; ++a)
-    for (int b = a; b < 3; ++b)
-      apply_upwind_diss(cctkGH, gf_gammat1(a, b), gf_betaG1,
-                        gf_gammat_rhs1(a, b));
+    for (int b = a; b < 3; ++b) {
+      apply_upwind(cctkGH, gf_gammat1(a, b), gf_betaG1, gf_gammat_rhs1(a, b));
+      apply_diss(cctkGH, gf_gammat1(a, b), gf_gammat_rhs1(a, b));
+    }
 
-  apply_upwind_diss(cctkGH, gf_Kh1, gf_betaG1, gf_Kh_rhs1);
-
-  for (int a = 0; a < 3; ++a)
-    for (int b = a; b < 3; ++b)
-      apply_upwind_diss(cctkGH, gf_At1(a, b), gf_betaG1, gf_At_rhs1(a, b));
+  apply_upwind(cctkGH, gf_Kh1, gf_betaG1, gf_Kh_rhs1);
+  apply_diss(cctkGH, gf_Kh1, gf_Kh_rhs1);
 
   for (int a = 0; a < 3; ++a)
-    apply_upwind_diss(cctkGH, gf_Gamt1(a), gf_betaG1, gf_Gamt_rhs1(a));
+    for (int b = a; b < 3; ++b) {
+      apply_upwind(cctkGH, gf_At1(a, b), gf_betaG1, gf_At_rhs1(a, b));
+      apply_diss(cctkGH, gf_At1(a, b), gf_At_rhs1(a, b));
+    }
 
-  if (!set_Theta_zero)
-    apply_upwind_diss(cctkGH, gf_Theta1, gf_betaG1, gf_Theta_rhs1);
+  for (int a = 0; a < 3; ++a) {
+    apply_upwind(cctkGH, gf_Gamt1(a), gf_betaG1, gf_Gamt_rhs1(a));
+    apply_diss(cctkGH, gf_Gamt1(a), gf_Gamt_rhs1(a));
+  }
 
-  apply_upwind_diss(cctkGH, gf_alphaG1, gf_betaG1, gf_alphaG_rhs1);
+  if (!set_Theta_zero) {
+    apply_upwind(cctkGH, gf_Theta1, gf_betaG1, gf_Theta_rhs1);
+    apply_diss(cctkGH, gf_Theta1, gf_Theta_rhs1);
+  }
 
-  for (int a = 0; a < 3; ++a)
-    apply_upwind_diss(cctkGH, gf_betaG1(a), gf_betaG1, gf_betaG_rhs1(a));
+  apply_upwind(cctkGH, gf_alphaG1, gf_betaG1, gf_alphaG_rhs1);
+  apply_diss(cctkGH, gf_alphaG1, gf_alphaG_rhs1);
+
+  for (int a = 0; a < 3; ++a) {
+    apply_upwind(cctkGH, gf_betaG1(a), gf_betaG1, gf_betaG_rhs1(a));
+    apply_diss(cctkGH, gf_betaG1(a), gf_betaG_rhs1(a));
+  }
 
   // A and B^i are advected and dissipated like every other evolved variable,
   // which is what ML_BSSN does by default (fixAdvectionTerms = 0). With
   // evolveA / evolveB off their RHS is zero and nothing here runs.
-  if (evolveA)
-    apply_upwind_diss(cctkGH, gf_A1, gf_betaG1, gf_A_rhs1);
+  if (evolveA) {
+    apply_upwind(cctkGH, gf_A1, gf_betaG1, gf_A_rhs1);
+    apply_diss(cctkGH, gf_A1, gf_A_rhs1);
+  }
 
   if (evolveB)
-    for (int a = 0; a < 3; ++a)
-      apply_upwind_diss(cctkGH, gf_B1(a), gf_betaG1, gf_B_rhs1(a));
+    for (int a = 0; a < 3; ++a) {
+      apply_upwind(cctkGH, gf_B1(a), gf_betaG1, gf_B_rhs1(a));
+      apply_diss(cctkGH, gf_B1(a), gf_B_rhs1(a));
+    }
 }
 
 } // namespace Z4c

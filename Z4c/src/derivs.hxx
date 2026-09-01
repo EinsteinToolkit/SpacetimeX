@@ -407,13 +407,15 @@ CCTK_ATTRIBUTE_NOINLINE void calc_derivs2(
                    layout);
 }
 
+// Advection along the shift, beta^i d_i u. This is part of the gauge and
+// evolution equations themselves, so it belongs in any reported time
+// derivative.
 template <typename T>
 CCTK_ATTRIBUTE_NOINLINE void
-apply_upwind_diss(const cGH *restrict const cctkGH, const GF3D2<const T> &gf_,
-                  const vec<GF3D2<const T>, dim> &gf_betaG_,
-                  const GF3D2<T> &gf_rhs_) {
+apply_upwind(const cGH *restrict const cctkGH, const GF3D2<const T> &gf_,
+             const vec<GF3D2<const T>, dim> &gf_betaG_,
+             const GF3D2<T> &gf_rhs_) {
   DECLARE_CCTK_ARGUMENTS;
-  DECLARE_CCTK_PARAMETERS;
 
   const vec<CCTK_REAL, dim> dx([&](int a) { return CCTK_DELTA_SPACE(a); });
 
@@ -421,33 +423,44 @@ apply_upwind_diss(const cGH *restrict const cctkGH, const GF3D2<const T> &gf_,
   typedef simdl<CCTK_REAL> vbool;
   constexpr size_t vsize = tuple_size_v<vreal>;
 
-  if (epsdiss == 0) {
+  const Loop::GridDescBaseDevice grid(cctkGH);
+  grid.loop_int_device<0, 0, 0, vsize>(
+      grid.nghostzones, [=] ARITH_DEVICE(const PointDesc &p) ARITH_INLINE {
+        const vbool mask = mask_for_loop_tail<vbool>(p.i, p.imax);
+        const vec<vreal, dim> betaG = gf_betaG_(mask, p.I);
+        const vreal rhs_old = gf_rhs_(mask, p.I);
+        const vreal rhs_new = rhs_old + deriv_upwind(mask, gf_, p.I, betaG, dx);
+        gf_rhs_.store(mask, p.I, rhs_new);
+      });
+}
 
-    const Loop::GridDescBaseDevice grid(cctkGH);
-    grid.loop_int_device<0, 0, 0, vsize>(
-        grid.nghostzones, [=] ARITH_DEVICE(const PointDesc &p) ARITH_INLINE {
-          const vbool mask = mask_for_loop_tail<vbool>(p.i, p.imax);
-          const vec<vreal, dim> betaG = gf_betaG_(mask, p.I);
-          const vreal rhs_old = gf_rhs_(mask, p.I);
-          const vreal rhs_new =
-              rhs_old + deriv_upwind(mask, gf_, p.I, betaG, dx);
-          gf_rhs_.store(mask, p.I, rhs_new);
-        });
+// Kreiss-Oliger dissipation. This is a filter on the discrete update with no
+// continuum counterpart, so it belongs only in the right hand side that the
+// time integrator sees, never in a time derivative reported to other thorns.
+template <typename T>
+CCTK_ATTRIBUTE_NOINLINE void apply_diss(const cGH *restrict const cctkGH,
+                                        const GF3D2<const T> &gf_,
+                                        const GF3D2<T> &gf_rhs_) {
+  DECLARE_CCTK_ARGUMENTS;
+  DECLARE_CCTK_PARAMETERS;
 
-  } else {
+  if (epsdiss == 0)
+    return;
 
-    const Loop::GridDescBaseDevice grid(cctkGH);
-    grid.loop_int_device<0, 0, 0, vsize>(
-        grid.nghostzones, [=] ARITH_DEVICE(const PointDesc &p) ARITH_INLINE {
-          const vbool mask = mask_for_loop_tail<vbool>(p.i, p.imax);
-          const vec<vreal, dim> betaG = gf_betaG_(mask, p.I);
-          const vreal rhs_old = gf_rhs_(mask, p.I);
-          const vreal rhs_new = rhs_old +
-                                deriv_upwind(mask, gf_, p.I, betaG, dx) +
-                                epsdiss * diss(mask, gf_, p.I, dx);
-          gf_rhs_.store(mask, p.I, rhs_new);
-        });
-  }
+  const vec<CCTK_REAL, dim> dx([&](int a) { return CCTK_DELTA_SPACE(a); });
+
+  typedef simd<CCTK_REAL> vreal;
+  typedef simdl<CCTK_REAL> vbool;
+  constexpr size_t vsize = tuple_size_v<vreal>;
+
+  const Loop::GridDescBaseDevice grid(cctkGH);
+  grid.loop_int_device<0, 0, 0, vsize>(
+      grid.nghostzones, [=] ARITH_DEVICE(const PointDesc &p) ARITH_INLINE {
+        const vbool mask = mask_for_loop_tail<vbool>(p.i, p.imax);
+        const vreal rhs_old = gf_rhs_(mask, p.I);
+        const vreal rhs_new = rhs_old + epsdiss * diss(mask, gf_, p.I, dx);
+        gf_rhs_.store(mask, p.I, rhs_new);
+      });
 }
 
 } // namespace Z4c
