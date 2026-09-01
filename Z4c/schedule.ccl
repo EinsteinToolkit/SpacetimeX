@@ -81,6 +81,14 @@ SCHEDULE GROUP Z4c_RHSGroup IN ODESolvers_RHS
 
 
 
+SCHEDULE Z4c_ParamCheck AT paramcheck
+{
+  LANG: C
+  OPTIONS: global
+} "Check Z4c parameter consistency"
+
+
+
 SCHEDULE Z4c_Test AT wragh
 {
   LANG: C
@@ -181,7 +189,9 @@ if (calc_ADM_vars) {
     # The main loop writes dtlapse and dtshift everywhere, but the advection
     # term beta^i d_i u needs a stencil and is added on the interior only.
     # Synchronising afterwards carries the corrected interior values into the
-    # ghost zones; the outer boundary layer keeps the source term alone.
+    # ghost zones and applies the configured CarpetX outer boundary condition;
+    # only with CarpetX::boundary_* = "none" does the outer boundary layer
+    # keep the source term alone.
     WRITES: ADMBaseX::dtlapse(everywhere)
     WRITES: ADMBaseX::dtshift(everywhere)
     SYNC: ADMBaseX::dtlapse
@@ -206,7 +216,10 @@ if (calc_ADMRHS_vars) {
     READS: TmunuBaseX::eTtt(interior)
     READS: TmunuBaseX::eTti(interior)
     READS: TmunuBaseX::eTij(interior)
-    # the advected gauge derivatives, as written by Z4c_ADM
+    # ADM variables as written by Z4c_ADM: curv for the advection term of
+    # dtcurv, the advected gauge derivatives for dt2lapse and dt2shift.
+    # Z4c_ParamCheck enforces the resulting calc_ADM_vars requirement.
+    READS: ADMBaseX::curv(everywhere)
     READS: ADMBaseX::dtlapse(everywhere)
     READS: ADMBaseX::dtshift(everywhere)
     WRITES: ADMBaseX::dtcurv(interior)

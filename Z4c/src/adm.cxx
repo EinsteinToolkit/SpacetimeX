@@ -25,6 +25,12 @@ extern "C" void Z4c_ADM(CCTK_ARGUMENTS) {
   DECLARE_CCTK_ARGUMENTS_Z4c_ADM;
   DECLARE_CCTK_PARAMETERS;
 
+  // The apply_upwind calls below use a deriv_order/2 + 1 wide stencil. This
+  // routine runs at initial, before Z4c_RHS can perform the same check.
+  for (int d = 0; d < 3; ++d)
+    if (cctk_nghostzones[d] < deriv_order / 2 + 1)
+      CCTK_VERROR("Need at least %d ghost zones", deriv_order / 2 + 1);
+
   const array<int, dim> indextype = {0, 0, 0};
   const GF3D2layout layout1(cctkGH, indextype);
 
@@ -145,8 +151,10 @@ extern "C" void Z4c_ADM(CCTK_ARGUMENTS) {
   //
   // A derivative needs neighbours, so unlike the loop above this covers the
   // interior only. schedule.ccl synchronises dtlapse and dtshift afterwards,
-  // which carries the corrected interior values into the ghost zones; the
-  // outer boundary layer keeps the source term alone.
+  // which carries the corrected interior values into the ghost zones and
+  // applies the configured CarpetX outer boundary condition; only with
+  // CarpetX::boundary_* = "none" does the outer boundary layer keep the
+  // source term alone.
   apply_upwind(cctkGH, gf_alphaG1, gf_betaG1, gf_dtalp1);
 
   for (int a = 0; a < 3; ++a)

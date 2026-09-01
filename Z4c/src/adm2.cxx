@@ -174,6 +174,16 @@ extern "C" void Z4c_ADM2(CCTK_ARGUMENTS) {
 
   //
 
+  // The extrinsic curvature as written by Z4c_ADM, used below to add the
+  // advection term beta^k d_k K_ij to dtcurv.
+  const smat<GF3D2<const CCTK_REAL>, 3> gf_k1{
+      GF3D2<const CCTK_REAL>(layout1, kxx),
+      GF3D2<const CCTK_REAL>(layout1, kxy),
+      GF3D2<const CCTK_REAL>(layout1, kxz),
+      GF3D2<const CCTK_REAL>(layout1, kyy),
+      GF3D2<const CCTK_REAL>(layout1, kyz),
+      GF3D2<const CCTK_REAL>(layout1, kzz)};
+
   const smat<GF3D2<CCTK_REAL>, 3> gf_dtk1{
       GF3D2<CCTK_REAL>(layout1, dtkxx), GF3D2<CCTK_REAL>(layout1, dtkxy),
       GF3D2<CCTK_REAL>(layout1, dtkxz), GF3D2<CCTK_REAL>(layout1, dtkyy),
@@ -230,7 +240,10 @@ extern "C" void Z4c_ADM2(CCTK_ARGUMENTS) {
             gf_eTtt1(mask, index1), gf_eTti1(mask, index1),
             gf_eTij1(mask, index1));
 
-        // Store
+        // Store. vars.K_rhs is only the source part of d/dt K_ij; every
+        // variable it is built from (chi, gammat, Kh, At, Theta) is advected,
+        // and by the chain rule those advection terms sum to
+        // beta^k d_k K_ij, which is added below with apply_upwind.
         gf_dtk1.store(mask, index1, vars.K_rhs);
 
         // Z4c_ADM reports the advected gauge conditions,
@@ -265,6 +278,10 @@ extern "C" void Z4c_ADM2(CCTK_ARGUMENTS) {
                  });
         });
 
+        // With evolveA / evolveB the source is the evolved A (B^i), whose
+        // full time derivative is A_rhs plus the advection term beta^i d_i A
+        // that rhs.cxx adds; that advection term is added below with
+        // apply_upwind.
         const vreal dS =
             evolveA ? vars.A_rhs
                     : -f_mu_L * (D * vars.Kh + (1 + vars.alphaG) * dtKh);
@@ -287,13 +304,42 @@ extern "C" void Z4c_ADM2(CCTK_ARGUMENTS) {
   nvtxRangeEnd(range);
 #endif
 
-  // The remaining beta^i d_i D and beta^j d_j D^a terms. As in Z4c_ADM these
-  // carry no Kreiss-Oliger dissipation: it is a property of the discrete
-  // update, not of a time derivative.
+  // The remaining advection terms. As in Z4c_ADM these carry no
+  // Kreiss-Oliger dissipation: it is a property of the discrete update, not
+  // of a time derivative.
+
+  // beta^k d_k K_ij, completing d/dt K_ij (see the store above)
+  for (int a = 0; a < 3; ++a)
+    for (int b = a; b < 3; ++b)
+      apply_upwind(cctkGH, gf_k1(a, b), gf_betaG1, gf_dtk1(a, b));
+
+  // beta^i d_i D and beta^j d_j D^a
   apply_upwind(cctkGH, gf_dtalp1, gf_betaG1, gf_dt2alp1);
 
   for (int a = 0; a < 3; ++a)
     apply_upwind(cctkGH, gf_dtbeta1(a), gf_betaG1, gf_dt2beta1(a));
+
+  // With evolveA / evolveB the evolved A and B^i are themselves advected in
+  // rhs.cxx, so d/dt A = A_rhs + beta^i d_i A enters d/dt D; the main loop
+  // stored only A_rhs. Mirrors the evolveA / evolveB guards in rhs.cxx.
+  if (evolveA)
+    apply_upwind(cctkGH, gf_A1, gf_betaG1, gf_dt2alp1);
+
+  if (evolveB)
+    for (int a = 0; a < 3; ++a)
+      apply_upwind(cctkGH, gf_B1(a), gf_betaG1, gf_dt2beta1(a));
+}
+
+extern "C" void Z4c_ParamCheck(CCTK_ARGUMENTS) {
+  DECLARE_CCTK_ARGUMENTSX_Z4c_ParamCheck;
+  DECLARE_CCTK_PARAMETERS;
+
+  // Z4c_ADM2 reads ADMBaseX::curv, dtlapse and dtshift, which only Z4c_ADM
+  // keeps up to date during evolution.
+  if (calc_ADMRHS_vars && !calc_ADM_vars)
+    CCTK_PARAMWARN(
+        "calc_ADMRHS_vars = yes requires calc_ADM_vars = yes: Z4c_ADM2 reads "
+        "ADMBaseX::curv, dtlapse and dtshift, which Z4c_ADM writes");
 }
 
 } // namespace Z4c
