@@ -16,10 +16,6 @@ USES INCLUDE HEADER: vect.hxx
 USES INCLUDE HEADER: newradx.hxx
 
 
-CCTK_INT FUNCTION GetCallFunctionCount()
-REQUIRES FUNCTION GetCallFunctionCount
-
-
 
 # All variables have been shifted so that they tend to zero in flat space
 
