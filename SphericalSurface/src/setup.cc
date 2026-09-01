@@ -339,6 +339,16 @@ extern "C" void SphericalSurface_SetupRes (CCTK_ARGUMENTS)
      
     // set resolution according to Radius and Cartesian resolution
 
+    // schedule.ccl declares sf_coordinate_estimators, sf_minreflevel and
+    // sf_maxreflevel as written everywhere, but they are only computed when
+    // auto_res[n] is set, which is not the default. Give them a defined
+    // value for every surface so that they are not left poisoned: CarpetX's
+    // validity checking sees the declared WRITES, finds NaNs, and aborts.
+    sf_minreflevel[n] = 0;
+    sf_maxreflevel[n] = 0;
+    sf_delta_theta_estimate[n] = 0;
+    sf_delta_phi_estimate[n] = 0;
+
     if (!auto_res[n])
         continue;
       
