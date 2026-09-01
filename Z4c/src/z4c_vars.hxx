@@ -282,8 +282,6 @@ template <typename T> struct z4c_vars : z4c_vars_noderivs<T> {
 
   // ADM RHS variables
   const smat<T, 3> K_rhs;
-  const T dtalpha_rhs;
-  const vec<T, 3> dtbeta_rhs;
 
   friend CCTK_ATTRIBUTE_NOINLINE ostream &operator<<(ostream &os,
                                                      const z4c_vars &vars) {
@@ -356,8 +354,6 @@ template <typename T> struct z4c_vars : z4c_vars_noderivs<T> {
               << "alphaG_rhs:" << vars.alphaG_rhs << ","         //
               << "betaG_rhs:" << vars.betaG_rhs << ","           //
               << "K_rhs:" << vars.K_rhs << ","                   //
-              << "dtalpha_rhs:" << vars.dtalpha_rhs << ","       //
-              << "dtbeta_rhs:" << vars.dtbeta_rhs << ","         //
               << "}";
   }
 
@@ -698,12 +694,6 @@ template <typename T> struct z4c_vars : z4c_vars_noderivs<T> {
                      (At_rhs(a, b) + (Kh_rhs + 2 * Theta_rhs) / 3 *
                                          (delta3(a, b) + gammat(a, b))) +
                  1 / (1 + chi) * (Kh + 2 * Theta) / 3 * gammat_rhs(a, b);
-        }),
-        //
-        dtalpha_rhs(evolveA ? A_rhs : dtalpha_target_rhs),
-        //
-        dtbeta_rhs([&](int a) ARITH_INLINE {
-          return evolveB ? B_rhs(a) : dtbeta_target_rhs(a);
         })
   //
   {}

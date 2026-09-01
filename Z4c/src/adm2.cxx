@@ -256,9 +256,9 @@ extern "C" void Z4c_ADM2(CCTK_ARGUMENTS) {
         //     d/dt D   = d/dt S   + (d/dt beta^i) d_i alpha  + beta^i d_i D
         //     d/dt D^a = d/dt S^a + (d/dt beta^j) d_j beta^a + beta^j d_j D^a
         //
-        // vars.dtalpha_rhs and vars.dtbeta_rhs cannot be used for the d/dt S
-        // terms: they differentiate the sources using the right hand sides
-        // held by z4c_vars, which are themselves pre-advection. The sources
+        // z4c_vars' dtalpha_target_rhs and dtbeta_target_rhs cannot be used
+        // for the d/dt S terms: they differentiate the sources using the
+        // pre-advection right hand sides held by z4c_vars. The sources
         // are recomputed here from the advected derivatives instead. Khat and
         // Gamt^i are advected with the centred derivatives that z4c_vars
         // carries rather than the upwinded ones rhs.cxx uses, and Kreiss-
