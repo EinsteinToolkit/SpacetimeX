@@ -25,6 +25,10 @@ template <typename T> struct z4c_vars_noderivs {
   const T f_mu_L;
   const T f_mu_S;
   const T eta;
+  const bool evolveA;
+  const bool evolveB;
+  const T alphaDriver;
+  const T betaDriver;
 
   // Constants
   const smat<T, 3> delta3;
@@ -41,6 +45,8 @@ template <typename T> struct z4c_vars_noderivs {
   const T Theta;           // W = 0
   const T alphaG;          // W = 0
   const vec<T, 3> betaG;   // W = 0
+  const T A;               // W = 0, d/dt alpha, evolved iff evolveA
+  const vec<T, 3> B;       // W = 0, d/dt beta^i, evolved iff evolveB
 
   // T_munu variables
   const T eTtt;
@@ -55,10 +61,12 @@ template <typename T> struct z4c_vars_noderivs {
   // ADM variables
   const smat<T, 3> g;     // W = 0
   const smat<T, 3> K;     // W = 0
-  const T alpha;          // W = 0
-  const T dtalpha;        // W = 0
-  const vec<T, 3> beta;   // W = 0
-  const vec<T, 3> dtbeta; // W = 0
+  const T alpha;                 // W = 0
+  const T dtalpha_target;        // W = 0, first order lapse condition
+  const T dtalpha;               // W = 0
+  const vec<T, 3> beta;          // W = 0
+  const vec<T, 3> dtbeta_target; // W = 0, first order shift condition
+  const vec<T, 3> dtbeta;        // W = 0
 
   friend CCTK_ATTRIBUTE_NOINLINE ostream &
   operator<<(ostream &os, const z4c_vars_noderivs &vars) {
@@ -93,20 +101,22 @@ template <typename T> struct z4c_vars_noderivs {
 
   ARITH_INLINE ARITH_DEVICE ARITH_HOST z4c_vars_noderivs(
       const bool set_Theta_zero, const T &kappa1, const T &kappa2,
-      const T &f_mu_L, const T &f_mu_S, const T &eta,
+      const T &f_mu_L, const T &f_mu_S, const T &eta, const bool evolveA,
+      const bool evolveB, const T &alphaDriver, const T &betaDriver,
       //
       const T &chi, const smat<T, 3> &gammat, const T &Kh, const smat<T, 3> &At,
       const vec<T, 3> &Gamt, const T &Theta, const T &alphaG,
-      const vec<T, 3> &betaG,
+      const vec<T, 3> &betaG, const T &A, const vec<T, 3> &B,
       //
       const T &eTtt, const vec<T, 3> &eTti, const smat<T, 3> &eTij)
       : set_Theta_zero(set_Theta_zero), kappa1(kappa1), kappa2(kappa2),
-        f_mu_L(f_mu_L), f_mu_S(f_mu_S), eta(eta),
+        f_mu_L(f_mu_L), f_mu_S(f_mu_S), eta(eta), evolveA(evolveA),
+        evolveB(evolveB), alphaDriver(alphaDriver), betaDriver(betaDriver),
         //
         delta3(one<smat<T, 3>>()()),
         //
         chi(chi), gammat(gammat), Kh(Kh), At(At), Gamt(Gamt), Theta(Theta),
-        alphaG(alphaG), betaG(betaG),
+        alphaG(alphaG), betaG(betaG), A(A), B(B),
         //
         eTtt(eTtt), eTti(eTti), eTij(eTij),
         // Hydro variables
@@ -140,19 +150,23 @@ template <typename T> struct z4c_vars_noderivs {
         }), //
         alpha(1 + alphaG),
         // (11)
-        dtalpha([&]() ARITH_INLINE {
+        dtalpha_target([&]() ARITH_INLINE {
           // const T mu_L = f_mu_L / (1 + alphaG);
           // return -pow2(1 + alphaG) * mu_L * Kh;
           return -(1 + alphaG) * f_mu_L * Kh;
         }()), //
+        dtalpha(evolveA ? A : dtalpha_target), //
         beta(betaG),
         // (12)
-        dtbeta([&](int a) ARITH_INLINE {
+        dtbeta_target([&](int a) ARITH_INLINE {
           // const T mu_S = f_mu_S / pow2(1 + alphaG);
           // return pow2(1 + alphaG) * mu_S * Gamt(a) //
           //        - eta * betaG(a);
           return f_mu_S * Gamt(a) //
                  - eta * betaG(a);
+        }), //
+        dtbeta([&](int a) ARITH_INLINE {
+          return evolveB ? B(a) : dtbeta_target(a);
         })
   //
   {}
@@ -235,6 +249,10 @@ template <typename T> struct z4c_vars : z4c_vars_noderivs<T> {
   using z4c_vars_noderivs<T>::f_mu_L;
   using z4c_vars_noderivs<T>::f_mu_S;
   using z4c_vars_noderivs<T>::eta;
+  using z4c_vars_noderivs<T>::evolveA;
+  using z4c_vars_noderivs<T>::evolveB;
+  using z4c_vars_noderivs<T>::alphaDriver;
+  using z4c_vars_noderivs<T>::betaDriver;
 
   // Constants
   using z4c_vars_noderivs<T>::delta3;
@@ -248,6 +266,8 @@ template <typename T> struct z4c_vars : z4c_vars_noderivs<T> {
   using z4c_vars_noderivs<T>::Theta;
   using z4c_vars_noderivs<T>::alphaG;
   using z4c_vars_noderivs<T>::betaG;
+  using z4c_vars_noderivs<T>::A;
+  using z4c_vars_noderivs<T>::B;
 
   // T_munu variables
   using z4c_vars_noderivs<T>::eTtt;
@@ -264,7 +284,9 @@ template <typename T> struct z4c_vars : z4c_vars_noderivs<T> {
   using z4c_vars_noderivs<T>::K;
   using z4c_vars_noderivs<T>::alpha;
   using z4c_vars_noderivs<T>::beta;
+  using z4c_vars_noderivs<T>::dtalpha_target;
   using z4c_vars_noderivs<T>::dtalpha;
+  using z4c_vars_noderivs<T>::dtbeta_target;
   using z4c_vars_noderivs<T>::dtbeta;
 
   // Derivatives of Z4c variables
@@ -317,6 +339,12 @@ template <typename T> struct z4c_vars : z4c_vars_noderivs<T> {
   const T Theta_rhs;
   const T alphaG_rhs;
   const vec<T, 3> betaG_rhs;
+  // d/dt of the first order gauge conditions
+  const T dtalpha_target_rhs;
+  const vec<T, 3> dtbeta_target_rhs;
+  // RHS of the evolved gauge derivatives; zero unless evolveA / evolveB
+  const T A_rhs;
+  const vec<T, 3> B_rhs;
 
   // ADM RHS variables
   const smat<T, 3> K_rhs;
@@ -402,7 +430,8 @@ template <typename T> struct z4c_vars : z4c_vars_noderivs<T> {
   // See arXiv:1212.2901 [gr-qc]
   ARITH_INLINE ARITH_DEVICE ARITH_HOST z4c_vars(
       const bool set_Theta_zero, const T &kappa1, const T &kappa2,
-      const T &f_mu_L, const T &f_mu_S, const T &eta,
+      const T &f_mu_L, const T &f_mu_S, const T &eta, const bool evolveA,
+      const bool evolveB, const T &alphaDriver, const T &betaDriver,
       //
       const T &chi, const vec<T, 3> &dchi, const smat<T, 3> &ddchi, //
       const smat<T, 3> &gammat, const smat<vec<T, 3>, 3> &dgammat,
@@ -415,10 +444,14 @@ template <typename T> struct z4c_vars : z4c_vars_noderivs<T> {
       const vec<T, 3> &betaG, const vec<vec<T, 3>, 3> &dbetaG,
       const vec<smat<T, 3>, 3> &ddbetaG,
       //
+      const T &A, const vec<T, 3> &B,
+      //
       const T &eTtt, const vec<T, 3> &eTti, const smat<T, 3> &eTij)
       : z4c_vars_noderivs<T>(
-            set_Theta_zero, kappa1, kappa2, f_mu_L, f_mu_S, eta, //
-            chi, gammat, Kh, At, Gamt, Theta, alphaG, betaG, eTtt, eTti, eTij),
+            set_Theta_zero, kappa1, kappa2, f_mu_L, f_mu_S, eta, evolveA,
+            evolveB, alphaDriver, betaDriver, //
+            chi, gammat, Kh, At, Gamt, Theta, alphaG, betaG, A, B, eTtt, eTti,
+            eTij),
         // Derivatives of Z4c variables
         dchi(dchi), ddchi(ddchi),             //
         dgammat(dgammat), ddgammat(ddgammat), //
@@ -693,6 +726,28 @@ template <typename T> struct z4c_vars : z4c_vars_noderivs<T> {
         //
         betaG_rhs(dtbeta),
         //
+        dtalpha_target_rhs([&]() ARITH_INLINE {
+          return -alphaG_rhs * f_mu_L * Kh //
+                 - (1 + alphaG) * f_mu_L * Kh_rhs;
+        }()),
+        //
+        dtbeta_target_rhs([&](int a) ARITH_INLINE {
+          return f_mu_S * Gamt_rhs(a) //
+                 - eta * betaG_rhs(a);
+        }),
+        //
+        // The driver relaxes A towards the first order lapse condition. With
+        // alphaDriver = 0 and A initialised to dtalpha_target the first order
+        // gauge is reproduced exactly.
+        A_rhs(evolveA ? dtalpha_target_rhs - alphaDriver * (A - dtalpha_target)
+                      : T(0)),
+        //
+        B_rhs([&](int a) ARITH_INLINE {
+          return evolveB ? dtbeta_target_rhs(a) -
+                               betaDriver * (B(a) - dtbeta_target(a))
+                         : T(0);
+        }),
+        //
         K_rhs([&](int a, int b) ARITH_INLINE {
           return -1 / pow2(1 + chi) * chi_rhs *
                      (At(a, b) +
@@ -704,15 +759,10 @@ template <typename T> struct z4c_vars : z4c_vars_noderivs<T> {
                      (At(a, b) + (Kh + 2 * Theta) / 3 * gammat_rhs(a, b));
         }),
         //
-        dtalpha_rhs([&]() ARITH_INLINE {
-          return -alphaG_rhs * f_mu_L * Kh //
-                 - (1 + alphaG) * f_mu_L * Kh_rhs;
-          ;
-        }()),
+        dtalpha_rhs(evolveA ? A_rhs : dtalpha_target_rhs),
         //
         dtbeta_rhs([&](int a) ARITH_INLINE {
-          return f_mu_S * Gamt_rhs(a) //
-                 - eta * betaG_rhs(a);
+          return evolveB ? B_rhs(a) : dtbeta_target_rhs(a);
         })
   //
   {}

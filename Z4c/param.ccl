@@ -42,6 +42,46 @@ CCTK_REAL eta "eta" STEERABLE=always
   *:* :: ""
 } 2.0
 
+
+
+# Integrated ("second order") gauge conditions.
+#
+# With these off, the gauge is the usual first order one:
+#     d/dt alpha  = -alpha f_mu_L Khat
+#     d/dt beta^i = f_mu_S Gamt^i - eta beta^i
+#
+# With them on, d/dt alpha and d/dt beta^i become evolved variables A and B^i
+# (group dtalphaG / dtbetaG), obeying
+#     d/dt alpha = A
+#     d/dt A     = d/dt (-alpha f_mu_L Khat) - alphaDriver (A + alpha f_mu_L Khat)
+# and correspondingly for the shift. The driver terms relax A and B^i towards
+# the first order values; with a driver of zero and A, B^i initialised to
+# those values the first order gauge is reproduced exactly, which is what the
+# unit test checks.
+#
+# The point of the integrated form is that A and B^i can be initialised from
+# ADMBaseX::dtlapse and ADMBaseX::dtshift. For stationary initial data in
+# horizon-penetrating coordinates those are zero, so the gauge starts at rest
+# instead of being kicked by a nonzero -alpha f_mu_L Khat at t = 0.
+
+BOOLEAN evolveA "Evolve A = d/dt alpha instead of setting it algebraically"
+{
+} "no"
+
+BOOLEAN evolveB "Evolve B^i = d/dt beta^i instead of setting it algebraically"
+{
+} "no"
+
+CCTK_REAL alphaDriver "Rate at which A relaxes to the first order lapse condition" STEERABLE=always
+{
+  0.0:* :: "zero disables the driver"
+} 0.0
+
+CCTK_REAL betaDriver "Rate at which B^i relaxes to the first order shift condition" STEERABLE=always
+{
+  0.0:* :: "zero disables the driver"
+} 0.0
+
 CCTK_REAL chi_floor "Floor for chi" STEERABLE=always
 {
   (0:* :: ""
@@ -100,4 +140,14 @@ CCTK_INT n_alphaG "n power of outgoing boundary r^n fall off rate for alpha"
 CCTK_INT n_betaG "n power of outgoing boundary r^n fall off rate for beta"
 {
   0:2           :: "1 is my guess"
+} 1
+
+CCTK_INT n_A "n power of outgoing boundary r^n fall off rate for A"
+{
+  0:2           :: ""
+} 1
+
+CCTK_INT n_B "n power of outgoing boundary r^n fall off rate for B"
+{
+  0:2           :: ""
 } 1

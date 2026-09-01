@@ -36,6 +36,13 @@ extern "C" void Z4c_apply_newradx_boundary_conditions(CCTK_ARGUMENTS) {
   NewRadX_Apply(cctkGH, betaGx, betaGx_rhs, 0, 1, n_betaG);
   NewRadX_Apply(cctkGH, betaGy, betaGy_rhs, 0, 1, n_betaG);
   NewRadX_Apply(cctkGH, betaGz, betaGz_rhs, 0, 1, n_betaG);
+  if (evolveA)
+    NewRadX_Apply(cctkGH, A, A_rhs, 0, 1, n_A);
+  if (evolveB) {
+    NewRadX_Apply(cctkGH, Bx, Bx_rhs, 0, 1, n_B);
+    NewRadX_Apply(cctkGH, By, By_rhs, 0, 1, n_B);
+    NewRadX_Apply(cctkGH, Bz, Bz_rhs, 0, 1, n_B);
+  }
 }
 
 } // namespace Z4c

@@ -8,6 +8,8 @@ STORAGE: Gam_tilde
 STORAGE: Theta
 STORAGE: alphaG
 STORAGE: betaG
+STORAGE: dtalphaG
+STORAGE: dtbetaG
 
 STORAGE: ZtC
 STORAGE: HC
@@ -22,6 +24,8 @@ STORAGE: Gam_tilde_rhs
 STORAGE: Theta_rhs
 STORAGE: alphaG_rhs
 STORAGE: betaG_rhs
+STORAGE: dtalphaG_rhs
+STORAGE: dtbetaG_rhs
 
 
 
@@ -100,6 +104,8 @@ SCHEDULE Z4c_Initial1 IN Z4c_InitialGroup
   READS: ADMBaseX::curv(interior)
   READS: ADMBaseX::lapse(interior)
   READS: ADMBaseX::shift(interior)
+  READS: ADMBaseX::dtlapse(interior)
+  READS: ADMBaseX::dtshift(interior)
   WRITES: chi(interior)
   WRITES: gamma_tilde(interior)
   WRITES: K_hat(interior)
@@ -107,6 +113,8 @@ SCHEDULE Z4c_Initial1 IN Z4c_InitialGroup
   WRITES: Theta(interior)
   WRITES: alphaG(interior)
   WRITES: betaG(interior)
+  WRITES: dtalphaG(interior)
+  WRITES: dtbetaG(interior)
   # SYNC: chi
   SYNC: gamma_tilde
   # SYNC: K_hat
@@ -145,6 +153,8 @@ SCHEDULE Z4c_Enforce IN Z4c_PostStepGroup
   SYNC: Theta
   SYNC: alphaG
   SYNC: betaG
+  SYNC: dtalphaG
+  SYNC: dtbetaG
 } "Enforce algebraic Z4c constraints"
 
 if (calc_ADM_vars) {
@@ -159,6 +169,8 @@ if (calc_ADM_vars) {
     READS: Theta(everywhere)
     READS: alphaG(everywhere)
     READS: betaG(everywhere)
+    READS: dtalphaG(everywhere)
+    READS: dtbetaG(everywhere)
     # READS: TmunuBaseX::eTtt(interior)
     # READS: TmunuBaseX::eTti(interior)
     # READS: TmunuBaseX::eTij(interior)
@@ -183,6 +195,8 @@ if (calc_ADMRHS_vars) {
     READS: Theta(everywhere)
     READS: alphaG(everywhere)
     READS: betaG(everywhere)
+    READS: dtalphaG(everywhere)
+    READS: dtbetaG(everywhere)
     READS: TmunuBaseX::eTtt(interior)
     READS: TmunuBaseX::eTti(interior)
     READS: TmunuBaseX::eTij(interior)
@@ -209,6 +223,8 @@ if (calc_constraints) {
     READS: Theta(everywhere)
     READS: alphaG(everywhere)
     READS: betaG(everywhere)
+    READS: dtalphaG(everywhere)
+    READS: dtbetaG(everywhere)
     READS: TmunuBaseX::eTtt(interior)
     READS: TmunuBaseX::eTti(interior)
     READS: TmunuBaseX::eTij(interior)
@@ -236,6 +252,8 @@ SCHEDULE Z4c_RHS IN Z4c_RHSGroup
   READS: Theta(everywhere)
   READS: alphaG(everywhere)
   READS: betaG(everywhere)
+  READS: dtalphaG(everywhere)
+  READS: dtbetaG(everywhere)
   READS: TmunuBaseX::eTtt(interior)
   READS: TmunuBaseX::eTti(interior)
   READS: TmunuBaseX::eTij(interior)
@@ -247,6 +265,8 @@ SCHEDULE Z4c_RHS IN Z4c_RHSGroup
   WRITES: Theta_rhs(interior)
   WRITES: alphaG_rhs(interior)
   WRITES: betaG_rhs(interior)
+  WRITES: dtalphaG_rhs(interior)
+  WRITES: dtbetaG_rhs(interior)
 } "Calculate Z4c RHS"
 
 if (CCTK_Equals(boundary_conditions, "NewRadX")) {
@@ -261,6 +281,8 @@ if (CCTK_Equals(boundary_conditions, "NewRadX")) {
     READS: Theta(everywhere)
     READS: alphaG(everywhere)
     READS: betaG(everywhere)
+    READS: dtalphaG(everywhere)
+    READS: dtbetaG(everywhere)
     READS: chi_rhs(interior)
     READS: gamma_tilde_rhs(interior)
     READS: K_hat_rhs(interior)
@@ -269,6 +291,8 @@ if (CCTK_Equals(boundary_conditions, "NewRadX")) {
     READS: Theta_rhs(interior)
     READS: alphaG_rhs(interior)
     READS: betaG_rhs(interior)
+    READS: dtalphaG_rhs(interior)
+    READS: dtbetaG_rhs(interior)
     WRITES: chi_rhs(interior)
     WRITES: gamma_tilde_rhs(interior)
     WRITES: K_hat_rhs(interior)
@@ -277,5 +301,7 @@ if (CCTK_Equals(boundary_conditions, "NewRadX")) {
     WRITES: Theta_rhs(interior)
     WRITES: alphaG_rhs(interior)
     WRITES: betaG_rhs(interior)
+    WRITES: dtalphaG_rhs(interior)
+    WRITES: dtbetaG_rhs(interior)
   } "Apply radiative boundary conditions to Z4c RHS variables using NewRadX"
 }

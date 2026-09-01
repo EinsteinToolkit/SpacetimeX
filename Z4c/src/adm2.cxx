@@ -85,6 +85,13 @@ extern "C" void Z4c_ADM2(CCTK_ARGUMENTS) {
       GF3D2<const CCTK_REAL>(layout1, betaGy),
       GF3D2<const CCTK_REAL>(layout1, betaGz)};
 
+  const GF3D2<const CCTK_REAL> gf_A1(layout1, A);
+
+  const vec<GF3D2<const CCTK_REAL>, 3> gf_B1{
+      GF3D2<const CCTK_REAL>(layout1, Bx),
+      GF3D2<const CCTK_REAL>(layout1, By),
+      GF3D2<const CCTK_REAL>(layout1, Bz)};
+
   //
 
   constexpr int nvars = 154;
@@ -197,7 +204,8 @@ extern "C" void Z4c_ADM2(CCTK_ARGUMENTS) {
 
         // load and calculate
         const z4c_vars<vreal> vars(
-            set_Theta_zero, kappa1, kappa2, f_mu_L, f_mu_S, eta, //
+            set_Theta_zero, kappa1, kappa2, f_mu_L, f_mu_S, eta, evolveA,
+            evolveB, alphaDriver, betaDriver, //
             gf_chi0(mask, index0), gf_dchi0(mask, index0),
             gf_ddchi0(mask, index0), //
             gf_gammat0(mask, index0), gf_dgammat0(mask, index0),
@@ -210,6 +218,7 @@ extern "C" void Z4c_ADM2(CCTK_ARGUMENTS) {
             gf_ddalphaG0(mask, index0), //
             gf_betaG0(mask, index0), gf_dbetaG0(mask, index0),
             gf_ddbetaG0(mask, index0), //
+            gf_A1(mask, index1), gf_B1(mask, index1), //
             gf_eTtt1(mask, index1), gf_eTti1(mask, index1),
             gf_eTij1(mask, index1));
 

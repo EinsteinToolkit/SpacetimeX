@@ -33,6 +33,15 @@ CCTK_REAL Theta TYPE=gf TAGS='rhs="Theta_rhs" dependents="ADMBaseX::curv"' "Thet
 CCTK_REAL alphaG TYPE=gf TAGS='rhs="alphaG_rhs" dependents="ADMBaseX::lapse ADMBaseX::dtlapse"' "alpha"
 CCTK_REAL betaG TYPE=gf TAGS='parities={-1 +1 +1   +1 -1 +1   +1 +1 -1} rhs="betaG_rhs" dependents="ADMBaseX::shift ADMBaseX::dtshift"' { betaGx betaGy betaGz } "beta"
 
+# Time derivatives of the gauge, evolved only when Z4c::evolveA / Z4c::evolveB
+# are set. A is d/dt alpha and B^i is d/dt beta^i; neither is A-tilde (the
+# traceless extrinsic curvature, group A_tilde above). Storage is allocated
+# unconditionally so that the ODESolvers state vector does not depend on a
+# parameter, but with the switches off their RHS is zero and they stay at
+# their initial values.
+CCTK_REAL dtalphaG TYPE=gf TAGS='rhs="dtalphaG_rhs" dependents="ADMBaseX::dtlapse"' { A } "d/dt alpha"
+CCTK_REAL dtbetaG TYPE=gf TAGS='parities={-1 +1 +1   +1 -1 +1   +1 +1 -1} rhs="dtbetaG_rhs" dependents="ADMBaseX::dtshift"' { Bx By Bz } "d/dt beta"
+
 
 
 CCTK_REAL ZtC TYPE=gf TAGS='parities={-1 +1 +1   +1 -1 +1   +1 +1 -1} checkpoint="no"' { ZtCx ZtCy ZtCz } "Z-tilde"
@@ -50,3 +59,5 @@ CCTK_REAL Gam_tilde_rhs TYPE=gf TAGS='parities={-1 +1 +1   +1 -1 +1   +1 +1 -1} 
 CCTK_REAL Theta_rhs TYPE=gf TAGS='checkpoint="no"' "Theta"
 CCTK_REAL alphaG_rhs TYPE=gf TAGS='checkpoint="no"' "alpha"
 CCTK_REAL betaG_rhs TYPE=gf TAGS='parities={-1 +1 +1   +1 -1 +1   +1 +1 -1} checkpoint="no"' { betaGx_rhs betaGy_rhs betaGz_rhs } "beta"
+CCTK_REAL dtalphaG_rhs TYPE=gf TAGS='checkpoint="no"' { A_rhs } "d/dt alpha"
+CCTK_REAL dtbetaG_rhs TYPE=gf TAGS='parities={-1 +1 +1   +1 -1 +1   +1 +1 -1} checkpoint="no"' { Bx_rhs By_rhs Bz_rhs } "d/dt beta"

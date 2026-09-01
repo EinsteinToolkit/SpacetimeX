@@ -48,7 +48,20 @@ extern "C" void Z4c_Initial1(CCTK_ARGUMENTS) {
       GF3D2<const CCTK_REAL>(layout1, betay),
       GF3D2<const CCTK_REAL>(layout1, betaz)};
 
+  const GF3D2<const CCTK_REAL> gf_dtalp1(layout1, dtalp);
+
+  const vec<GF3D2<const CCTK_REAL>, 3> gf_dtbeta1{
+      GF3D2<const CCTK_REAL>(layout1, dtbetax),
+      GF3D2<const CCTK_REAL>(layout1, dtbetay),
+      GF3D2<const CCTK_REAL>(layout1, dtbetaz)};
+
   const GF3D2<CCTK_REAL> gf_chi1(layout1, chi);
+
+  const GF3D2<CCTK_REAL> gf_A1(layout1, A);
+
+  const vec<GF3D2<CCTK_REAL>, 3> gf_B1{GF3D2<CCTK_REAL>(layout1, Bx),
+                                       GF3D2<CCTK_REAL>(layout1, By),
+                                       GF3D2<CCTK_REAL>(layout1, Bz)};
 
   const smat<GF3D2<CCTK_REAL>, 3> gf_gammat1{
       GF3D2<CCTK_REAL>(layout1, gammatxx), GF3D2<CCTK_REAL>(layout1, gammatxy),
@@ -116,6 +129,14 @@ extern "C" void Z4c_Initial1(CCTK_ARGUMENTS) {
 
         const vec<vreal, 3> betaG([&](int a) ARITH_INLINE { return beta(a); });
 
+        // A = d/dt alpha and B^i = d/dt beta^i are taken from the initial
+        // data. They are only evolved when evolveA / evolveB are set, but
+        // they are always initialised, so that the state vector is never
+        // left poisoned.
+        const vreal A_ = gf_dtalp1(mask, index1);
+
+        const vec<vreal, 3> B_(gf_dtbeta1(mask, index1));
+
         // Store
         gf_chi1.store(mask, index1, chi);
         gf_gammat1.store(mask, index1, gammat);
@@ -124,6 +145,8 @@ extern "C" void Z4c_Initial1(CCTK_ARGUMENTS) {
         gf_Theta1.store(mask, index1, Theta);
         gf_alphaG1.store(mask, index1, alphaG);
         gf_betaG1.store(mask, index1, betaG);
+        gf_A1.store(mask, index1, A_);
+        gf_B1.store(mask, index1, B_);
       });
 #ifdef __CUDACC__
   nvtxRangeEnd(range);

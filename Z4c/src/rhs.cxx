@@ -85,6 +85,13 @@ extern "C" void Z4c_RHS(CCTK_ARGUMENTS) {
       GF3D2<const CCTK_REAL>(layout1, betaGy),
       GF3D2<const CCTK_REAL>(layout1, betaGz)};
 
+  const GF3D2<const CCTK_REAL> gf_A1(layout1, A);
+
+  const vec<GF3D2<const CCTK_REAL>, 3> gf_B1{
+      GF3D2<const CCTK_REAL>(layout1, Bx),
+      GF3D2<const CCTK_REAL>(layout1, By),
+      GF3D2<const CCTK_REAL>(layout1, Bz)};
+
   //
 
   // Ideas:
@@ -204,6 +211,13 @@ extern "C" void Z4c_RHS(CCTK_ARGUMENTS) {
       GF3D2<CCTK_REAL>(layout1, betaGy_rhs),
       GF3D2<CCTK_REAL>(layout1, betaGz_rhs)};
 
+  const GF3D2<CCTK_REAL> gf_A_rhs1(layout1, A_rhs);
+
+  const vec<GF3D2<CCTK_REAL>, 3> gf_B_rhs1{
+      GF3D2<CCTK_REAL>(layout1, Bx_rhs),
+      GF3D2<CCTK_REAL>(layout1, By_rhs),
+      GF3D2<CCTK_REAL>(layout1, Bz_rhs)};
+
   //
 
   typedef simd<CCTK_REAL> vreal;
@@ -226,7 +240,8 @@ extern "C" void Z4c_RHS(CCTK_ARGUMENTS) {
 
           // Load and calculate
           const z4c_vars<vreal> vars(
-              set_Theta_zero, kappa1, kappa2, f_mu_L, f_mu_S, eta, //
+              set_Theta_zero, kappa1, kappa2, f_mu_L, f_mu_S, eta, evolveA,
+              evolveB, alphaDriver, betaDriver, //
               gf_chi0(mask, index0), gf_dchi0(mask, index0),
               gf_ddchi0(mask, index0), //
               gf_gammat0(mask, index0), gf_dgammat0(mask, index0),
@@ -239,6 +254,7 @@ extern "C" void Z4c_RHS(CCTK_ARGUMENTS) {
               gf_ddalphaG0(mask, index0), //
               gf_betaG0(mask, index0), gf_dbetaG0(mask, index0),
               gf_ddbetaG0(mask, index0), //
+              gf_A1(mask, index1), gf_B1(mask, index1), //
               gf_eTtt1(mask, index1), gf_eTti1(mask, index1),
               gf_eTij1(mask, index1));
 
@@ -250,6 +266,8 @@ extern "C" void Z4c_RHS(CCTK_ARGUMENTS) {
           gf_Theta_rhs1.store(mask, index1, vars.Theta_rhs);
           gf_alphaG_rhs1.store(mask, index1, vars.alphaG_rhs);
           gf_betaG_rhs1.store(mask, index1, vars.betaG_rhs);
+          gf_A_rhs1.store(mask, index1, vars.A_rhs);
+          gf_B_rhs1.store(mask, index1, vars.B_rhs);
         });
   });
 #ifdef __CUDACC__
@@ -353,6 +371,16 @@ extern "C" void Z4c_RHS(CCTK_ARGUMENTS) {
 
   for (int a = 0; a < 3; ++a)
     apply_upwind_diss(cctkGH, gf_betaG1(a), gf_betaG1, gf_betaG_rhs1(a));
+
+  // A and B^i are advected and dissipated like every other evolved variable,
+  // which is what ML_BSSN does by default (fixAdvectionTerms = 0). With
+  // evolveA / evolveB off their RHS is zero and nothing here runs.
+  if (evolveA)
+    apply_upwind_diss(cctkGH, gf_A1, gf_betaG1, gf_A_rhs1);
+
+  if (evolveB)
+    for (int a = 0; a < 3; ++a)
+      apply_upwind_diss(cctkGH, gf_B1(a), gf_betaG1, gf_B_rhs1(a));
 }
 
 } // namespace Z4c
