@@ -88,8 +88,7 @@ extern "C" void Z4c_ADM2(CCTK_ARGUMENTS) {
   const GF3D2<const CCTK_REAL> gf_A1(layout1, A);
 
   const vec<GF3D2<const CCTK_REAL>, 3> gf_B1{
-      GF3D2<const CCTK_REAL>(layout1, Bx),
-      GF3D2<const CCTK_REAL>(layout1, By),
+      GF3D2<const CCTK_REAL>(layout1, Bx), GF3D2<const CCTK_REAL>(layout1, By),
       GF3D2<const CCTK_REAL>(layout1, Bz)};
 
   //
@@ -180,6 +179,15 @@ extern "C" void Z4c_ADM2(CCTK_ARGUMENTS) {
       GF3D2<CCTK_REAL>(layout1, dtkxz), GF3D2<CCTK_REAL>(layout1, dtkyy),
       GF3D2<CCTK_REAL>(layout1, dtkyz), GF3D2<CCTK_REAL>(layout1, dtkzz)};
 
+  // The full gauge derivatives, as written and synchronised by Z4c_ADM. They
+  // already contain the advection term, unlike vars.dtalpha and vars.dtbeta.
+  const GF3D2<const CCTK_REAL> gf_dtalp1(layout1, dtalp);
+
+  const vec<GF3D2<const CCTK_REAL>, 3> gf_dtbeta1{
+      GF3D2<const CCTK_REAL>(layout1, dtbetax),
+      GF3D2<const CCTK_REAL>(layout1, dtbetay),
+      GF3D2<const CCTK_REAL>(layout1, dtbetaz)};
+
   const GF3D2<CCTK_REAL> gf_dt2alp1(layout1, dt2alp);
 
   const vec<GF3D2<CCTK_REAL>, 3> gf_dt2beta1{
@@ -217,19 +225,75 @@ extern "C" void Z4c_ADM2(CCTK_ARGUMENTS) {
             gf_alphaG0(mask, index0), gf_dalphaG0(mask, index0),
             gf_ddalphaG0(mask, index0), //
             gf_betaG0(mask, index0), gf_dbetaG0(mask, index0),
-            gf_ddbetaG0(mask, index0), //
+            gf_ddbetaG0(mask, index0),                //
             gf_A1(mask, index1), gf_B1(mask, index1), //
             gf_eTtt1(mask, index1), gf_eTti1(mask, index1),
             gf_eTij1(mask, index1));
 
         // Store
         gf_dtk1.store(mask, index1, vars.K_rhs);
-        gf_dt2alp1.store(mask, index1, vars.dtalpha_rhs);
-        gf_dt2beta1.store(mask, index1, vars.dtbeta_rhs);
+
+        // Z4c_ADM reports the advected gauge conditions,
+        //
+        //     D   = d/dt alpha  = S   + beta^i d_i alpha
+        //     D^a = d/dt beta^a = S^a + beta^j d_j beta^a
+        //
+        // so their time derivatives are
+        //
+        //     d/dt D   = d/dt S   + (d/dt beta^i) d_i alpha  + beta^i d_i D
+        //     d/dt D^a = d/dt S^a + (d/dt beta^j) d_j beta^a + beta^j d_j D^a
+        //
+        // vars.dtalpha_rhs and vars.dtbeta_rhs cannot be used for the d/dt S
+        // terms: they differentiate the sources using the right hand sides
+        // held by z4c_vars, which are themselves pre-advection. The sources
+        // are recomputed here from the advected derivatives instead. Khat and
+        // Gamt^i are advected with the centred derivatives that z4c_vars
+        // carries rather than the upwinded ones rhs.cxx uses, and Kreiss-
+        // Oliger dissipation is excluded throughout, so these remain the
+        // derivatives of the continuum gauge conditions rather than of the
+        // discrete update.
+        const vreal D = gf_dtalp1(mask, index1);
+        const vec<vreal, 3> Da = gf_dtbeta1(mask, index1);
+
+        const vreal dtKh = vars.Kh_rhs + sum<3>([&](int i) ARITH_INLINE {
+                             return vars.betaG(i) * vars.dKh(i);
+                           });
+
+        const vec<vreal, 3> dtGamt([&](int a) ARITH_INLINE {
+          return vars.Gamt_rhs(a) + sum<3>([&](int j) ARITH_INLINE {
+                   return vars.betaG(j) * vars.dGamt(a)(j);
+                 });
+        });
+
+        const vreal dS =
+            evolveA ? vars.A_rhs
+                    : -f_mu_L * (D * vars.Kh + (1 + vars.alphaG) * dtKh);
+
+        const vec<vreal, 3> dSa([&](int a) ARITH_INLINE {
+          return evolveB ? vars.B_rhs(a) : f_mu_S * dtGamt(a) - eta * Da(a);
+        });
+
+        gf_dt2alp1.store(mask, index1, dS + sum<3>([&](int i) ARITH_INLINE {
+                                         return Da(i) * vars.dalphaG(i);
+                                       }));
+
+        gf_dt2beta1.store(mask, index1, vec<vreal, 3>([&](int a) ARITH_INLINE {
+                            return dSa(a) + sum<3>([&](int j) ARITH_INLINE {
+                                     return Da(j) * vars.dbetaG(a)(j);
+                                   });
+                          }));
       });
 #ifdef __CUDACC__
   nvtxRangeEnd(range);
 #endif
+
+  // The remaining beta^i d_i D and beta^j d_j D^a terms. As in Z4c_ADM these
+  // carry no Kreiss-Oliger dissipation: it is a property of the discrete
+  // update, not of a time derivative.
+  apply_upwind(cctkGH, gf_dtalp1, gf_betaG1, gf_dt2alp1);
+
+  for (int a = 0; a < 3; ++a)
+    apply_upwind(cctkGH, gf_dtbeta1(a), gf_betaG1, gf_dt2beta1(a));
 }
 
 } // namespace Z4c

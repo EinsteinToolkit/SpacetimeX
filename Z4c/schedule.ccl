@@ -206,6 +206,9 @@ if (calc_ADMRHS_vars) {
     READS: TmunuBaseX::eTtt(interior)
     READS: TmunuBaseX::eTti(interior)
     READS: TmunuBaseX::eTij(interior)
+    # the advected gauge derivatives, as written by Z4c_ADM
+    READS: ADMBaseX::dtlapse(everywhere)
+    READS: ADMBaseX::dtshift(everywhere)
     WRITES: ADMBaseX::dtcurv(interior)
     WRITES: ADMBaseX::dt2lapse(interior)
     WRITES: ADMBaseX::dt2shift(interior)
