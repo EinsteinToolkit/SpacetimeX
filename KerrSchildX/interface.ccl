@@ -3,3 +3,5 @@
 IMPLEMENTS: KerrSchildX
 
 INHERITS: ADMBaseX CoordinatesX
+
+USES INCLUDE HEADER: dual.hxx
