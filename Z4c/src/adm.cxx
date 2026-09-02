@@ -133,16 +133,16 @@ extern "C" void Z4c_ADM(CCTK_ARGUMENTS) {
   nvtxRangeEnd(range);
 #endif
 
-  // vars.dtalpha and vars.dtbeta are only the source terms of the gauge
-  // conditions. The conditions themselves are advected along the shift,
+  // Without evolveA, vars.dtalpha is only the source term of the lapse
+  // condition. The condition itself is advected along the shift,
   //
   //     d/dt alpha  = -alpha f_mu_L Khat + beta^i d_i alpha
   //
-  // and correspondingly for the shift, so ADMBaseX::dtlapse and dtshift are
-  // wrong by beta^i d_i alpha (a few percent near a black hole horizon)
-  // unless that term is added here as well. It is added for both gauges: with
-  // evolveA the stored value is A, and the lapse is still advected on top of
-  // it.
+  // and correspondingly for the shift, so ADMBaseX::dtlapse and dtshift would
+  // be wrong by beta^i d_i alpha (a few percent near a black hole horizon)
+  // unless that term is added here as well. With evolveA the stored value is
+  // A, which is the complete d/dt alpha (rhs.cxx does not advect alphaG on
+  // top of it), so nothing is added.
   //
   // Kreiss-Oliger dissipation is deliberately NOT added. It is applied to the
   // evolved right hand sides in rhs.cxx because it stabilises the discrete
@@ -155,10 +155,12 @@ extern "C" void Z4c_ADM(CCTK_ARGUMENTS) {
   // applies the configured CarpetX outer boundary condition; only with
   // CarpetX::boundary_* = "none" does the outer boundary layer keep the
   // source term alone.
-  apply_upwind(cctkGH, gf_alphaG1, gf_betaG1, gf_dtalp1);
+  if (!evolveA)
+    apply_upwind(cctkGH, gf_alphaG1, gf_betaG1, gf_dtalp1);
 
-  for (int a = 0; a < 3; ++a)
-    apply_upwind(cctkGH, gf_betaG1(a), gf_betaG1, gf_dtbeta1(a));
+  if (!evolveB)
+    for (int a = 0; a < 3; ++a)
+      apply_upwind(cctkGH, gf_betaG1(a), gf_betaG1, gf_dtbeta1(a));
 }
 
 } // namespace Z4c

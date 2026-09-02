@@ -147,12 +147,24 @@ SCHEDULE Z4c_Enforce IN Z4c_PostStepGroup
   LANG: C
   READS: chi(interior)
   READS: gamma_tilde(interior)
+  READS: K_hat(interior)
   READS: A_tilde(interior)
+  READS: Gam_tilde(interior)
+  READS: Theta(interior)
   READS: alphaG(interior)
+  READS: betaG(interior)
+  READS: dtalphaG(interior)
+  READS: dtbetaG(interior)
   WRITES: chi(interior)
   WRITES: gamma_tilde(interior)
+  WRITES: K_hat(interior)
   WRITES: A_tilde(interior)
+  WRITES: Gam_tilde(interior)
+  WRITES: Theta(interior)
   WRITES: alphaG(interior)
+  WRITES: betaG(interior)
+  WRITES: dtalphaG(interior)
+  WRITES: dtbetaG(interior)
   SYNC: chi
   SYNC: gamma_tilde
   SYNC: K_hat

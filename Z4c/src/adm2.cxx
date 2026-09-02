@@ -246,25 +246,29 @@ extern "C" void Z4c_ADM2(CCTK_ARGUMENTS) {
         // beta^k d_k K_ij, which is added below with apply_upwind.
         gf_dtk1.store(mask, index1, vars.K_rhs);
 
-        // Z4c_ADM reports the advected gauge conditions,
+        // Z4c_ADM reports the complete time derivatives of lapse and shift,
         //
-        //     D   = d/dt alpha  = S   + beta^i d_i alpha
-        //     D^a = d/dt beta^a = S^a + beta^j d_j beta^a
+        //     D = d/dt alpha,   D^a = d/dt beta^a.
         //
-        // so their time derivatives are
+        // Without evolveA, D = S + beta^i d_i alpha with the source
+        // S = -alpha f_mu_L Khat, so
         //
         //     d/dt D   = d/dt S   + (d/dt beta^i) d_i alpha  + beta^i d_i D
         //     d/dt D^a = d/dt S^a + (d/dt beta^j) d_j beta^a + beta^j d_j D^a
         //
-        // z4c_vars' dtalpha_target_rhs and dtbeta_target_rhs cannot be used
-        // for the d/dt S terms: they differentiate the sources using the
-        // pre-advection right hand sides held by z4c_vars. The sources
-        // are recomputed here from the advected derivatives instead. Khat and
-        // Gamt^i are advected with the centred derivatives that z4c_vars
-        // carries rather than the upwinded ones rhs.cxx uses, and Kreiss-
-        // Oliger dissipation is excluded throughout, so these remain the
-        // derivatives of the continuum gauge conditions rather than of the
-        // discrete update.
+        // where d/dt S needs the complete d/dt Khat = Kh_rhs + beta^i d_i Khat.
+        // Khat and Gamt^i are advected with the centred derivatives that
+        // z4c_vars carries rather than the upwinded ones rhs.cxx uses, and
+        // Kreiss-Oliger dissipation is excluded throughout, so these remain
+        // the derivatives of the continuum gauge conditions rather than of the
+        // discrete update. The beta^i d_i D term is added below with
+        // apply_upwind.
+        //
+        // With evolveA, D = A and d/dt D = A_rhs + beta^i d_i A: z4c_vars'
+        // A_rhs is the complete d/dt of the advective lapse condition,
+        // (d/dt beta^i) d_i alpha included, except for the advection of A
+        // itself, which is added below with apply_upwind. Likewise for the
+        // shift.
         const vreal D = gf_dtalp1(mask, index1);
         const vec<vreal, 3> Da = gf_dtbeta1(mask, index1);
 
@@ -278,27 +282,23 @@ extern "C" void Z4c_ADM2(CCTK_ARGUMENTS) {
                  });
         });
 
-        // With evolveA / evolveB the source is the evolved A (B^i), whose
-        // full time derivative is A_rhs plus the advection term beta^i d_i A
-        // that rhs.cxx adds; that advection term is added below with
-        // apply_upwind.
-        const vreal dS =
+        const vreal dt2alp =
             evolveA ? vars.A_rhs
-                    : -f_mu_L * (D * vars.Kh + (1 + vars.alphaG) * dtKh);
+                    : -f_mu_L * (D * vars.Kh + (1 + vars.alphaG) * dtKh) +
+                          sum<3>([&](int i) ARITH_INLINE {
+                            return Da(i) * vars.dalphaG(i);
+                          });
 
-        const vec<vreal, 3> dSa([&](int a) ARITH_INLINE {
-          return evolveB ? vars.B_rhs(a) : f_mu_S * dtGamt(a) - eta * Da(a);
+        const vec<vreal, 3> dt2beta([&](int a) ARITH_INLINE {
+          return evolveB ? vars.B_rhs(a)
+                         : f_mu_S * dtGamt(a) - eta * Da(a) +
+                               sum<3>([&](int j) ARITH_INLINE {
+                                 return Da(j) * vars.dbetaG(a)(j);
+                               });
         });
 
-        gf_dt2alp1.store(mask, index1, dS + sum<3>([&](int i) ARITH_INLINE {
-                                         return Da(i) * vars.dalphaG(i);
-                                       }));
-
-        gf_dt2beta1.store(mask, index1, vec<vreal, 3>([&](int a) ARITH_INLINE {
-                            return dSa(a) + sum<3>([&](int j) ARITH_INLINE {
-                                     return Da(j) * vars.dbetaG(a)(j);
-                                   });
-                          }));
+        gf_dt2alp1.store(mask, index1, dt2alp);
+        gf_dt2beta1.store(mask, index1, dt2beta);
       });
 #ifdef __CUDACC__
   nvtxRangeEnd(range);
@@ -313,15 +313,18 @@ extern "C" void Z4c_ADM2(CCTK_ARGUMENTS) {
     for (int b = a; b < 3; ++b)
       apply_upwind(cctkGH, gf_k1(a, b), gf_betaG1, gf_dtk1(a, b));
 
-  // beta^i d_i D and beta^j d_j D^a
-  apply_upwind(cctkGH, gf_dtalp1, gf_betaG1, gf_dt2alp1);
+  // beta^i d_i D and beta^j d_j D^a, completing d/dt D and d/dt D^a when A,
+  // B^i are not evolved
+  if (!evolveA)
+    apply_upwind(cctkGH, gf_dtalp1, gf_betaG1, gf_dt2alp1);
 
-  for (int a = 0; a < 3; ++a)
-    apply_upwind(cctkGH, gf_dtbeta1(a), gf_betaG1, gf_dt2beta1(a));
+  if (!evolveB)
+    for (int a = 0; a < 3; ++a)
+      apply_upwind(cctkGH, gf_dtbeta1(a), gf_betaG1, gf_dt2beta1(a));
 
-  // With evolveA / evolveB the evolved A and B^i are themselves advected in
-  // rhs.cxx, so d/dt A = A_rhs + beta^i d_i A enters d/dt D; the main loop
-  // stored only A_rhs. Mirrors the evolveA / evolveB guards in rhs.cxx.
+  // With evolveA / evolveB, D = A and D^a = B^a, which are advected in
+  // rhs.cxx, so d/dt D = A_rhs + beta^i d_i A; the main loop stored only
+  // A_rhs. Mirrors the evolveA / evolveB guards in rhs.cxx.
   if (evolveA)
     apply_upwind(cctkGH, gf_A1, gf_betaG1, gf_dt2alp1);
 

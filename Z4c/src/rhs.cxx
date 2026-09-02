@@ -392,17 +392,29 @@ extern "C" void Z4c_RHS(CCTK_ARGUMENTS) {
     apply_diss(cctkGH, gf_Theta1, gf_Theta_rhs1);
   }
 
-  apply_upwind(cctkGH, gf_alphaG1, gf_betaG1, gf_alphaG_rhs1);
+  // The gauge conditions are advective. Without evolveA, alphaG_rhs holds the
+  // source -alpha f_mu_L Khat and the advection term beta^i d_i alpha is added
+  // here. With evolveA, alphaG_rhs is A = d/dt alpha, the complete time
+  // derivative, and must not be advected again: that would make
+  // d/dt alpha = A + beta^i d_i alpha, which does not vanish for stationary
+  // data with A = 0. Dissipation is applied either way. Likewise for the
+  // shift.
+  if (!evolveA)
+    apply_upwind(cctkGH, gf_alphaG1, gf_betaG1, gf_alphaG_rhs1);
   apply_diss(cctkGH, gf_alphaG1, gf_alphaG_rhs1);
 
   for (int a = 0; a < 3; ++a) {
-    apply_upwind(cctkGH, gf_betaG1(a), gf_betaG1, gf_betaG_rhs1(a));
+    if (!evolveB)
+      apply_upwind(cctkGH, gf_betaG1(a), gf_betaG1, gf_betaG_rhs1(a));
     apply_diss(cctkGH, gf_betaG1(a), gf_betaG_rhs1(a));
   }
 
   // A and B^i are advected and dissipated like every other evolved variable,
-  // which is what ML_BSSN does by default (fixAdvectionTerms = 0). With
-  // evolveA / evolveB off their RHS is zero and nothing here runs.
+  // which is what ML_BSSN does by default (fixAdvectionTerms = 0). The
+  // advection term beta^i d_i A is the last term of d/dt of the advective
+  // lapse condition, which z4c_vars' dtalpha_target_rhs deliberately leaves
+  // out (see z4c_vars.hxx). With evolveA / evolveB off their RHS is zero and
+  // nothing here runs.
   if (evolveA) {
     apply_upwind(cctkGH, gf_A1, gf_betaG1, gf_A_rhs1);
     apply_diss(cctkGH, gf_A1, gf_A_rhs1);

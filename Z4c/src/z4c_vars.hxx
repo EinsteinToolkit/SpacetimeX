@@ -273,7 +273,18 @@ template <typename T> struct z4c_vars : z4c_vars_noderivs<T> {
   const T Theta_rhs;
   const T alphaG_rhs;
   const vec<T, 3> betaG_rhs;
-  // d/dt of the first order gauge conditions
+  // Advective first order gauge conditions: the targets the drivers relax A
+  // and B^i towards, and the complete d/dt alpha, d/dt beta^i when A, B^i
+  // are not evolved
+  const T dtalpha_adv;
+  const vec<T, 3> dtbeta_adv;
+  // Complete coordinate time derivatives of lapse and shift, advection
+  // included: A and B^i when evolved, the advective first order conditions
+  // otherwise
+  const T dtalpha_full;
+  const vec<T, 3> dtbeta_full;
+  // d/dt of the advective first order gauge conditions, without the
+  // beta^i d_i (d/dt alpha) term that rhs.cxx adds by advecting A and B^i
   const T dtalpha_target_rhs;
   const vec<T, 3> dtbeta_target_rhs;
   // RHS of the evolved gauge derivatives; zero unless evolveA / evolveB
@@ -353,6 +364,10 @@ template <typename T> struct z4c_vars : z4c_vars_noderivs<T> {
               << "Theta_rhs:" << vars.Theta_rhs << ","           //
               << "alphaG_rhs:" << vars.alphaG_rhs << ","         //
               << "betaG_rhs:" << vars.betaG_rhs << ","           //
+              << "dtalpha_adv:" << vars.dtalpha_adv << ","       //
+              << "dtbeta_adv:" << vars.dtbeta_adv << ","         //
+              << "A_rhs:" << vars.A_rhs << ","                   //
+              << "B_rhs:" << vars.B_rhs << ","                   //
               << "K_rhs:" << vars.K_rhs << ","                   //
               << "}";
   }
@@ -664,25 +679,68 @@ template <typename T> struct z4c_vars : z4c_vars_noderivs<T> {
         //
         betaG_rhs(dtbeta),
         //
-        dtalpha_target_rhs([&]() ARITH_INLINE {
-          return -alphaG_rhs * f_mu_L * Kh //
-                 - (1 + alphaG) * f_mu_L * Kh_rhs;
-        }()),
+        // The first order conditions (11), (12) are advected along the shift,
+        //     d/dt alpha  = -alpha f_mu_L Khat         + beta^i d_i alpha
+        //     d/dt beta^a = f_mu_S Gamt^a - eta beta^a + beta^j d_j beta^a
+        // (rhs.cxx adds the advection terms to alphaG_rhs and betaG_rhs when
+        // A, B^i are not evolved).
+        dtalpha_adv(dtalpha_target + sum<3>([&](int i) ARITH_INLINE {
+                      return betaG(i) * dalphaG(i);
+                    })),
         //
-        dtbeta_target_rhs([&](int a) ARITH_INLINE {
-          return f_mu_S * Gamt_rhs(a) //
-                 - eta * betaG_rhs(a);
+        dtbeta_adv([&](int a) ARITH_INLINE {
+          return dtbeta_target(a) + sum<3>([&](int j) ARITH_INLINE {
+                   return betaG(j) * dbetaG(a)(j);
+                 });
         }),
         //
-        // The driver relaxes A towards the first order lapse condition. With
-        // alphaDriver = 0 and A initialised to dtalpha_target the first order
-        // gauge is reproduced exactly.
-        A_rhs(evolveA ? dtalpha_target_rhs - alphaDriver * (A - dtalpha_target)
+        dtalpha_full(evolveA ? A : dtalpha_adv),
+        //
+        dtbeta_full([&](int a) ARITH_INLINE {
+          return evolveB ? B(a) : dtbeta_adv(a);
+        }),
+        //
+        // Complete time derivative of the advective lapse condition,
+        //     d/dt (-alpha f_mu_L Khat + beta^i d_i alpha)
+        //       = -(d/dt alpha) f_mu_L Khat - alpha f_mu_L (d/dt Khat)
+        //         + (d/dt beta^i) d_i alpha + beta^i d_i (d/dt alpha),
+        // with the complete d/dt Khat = Kh_rhs + beta^i d_i Khat. The last
+        // term is beta^i d_i A, which rhs.cxx adds by advecting A, so it is
+        // not included here.
+        dtalpha_target_rhs([&]() ARITH_INLINE {
+          return -dtalpha_full * f_mu_L * Kh //
+                 - (1 + alphaG) * f_mu_L *
+                       (Kh_rhs + sum<3>([&](int i) ARITH_INLINE {
+                          return betaG(i) * dKh(i);
+                        })) //
+                 + sum<3>([&](int i) ARITH_INLINE {
+                     return dtbeta_full(i) * dalphaG(i);
+                   });
+        }()),
+        //
+        // Likewise for the shift, without the beta^j d_j B^a term
+        dtbeta_target_rhs([&](int a) ARITH_INLINE {
+          return f_mu_S * (Gamt_rhs(a) + sum<3>([&](int j) ARITH_INLINE {
+                             return betaG(j) * dGamt(a)(j);
+                           })) //
+                 - eta * dtbeta_full(a) //
+                 + sum<3>([&](int j) ARITH_INLINE {
+                     return dtbeta_full(j) * dbetaG(a)(j);
+                   });
+        }),
+        //
+        // A = d/dt alpha and B^a = d/dt beta^a are the complete coordinate
+        // time derivatives; rhs.cxx does not advect alphaG and betaG on top of
+        // them. The driver relaxes A towards the advective first order
+        // condition. With alphaDriver = 0 and A initialised to dtalpha_adv the
+        // first order gauge is reproduced exactly; with A = 0 for stationary
+        // data (d/dt alpha = 0, hence also d/dt Khat = 0) A stays 0.
+        A_rhs(evolveA ? dtalpha_target_rhs - alphaDriver * (A - dtalpha_adv)
                       : T(0)),
         //
         B_rhs([&](int a) ARITH_INLINE {
           return evolveB ? dtbeta_target_rhs(a) -
-                               betaDriver * (B(a) - dtbeta_target(a))
+                               betaDriver * (B(a) - dtbeta_adv(a))
                          : T(0);
         }),
         //

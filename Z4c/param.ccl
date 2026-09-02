@@ -51,23 +51,29 @@ CCTK_REAL eta "eta" STEERABLE=always
 
 # Integrated ("second order") gauge conditions.
 #
-# With these off, the gauge is the usual first order one:
-#     d/dt alpha  = -alpha f_mu_L Khat
-#     d/dt beta^i = f_mu_S Gamt^i - eta beta^i
+# With these off, the gauge is the usual first order one, advected along the
+# shift:
+#     d/dt alpha  = -alpha f_mu_L Khat         + beta^i d_i alpha
+#     d/dt beta^i = f_mu_S Gamt^i - eta beta^i + beta^j d_j beta^i
 #
 # With them on, d/dt alpha and d/dt beta^i become evolved variables A and B^i
-# (group dtalphaG / dtbetaG), obeying
+# (groups dtalphaG / dtbetaG), the complete coordinate time derivatives:
 #     d/dt alpha = A
-#     d/dt A     = d/dt (-alpha f_mu_L Khat) - alphaDriver (A + alpha f_mu_L Khat)
-# and correspondingly for the shift. The driver terms relax A and B^i towards
-# the first order values; with a driver of zero and A, B^i initialised to
-# those values the first order gauge is reproduced exactly, which is what the
-# unit test checks.
+#     d/dt A     = d/dt (-alpha f_mu_L Khat + beta^i d_i alpha)
+#                  - alphaDriver (A + alpha f_mu_L Khat - beta^i d_i alpha)
+# and correspondingly for the shift, where d/dt on the right hand side is the
+# complete time derivative (d/dt alpha = A, d/dt beta^i = B^i, and
+# d/dt Khat = Kh_rhs + beta^i d_i Khat). The driver terms relax A and B^i
+# towards the first order values; with a driver of zero and A, B^i initialised
+# to those values the first order gauge is reproduced exactly.
 #
 # The point of the integrated form is that A and B^i can be initialised from
 # ADMBaseX::dtlapse and ADMBaseX::dtshift. For stationary initial data in
-# horizon-penetrating coordinates those are zero, so the gauge starts at rest
-# instead of being kicked by a nonzero -alpha f_mu_L Khat at t = 0.
+# horizon-penetrating coordinates those are zero, and since d/dt Khat and
+# d/dt Gamt^i vanish as well, every right hand side vanishes: the data stay
+# stationary up to truncation error instead of the gauge being kicked by a
+# nonzero -alpha f_mu_L Khat at t = 0. A nonzero driver re-introduces that
+# kick, since the first order values are not zero for such data.
 
 BOOLEAN evolveA "Evolve A = d/dt alpha instead of setting it algebraically"
 {
@@ -96,6 +102,48 @@ CCTK_REAL alphaG_floor "Floor for alphaG" STEERABLE=always
 {
   (0:* :: ""
 } 1.0e-10
+
+# Clamping of extreme values. Kerr-Schild data with a "stuffed" interior
+# collapse there in finite coordinate time when the lapse does not collapse
+# with them (the stuffed shift makes Khat ~ 1/(alpha rtilde(0)), and
+# d/dt K ~ alpha K^2). Clamping bounds that garbage: it acts only where values
+# are extreme, which for such data is inside the horizon, where any
+# modification is acceptable; a healthy exterior never reaches the bounds.
+# Clamps introduce kinks, which the Kreiss-Oliger dissipation smooths.
+
+CCTK_REAL alpha_max "Ceiling for the lapse alpha; 0 disables" STEERABLE=always
+{
+  0.0 :: "disabled"
+  (0.0:* :: "clamp alpha to at most this value"
+} 0.0
+
+CCTK_REAL clamp_max "Clamp |Khat|, |Atilde_ij|, |Gamma_tilde^i|, |Theta|, |A| and |B^i| (all of dimension 1/M) to at most this value; 0 disables" STEERABLE=always
+{
+  0.0 :: "disabled"
+  (0.0:* :: "clamp to this value"
+} 0.0
+
+# Once the lapse has collapsed inside, only the shift-driven terms remain
+# active there; an unbounded shift then drives the conformal metric through
+# the Lie-derivative terms. These two bound that path.
+
+CCTK_REAL beta_max "Clamp |beta^i| (each component) to at most this value; 0 disables" STEERABLE=always
+{
+  0.0 :: "disabled"
+  (0.0:* :: "clamp to this value"
+} 0.0
+
+CCTK_REAL gammat_max "Clamp |gamma_tilde_ij - delta_ij| (each component) to at most this value, before and after det gamma_tilde = 1 is enforced; where delta + gamma_tilde is not positive definite it is reset to flat; 0 disables" STEERABLE=always
+{
+  0.0 :: "disabled"
+  (0.0:* :: "clamp to this value"
+} 0.0
+
+CCTK_REAL chi_max "Ceiling for chi (the physical metric is gamma_tilde / chi); 0 disables" STEERABLE=always
+{
+  0.0 :: "disabled"
+  (0.0:* :: "clamp chi to at most this value"
+} 0.0
 
 CCTK_REAL epsdiss "Dissipation coefficient <arXiv:gr-qc/0610128>" STEERABLE=always
 {
