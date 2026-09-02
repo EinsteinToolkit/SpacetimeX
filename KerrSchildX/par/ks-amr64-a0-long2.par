@@ -1,0 +1,235 @@
+# Schwarzschild black hole (M = 1) in Kerr-Schild coordinates, evolved with Z4c
+# in the integrated gauge so that the exterior stays manifestly stationary, on
+# a box-in-box grid with dx = 1/16 around the horizon, for 50 M.
+#
+# The Kerr-Schild slicing is horizon penetrating, so the grid contains the
+# singularity, which KerrSchildX replaces by a smooth "stuffed" interior. That
+# interior is not a solution and collapses; Z4c_Enforce bounds it (see the Z4c
+# section). The exact exterior never touches those bounds.
+#
+# Expected behaviour (one H200, ~2.9 h for 50 M): the exterior is stationary
+# to 1e-5 in the lapse for about 30 M, after which a shell of gauge pollution
+# of order 1e-3 forms within ~0.5 M outside the horizon and saturates; the
+# horizon's irreducible mass stays within 3.4e-5 of 1 for all 50 M (within
+# 1e-5 until 40 M); the outer boundary's error reaches r ~ 20 M by t = 50 M.
+# Without beta_max, gammat_max and chi_max the interior runs away between
+# t = 20 and 30 M and destroys the exterior. Details: Z4c/CODE.md, section P7.
+#
+# ks-amr64-a08-r32.par is the spinning (a = 0.8) companion.
+
+ActiveThorns = "
+    ADMBaseX
+    AEILocalInterp
+    AHFinderDirect
+    BoxInBox
+    CarpetX
+    CoordinatesX
+    Formaline
+    IOUtil
+    KerrSchildX
+    ODESolvers
+    SphericalSurface
+    SystemTopology
+    TmunuBaseX
+    Z4c
+"
+
+Cactus::cctk_show_schedule = yes
+
+Cactus::presync_mode = "mixed-error"
+
+Cactus::terminate = "iteration"
+Cactus::cctk_itlast = 3200          # dt = dtfac * dx_finest = 1/64, so t = 50 M
+
+CarpetX::verbose = no
+CarpetX::poison_undefined_values = yes
+
+# ---------------------------------------------------------------- grid --------
+
+CarpetX::xmin = -64.0
+CarpetX::ymin = -64.0
+CarpetX::zmin = -64.0
+
+CarpetX::xmax = +64.0
+CarpetX::ymax = +64.0
+CarpetX::zmax = +64.0
+
+CarpetX::ncells_x = 64
+CarpetX::ncells_y = 64
+CarpetX::ncells_z = 64
+
+# Coarse dx = 2. BoxInBox nests cubes of half-width 48, 24, 12, 6 and 3 around
+# the origin, so the finest level has dx = 1/16 and covers the horizon
+# (r_+ = 2) with a margin. The outer boundary at 64 M is far enough that its error (the robin
+# condition is only approximately consistent with the 1/r^2 terms of the data)
+# does not reach the horizon region before t ~ 50 M.
+#
+# With one box per level (max_grid_size >= the level's extent) CarpetX runs
+# about five times faster than with its default 32^3 boxes, for the same cells.
+# The initial hierarchy is built at start-up even with regrid_every = 0.
+CarpetX::max_num_levels = 6
+CarpetX::regrid_every = 0
+CarpetX::regrid_error_threshold = 0.9
+CarpetX::prolongation_type = "ddf"
+CarpetX::prolongation_order = 5
+CarpetX::max_grid_size_x = 128
+CarpetX::max_grid_size_y = 128
+CarpetX::max_grid_size_z = 128
+
+BoxInBox::num_regions = 1
+BoxInBox::shape_1 = "cube"
+BoxInBox::num_levels_1 = 6
+BoxInBox::radius_1[1] = 48.0
+BoxInBox::radius_1[2] = 24.0
+BoxInBox::radius_1[3] = 12.0
+BoxInBox::radius_1[4] =  6.0
+BoxInBox::radius_1[5] =  3.0
+
+CarpetX::ghost_size = 3
+
+# Outer boundary. The default is "none", which never fills the outer boundary
+# and never marks it valid, so Z4c_Initial2 (which READS gamma_tilde
+# everywhere) aborts with "The outer boundary is invalid because:
+# MakeNewLevelFromScratch". The Z4c variables are stored as deviations that
+# fall off as 1/r, which is what "robin" assumes.
+CarpetX::boundary_x       = "robin"
+CarpetX::boundary_y       = "robin"
+CarpetX::boundary_z       = "robin"
+CarpetX::boundary_upper_x = "robin"
+CarpetX::boundary_upper_y = "robin"
+CarpetX::boundary_upper_z = "robin"
+
+# Must match AHFinderDirect::geometry_interpolator_pars below; CarpetX asserts
+# that the requested order equals this parameter.
+CarpetX::interpolation_order = 4
+
+CarpetX::dtfac = 0.25
+ODESolvers::method = "RK4"
+
+# ------------------------------------------------------- initial data --------
+
+ADMBaseX::initial_data    = "kerrschildx"
+ADMBaseX::initial_lapse   = "kerrschildx"
+ADMBaseX::initial_shift   = "kerrschildx"
+ADMBaseX::initial_dtlapse = "kerrschildx"
+ADMBaseX::initial_dtshift = "kerrschildx"
+
+KerrSchildX::mass = 1.0
+KerrSchildX::spin = 0.0            # dimensional, in units of mass: |spin| < mass
+
+# Replace the singularity by a smooth ("stuffed") interior for r < 1, well
+# inside r_+ = 2. These are the settings that par/ks-mclachlan.par
+# uses for the Carpet-era equivalent of this run. The stuffed region is not a
+# solution of the Einstein equations; see the Z4c clamps below.
+KerrSchildX::r_regularization = "parabolic"
+KerrSchildX::epsilon          = 1.0
+KerrSchildX::power            = 8
+
+# ------------------------------------------------------------- Z4c -----------
+
+Z4c::calc_ADM_vars    = yes        # required: AHFinderDirect reads ADMBaseX
+Z4c::calc_ADMRHS_vars = no
+Z4c::calc_constraints = yes
+
+# Integrated gauge: A = d/dt alpha and B^i = d/dt beta^i are evolved and
+# initialised from ADMBaseX::dtlapse/dtshift, which vanish for Kerr-Schild data.
+# With the drivers at zero (their default) every right-hand side vanishes for
+# the exact data, so the exterior stays at rest up to truncation error.
+Z4c::evolveA = yes
+Z4c::evolveB = yes
+
+# The stuffed interior collapses in finite coordinate time when the lapse does
+# not collapse with it (there d/dt K ~ alpha K^2 with K ~ 1/(alpha r_stuff)),
+# and once the lapse has reached its floor the shift-driven terms would still
+# run the conformal metric away. These bounds keep that region finite. They
+# act only where values are extreme, which for these data is inside the
+# horizon; the exact exterior never reaches them (there |Khat|, |Atilde|, |A|,
+# |B| < 1, |beta| < 1, |gamma_tilde - delta| < 3, 0.5 < chi < 1).
+Z4c::clamp_max    = 20             # |Khat|, |Atilde_ij|, |Gamma_tilde^i|, |Theta|, |A|, |B^i|
+Z4c::alpha_max    = 1.0
+Z4c::beta_max     = 2.0
+Z4c::gammat_max   = 10.0
+Z4c::chi_floor    = 0.1
+Z4c::chi_max      = 1.5
+Z4c::alphaG_floor = 1.0e-8
+
+# Kreiss-Oliger dissipation, three times the Z4c default; it smooths the kinks
+# the clamps introduce.
+Z4c::epsdiss      = 1.0
+
+# ------------------------------------------------ apparent horizon -----------
+
+AHFinderDirect::N_horizons  = 1
+AHFinderDirect::find_every  = 64   # every 1 M
+AHFinderDirect::move_origins = yes
+AHFinderDirect::verbose_level = "physics details"
+
+# Also find the horizon at the initial time. Note that with refinement levels
+# this first find happens before the fine levels are filled and is inaccurate;
+# the values from t = 1 M on are the ones to trust.
+AHFinderDirect::run_at_CCTK_POSTINITIAL = yes
+
+# "CarpetX" is the only geometry interpolator CarpetX accepts; the default
+# ("Hermite polynomial interpolation") aborts. The surface and interpatch
+# interpolators act on the angular grid and stay with AEILocalInterp.
+AHFinderDirect::geometry_interpolator_name   = "CarpetX"
+AHFinderDirect::geometry_interpolator_pars   = "order=4"
+AHFinderDirect::surface_interpolator_name    = "Lagrange polynomial interpolation"
+AHFinderDirect::surface_interpolator_pars    = "order=3"
+AHFinderDirect::interpatch_interpolator_name = "Lagrange polynomial interpolation"
+AHFinderDirect::interpatch_interpolator_pars = "order=3"
+
+# AHFinderDirect knows the analytic Kerr-Schild horizon shape and can start
+# from the exact oblate ellipsoid. NOTE the different spin convention: this
+# parameter is the DIMENSIONLESS a = J/m^2, i.e. KerrSchildX::spin / mass.
+AHFinderDirect::initial_guess_method[1]                    = "Kerr/Kerr-Schild"
+AHFinderDirect::initial_guess__Kerr_KerrSchild__mass[1]    = 1.0
+AHFinderDirect::initial_guess__Kerr_KerrSchild__spin[1]    = 0.0
+AHFinderDirect::initial_guess__Kerr_KerrSchild__x_posn[1]  = 0.0
+AHFinderDirect::initial_guess__Kerr_KerrSchild__y_posn[1]  = 0.0
+AHFinderDirect::initial_guess__Kerr_KerrSchild__z_posn[1]  = 0.0
+
+AHFinderDirect::origin_x[1] = 0.0
+AHFinderDirect::origin_y[1] = 0.0
+AHFinderDirect::origin_z[1] = 0.0
+
+AHFinderDirect::which_surface_to_store_info[1]     = 0
+AHFinderDirect::reset_horizon_after_not_finding[1] = no
+AHFinderDirect::max_allowable_horizon_radius[1]    = 4.0
+
+# The ACCUMULATOR expression for max_N_zones_per_right_angle is commented out
+# in param.ccl, so both of these must be set by hand.
+AHFinderDirect::N_zones_per_right_angle[1] = 24
+AHFinderDirect::max_N_zones_per_right_angle = 24
+
+AHFinderDirect::output_h_every = 1
+
+SphericalSurface::nsurfaces = 1
+SphericalSurface::maxntheta = 66
+SphericalSurface::maxnphi   = 124
+
+SphericalSurface::ntheta      [0] = 41
+SphericalSurface::nphi        [0] = 80
+SphericalSurface::nghoststheta[0] = 2
+SphericalSurface::nghostsphi  [0] = 2
+
+# ----------------------------------------------------------- output ----------
+
+IO::out_dir   = $parfile
+IO::out_every = 64                 # every 1 M
+
+CarpetX::out_metadata = no
+
+# 1D output along the coordinate axes. Comparing the it=N files against the
+# it=0 files measures the drift from the stationary solution.
+CarpetX::out_tsv_vars = "
+    ADMBaseX::metric
+    ADMBaseX::curv
+    ADMBaseX::lapse
+    ADMBaseX::shift
+    ADMBaseX::dtlapse
+    ADMBaseX::dtshift
+    Z4c::allC
+    Z4c::dtalphaG
+    Z4c::dtbetaG
+"
