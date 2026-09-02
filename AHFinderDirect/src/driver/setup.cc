@@ -223,6 +223,52 @@ extern struct state state;
 // This function is called by the Cactus scheduler to set up all our
 // persistent data structures.  (These are stored in  struct state .)
 //
+//
+// This function (re)initialises the grid arrays that AHFinderDirect_setup
+// declares as WRITES: the horizon centroids (not valid yet) and the
+// per-horizon flags.  It is separate from AHFinderDirect_setup because
+// CarpetX traverses CCTK_BASEGRID again after every regrid that creates or
+// changes levels, so that routine is entered more than once while the
+// internal data structures are set up only once.
+//
+namespace {
+void initialise_grid_arrays(CCTK_ARGUMENTS)
+{
+DECLARE_CCTK_ARGUMENTS
+DECLARE_CCTK_PARAMETERS
+const struct verbose_info& verbose_info = state.verbose_info;
+
+  for (int n = 0; n < N_horizons; ++ n) {
+    // Horizon centroids are not valid
+    ah_centroid_x[n] = 0.0;
+    ah_centroid_y[n] = 0.0;
+    ah_centroid_z[n] = 0.0;
+    ah_centroid_t[n] = 0.0;
+    ah_centroid_valid[n] = 0;
+    ah_centroid_iteration[n] = -1;
+    
+    ah_centroid_x_p[n] = 0.0;
+    ah_centroid_y_p[n] = 0.0;
+    ah_centroid_z_p[n] = 0.0;
+    ah_centroid_t_p[n] = 0.0;
+    ah_centroid_valid_p[n] = 0;
+    ah_centroid_iteration_p[n] = -1;
+    
+    struct AH_data& AH_data = *state.AH_data_array[n+1];
+    ah_initial_find_flag[n]        = AH_data.initial_find_flag;
+    ah_really_initial_find_flag[n] = AH_data.really_initial_find_flag;
+    ah_search_flag[n]              = AH_data.search_flag;
+    ah_found_flag[n]               = AH_data.found_flag;
+    if (verbose_info.print_algorithm_details) {
+      printf ("AHF setup %d initial_find_flag=%d\n",        n+1, (int) AH_data.initial_find_flag);
+      printf ("AHF setup %d really_initial_find_flag=%d\n", n+1, (int) AH_data.really_initial_find_flag);
+      printf ("AHF setup %d search_flag=%d\n",              n+1, (int) AH_data.search_flag);
+      printf ("AHF setup %d found_flag=%d\n",               n+1, (int) AH_data.found_flag);
+    }
+  }
+}
+} // namespace
+
 extern "C"
   void AHFinderDirect_setup(CCTK_ARGUMENTS)
 {
@@ -235,6 +281,20 @@ CCTK_VInfo(CCTK_THORNSTRING,
 static bool already_ran = false;
 
 if (already_ran){
+	// CarpetX traverses the CCTK_BASEGRID bin again after every regrid
+	// that creates or changes refinement levels: during initialisation
+	// once per level it builds (the hierarchy is built one level at a
+	// time), and during evolution after each regrid that modifies levels
+	// (CarpetX/src/schedule.cxx, Initialise and Evolve).  A routine
+	// scheduled there with `options: global` is called once per traversal,
+	// so this routine runs more than once on a refined grid.  With
+	// poison_undefined_values, CarpetX poisons the grid arrays declared as
+	// WRITES before each call, so they must be written on every call or the
+	// poison check aborts the run.  During initialisation no horizon has
+	// been searched for yet and the initial values are correct; at a later
+	// regrid this resets the centroid history, which the next successful
+	// find refreshes.
+	initialise_grid_arrays(CCTK_PASS_CTOC);
 	return;
 }
 
@@ -752,34 +812,7 @@ if (strlen(surface_interpolator_name) > 0)
   // when they are recovered from a checkpoint.  However, if new
   // horizons are enabled during recovery, they are then correctly
   // initialised.
-  for (int n = 0; n < N_horizons; ++ n) {
-    // Horizon centroids are not valid
-    ah_centroid_x[n] = 0.0;
-    ah_centroid_y[n] = 0.0;
-    ah_centroid_z[n] = 0.0;
-    ah_centroid_t[n] = 0.0;
-    ah_centroid_valid[n] = 0;
-    ah_centroid_iteration[n] = -1;
-    
-    ah_centroid_x_p[n] = 0.0;
-    ah_centroid_y_p[n] = 0.0;
-    ah_centroid_z_p[n] = 0.0;
-    ah_centroid_t_p[n] = 0.0;
-    ah_centroid_valid_p[n] = 0;
-    ah_centroid_iteration_p[n] = -1;
-    
-    struct AH_data& AH_data = *state.AH_data_array[n+1];
-    ah_initial_find_flag[n]        = AH_data.initial_find_flag;
-    ah_really_initial_find_flag[n] = AH_data.really_initial_find_flag;
-    ah_search_flag[n]              = AH_data.search_flag;
-    ah_found_flag[n]               = AH_data.found_flag;
-    if (verbose_info.print_algorithm_details) {
-      printf ("AHF setup %d initial_find_flag=%d\n",        n+1, (int) AH_data.initial_find_flag);
-      printf ("AHF setup %d really_initial_find_flag=%d\n", n+1, (int) AH_data.really_initial_find_flag);
-      printf ("AHF setup %d search_flag=%d\n",              n+1, (int) AH_data.search_flag);
-      printf ("AHF setup %d found_flag=%d\n",               n+1, (int) AH_data.found_flag);
-    }
-  }
+  initialise_grid_arrays(CCTK_PASS_CTOC);
 
   // Save in grid array in case a recovery only recovers some horizons
   for (int n = 0; n < N_horizons; ++ n) {
