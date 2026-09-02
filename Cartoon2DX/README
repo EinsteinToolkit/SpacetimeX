@@ -1,0 +1,38 @@
+Cactus Code Thorn Cartoon2DX
+Author(s)    : Steven R. Brandt <sbrandt@cct.lsu.edu>
+Maintainer(s): Steven R. Brandt <sbrandt@cct.lsu.edu>
+Licence      : LGPL (same as SpacetimeX)
+--------------------------------------------------------------------------
+
+1. Purpose
+
+CarpetX port of cactusnumerical/Cartoon2D. Evolves an axisymmetric
+system as a thin-in-y Cartesian slab: y-ghosts (and optional x<0
+hang-over) are filled by interpolating in cylindrical radius and
+rotating tensor components.
+
+Paper: Alcubierre, Brandt, Brügmann, Holz, Seidel, Takahashi,
+Thornburg (2001), "Symmetry without symmetry", gr-qc/9908012.
+Original cartoon idea: Steve Brandt. Cactus4 Cartoon2D: Sai Iyer.
+
+2. Using this thorn
+
+Activate Cartoon2DX and set the cartoon faces:
+
+  CarpetX::boundary_y       = "cartoon"
+  CarpetX::boundary_upper_y = "cartoon"
+  CarpetX::boundary_x       = "cartoon"   # half-x: xmin is the axis
+  Cartoon2DX::fill_negative_x = yes
+  CarpetX::ncells_y = 1                   # one cell; y=0 at the centre
+
+Tag grid-function groups with tensortypealias (Scalar / U / DD_sym),
+or rely on an existing parities tag. No glue thorn is required.
+
+See doc/documentation.tex for the algorithm, grid layout, and
+parameter notes.
+
+3. Tests
+
+  test/tov.par                 Cactus testsuite: low-res TOV, 2 steps
+  test/standalone_math_test.cxx  g++ test of the interpolation/rotation math
+  Docs/thornlist/cartoon2dx.th   GetComponents list for this feature

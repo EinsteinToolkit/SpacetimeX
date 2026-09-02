@@ -1,0 +1,96 @@
+###############################
+# Cactus testsuite: low-res cartoon TOV, two RK4 steps.
+# Thin-y, half-x. Intended to finish on a laptop in well under 30 s.
+##############################
+ActiveThorns = "
+    ADMBaseX
+    AsterMasks
+    CarpetX
+    Cartoon2DX
+    HydroBaseX
+    IOUtil
+    ODESolvers
+    TmunuBaseX
+"
+
+$ncells = 10
+$max_p  = 20
+# dx = 2; one-cell y-slab centred on y=0. Star R ~ 8 is covered.
+
+Cactus::presync_mode = "mixed-error"
+CarpetX::poison_undefined_values = no
+CarpetX::verbose = no
+
+CarpetX::xmin = 0
+CarpetX::ymin = -1.0
+CarpetX::zmin = 0
+CarpetX::xmax = $max_p
+CarpetX::ymax =  1.0
+CarpetX::zmax = $max_p
+
+CarpetX::ncells_x = $ncells
+CarpetX::ncells_y = 1
+CarpetX::ncells_z = $ncells
+
+CarpetX::boundary_x = "cartoon"
+CarpetX::boundary_y = "cartoon"
+CarpetX::boundary_z = "neumann"
+CarpetX::boundary_upper_x = "neumann"
+CarpetX::boundary_upper_y = "cartoon"
+CarpetX::boundary_upper_z = "neumann"
+
+CarpetX::max_num_levels = 1
+CarpetX::regrid_every = 100000
+CarpetX::blocking_factor_x = 1
+CarpetX::blocking_factor_y = 1
+CarpetX::blocking_factor_z = 1
+CarpetX::prolongation_type = "ddf"
+CarpetX::ghost_size = 2
+CarpetX::dtfac = 0.25
+
+ADMBaseX::initial_data    = "tov"
+ADMBaseX::initial_lapse   = "tov"
+ADMBaseX::initial_shift   = "tov"
+ADMBaseX::initial_dtlapse = "zero"
+ADMBaseX::initial_dtshift = "zero"
+HydroBaseX::initial_hydro = "tov"
+
+ActiveThorns = "TOVSolverX"
+TOVSolverX::TOV_Rho_Central[0] = 1.28e-3
+TOVSolverX::TOV_Gamma          = 2.0
+TOVSolverX::TOV_K              = 100.0
+
+ActiveThorns = "AsterX AsterSeeds"
+AsterX::flux_type = "HLLE"
+ReconX::reconstruction_method = "minmod"
+Con2PrimFactory::max_iter = 100
+EOSX::evolution_eos = "IdealGas"
+EOSX::gl_gamma = 2.0
+EOSX::poly_gamma = 2.0
+EOSX::poly_k = 100.0
+AsterSeeds::test_type = "3DTest"
+AsterSeeds::test_case = "magTOV"
+AsterSeeds::Afield_config = "internal dipole"
+AsterSeeds::Ab = 0.0
+
+Cactus::terminate = "iteration"
+Cactus::cctk_itlast = 2
+ODESolvers::method = "RK4"
+
+Cartoon2DX::order = 4
+Cartoon2DX::verbose = no
+Cartoon2DX::fill_negative_x = yes
+
+IO::out_dir = $parfile
+IO::out_every = 2
+IO::parfile_write = "no"
+IO::out_fileinfo = "axis labels"
+CarpetX::out_metadata = no
+CarpetX::out_silo_vars = ""
+CarpetX::out_openpmd_vars = ""
+CarpetX::out_norm_vars = "
+    HydroBaseX::rho
+    HydroBaseX::vel
+"
+CarpetX::out_norm_omit_unstable = yes
+CarpetX::out_norm_omit_sumloc_for_backward_compatibility = yes

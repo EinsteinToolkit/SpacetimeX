@@ -1,0 +1,214 @@
+% *======================================================================*
+%  Cactus Thorn template for ThornGuide documentation
+%  Author: Ian Kelley
+%  Date: Sun Jun 02, 2002
+%  $Header$
+%
+%  Thorn documentation in the latex file doc/documentation.tex
+%  will be included in ThornGuides built with the Cactus make system.
+%  The scripts employed by the make system automatically include
+%  pages about variables, parameters and scheduling parsed from the
+%  relevant thorn CCL files.
+%
+%  This template contains guidelines which help to assure that your
+%  documentation will be correctly added to ThornGuides. More
+%  information is available in the Cactus UsersGuide.
+%
+%  Guidelines:
+%   - Do not change anything before the line
+%       % START CACTUS THORNGUIDE",
+%     except for filling in the title, author, date, etc. fields.
+%        - Each of these fields should only be on ONE line.
+%        - Author names should be separated with a \\ or a comma.
+%   - You can define your own macros, but they must appear after
+%     the START CACTUS THORNGUIDE line, and must not redefine standard
+%     latex commands.
+%   - To avoid name clashes with other thorns, 'labels', 'citations',
+%     'references', and 'image' names should conform to the following
+%     convention:
+%       ARRANGEMENT_THORN_LABEL
+%     For example, an image wave.eps in the arrangement CactusWave and
+%     thorn WaveToyX should be renamed to CactusWave_WaveToyX_wave.eps
+%   - Graphics should only be included using the graphicx package.
+%     More specifically, with the "\includegraphics" command.  Do
+%     not specify any graphic file extensions in your .tex file. This
+%     will allow us to create a PDF version of the ThornGuide
+%     via pdflatex.
+%   - References should be included with the latex "\bibitem" command.
+%   - Use \begin{abstract}...\end{abstract} instead of \abstract{...}
+%   - Do not use \appendix, instead include any appendices you need as
+%     standard sections.
+%   - For the benefit of our Perl scripts, and for future extensions,
+%     please use simple latex.
+%
+% *======================================================================*
+
+\documentclass{article}
+
+% Use the Cactus ThornGuide style file
+\usepackage{../../../../doc/latex/cactus}
+
+\begin{document}
+
+\author{Steven R. Brandt}
+
+\title{Cartoon2DX}
+
+\date{September 2 2026}
+
+\maketitle
+
+% Do not delete next line
+% START CACTUS THORNGUIDE
+
+\begin{abstract}
+\texttt{Cartoon2DX} is the CarpetX port of \texttt{cactusnumerical/Cartoon2D}.
+It evolves an axisymmetric system as a thin-in-$y$ Cartesian slab: values on
+the $y$-faces (and optionally $x<0$) are obtained by interpolating a
+reference profile in cylindrical radius and rotating tensor components into
+place. CarpetX treats this as a physical boundary type
+\texttt{boundary\_t::cartoon}.
+\end{abstract}
+
+\section{Introduction}
+
+Axisymmetric systems can be evolved with a fully 3-dimensional Cartesian
+code by keeping only a slab one cell thick in $y$, plus ghost zones, and
+filling the off-plane points from the $y=0$ data under the axisymmetry
+assumption. This is the ``cartoon'' method of
+Alcubierre et al.~\cite{SpacetimeX_Cartoon2DX_Alcubierre2001}, originally
+implemented for Cactus3 by Steve Brandt and for Cactus4
+(\texttt{Cartoon2D}) by Sai Iyer.
+
+\texttt{Cartoon2DX} does the same thing for the CarpetX driver. The
+important CarpetX-specific points are mixed centering (vertex-centered
+metric, cell-centered hydro, staggered fluxes) and the fact that
+cartoon faces are physical outer faces in CarpetX's
+\texttt{valid\_int}/\texttt{valid\_outer}/\texttt{valid\_ghosts}
+accounting, not MPI ghosts.
+
+\section{Algorithm}
+
+The symmetry axis is $z$. For a point with coordinates $(x,y)$ (taken
+from \texttt{PointDesc.x}/\texttt{.y}, which already know the group's
+centering),
+\[
+\rho = \sqrt{x^2+y^2}.
+\]
+The reference data live on the $y=0$ plane at $x=\rho$. Each tensor
+component is interpolated there with 1D Lagrange interpolation of order
+\texttt{Cartoon2DX::order} (using \texttt{order+1} points). The
+interpolated Cartesian components are then rotated in the $xy$-plane
+into the point's own azimuthal frame:
+\begin{itemize}
+\item Scalar: copy.
+\item Vector $U$: rotate the $x$ and $y$ components; $z$ is unchanged.
+\item Symmetric tensor $DD_{\mathrm{sym}}$: the usual quadratic-form
+  transform in $xy$; $zz$ is unchanged.
+\end{itemize}
+The same fill is used for $y$-ghosts and, when
+\texttt{fill\_negative\_x=yes}, for $x<0$ hang-over cells.
+
+\section{Using this thorn}
+
+Activate \texttt{Cartoon2DX} and set the cartoon faces on CarpetX:
+\begin{verbatim}
+CarpetX::boundary_y       = "cartoon"
+CarpetX::boundary_upper_y = "cartoon"
+CarpetX::boundary_x       = "cartoon"   # half-x; xmin is the axis
+CarpetX::ncells_y         = 1
+Cartoon2DX::fill_negative_x = yes
+Cartoon2DX::order         = 4
+\end{verbatim}
+\texttt{ghost\_size} must cover the interpolation stencil
+(\texttt{order=4} needs five points, so \texttt{ghost\_size $\ge$ 2}).
+The one-cell $y$-slab should be centred on $y=0$ (for spacing $dy$,
+\texttt{ymin=$-dy/2$}, \texttt{ymax=$+dy/2$}).
+
+CarpetX calls \texttt{ApplyCartoonBoundary(cctkGH, gi, tl)} from
+\texttt{apply\_boundary\_conditions} for every live timelevel of a group
+that has a cartoon face. Builtin Dirichlet/Neumann/extrapolation
+stencils skip those faces. There is no scheduled fill bin and no
+\texttt{INHERITS:}.
+
+\subsection{Tensor type}
+
+Each grid-function group is classified from, in order:
+\begin{enumerate}
+\item the Einstein Toolkit \texttt{tensortypealias} tag
+  (\texttt{Scalar}, \texttt{U} or \texttt{D}, \texttt{DD\_sym}) ---
+  the same tag old \texttt{Cartoon2D} reads;
+\item the CarpetX \texttt{parities} tag (1 / 3 / 6 variables), used by
+  generated thorns;
+\item untagged one-variable groups, treated as scalars.
+\end{enumerate}
+Packed groups (for example AsterX \texttt{cons\_vector}) are walked
+component-wise from the parities array. Groups with neither tag are
+skipped.
+
+\subsection{Half-$x$ and AMR}
+
+Axisymmetry also makes $x<0$ redundant. Set \texttt{xmin=0} and
+\texttt{boundary\_x="cartoon"} so the lower-$x$ ghosts are the hang-over
+needed for $x$-derivatives; they are filled by the same rotation as the
+$y$-ghosts. Do not use \texttt{symmetry\_t::reflection} on $x$ --- that
+mirrors Cartesian components, whereas cartoon rotates them.
+
+On AMR, the cartoon slab must stay one cell thick at every level. Set
+\texttt{CarpetX::refinement\_factor\_y = 1} and refine only in $x$ and
+$z$.
+
+\subsection{Obtaining this thorn}
+
+\texttt{Cartoon2DX} is in the \texttt{SpacetimeX} arrangement. A
+GetComponents list that checks out this feature branch together with
+the matching CarpetX and AsterX changes is
+\texttt{Docs/thornlist/cartoon2dx.th}.
+
+\section{Tests}
+
+\begin{description}
+\item[\texttt{test/tov.par}] Cactus testsuite. Low-resolution Cowling
+  TOV star, two RK4 steps, intended to finish on a laptop in well under
+  30 seconds.
+\item[\texttt{test/standalone\_math\_test.cxx}] Interpolation and
+  tensor-rotation math, compiled with \texttt{g++}, no Cactus or AMReX.
+\end{description}
+Longer comparison parameter files (TOV and Brill--Lindquist head-on,
+cartoon versus full 3D) are also in \texttt{test/} but are not part of
+the testsuite.
+
+\section{History}
+
+\begin{itemize}
+\item Cartoon method: Steve Brandt (Cactus3), with Bernd Br\"ugmann.
+\item \texttt{Cartoon2D} for Cactus4/Carpet: Sai Iyer, documented by
+  Denis Pollney.
+\item \texttt{Cartoon2DX} for CarpetX: Steven R. Brandt.
+\end{itemize}
+
+An earlier draft of this thorn used \texttt{INHERITS:} of a specific
+evolution thorn. That made Cartoon2DX unusable with any other physics
+(Cactus treats \texttt{INHERITS:} as a hard activation requirement).
+The fill looks up groups by index and writes through
+\texttt{CCTK\_VarDataPtrI}, so there is no \texttt{INHERITS:} now.
+
+ENO interpolation and excision, present in old \texttt{Cartoon2D}, are
+not implemented.
+
+\begin{thebibliography}{9}
+
+\bibitem{SpacetimeX_Cartoon2DX_Alcubierre2001}
+  M.~Alcubierre, S.~Brandt, B.~Br\"ugmann, D.~Holz, E.~Seidel,
+  R.~Takahashi and J.~Thornburg,
+  ``Symmetry without symmetry: Numerical simulation of axisymmetric
+  systems using Cartesian grids,''
+  Int.\ J.\ Mod.\ Phys.\ D {\bf 10}, 273 (2001)
+  [gr-qc/9908012].
+
+\end{thebibliography}
+
+% Do not delete next line
+% END CACTUS THORNGUIDE
+
+\end{document}
