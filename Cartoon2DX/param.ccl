@@ -1,0 +1,42 @@
+# Parameter definitions for thorn Cartoon2DX
+
+BOOLEAN verbose "Print diagnostic information about the cartoon boundary condition"
+{
+} "no"
+
+# RESTRICTED, not the default PRIVATE: this is a library-wide setting
+# meant to be shared by any consumer of the Cartoon2DX math library (e.g.
+# CarpetX/Cartoon2DXWaveToyX's own param.ccl does `SHARES: Cartoon2DX;
+# USES CCTK_INT order`) -- Cactus's CST rejects USES/EXTENDS on a
+# non-RESTRICTED parameter ("attempted to EXTEND or USE non-restricted
+# parameter"). Found by an actual build attempt; "GLOBAL:" (tried first)
+# isn't a real param.ccl keyword at all -- confirmed by grepping the rest
+# of the codebase for it and finding zero other uses, then checking a
+# genuinely-working SHARES example (DGWaveToyX/DGCoordinatesX) to find
+# the real one.
+RESTRICTED:
+INT order "Order of the local Lagrange interpolation used to fill cartoon ghost zones (uses order+1 points)"
+{
+  1:5 :: "linear (2-point) through quintic (6-point), matching the original Cartoon2D thorn's supported range"
+} 4
+
+# Original Cartoon2D only stored x>=0 plus a short x<0 hang-over for
+# derivative/interpolation stencils; x<0 values come from rotation.
+# When yes, xmin should be the axis (0) so the lower-x ghosts are that
+# hang-over, and NewRadX::apply_lower_x should be no.
+BOOLEAN fill_negative_x "Fill x<0 points by rotation from x>=0 (half-plane cartoon)"
+{
+} yes
+
+# Deferred, not yet exposed as parameters (see notes.md "Status" for
+# rationale):
+#   - eno_order / an ENO interpolation option (old Cartoon2D had one;
+#     not needed for the vacuum Brill-Lindquist test that motivates this
+#     port).
+#   - old_excision / new_excision and their associated mask variables
+#     (excision is not needed for a vacuum head-on-collision test).
+#   - allow_grid_resize (CarpetX grid extents are set directly via
+#     CarpetX::ncells_x/y/z etc.; there is no PUGH-style byspacing/byrange
+#     grid-resize step to hook).
+#   - cartoon_active (fill is invoked from CarpetX apply_boundary_conditions
+#     when a face is boundary_t::cartoon, not from a scheduled bin).

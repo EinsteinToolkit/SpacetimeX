@@ -1,0 +1,155 @@
+# head_on_full3d.par -- Brill-Lindquist head-on collision, full 3D
+# reference run (no Cartoon2DX). Pairs with head_on_cartoon2dx.par, which
+# evolves the identical physical setup as a thin-y-slab Cartoon2DX
+# evolution; the correctness test (requirements.md) is that the two
+# agree. See notes.md "Status" for what has and hasn't been verified by
+# an actual build/run.
+#
+# Deliberately minimal: no AMR, no horizon finding, no wave extraction --
+# just enough to run the evolution and record norms to diff against the
+# thin-y run. Structure (grid/BC/gauge param names and values) is based
+# on repos/Cottonmouth/examples/qc0-z4c.par, stripped down; see that file
+# for the fuller-featured production setup this was derived from.
+
+$xmin       = -8.0
+$xmax       = +8.0
+$ncells     = 128
+$final_time = 10.0
+$out_every  = 16
+
+ActiveThorns = "
+  ADMBaseX
+  BrillLindquistMulti
+  CarpetX
+  CoordinatesX
+  CottonmouthZ4c4m
+  IOUtil
+  ODESolvers
+  TmunuBaseX
+"
+
+# Driver
+Cactus::cctk_show_schedule       = yes
+Cactus::presync_mode             = "mixed-error"
+CarpetX::verbose                 = no
+# CarpetX default is yes (NaN any region still marked undefined).
+CarpetX::poison_undefined_values = yes
+
+# Run termination
+Cactus::terminate       = "time"
+Cactus::cctk_final_time = $final_time
+
+# Grid setup -- single level (no AMR). x/z are the symmetric cube
+# [xmin,xmax]; y is shifted by half a cell (dy/2 = (xmax-xmin)/ncells/2)
+# so NO grid vertex lands at y=0. Both punctures sit on the z-axis
+# (x=y=0), and with an even ncells and a symmetric y range, x=0 AND y=0
+# are BOTH exact vertices, so the grid would have a full line of points
+# running directly along rho=0 through the punctures -- sampling the
+# steepest, least-resolved part of the puncture profile. It only takes
+# breaking ONE of x=0/y=0 to avoid rho=0 everywhere, so only y is
+# shifted here (x/z stay untouched, matching head_on_cartoon2dx.par's
+# dx/dz exactly). This is the standard NR "avoid_originy" trick (see e.g.
+# old Cartoon2D's SetGrid.c), not something specific to this port. Found
+# by an actual run to matter a lot -- see notes.md "Resolution/Courant
+# tuning attempt" (an ODD ncells was tried first: also fixes this, but
+# AMReX requires blocking_factor to be a power of 2, and no such factor
+# other than 1 divides an odd ncells, so it forced ~ncells^3 one-cell
+# boxes and a ~28x slowdown -- avoid_originy gets the same fix for free).
+# ymin/ymax are hardcoded, not $xmin-derived: unclear whether this par
+# file parser supports inline arithmetic on $variables, and simple
+# substitution is all that's verified (see the qc0-z4c.par example this
+# is based on). dx = (xmax-xmin)/ncells = 16/128 = 0.125; shifted by
+# dx/2 = 0.0625.
+CarpetX::xmin = $xmin
+CarpetX::ymin = -8.0625
+CarpetX::zmin = $xmin
+
+CarpetX::xmax = $xmax
+CarpetX::ymax = 7.9375
+CarpetX::zmax = $xmax
+
+CarpetX::ncells_x = $ncells
+CarpetX::ncells_y = $ncells
+CarpetX::ncells_z = $ncells
+
+CarpetX::ghost_size          = 3
+CarpetX::interpolation_order = 3
+
+CarpetX::blocking_factor_x = 8
+CarpetX::blocking_factor_y = 8
+CarpetX::blocking_factor_z = 8
+
+CarpetX::max_num_levels = 1
+
+# Boundary conditions
+CarpetX::boundary_x       = "linear extrapolation"
+CarpetX::boundary_y       = "linear extrapolation"
+CarpetX::boundary_z       = "linear extrapolation"
+CarpetX::boundary_upper_x = "linear extrapolation"
+CarpetX::boundary_upper_y = "linear extrapolation"
+CarpetX::boundary_upper_z = "linear extrapolation"
+
+# Initial data: 2 equal-mass punctures on the z-axis (Cartoon2DX's
+# symmetry axis), released from rest (K_ij=0). See
+# repos/SpacetimeX/BrillLindquistMulti's defaults -- not overridden here
+# so both par files stay in sync automatically.
+ADMBaseX::initial_data  = "Brill-Lindquist multi-puncture"
+ADMBaseX::initial_lapse = "one"
+ADMBaseX::initial_shift = "zero"
+
+# Time integration
+CarpetX::dtfac      = 0.25
+ODESolvers::method   = "RK4"
+
+# Spacetime evolution
+CottonmouthZ4c4m::eta_beta      = 1.0
+# NewRadX is back on (was off in an earlier version of this file): its
+# outer-boundary Coulomb-falloff extrapolation asserted on the thin-y
+# cartoon2dx domain (see head_on_cartoon2dx.par), which forced turning it
+# off in BOTH par files while chasing that down. The actual fix was a
+# patch to NewRadX itself (see NewRadX::require_tagged_interior_for_radpower
+# in the SpacetimeX/NewRadX param.ccl/newradx.cxx, and notes.md), not
+# needed here -- this domain's y-interior is thick enough that NewRadX's
+# original, strict check already passes, so this file doesn't need the
+# relaxed setting.
+CottonmouthZ4c4m::apply_NewRadX = yes
+
+# Output.
+#
+# IMPORTANT: out_norm_vars norms are NOT directly comparable between this
+# run and head_on_cartoon2dx.par's -- an L2/Linf norm is aggregated over
+# however many grid points that run's domain has, and the thin-y run has
+# a vastly smaller point count/volume than this full 3D one. Norms are
+# only useful here as an independent per-run sanity check (is *this* run
+# stable, are *its* constraint violations small) -- not as the
+# correctness comparison itself. The actual correctness test
+# (requirements.md) needs a POINTWISE comparison of field values at
+# matching (x, y=0, z) grid points between the two runs, which is what
+# out_silo_vars below is for (post-processing to extract and diff the
+# y=0 plane is not yet written -- see notes.md "Status").
+IO::out_dir   = $parfile
+IO::out_every = $out_every
+
+CarpetX::out_performance = no
+CarpetX::out_metadata    = no
+CarpetX::out_norm_omit_unstable = no
+CarpetX::out_norm_vars = "
+  ADMBaseX::metric
+  ADMBaseX::curv
+  CottonmouthZ4c4m::evo_lapse
+  CottonmouthZ4c4m::evo_shift
+  CottonmouthZ4c4m::Theta
+  CottonmouthZ4c4m::HamCons
+  CottonmouthZ4c4m::MomCons
+  CottonmouthZ4c4m::ZtCons
+"
+
+CarpetX::out_silo_every = $out_every
+CarpetX::out_silo_vars = "
+  ADMBaseX::metric
+  ADMBaseX::curv
+  CottonmouthZ4c4m::evo_lapse
+  CottonmouthZ4c4m::evo_shift
+  CottonmouthZ4c4m::HamCons
+  CottonmouthZ4c4m::MomCons
+"

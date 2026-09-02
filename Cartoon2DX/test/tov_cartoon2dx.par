@@ -1,0 +1,126 @@
+###############################
+# Cartoon2DX TOV neutron star (thin-y, half-x).
+# Physics matches AsterX/TOVSolverX/par/TOV.par (K=100, rho_c=1.28e-3,
+# M=1.4); the y-slab is one cell thick and xmin is the axis.
+# Pair with tov_full3d.par.
+##############################
+ActiveThorns = "
+    ADIOS2
+    ADMBaseX
+    AsterMasks
+    CarpetX
+    Cartoon2DX
+    HydroBaseX
+    IOUtil
+    ODESolvers
+    SystemTopology
+    TimerReport
+    TmunuBaseX
+"
+
+$nlevels	= 1
+$ncells 	=  50
+$max_p		=  100
+# dx = 100/50 = 2, so the one-cell y-slab is ymin=-1, ymax=+1 (y=0 at the cell centre).
+
+CarpetX::verbose = no
+
+Cactus::presync_mode = "mixed-error"
+# magTOV-style: hydro ID does not write ghosts before AsterSeeds::SetEntropy.
+# Poison-on is a later TOV check (2BH already passed it).
+CarpetX::poison_undefined_values = no
+
+# Half-x: xmin is the axis. Thin-y: one cell whose center sits at y=0.
+CarpetX::xmin = 0
+CarpetX::ymin = -1.0
+CarpetX::zmin = 0
+
+CarpetX::xmax = $max_p
+CarpetX::ymax =  1.0
+CarpetX::zmax = $max_p
+
+CarpetX::ncells_x = $ncells
+CarpetX::ncells_y = 1
+CarpetX::ncells_z = $ncells
+
+CarpetX::boundary_x = "cartoon"
+CarpetX::boundary_y = "cartoon"
+CarpetX::boundary_z = "neumann"
+CarpetX::boundary_upper_x = "neumann"
+CarpetX::boundary_upper_y = "cartoon"
+CarpetX::boundary_upper_z = "neumann"
+
+CarpetX::max_num_levels = $nlevels
+CarpetX::regrid_every = 100000
+
+CarpetX::blocking_factor_x = 1
+CarpetX::blocking_factor_y = 1
+CarpetX::blocking_factor_z = 1
+CarpetX::regrid_error_threshold = 5.0e-5
+
+CarpetX::prolongation_type = "ddf"
+CarpetX::ghost_size = 2
+CarpetX::dtfac = 0.25
+
+ADMBaseX::initial_data       = "tov"
+ADMBaseX::initial_lapse      = "tov"
+ADMBaseX::initial_shift      = "tov"
+ADMBaseX::initial_dtlapse    = "zero"
+ADMBaseX::initial_dtshift    = "zero"
+
+HydroBaseX::initial_hydro = "tov"
+
+ActiveThorns = "TOVSolverX"
+TOVSolverX::TOV_Rho_Central[0] = 1.28e-3
+TOVSolverX::TOV_Gamma          = 2.0
+TOVSolverX::TOV_K              = 100.0
+
+ActiveThorns = "AsterX AsterSeeds"
+AsterX::flux_type = "HLLE"
+ReconX::reconstruction_method = "minmod"
+Con2PrimFactory::max_iter = 100
+EOSX::evolution_eos = "IdealGas"
+EOSX::gl_gamma = 2.0
+EOSX::poly_gamma = 2.0
+EOSX::poly_k = 100.0
+# Zero vector potential so AsterX_ComputedBstagFromA has valid Avec
+# (this nuX AsterX always reads A at initial; hydro TOV has no B).
+AsterSeeds::test_type = "3DTest"
+AsterSeeds::test_case = "magTOV"
+AsterSeeds::Afield_config = "internal dipole"
+AsterSeeds::Ab = 0.0
+
+Cactus::terminate = "iteration"
+Cactus::cctk_itlast = 2
+ODESolvers::method = "RK4"
+
+Cartoon2DX::order = 4
+Cartoon2DX::verbose = yes
+Cartoon2DX::fill_negative_x = yes
+
+IO::out_dir = $parfile
+IO::out_every = 1
+CarpetX::out_silo_vars = "
+    HydroBaseX::rho
+    HydroBaseX::vel
+    HydroBaseX::eps
+    HydroBaseX::press
+    CarpetX::regrid_error
+    ADMBaseX::lapse
+    ADMBaseX::shift
+    ADMBaseX::metric
+"
+
+CarpetX::out_openpmd_vars = "
+    HydroBaseX::rho
+    HydroBaseX::vel
+    HydroBaseX::eps
+    HydroBaseX::press
+    CarpetX::regrid_error
+"
+
+TimerReport::out_every = 1
+TimerReport::out_filename = "TimerReport"
+TimerReport::output_all_timers_together = yes
+TimerReport::output_all_timers_readable = yes
+TimerReport::n_top_timers = 50

@@ -1,0 +1,11 @@
+# Main make.code.defn file for thorn Cartoon2DX
+
+# Source files in this directory
+# (cartoon2dx.hxx and cartoon2dx_carpetx.hxx are header-only and need no
+# .cxx of their own; see ../test/standalone_math_test.cxx for
+# cartoon2dx.hxx's tests, which are deliberately NOT listed here since
+# they are not part of the Cactus build.)
+SRCS = check_parameters.cxx apply.cxx
+
+# Subdirectories containing source files
+SUBDIRS =

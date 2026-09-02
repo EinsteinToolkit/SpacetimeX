@@ -1,0 +1,10 @@
+# Schedule definitions for thorn Cartoon2DX
+
+SCHEDULE Cartoon2DX_CheckParameters AT CCTK_PARAMCHECK
+{
+  LANG: C
+  OPTIONS: meta
+} "Check Cartoon2DX parameters"
+
+# Fill is not scheduled. CarpetX calls ApplyCartoonBoundary from
+# apply_boundary_conditions when a face is boundary_t::cartoon.

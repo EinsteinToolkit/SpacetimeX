@@ -1,0 +1,47 @@
+# Interface definition for thorn Cartoon2DX
+
+IMPLEMENTS: Cartoon2DX
+
+# No INHERITS: of any kind. This thorn owns no grid variables. CarpetX
+# calls ApplyCartoonBoundary from apply_boundary_conditions for groups
+# whose faces are boundary_t::cartoon (y-ghosts, and x<0 when
+# fill_negative_x), according to each group's tensor type and CENTERING.
+#
+# Tensor type comes from the Einstein Toolkit `tensortypealias` tag
+# (Scalar / U or D / DD_sym) -- the same tag old Cartoon2D reads --
+# falling back to the CarpetX `parities` tag (1 / 3 / 6 variables)
+# used by generated thorns such as CottonmouthZ4c4m. Packed groups
+# (AsterX cons_vector) are walked component-wise from parities.
+# Untagged 1-variable GFs are treated as scalars. rho is computed
+# from PointDesc .x/.y, which are centering-aware.
+# Consumers do not need a glue thorn: tag the group and activate
+# Cartoon2DX.
+#
+# Do not add INHERITS: here. An earlier version did
+# `INHERITS: CottonmouthZ4c4m`, which forced ADMBaseX/CottonmouthZ4c4m/
+# TmunuBaseX to be active whenever Cartoon2DX was, and broke the
+# WaveToyX par file ("Implementation 'ADMBASEX' not activated").
+
+USES INCLUDE HEADER: loop.hxx
+USES INCLUDE HEADER: loop_device.hxx
+USES INCLUDE HEADER: vect.hxx
+
+# Public header providing the driver-independent cartoon math (rho and
+# tensor-rotation geometry, 1D Lagrange interpolation). See
+# src/cartoon2dx.hxx for details and test/standalone_math_test.cxx for
+# its correctness tests. Consuming thorns should add
+# "REQUIRES Cartoon2DX" to their own configuration.ccl and
+# `#include <cartoon2dx.hxx>`.
+INCLUDES HEADER: cartoon2dx.hxx IN cartoon2dx.hxx
+
+# CarpetX-specific ghost-fill glue built on top of the above (GF3D5
+# stencil gathering + looping). See src/cartoon2dx_carpetx.hxx.
+INCLUDES HEADER: cartoon2dx_carpetx.hxx IN cartoon2dx_carpetx.hxx
+
+# No grid variables of its own.
+
+void FUNCTION ApplyCartoonBoundary( \
+  CCTK_POINTER_TO_CONST IN cctkGH, \
+  CCTK_INT IN gi, \
+  CCTK_INT IN tl)
+PROVIDES FUNCTION ApplyCartoonBoundary WITH Cartoon2DX_ApplyBoundary LANGUAGE C

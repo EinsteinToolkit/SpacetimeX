@@ -1,0 +1,10 @@
+# Configuration definitions for thorn Cartoon2DX
+
+REQUIRES CarpetX
+REQUIRES Loop
+REQUIRES Arith
+
+# NOTE: This thorn has no INHERITS: of any kind (see interface.ccl).
+# configuration.ccl REQUIRES is for build-time capabilities (Loop/Arith/
+# CarpetX PROVIDE a capability matching their own name), not "make sure
+# this other thorn is active".

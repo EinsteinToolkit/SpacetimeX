@@ -1,0 +1,162 @@
+# head_on_cartoon2dx.par -- Brill-Lindquist head-on collision, thin-y
+# Cartoon2DX evolution. Pairs with head_on_full3d.par (identical physical
+# setup, full 3D); the correctness test (requirements.md) is that the two
+# agree. See notes.md "Status" for what has and hasn't been verified by
+# an actual build/run.
+#
+# Only the y-direction grid setup and ActiveThorns differ from
+# head_on_full3d.par -- x/z extent, resolution, ghost width, boundary
+# conditions, initial data, gauge, and time integration are IDENTICAL on
+# purpose, so dx=dy=dz (hence dt) matches exactly between the two runs
+# and any difference in the output norms is attributable to the cartoon
+# trick itself, not to an incidental resolution/timestep mismatch.
+
+$xmin       = 0.0
+$xmax       = +8.0
+$ncells_x   = 64
+$ncells_z   = 128
+$final_time = 10.0
+$out_every  = 16
+
+ActiveThorns = "
+  ADMBaseX
+  BrillLindquistMulti
+  CarpetX
+  Cartoon2DX
+  CoordinatesX
+  CottonmouthZ4c4m
+  IOUtil
+  ODESolvers
+  TmunuBaseX
+"
+
+# Driver
+Cactus::cctk_show_schedule       = yes
+Cactus::presync_mode             = "mixed-error"
+CarpetX::verbose                 = no
+# CarpetX default is yes (NaN any region still marked undefined).
+CarpetX::poison_undefined_values = yes
+
+# Run termination
+Cactus::terminate       = "time"
+Cactus::cctk_final_time = $final_time
+
+# Grid setup -- x/z identical to head_on_full3d.par; y is a single cell
+# (2 vertices) plus ghost zones, per cartoon2dx.md's thin-y-slice design.
+# dy = (ymax-ymin)/ncells_y = 0.125, matching dx=dz=16/128=0.125 exactly.
+# This grid never needs head_on_full3d.par's y-shift trick: its 2
+# interior y-vertices already sit at +-dy/2, never at y=0 itself, so it
+# can never land a grid point exactly on the puncture axis regardless of
+# ncells' parity -- see the comment in head_on_full3d.par.
+CarpetX::xmin = $xmin
+CarpetX::ymin = -0.0625
+CarpetX::zmin = -8.0
+
+CarpetX::xmax = $xmax
+CarpetX::ymax = +0.0625
+CarpetX::zmax = +8.0
+
+CarpetX::ncells_x = $ncells_x
+CarpetX::ncells_y = 1
+CarpetX::ncells_z = $ncells_z
+
+CarpetX::ghost_size          = 3
+CarpetX::interpolation_order = 3
+
+CarpetX::blocking_factor_x = 8
+CarpetX::blocking_factor_y = 1
+CarpetX::blocking_factor_z = 8
+
+CarpetX::max_num_levels = 1
+
+# y (thin slab) and lower-x (half-plane hang-over) are cartoon faces.
+# Upper-x and z stay linear extrapolation. boundary_y cannot be "none":
+# CarpetX tracks outer validity as a single flag covering all 6 faces.
+CarpetX::boundary_x       = "cartoon"
+CarpetX::boundary_y       = "cartoon"
+CarpetX::boundary_z       = "linear extrapolation"
+CarpetX::boundary_upper_x = "linear extrapolation"
+CarpetX::boundary_upper_y = "cartoon"
+CarpetX::boundary_upper_z = "linear extrapolation"
+
+# Initial data: identical to head_on_full3d.par. BrillLindquistMulti's
+# formula is evaluated pointwise at each point's own (x,y,z), including
+# the y ghost zones, so it needs no help from Cartoon2DX -- see
+# notes.md's note on why no "PreInitial" hook was needed for the ID
+# thorn itself, only for adm_to_z4c_pt2 immediately downstream of it.
+ADMBaseX::initial_data  = "Brill-Lindquist multi-puncture"
+ADMBaseX::initial_lapse = "one"
+ADMBaseX::initial_shift = "zero"
+
+# Time integration -- identical to head_on_full3d.par (same dx=dy=dz, so
+# the same dtfac gives the same dt).
+CarpetX::dtfac      = 0.25
+ODESolvers::method   = "RK4"
+
+# Spacetime evolution -- identical to head_on_full3d.par, EXCEPT
+# NewRadX::require_tagged_interior_for_radpower below, which this domain
+# (and only this one) needs.
+CottonmouthZ4c4m::eta_beta      = 1.0
+# NewRadX is back on (was off in an earlier version of this file): its
+# outer-boundary Coulomb-falloff correction (radpower>0, the default for
+# every CottonmouthZ4c4m::radpower_* quantity) steps nghostzones grid
+# points inward from each boundary point to sample "the interior," and
+# asserted because this domain's y-interior is only 2 points wide --
+# nghostzones=3 always overshoots past it into the ghost zone on the
+# OTHER side, regardless of ghost width. That ghost-zone data is not
+# untrustworthy here, though: it's exactly what Cartoon2DX's whole design
+# guarantees -- the y-ghosts hold what a full-3D interior would show at
+# that point, actively computed, not merely synced/extrapolated. NewRadX's
+# assert couldn't know that (it's a generic thorn with no notion of
+# Cartoon2DX), so it's relaxed here to just an array-bounds check via the
+# opt-in param below (see SpacetimeX/NewRadX param.ccl and
+# src/newradx.cxx, and notes.md, for the full derivation of why this is
+# safe: found and patched during this port, not an existing NewRadX
+# feature).
+CottonmouthZ4c4m::apply_NewRadX = yes
+NewRadX::require_tagged_interior_for_radpower = no
+# Both interior y-layers of this thin slab are "outermost", so NewRadX
+# on y would replace the Einstein RHS everywhere and radiate the
+# domain to Minkowski (gxx.max 541 -> 1 by t=0.5). y is the cartoon
+# direction, not a physical outer boundary.
+NewRadX::apply_y = no
+# xmin is the axis, not a physical outer boundary.
+NewRadX::apply_lower_x = no
+
+# Cartoon2DX
+Cartoon2DX::order   = 4
+Cartoon2DX::verbose = yes
+
+# Output.
+#
+# IMPORTANT: see the matching comment in head_on_full3d.par -- norms
+# here are NOT directly comparable to that run's (this domain has far
+# fewer grid points), only useful as this run's own independent sanity
+# check. out_silo_vars is what the actual pointwise y=0-plane comparison
+# will read from (post-processing not yet written -- notes.md "Status").
+IO::out_dir   = $parfile
+IO::out_every = $out_every
+
+CarpetX::out_performance = no
+CarpetX::out_metadata    = no
+CarpetX::out_norm_omit_unstable = no
+CarpetX::out_norm_vars = "
+  ADMBaseX::metric
+  ADMBaseX::curv
+  CottonmouthZ4c4m::evo_lapse
+  CottonmouthZ4c4m::evo_shift
+  CottonmouthZ4c4m::Theta
+  CottonmouthZ4c4m::HamCons
+  CottonmouthZ4c4m::MomCons
+  CottonmouthZ4c4m::ZtCons
+"
+
+CarpetX::out_silo_every = $out_every
+CarpetX::out_silo_vars = "
+  ADMBaseX::metric
+  ADMBaseX::curv
+  CottonmouthZ4c4m::evo_lapse
+  CottonmouthZ4c4m::evo_shift
+  CottonmouthZ4c4m::HamCons
+  CottonmouthZ4c4m::MomCons
+"
