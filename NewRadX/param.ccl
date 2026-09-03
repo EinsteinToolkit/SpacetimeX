@@ -3,3 +3,32 @@
 CCTK_BOOLEAN apply_inner_boundary "Apply radiative BC at inner boundary of a multipatch systems, if such boundary exists (e.g. Thornburg06 inner sphere)" STEERABLE=always
 {
 } "no"
+
+# NewRadX_Apply loops over outermost-interior points on every face that is
+# not a symmetry/periodic boundary and REPLACES the RHS there with the
+# radiative condition. On a thin-y cartoon slab both interior y-layers
+# are outermost, so applying on y would overwrite the Einstein RHS
+# everywhere and radiate the domain to Minkowski. Set apply_y="no" in
+# that case (x and z still get a real outer radiative BC).
+CCTK_BOOLEAN apply_x "Apply radiative BC on x faces" STEERABLE=always
+{
+} "yes"
+# Per-face overrides. A half-plane cartoon domain has xmin at the axis,
+# so the lower x face is a stencil hang-over filled by rotation, not a
+# physical outer boundary -- set apply_lower_x="no" there.
+CCTK_BOOLEAN apply_lower_x "Apply radiative BC on the lower x face" STEERABLE=always
+{
+} "yes"
+CCTK_BOOLEAN apply_upper_x "Apply radiative BC on the upper x face" STEERABLE=always
+{
+} "yes"
+CCTK_BOOLEAN apply_y "Apply radiative BC on y faces" STEERABLE=always
+{
+} "yes"
+CCTK_BOOLEAN apply_z "Apply radiative BC on z faces" STEERABLE=always
+{
+} "yes"
+
+CCTK_BOOLEAN require_tagged_interior_for_radpower "When radpower>0, the Coulomb-falloff correction samples a point nghostzones grid cells inward from each radiative boundary point. By default (\"yes\", the original, conservative behavior) that sample point is required to lie within the group's TAGGED INTERIOR region in every direction, which fails on a domain whose interior is narrower than nghostzones+1 cells in some direction (e.g. a thin-slab/cartoon-style axisymmetry domain). Set to \"no\" only if you have independently ensured ghost-zone data is valid at the sample point in every such direction -- e.g. because another thorn actively computes correct values there (not merely syncs or extrapolates). When \"no\", only basic array-bounds safety is checked instead of tagged-interior membership; this does not by itself make ghost-zone data valid, it only stops NewRadX from refusing to use data that some other thorn has already made valid." STEERABLE=always
+{
+} "yes"

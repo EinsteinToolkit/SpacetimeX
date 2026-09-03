@@ -65,7 +65,7 @@
 \texttt{Cartoon2DX} is the CarpetX port of \texttt{cactusnumerical/Cartoon2D}.
 It evolves an axisymmetric system as a thin-in-$y$ Cartesian slab: values on
 the $y$-faces (and optionally $x<0$) are obtained by interpolating a
-reference profile in cylindrical radius and rotating tensor components into
+reference cylindrical coordinate and rotating tensor components into
 place. CarpetX treats this as a physical boundary type
 \texttt{boundary\_t::cartoon}.
 \end{abstract}
@@ -74,10 +74,10 @@ place. CarpetX treats this as a physical boundary type
 
 Axisymmetric systems can be evolved with a fully 3-dimensional Cartesian
 code by keeping only a slab one cell thick in $y$, plus ghost zones, and
-filling the off-plane points from the $y=0$ data under the axisymmetry
-assumption. This is the ``cartoon'' method of
+filling the off-plane points from the $y=0$ data by rotation + interpolation using 
+the axisymmetry assumption. This is the ``cartoon'' method of
 Alcubierre et al.~\cite{SpacetimeX_Cartoon2DX_Alcubierre2001}, originally
-implemented for Cactus3 by Steve Brandt and for Cactus4
+implemented for Cactus3 by Steve Brandt (and Grok) and for Cactus4
 (\texttt{Cartoon2D}) by Sai Iyer.
 
 \texttt{Cartoon2DX} does the same thing for the CarpetX driver. The
@@ -186,12 +186,6 @@ the testsuite.
   Denis Pollney.
 \item \texttt{Cartoon2DX} for CarpetX: Steven R. Brandt.
 \end{itemize}
-
-An earlier draft of this thorn used \texttt{INHERITS:} of a specific
-evolution thorn. That made Cartoon2DX unusable with any other physics
-(Cactus treats \texttt{INHERITS:} as a hard activation requirement).
-The fill looks up groups by index and writes through
-\texttt{CCTK\_VarDataPtrI}, so there is no \texttt{INHERITS:} now.
 
 ENO interpolation and excision, present in old \texttt{Cartoon2D}, are
 not implemented.

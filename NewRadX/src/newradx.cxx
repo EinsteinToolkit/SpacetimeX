@@ -46,6 +46,28 @@ r2o(const Loop::PointDesc &p, const vect<int, dim> &pI,
   return num * den;
 }
 
+// Faces with apply_*=no are treated like symmetry faces so
+// loop_outermost_int skips them. Default apply_*=yes leaves behavior
+// unchanged.
+static vect<vect<bool, dim>, 2>
+skip_disabled_faces(vect<vect<bool, dim>, 2> is_sym_bnd, bool apply_x,
+                    bool apply_y, bool apply_z, bool apply_lower_x,
+                    bool apply_upper_x) {
+  if (!apply_x || !apply_lower_x)
+    is_sym_bnd[0][0] = true;
+  if (!apply_x || !apply_upper_x)
+    is_sym_bnd[1][0] = true;
+  if (!apply_y) {
+    is_sym_bnd[0][1] = true;
+    is_sym_bnd[1][1] = true;
+  }
+  if (!apply_z) {
+    is_sym_bnd[0][2] = true;
+    is_sym_bnd[1][2] = true;
+  }
+  return is_sym_bnd;
+}
+
 template <std::size_t dir>
 static inline CCTK_ATTRIBUTE_ALWAYS_INLINE CCTK_DEVICE CCTK_REAL calc_deriv(
     const Loop::PointDesc &p, const Loop::GF3D2<const CCTK_REAL> &gf) noexcept {
@@ -87,15 +109,18 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
                    const Loop::GF3D2<CCTK_REAL> &rhs, const CCTK_REAL var0,
                    const CCTK_REAL v0, const CCTK_REAL radpower) {
   DECLARE_CCTK_ARGUMENTS;
+  DECLARE_CCTK_PARAMETERS;
 
   const auto symmetries = CarpetX::ghext->patchdata.at(cctk_patch).symmetries;
-  const vect<vect<bool, Loop::dim>, 2> is_sym_bnd{
+  vect<vect<bool, Loop::dim>, 2> is_sym_bnd{
       {symmetries[0][0] != CarpetX::symmetry_t::none,
        symmetries[0][1] != CarpetX::symmetry_t::none,
        symmetries[0][2] != CarpetX::symmetry_t::none},
       {symmetries[1][0] != CarpetX::symmetry_t::none,
        symmetries[1][1] != CarpetX::symmetry_t::none,
        symmetries[1][2] != CarpetX::symmetry_t::none}};
+  is_sym_bnd = skip_disabled_faces(is_sym_bnd, apply_x, apply_y, apply_z,
+                                   apply_lower_x, apply_upper_x);
 
   const Loop::GridDescBaseDevice grid(cctkGH);
   grid.loop_outermost_int_device<0, 0, 0>(
@@ -155,12 +180,27 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
                                             grid.nghostzones[2] * p.NI[2]};
           const vect<int, dim> intp = p.I - displacement;
 
-          assert(intp[0] >= grid.nghostzones[0]);
-          assert(intp[1] >= grid.nghostzones[1]);
-          assert(intp[2] >= grid.nghostzones[2]);
-          assert(intp[0] <= grid.lsh[0] - grid.nghostzones[0] - 1);
-          assert(intp[1] <= grid.lsh[1] - grid.nghostzones[1] - 1);
-          assert(intp[2] <= grid.lsh[2] - grid.nghostzones[2] - 1);
+          // By default, require intp to lie within the group's TAGGED
+          // INTERIOR (the original, conservative check): this assumes
+          // ghost-zone data is untrustworthy, which holds for an
+          // ordinary domain (ghosts are just synced/extrapolated) but
+          // not for e.g. a thin-slab/cartoon-style domain where another
+          // thorn actively computes correct values into the ghost zone.
+          // require_tagged_interior_for_radpower="no" opts into trusting
+          // that instead, keeping only the array-bounds safety check
+          // (see param.ccl for the full rationale).
+          if (require_tagged_interior_for_radpower) {
+            assert(intp[0] >= grid.nghostzones[0]);
+            assert(intp[1] >= grid.nghostzones[1]);
+            assert(intp[2] >= grid.nghostzones[2]);
+            assert(intp[0] <= grid.lsh[0] - grid.nghostzones[0] - 1);
+            assert(intp[1] <= grid.lsh[1] - grid.nghostzones[1] - 1);
+            assert(intp[2] <= grid.lsh[2] - grid.nghostzones[2] - 1);
+          } else {
+            assert(intp[0] >= 0 && intp[0] < grid.lsh[0]);
+            assert(intp[1] >= 0 && intp[1] < grid.lsh[1]);
+            assert(intp[2] >= 0 && intp[2] < grid.lsh[2]);
+          }
 
           // coordinates at p.I-displacement
           const auto xint = p.x - displacement[0] * p.DX[0];
@@ -211,13 +251,15 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
   DECLARE_CCTK_PARAMETERS;
 
   const auto symmetries = CarpetX::ghext->patchdata.at(cctk_patch).symmetries;
-  const vect<vect<bool, Loop::dim>, 2> is_sym_bnd{
+  vect<vect<bool, Loop::dim>, 2> is_sym_bnd{
       {symmetries[0][0] != CarpetX::symmetry_t::none,
        symmetries[0][1] != CarpetX::symmetry_t::none,
        symmetries[0][2] != CarpetX::symmetry_t::none},
       {symmetries[1][0] != CarpetX::symmetry_t::none,
        symmetries[1][1] != CarpetX::symmetry_t::none,
        symmetries[1][2] != CarpetX::symmetry_t::none}};
+  is_sym_bnd = skip_disabled_faces(is_sym_bnd, apply_x, apply_y, apply_z,
+                                   apply_lower_x, apply_upper_x);
 
   const Loop::GridDescBaseDevice grid(cctkGH);
   grid.loop_outermost_int_device<0, 0, 0>(
@@ -281,12 +323,27 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
                                             grid.nghostzones[2] * p.NI[2]};
           const vect<int, dim> intp = p.I - displacement;
 
-          assert(intp[0] >= grid.nghostzones[0]);
-          assert(intp[1] >= grid.nghostzones[1]);
-          assert(intp[2] >= grid.nghostzones[2]);
-          assert(intp[0] <= grid.lsh[0] - grid.nghostzones[0] - 1);
-          assert(intp[1] <= grid.lsh[1] - grid.nghostzones[1] - 1);
-          assert(intp[2] <= grid.lsh[2] - grid.nghostzones[2] - 1);
+          // By default, require intp to lie within the group's TAGGED
+          // INTERIOR (the original, conservative check): this assumes
+          // ghost-zone data is untrustworthy, which holds for an
+          // ordinary domain (ghosts are just synced/extrapolated) but
+          // not for e.g. a thin-slab/cartoon-style domain where another
+          // thorn actively computes correct values into the ghost zone.
+          // require_tagged_interior_for_radpower="no" opts into trusting
+          // that instead, keeping only the array-bounds safety check
+          // (see param.ccl for the full rationale).
+          if (require_tagged_interior_for_radpower) {
+            assert(intp[0] >= grid.nghostzones[0]);
+            assert(intp[1] >= grid.nghostzones[1]);
+            assert(intp[2] >= grid.nghostzones[2]);
+            assert(intp[0] <= grid.lsh[0] - grid.nghostzones[0] - 1);
+            assert(intp[1] <= grid.lsh[1] - grid.nghostzones[1] - 1);
+            assert(intp[2] <= grid.lsh[2] - grid.nghostzones[2] - 1);
+          } else {
+            assert(intp[0] >= 0 && intp[0] < grid.lsh[0]);
+            assert(intp[1] >= 0 && intp[1] < grid.lsh[1]);
+            assert(intp[2] >= 0 && intp[2] < grid.lsh[2]);
+          }
 
           // Global coordinates at interior point
           const auto xint = vcoordx(intp);
