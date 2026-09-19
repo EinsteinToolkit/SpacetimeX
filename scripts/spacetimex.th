@@ -165,8 +165,8 @@ CarpetX/TmunuBaseX
 !TARGET   = $ARR
 !TYPE     = ignore
 !CHECKOUT =
-#SpacetimeX/AHFinderDirect
-SpacetimeX/AHFinderX
+SpacetimeX/AHFinderDirect
+#SpacetimeX/AHFinderX
 SpacetimeX/BrillLindquist
 SpacetimeX/Cowling
 SpacetimeX/KerrSchildX
