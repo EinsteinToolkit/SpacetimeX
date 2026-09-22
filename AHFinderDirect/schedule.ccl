@@ -6,12 +6,23 @@ storage: ahmask[1]
 #
 # setup
 #
+schedule AHFinderDirect_init at CCTK_WRAGH
+{
+   lang: C
+   options: global
+   WRITES: AHFinderDirect::ah_centroid, ah_flags
+   WRITES: AHFinderDirect::ah_origin, ah_radius
+} "initialise the horizon grid arrays"
+
 schedule AHFinderDirect_setup at CCTK_BASEGRID        \
    after SpatialCoordinates
    {
    lang: C
    options: global
+   READS:  AHFinderDirect::ah_centroid, ah_flags
+   READS:  AHFinderDirect::ah_origin, ah_radius
    WRITES: AHFinderDirect::ah_centroid, ah_flags
+   WRITES: AHFinderDirect::ah_origin, ah_radius
    } "setup data structures"
 
 schedule AHFinderDirect_import_mask at CCTK_POSTREGRIDINITIAL \
@@ -38,6 +49,7 @@ schedule AHFinderDirect_recover at CCTK_POST_RECOVER_VARIABLES
    {
    lang: C
    options: global
+    READS: AHFinderDirect::ah_flags, ah_origin, ah_radius
    } "import horizon data from Cactus variables"
 
 #
@@ -49,6 +61,7 @@ if (run_at_CCTK_ANALYSIS != 0)
      {
      lang: C
      options: global
+      READS: AHFinderDirect::ah_centroid
      } "find apparent horizon(s) after this time step"
   }
 if (run_at_CCTK_POSTSTEP != 0)
@@ -57,6 +70,7 @@ if (run_at_CCTK_POSTSTEP != 0)
      {
      lang: C
      options: global
+      READS: AHFinderDirect::ah_centroid
      } "find apparent horizon(s) after this time step"
   }
 if (run_at_CCTK_POSTINITIAL != 0)
@@ -65,6 +79,7 @@ if (run_at_CCTK_POSTINITIAL != 0)
      {
      lang: C
      options: global
+      READS: AHFinderDirect::ah_centroid
      } "find apparent horizon(s) after this time step"
   }
 if (run_at_CCTK_POSTPOSTINITIAL != 0)
@@ -73,6 +88,7 @@ if (run_at_CCTK_POSTPOSTINITIAL != 0)
      {
      lang: C
      options: global
+      READS: AHFinderDirect::ah_centroid
      } "find apparent horizon(s) after this time step"
   }
 if (run_at_CCTK_POST_RECOVER_VARIABLES != 0)
@@ -82,6 +98,7 @@ if (run_at_CCTK_POST_RECOVER_VARIABLES != 0)
      {
      lang: C
      options: global
+      READS: AHFinderDirect::ah_centroid
      } "find apparent horizon(s) after this time step"
   }
 
@@ -116,6 +133,18 @@ if (run_at_CCTK_ANALYSIS != 0)
      {
      lang: C
      options: global
+      READS: SphericalSurface::sf_shape_descriptors
+      READS: SphericalSurface::sf_coordinate_descriptors
+      READS: SphericalSurface::sf_active
+      READS: SphericalSurface::sf_valid
+      READS: SphericalSurface::sf_info
+      READS: SphericalSurface::sf_origin
+      READS: SphericalSurface::sf_radius
+      WRITES: SphericalSurface::sf_active
+      WRITES: SphericalSurface::sf_valid
+      WRITES: SphericalSurface::sf_info
+      WRITES: SphericalSurface::sf_origin
+      WRITES: SphericalSurface::sf_radius
      } "store apparent horizon(s) into spherical surface(s)"
 
   schedule AHFinderDirect_save at CCTK_ANALYSIS \
@@ -123,6 +152,9 @@ if (run_at_CCTK_ANALYSIS != 0)
      {
      lang: C
      options: global
+      READS: AHFinderDirect::ah_centroid, ah_flags
+      WRITES: AHFinderDirect::ah_centroid, ah_flags
+      WRITES: AHFinderDirect::ah_origin, ah_radius
      } "save apparent horizon(s) into Cactus variables"
 
   if (which_horizon_to_announce_centroid != 0)
@@ -158,6 +190,18 @@ if (run_at_CCTK_POSTSTEP != 0)
      {
      lang: C
      options: global
+      READS: SphericalSurface::sf_shape_descriptors
+      READS: SphericalSurface::sf_coordinate_descriptors
+      READS: SphericalSurface::sf_active
+      READS: SphericalSurface::sf_valid
+      READS: SphericalSurface::sf_info
+      READS: SphericalSurface::sf_origin
+      READS: SphericalSurface::sf_radius
+      WRITES: SphericalSurface::sf_active
+      WRITES: SphericalSurface::sf_valid
+      WRITES: SphericalSurface::sf_info
+      WRITES: SphericalSurface::sf_origin
+      WRITES: SphericalSurface::sf_radius
      } "store apparent horizon(s) into spherical surface(s)"
 
   schedule AHFinderDirect_save at CCTK_POSTSTEP \
@@ -165,6 +209,9 @@ if (run_at_CCTK_POSTSTEP != 0)
      {
      lang: C
      options: global
+      READS: AHFinderDirect::ah_centroid, ah_flags
+      WRITES: AHFinderDirect::ah_centroid, ah_flags
+      WRITES: AHFinderDirect::ah_origin, ah_radius
      } "save apparent horizon(s) into Cactus variables"
 
   if (which_horizon_to_announce_centroid != 0)
@@ -200,6 +247,18 @@ if (run_at_CCTK_POSTINITIAL != 0)
      {
      lang: C
      options: global
+      READS: SphericalSurface::sf_shape_descriptors
+      READS: SphericalSurface::sf_coordinate_descriptors
+      READS: SphericalSurface::sf_active
+      READS: SphericalSurface::sf_valid
+      READS: SphericalSurface::sf_info
+      READS: SphericalSurface::sf_origin
+      READS: SphericalSurface::sf_radius
+      WRITES: SphericalSurface::sf_active
+      WRITES: SphericalSurface::sf_valid
+      WRITES: SphericalSurface::sf_info
+      WRITES: SphericalSurface::sf_origin
+      WRITES: SphericalSurface::sf_radius
      } "store apparent horizon(s) into spherical surface(s)"
 
   schedule AHFinderDirect_save at CCTK_POSTINITIAL \
@@ -207,6 +266,9 @@ if (run_at_CCTK_POSTINITIAL != 0)
      {
      lang: C
      options: global
+      READS: AHFinderDirect::ah_centroid, ah_flags
+      WRITES: AHFinderDirect::ah_centroid, ah_flags
+      WRITES: AHFinderDirect::ah_origin, ah_radius
      } "save apparent horizon(s) into Cactus variables"
 
   if (which_horizon_to_announce_centroid != 0)
@@ -243,6 +305,18 @@ if (run_at_CCTK_POSTPOSTINITIAL != 0)
      {
      lang: C
      options: global
+      READS: SphericalSurface::sf_shape_descriptors
+      READS: SphericalSurface::sf_coordinate_descriptors
+      READS: SphericalSurface::sf_active
+      READS: SphericalSurface::sf_valid
+      READS: SphericalSurface::sf_info
+      READS: SphericalSurface::sf_origin
+      READS: SphericalSurface::sf_radius
+      WRITES: SphericalSurface::sf_active
+      WRITES: SphericalSurface::sf_valid
+      WRITES: SphericalSurface::sf_info
+      WRITES: SphericalSurface::sf_origin
+      WRITES: SphericalSurface::sf_radius
      } "store apparent horizon(s) into spherical surface(s)"
 
   schedule AHFinderDirect_save at CCTK_POSTPOSTINITIAL \
@@ -250,6 +324,9 @@ if (run_at_CCTK_POSTPOSTINITIAL != 0)
      {
      lang: C
      options: global
+      READS: AHFinderDirect::ah_centroid, ah_flags
+      WRITES: AHFinderDirect::ah_centroid, ah_flags
+      WRITES: AHFinderDirect::ah_origin, ah_radius
      } "save apparent horizon(s) into Cactus variables"
 
   if (which_horizon_to_announce_centroid != 0)
@@ -285,6 +362,18 @@ if (run_at_CCTK_POST_RECOVER_VARIABLES != 0)
      {
      lang: C
      options: global
+      READS: SphericalSurface::sf_shape_descriptors
+      READS: SphericalSurface::sf_coordinate_descriptors
+      READS: SphericalSurface::sf_active
+      READS: SphericalSurface::sf_valid
+      READS: SphericalSurface::sf_info
+      READS: SphericalSurface::sf_origin
+      READS: SphericalSurface::sf_radius
+      WRITES: SphericalSurface::sf_active
+      WRITES: SphericalSurface::sf_valid
+      WRITES: SphericalSurface::sf_info
+      WRITES: SphericalSurface::sf_origin
+      WRITES: SphericalSurface::sf_radius
      } "store apparent horizon(s) into spherical surface(s)"
 
   schedule AHFinderDirect_save at CCTK_POST_RECOVER_VARIABLES \
@@ -292,6 +381,9 @@ if (run_at_CCTK_POST_RECOVER_VARIABLES != 0)
      {
      lang: C
      options: global
+      READS: AHFinderDirect::ah_centroid, ah_flags
+      WRITES: AHFinderDirect::ah_centroid, ah_flags
+      WRITES: AHFinderDirect::ah_origin, ah_radius
      } "save apparent horizon(s) into Cactus variables"
 
   if (which_horizon_to_announce_centroid != 0)
