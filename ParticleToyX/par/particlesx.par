@@ -1,0 +1,23 @@
+ActiveThorns = "
+    CarpetX
+    IOUtil
+    ParticleToyX
+    ParticlesX
+"
+
+Cactus::cctk_show_schedule = no
+Cactus::presync_mode = "mixed-error"
+
+CarpetX::poison_undefined_values = yes
+CarpetX::verbose = yes
+
+CarpetX::ncells_x = 32
+CarpetX::ncells_y = 32
+CarpetX::ncells_z = 32
+
+ParticlesX::num_particles = 10
+
+Cactus::cctk_itlast = 10
+
+IO::out_dir = $parfile
+ParticlesX::out_every = 1
