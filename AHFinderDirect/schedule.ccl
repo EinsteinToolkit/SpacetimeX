@@ -61,7 +61,7 @@ if (run_at_CCTK_ANALYSIS != 0)
      {
      lang: C
      options: global
-      READS: AHFinderDirect::ah_centroid
+      READS: AHFinderDirect::ah_centroid, ah_flags
      } "find apparent horizon(s) after this time step"
   }
 if (run_at_CCTK_POSTSTEP != 0)
@@ -70,7 +70,7 @@ if (run_at_CCTK_POSTSTEP != 0)
      {
      lang: C
      options: global
-      READS: AHFinderDirect::ah_centroid
+      READS: AHFinderDirect::ah_centroid, ah_flags
      } "find apparent horizon(s) after this time step"
   }
 if (run_at_CCTK_POSTINITIAL != 0)
@@ -79,7 +79,7 @@ if (run_at_CCTK_POSTINITIAL != 0)
      {
      lang: C
      options: global
-      READS: AHFinderDirect::ah_centroid
+      READS: AHFinderDirect::ah_centroid, ah_flags
      } "find apparent horizon(s) after this time step"
   }
 if (run_at_CCTK_POSTPOSTINITIAL != 0)
@@ -88,7 +88,7 @@ if (run_at_CCTK_POSTPOSTINITIAL != 0)
      {
      lang: C
      options: global
-      READS: AHFinderDirect::ah_centroid
+      READS: AHFinderDirect::ah_centroid, ah_flags
      } "find apparent horizon(s) after this time step"
   }
 if (run_at_CCTK_POST_RECOVER_VARIABLES != 0)
@@ -98,7 +98,7 @@ if (run_at_CCTK_POST_RECOVER_VARIABLES != 0)
      {
      lang: C
      options: global
-      READS: AHFinderDirect::ah_centroid
+      READS: AHFinderDirect::ah_centroid, ah_flags
      } "find apparent horizon(s) after this time step"
   }
 
