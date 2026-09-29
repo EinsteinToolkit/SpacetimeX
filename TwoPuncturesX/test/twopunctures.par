@@ -1,56 +1,67 @@
-# $Header$
+# This is a CarpetX equivalent of the
+# twopunctures_carpet.par test file,
 
-ActiveThorns = "Boundary CartGrid3D Time CoordBase SymBase"
-ActiveThorns = "PUGH PUGHReduce PUGHSlab LocalReduce"
-ActiveThorns = "IOASCII IOBasic IOUtil"
-ActiveThorns = "ADMBaseX StaticConformal"
-ActiveThorns = "TmunuBaseX ADMConstraints ADMCoupling ADMMacros SpaceMask"
-ActiveThorns = "TwoPuncturesX"
+ActiveThorns = "
+  ADMBaseX
+  CarpetX
+  CoordinatesX
+  IOUtil
+  ODESolvers
+  TwoPuncturesX
+"
 
-Cactus::cctk_itlast		= 0
+# Driver
+Cactus::cctk_show_schedule       = yes
+Cactus::presync_mode             = "mixed-error"
+CarpetX::verbose                 = yes
+CarpetX::poison_undefined_values = yes
 
-Time::dtfac			= 0.25
+# Run Termination
+Cactus::terminate   = "iteration"
+Cactus::cctk_itlast = 0
 
-Grid::type			= "byrange"
-Grid::domain			= "full"
-Grid::xmin                      = -4
-Grid::xmax                      =  4
-Grid::ymin                      = -4
-Grid::ymax			=  4
-Grid::zmin                      = -4
-Grid::zmax			=  4
-Driver::global_nx		= 35
-Driver::global_ny		= 35
-Driver::global_nz		= 35
+# Grid setup
+CarpetX::xmin = -2.0
+CarpetX::ymin = -2.0
+CarpetX::zmin = -2.0
 
-ADMBaseX::initial_data		= "twopunctures"
+CarpetX::xmax = +2.0
+CarpetX::ymax = +2.0
+CarpetX::zmax = +2.0
 
-TwoPuncturesX::keep_u_around     = yes
+CarpetX::ncells_x = 40
+CarpetX::ncells_y = 40
+CarpetX::ncells_z = 40
 
-TwoPuncturesX::npoints_A         = 20
-TwoPuncturesX::npoints_B         = 20
-TwoPuncturesX::npoints_phi       = 12
+CarpetX::ghost_size = 0
 
-TwoPuncturesX::par_b             =  1.5
+# Initial data
+ADMBaseX::initial_data  = "TwoPunctures"
+ADMBaseX::initial_lapse = "TwoPunctures-averaged"
 
-TwoPuncturesX::par_m_plus        =  1.5
-TwoPuncturesX::par_P_plus[1]     =  2.0
-TwoPuncturesX::par_S_plus[1]     =  0.5
-TwoPuncturesX::par_S_plus[2]     = -0.5
+TwoPuncturesX::verbose        = yes
 
-TwoPuncturesX::par_m_minus       =  1.0
-TwoPuncturesX::par_P_minus[1]    = -2.0
-TwoPuncturesX::par_S_minus[0]    = -1.0
-TwoPuncturesX::par_S_minus[2]    = -1.0
+TwoPuncturesX::par_b          =  1.168642873
+TwoPuncturesX::par_m_plus     =  0.453
+TwoPuncturesX::par_m_minus    =  0.453
+TwoPuncturesX::par_P_plus [1] = +0.3331917498
+TwoPuncturesX::par_P_minus[1] = -0.3331917498
 
-ADMBaseX::lapse_evolution_method	= "static"
-ADMBaseX::initial_lapse		= "one"
+# Low accuracy initial data for fast execution
+TwoPuncturesX::grid_setup_method         = "Taylor expansion"
+TwoPuncturesX::npoints_A                 = 16
+TwoPuncturesX::npoints_B                 = 16
+TwoPuncturesX::npoints_phi               = 8
 
-IO::out_dir			= $parfile
-IO::out_fileinfo		= "axis labels"
+# Checkpoint and recovery
+IO::out_dir       = $parfile
+IO::out_every     = 1
+IO::parfile_write = no
 
-IOBasic::outScalar_every	= 1
-IOBasic::outScalar_vars		= "admbase::metric admbase::curv admconstraints::hamiltonian admconstraints::momentum TwoPuncturesX::puncture_u"
+# Output
+CarpetX::out_performance = no
+CarpetX::out_metadata    = no
 
-IOASCII::out1D_every		= 1
-IOASCII::out1D_vars		= "admbase::metric admbase::curv admconstraints::hamiltonian admconstraints::momentum TwoPuncturesX::puncture_u"
+CarpetX::out_tsv_vars = "
+  ADMBaseX::metric
+"
