@@ -53,10 +53,20 @@ SCHEDULE GROUP SphericalSurface_HasBeenSet AT basegrid
 
 
 
+# Same clauses as the basegrid entry above. Without them CarpetX nulls
+# cctkGH->data[] for every undeclared variable, and this routine segfaults on
+# the first sf_ write.
 SCHEDULE SphericalSurface_Set AT poststep BEFORE SphericalSurface_HasBeenSet
 {
   LANG: C
   OPTIONS: global
+  READS: SphericalSurface::sf_shape_descriptors
+  READS: SphericalSurface::sf_coordinate_descriptors
+  WRITES: SphericalSurface::sf_active(everywhere)
+  WRITES: SphericalSurface::sf_valid(everywhere)
+  WRITES: SphericalSurface::sf_info(everywhere)
+  WRITES: SphericalSurface::sf_origin(everywhere)
+  WRITES: SphericalSurface::sf_radius(everywhere)
 } "Set surface radii"
 
 SCHEDULE GROUP SphericalSurface_HasBeenSet AT poststep

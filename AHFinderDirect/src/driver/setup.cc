@@ -223,6 +223,62 @@ extern struct state state;
 // This function is called by the Cactus scheduler to set up all our
 // persistent data structures.  (These are stored in  struct state .)
 //
+//
+// AHFinderDirect_setup() below declares ah_radius, ah_origin, ah_centroid and
+// ah_flags as output, but it only fills them the first time it runs. The
+// static already_ran guard makes every later call a no-op.  CarpetX
+// re-traverses CCTK_BASEGRID after each regrid, and it poisons a routine's
+// write-only outputs immediately before calling it, so those later calls used
+// to leave the whole of ah_radius (and the centroids) as nans and abort in
+// valid.cxx. The BASEGRID entry is therefore declared as READS *and* WRITES,
+// which is what it really does, a partial, preserving update, and CarpetX
+// then leaves the arrays alone. That only works if they are already valid the
+// first time AHFinderDirect_setup runs, which is what this routine is for.
+//
+// The values match what AHFinderDirect_setup would write for a horizon that
+// has not been found yet.
+//
+extern "C"
+  void AHFinderDirect_init(CCTK_ARGUMENTS)
+{
+DECLARE_CCTK_ARGUMENTS_AHFinderDirect_init
+DECLARE_CCTK_PARAMETERS
+
+for (int n = 0; n < N_horizons; ++n) {
+  ah_origin_x[n] = 0.0;
+  ah_origin_y[n] = 0.0;
+  ah_origin_z[n] = 0.0;
+
+  ah_centroid_x[n] = 0.0;
+  ah_centroid_y[n] = 0.0;
+  ah_centroid_z[n] = 0.0;
+  ah_centroid_t[n] = 0.0;
+  ah_centroid_x_p[n] = 0.0;
+  ah_centroid_y_p[n] = 0.0;
+  ah_centroid_z_p[n] = 0.0;
+  ah_centroid_t_p[n] = 0.0;
+
+  ah_initial_find_flag[n] = 0;
+  ah_really_initial_find_flag[n] = 0;
+  ah_search_flag[n] = 0;
+  ah_found_flag[n] = 0;
+  ah_centroid_valid[n] = 0;
+  ah_centroid_valid_p[n] = 0;
+  ah_centroid_iteration[n] = -1;
+  ah_centroid_iteration_p[n] = -1;
+
+  // the whole array is poisoned, so the whole array has to be set, not only
+  // the (N_zones_per_right_angle+1)^2 * N_patches points that are in use
+  const int nzones = max_N_zones_per_right_angle + 1;
+  for (int pn = 0; pn < 6; ++pn)
+    for (int j = 0; j < nzones; ++j)
+      for (int i = 0; i < nzones; ++i)
+        ah_radius[i + nzones * (j + nzones * (pn + 6 * n))] = 0.0;
+  }
+}
+
+//******************************************************************************
+
 extern "C"
   void AHFinderDirect_setup(CCTK_ARGUMENTS)
 {
