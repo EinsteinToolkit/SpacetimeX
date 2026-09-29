@@ -13,6 +13,7 @@
 
 #include <ssht/ssht.h>
 
+#include <algorithm>
 #include <array>
 #include <cassert>
 #include <cmath>
@@ -202,14 +203,14 @@ metric_t<T> interpolate_metric(const cGH *const cctkGH,
   const int kzz_ind = CCTK_VarIndex("ADMBaseX::kzz");
 
   constexpr int nvars = 6 * (1 + 3 + 1);
-  const array<CCTK_INT, nvars> varinds{
+  const std::array<CCTK_INT, nvars> varinds{
       gxx_ind, gxy_ind, gxz_ind, gyy_ind, gyz_ind, gzz_ind, //
       gxx_ind, gxy_ind, gxz_ind, gyy_ind, gyz_ind, gzz_ind, //
       gxx_ind, gxy_ind, gxz_ind, gyy_ind, gyz_ind, gzz_ind, //
       gxx_ind, gxy_ind, gxz_ind, gyy_ind, gyz_ind, gzz_ind, //
       kxx_ind, kxy_ind, kxz_ind, kyy_ind, kyz_ind, kzz_ind, //
   };
-  const array<CCTK_INT, nvars> operations{
+  const std::array<CCTK_INT, nvars> operations{
       0, 0, 0, 0, 0, 0, //
       1, 1, 1, 1, 1, 1, //
       2, 2, 2, 2, 2, 2, //
@@ -219,7 +220,7 @@ metric_t<T> interpolate_metric(const cGH *const cctkGH,
 
   const geom_t &geom = coords.geom;
   metric_t<T> metric(geom);
-  array<T *, nvars> ptrs{
+  std::array<T *, nvars> ptrs{
       metric.g(0, 0)().data(),     metric.g(0, 1)().data(),
       metric.g(0, 2)().data(),     metric.g(1, 1)().data(),
       metric.g(1, 2)().data(),     metric.g(2, 2)().data(),
@@ -603,7 +604,8 @@ step(const cGH *const cctkGH, const vec3<T> &pos, const T &radius,
 
   // Limit step size to 10% of the current radius
   const T h00 = real(hlm()(0, 0));
-  delta_hlm()(0, 0) = clamp(real(delta_hlm()(0, 0)), -0.1 * h00, 0.1 * h00);
+  delta_hlm()(0, 0) =
+      std::clamp(real(delta_hlm()(0, 0)), -0.1 * h00, 0.1 * h00);
 
   return delta_hlm;
 }
@@ -631,7 +633,7 @@ void solve(const cGH *const cctkGH, vec3<T> &pos, T &radius,
                maximum(hij));
     if (0) {
       const int lmax = hlm.geom.lmax;
-      for (int l = 0; l <= min(4, lmax); ++l) {
+      for (int l = 0; l <= std::min(4, lmax); ++l) {
         using std::abs, std::max, std::min;
         T r = 0.0, rmin = 1.0 / 0.0, rmax = -1.0 / 0.0;
         for (int m = -l; m <= +l; ++m) {
