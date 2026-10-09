@@ -1,4 +1,5 @@
 #include <cctk.h>
+#include <cctk_Arguments.h>
 #include <cctk_Parameters.h>
 
 #include <loop_device.hxx>
@@ -6,6 +7,7 @@
 
 #include "newradx.hxx"
 
+#include <array>
 #include <cmath>
 
 namespace NewRadX {
@@ -210,6 +212,23 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
   DECLARE_CCTK_ARGUMENTS;
   DECLARE_CCTK_PARAMETERS;
 
+  // The radiative BC models an outgoing wave along the patch-local c
+  // direction, so it is meaningful only on patches whose c is radial. On the
+  // Llama cube c is Cartesian and every face is interpatch; skip it entirely.
+  if (CCTK_IsFunctionAliased("MultiPatch_cIsRadial") &&
+      !MultiPatch_cIsRadial(cctk_patch))
+    return;
+
+  // The BC is applied only where the radial (c) face is a genuine outer
+  // boundary. Inner radial and angular faces may be interpatch and are filled
+  // by interpolation instead.
+  std::array<CCTK_INT, 2 * Loop::dim> is_interpatch_face{};
+  if (CCTK_IsFunctionAliased("MultiPatch_GetBoundarySpecification2"))
+    MultiPatch_GetBoundarySpecification2(cctk_patch, 2 * Loop::dim,
+                                         is_interpatch_face.data());
+  const bool c_lower_is_physical = !is_interpatch_face[2 * 2 + 0];
+  const bool c_upper_is_physical = !is_interpatch_face[2 * 2 + 1];
+
   const auto symmetries = CarpetX::ghext->patchdata.at(cctk_patch).symmetries;
   const vect<vect<bool, Loop::dim>, 2> is_sym_bnd{
       {symmetries[0][0] != CarpetX::symmetry_t::none,
@@ -223,10 +242,14 @@ void NewRadX_Apply(const cGH *restrict const cctkGH,
   grid.loop_outermost_int_device<0, 0, 0>(
       grid.nghostzones, is_sym_bnd,
       [=] CCTK_DEVICE(const Loop::PointDesc &p) CCTK_ATTRIBUTE_ALWAYS_INLINE {
-        // Skip inner radial boundary unless requested
-        if (!apply_inner_boundary && p.NI[2] == -1) {
+        // Apply only on physical radial (c-normal) faces. Angular faces are
+        // interpatch seams, and the inner radial face may be interpatch too.
+        if (p.NI[2] == 0)
           return;
-        }
+        if (p.NI[2] == +1 && !c_upper_is_physical)
+          return;
+        if (p.NI[2] == -1 && (!apply_inner_boundary || !c_lower_is_physical))
+          return;
 
         // At the outer boundary absorb outgoing waves; at the inner
         // boundary absorb incoming waves (flip sign of v0).

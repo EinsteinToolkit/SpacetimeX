@@ -6,3 +6,14 @@ USES INCLUDE HEADER: driver.hxx
 USES INCLUDE HEADER: loop_device.hxx
 
 INCLUDE HEADER: newradx.hxx in newradx.hxx
+
+# Determine if the third local coordinate (c) of a patch is radial
+CCTK_INT FUNCTION MultiPatch_cIsRadial(CCTK_INT IN patch)
+USES FUNCTION MultiPatch_cIsRadial
+
+# Determine which of a patch's faces border another patch
+CCTK_INT FUNCTION MultiPatch_GetBoundarySpecification2( \
+  CCTK_INT IN patch, \
+  CCTK_INT IN size, \
+  CCTK_INT OUT ARRAY is_interpatch_boundary)
+USES FUNCTION MultiPatch_GetBoundarySpecification2
