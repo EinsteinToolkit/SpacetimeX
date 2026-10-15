@@ -398,21 +398,8 @@ void TwoPuncturesX_TwoPunctures(CCTK_ARGUMENTS) {
       CCTK_EQUALS(initial_lapse, "twopunctures-antisymmetric");
   averaged_lapse = CCTK_EQUALS(initial_lapse, "twopunctures-averaged");
   pmn_lapse = CCTK_EQUALS(initial_lapse, "psi^n");
-  if (pmn_lapse) {
-		CCTK_VInfo(CCTK_THORNSTRING, "Setting initial lapse to psi^%f profile,",
-               (double)initial_lapse_psi_exponent);
-		CCTK_VInfo(CCTK_THORNSTRING, "where psi is the *uncorrected* conformal");
-		CCTK_VInfo(CCTK_THORNSTRING, "factor, not psi+u!");
-  }
   W_lapse = CCTK_EQUALS(initial_lapse, "W");
-  if (W_lapse)
-    CCTK_VInfo(CCTK_THORNSTRING,
-               "Setting initial lapse to W=(psi+u)^{-2}, needed for slow-start lapse.");
   brownsville_lapse = CCTK_EQUALS(initial_lapse, "brownsville");
-  if (brownsville_lapse)
-    CCTK_VINFO("Setting initial lapse to a Brownsville-style profile "
-               "with exp %f.",
-               (double)initial_lapse_psi_exponent);
 
   static bool did_print = false;
   bool dp;
